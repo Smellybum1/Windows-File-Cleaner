@@ -5,6 +5,7 @@ TestResults/
 
 # Local test fixtures
 test-fixtures/
+.local/
 
 # User and IDE files
 .vs/
@@ -15,4 +16,3 @@ test-fixtures/
 
 # Logs
 *.log
-

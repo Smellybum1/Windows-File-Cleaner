@@ -24,8 +24,14 @@ public partial class MainWindow : Window
     private bool _isUpdatingCategoryFilterOptions;
 
     public MainWindow()
+        : this(StorageScanOptions.DefaultForCurrentUser().CleanupScopePath)
+    {
+    }
+
+    public MainWindow(string initialCleanupScopePath)
     {
         InitializeComponent();
+        ScopePathBox.Text = initialCleanupScopePath;
         ResultsGrid.ItemsSource = Array.Empty<StorageEntryRow>();
         UpdateCategoryFilterOptions();
     }

@@ -37,6 +37,22 @@ Expected test output:
 All WindowsFileCleaner.Tests checks passed.
 ```
 
+## WPF Fixture Smoke
+
+Create a small synthetic Cleanup Scope inside the repo:
+
+```powershell
+.\tools\New-StorageScanSmokeFixture.ps1
+```
+
+Then run the printed command, which has this shape:
+
+```powershell
+dotnet run --project src\WindowsFileCleaner.App -- --scope "D:\Codex\Windows File Cleaner\.local\storage-scan-smoke-fixture"
+```
+
+This only fills the Cleanup Scope box. Click `Scan` yourself after the app opens.
+
 ## Run The App
 
 ```powershell
@@ -53,7 +69,7 @@ C:\Users\moxhe
 
 After the app opens:
 
-1. Confirm the scope box shows `C:\Users\moxhe`.
+1. Confirm the scope box shows the intended Cleanup Scope.
 2. Click `Scan`.
 3. Confirm the status says no files were modified.
 4. Review the summary cards for total size, folders, files, and access issues.

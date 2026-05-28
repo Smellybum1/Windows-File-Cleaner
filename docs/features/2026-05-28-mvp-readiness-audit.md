@@ -91,12 +91,12 @@ Rejected ideas buffer:
 | Cleanup candidate categories | `BloatCategory` usage in core, WPF labels, CSV exporters, docs | Verified in current repo | Categories include caches, package caches, app data, protected locations, access issues, and conservative app/game labels. |
 | Importance ratings | `ImportanceRating`, WPF grid labels, fixture tests, glossary | Verified in current repo | User-facing labels are `Likely safe`, `Caution`, and `High risk`. |
 | Deletion recommendations | `DeletionRecommendation`, classifier rules, WPF grid labels, glossary | Verified in current repo | Recommendations remain conservative: `Keep`, `Inspect`, or `Quarantine candidate`. |
-| Fixture-based verification before real scan | `tests/WindowsFileCleaner.Tests/Program.cs`, progress log | Verified in current repo | Test harness covers scanner, classifier, summaries, preview, drafts, CSV, and safety guard behavior. |
+| Fixture-based verification before real scan | `tests/WindowsFileCleaner.Tests/Program.cs`, WPF fixture smoke launch docs, progress log | Verified in current repo | Test harness covers scanner, classifier, summaries, preview, drafts, CSV, and safety guard behavior. The WPF app can also launch with a synthetic Cleanup Scope via `--scope`. |
 | No cleanup execution in MVP | `ProductionCodeDoesNotContainCleanupExecutionCalls`, README Safety Status | Verified in current repo | Source-level guard blocks obvious production move/delete/write execution APIs except user-selected CSV report writes. |
 | Quarantine on `D:` with undo path explored safely | Quarantine Preview, Restore Manifest Draft, Quarantine Confirmation Draft, ADR 0003 | Preview-only verified | The app proves destination/readiness shape without writing manifests or moving files. |
 | Docs kept current | README, domain docs, ADRs, feature briefs, `.codex/progress.md` | Verified in current repo | Docs use the Grill with Docs control layer requested for the project. |
 | Commits and remote push | Git history and remote `origin/main` | Verified at packet start | Branch was clean and tracking `origin/main` before this audit packet. |
-| Latest WPF UI retest | User screenshot plus README manual checklist | Pending manual verification | The first scan was manually verified, but later filters, shortlist, preview export, and readiness UI need a fresh app run. |
+| Latest WPF UI retest | User screenshot plus README manual checklist | Pending manual verification | The first scan was manually verified, but later filters, shortlist, preview export, and readiness UI need a fresh app run. Use the fixture smoke path first, then retest `C:\Users\moxhe`. |
 | Actual Quarantine execution | README Not Implemented Yet, domain rules, ADR 0003 | Out of MVP | Requires explicit future design, confirmation semantics, restore rules, tests, and ADR review. |
 | Undo Quarantine execution | README Not Implemented Yet, Restore Manifest docs | Out of MVP | Requires executed manifests and file-moving workflow first. |
 
@@ -120,15 +120,18 @@ Results:
 
 Use `README.md` as the current manual MVP checklist. The highest-value retest is:
 
-1. Run the app with `dotnet run --project src\WindowsFileCleaner.App`.
-2. Scan `C:\Users\moxhe`.
-3. Confirm the status still says no files were modified.
-4. Test Safety Summary shortcuts.
-5. Test Access issues, Bloat Category, and No category filters.
-6. Add one likely-safe row to Review Shortlist.
-7. Create a Quarantine Preview.
-8. Confirm Restore Manifest Draft and Quarantine Confirmation Draft wording is understandable.
-9. Export the Quarantine Preview CSV only to a user-selected report path.
+1. Run `.\tools\New-StorageScanSmokeFixture.ps1`.
+2. Run the printed `dotnet run --project src\WindowsFileCleaner.App -- --scope "<fixture path>"` command.
+3. Smoke test the WPF controls against the fixture.
+4. Run the app with `dotnet run --project src\WindowsFileCleaner.App`.
+5. Scan `C:\Users\moxhe`.
+6. Confirm the status still says no files were modified.
+7. Test Safety Summary shortcuts.
+8. Test Access issues, Bloat Category, and No category filters.
+9. Add one likely-safe row to Review Shortlist.
+10. Create a Quarantine Preview.
+11. Confirm Restore Manifest Draft and Quarantine Confirmation Draft wording is understandable.
+12. Export the Quarantine Preview CSV only to a user-selected report path.
 
 ## Decisions made
 

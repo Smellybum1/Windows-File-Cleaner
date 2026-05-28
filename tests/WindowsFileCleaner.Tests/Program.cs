@@ -3,6 +3,7 @@ using WindowsFileCleaner.Core;
 var tests = new StorageScanTests();
 tests.ScannerTotalsFilesAndClassifiesCandidates();
 tests.ScannerRefusesToLeaveCleanupScope();
+tests.LaunchOptionsDefaultAndScopeArgument();
 tests.ClassifierLabelsRealScanContainerPatterns();
 tests.ReviewBuilderSummarizesAndFiltersResults();
 tests.ReviewBuilderFiltersAccessIssues();
@@ -61,6 +62,34 @@ internal sealed class StorageScanTests
 
         var outside = Path.GetFullPath(Path.Combine(fixture.RootPath, "..", "outside.txt"));
         Assert(!PathSafety.IsWithinScope(fixture.RootPath, outside), "Sibling path must not be inside Cleanup Scope.");
+    }
+
+    public void LaunchOptionsDefaultAndScopeArgument()
+    {
+        var defaultOptions = StorageScanLaunchOptions.Parse([]);
+        Assert(
+            defaultOptions.CleanupScopePath == StorageScanOptions.DefaultForCurrentUser().CleanupScopePath,
+            "Launch options should default to the current user's Cleanup Scope.");
+
+        var separateScope = @"D:\Codex\Windows File Cleaner\.local\storage-scan-smoke-fixture";
+        var parsedSeparate = StorageScanLaunchOptions.Parse(["--scope", separateScope]);
+        Assert(parsedSeparate.CleanupScopePath == separateScope, "Launch options should parse --scope <path>.");
+
+        var equalsScope = @"D:\Codex\Windows File Cleaner\.local\another-smoke-fixture";
+        var parsedEquals = StorageScanLaunchOptions.Parse([$"--scope={equalsScope}"]);
+        Assert(parsedEquals.CleanupScopePath == equalsScope, "Launch options should parse --scope=<path>.");
+
+        var missingScopeFailed = false;
+        try
+        {
+            StorageScanLaunchOptions.Parse(["--scope"]);
+        }
+        catch (ArgumentException)
+        {
+            missingScopeFailed = true;
+        }
+
+        Assert(missingScopeFailed, "Launch options should reject --scope without a path.");
     }
 
     public void ClassifierLabelsRealScanContainerPatterns()

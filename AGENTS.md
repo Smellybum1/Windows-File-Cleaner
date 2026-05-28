@@ -31,6 +31,12 @@ dotnet restore
 # Start local development
 dotnet run --project src/WindowsFileCleaner.App
 
+# Create a synthetic WPF smoke-test Cleanup Scope
+.\tools\New-StorageScanSmokeFixture.ps1
+
+# Start local development against the synthetic Cleanup Scope
+dotnet run --project src/WindowsFileCleaner.App -- --scope "D:\Codex\Windows File Cleaner\.local\storage-scan-smoke-fixture"
+
 # Run tests
 dotnet run --project tests/WindowsFileCleaner.Tests/WindowsFileCleaner.Tests.csproj
 

@@ -1055,6 +1055,7 @@ Implementation implications:
 
 - Recursive scanning should be expected, but it must handle access errors and long-running scans gracefully.
 - The first version should verify scanner behavior against fixture directories before scanning the real Cleanup Scope.
+- The WPF app may be launched with `--scope` to prefill a synthetic Cleanup Scope for manual smoke testing; startup must not auto-scan.
 - Storage Scan must not modify files.
 
 ### Rule: Read-only before cleanup
