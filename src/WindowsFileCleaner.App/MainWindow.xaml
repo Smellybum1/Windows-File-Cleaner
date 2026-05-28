@@ -116,6 +116,38 @@
                            Foreground="#526171"
                            Margin="0,8,0,0"
                            TextWrapping="Wrap" />
+                <WrapPanel Margin="0,8,0,0">
+                    <Button x:Name="SafetyHighRiskButton"
+                            Content="Review high risk"
+                            MinWidth="125"
+                            IsEnabled="False"
+                            Click="SafetyHighRiskButton_Click" />
+                    <Button x:Name="SafetyProtectedButton"
+                            Content="Review protected"
+                            MinWidth="135"
+                            IsEnabled="False"
+                            Click="SafetyProtectedButton_Click" />
+                    <Button x:Name="SafetyAccessIssuesButton"
+                            Content="Review access"
+                            MinWidth="120"
+                            IsEnabled="False"
+                            Click="SafetyAccessIssuesButton_Click" />
+                    <Button x:Name="SafetyReparsePointsButton"
+                            Content="Review reparse"
+                            MinWidth="125"
+                            IsEnabled="False"
+                            Click="SafetyReparsePointsButton_Click" />
+                    <Button x:Name="SafetyQuarantineCandidatesButton"
+                            Content="Review quarantine"
+                            MinWidth="145"
+                            IsEnabled="False"
+                            Click="SafetyQuarantineCandidatesButton_Click" />
+                    <Button x:Name="SafetyNoCategoryButton"
+                            Content="Review no category"
+                            MinWidth="145"
+                            IsEnabled="False"
+                            Click="SafetyNoCategoryButton_Click" />
+                </WrapPanel>
             </StackPanel>
         </Border>
 

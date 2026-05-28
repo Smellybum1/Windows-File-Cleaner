@@ -7,6 +7,7 @@ tests.ClassifierLabelsRealScanContainerPatterns();
 tests.ReviewBuilderSummarizesAndFiltersResults();
 tests.ReviewBuilderFiltersAccessIssues();
 tests.StorageScanSafetySummaryHighlightsReviewBoundaries();
+tests.StorageScanSafetyShortcutsMapToReadOnlyFilters();
 tests.ReviewShortlistTracksSelectedRowsWithoutModifyingReview();
 tests.QuarantinePreviewBuildsReadOnlyPlanFromShortlist();
 tests.QuarantinePreviewCsvExporterWritesReviewReport();
@@ -297,6 +298,40 @@ internal sealed class StorageScanTests
         Assert(summary.Notes.Any(note => note.Contains("review candidates only", StringComparison.OrdinalIgnoreCase)), "Safety notes should not treat quarantine candidates as approval.");
     }
 
+    public void StorageScanSafetyShortcutsMapToReadOnlyFilters()
+    {
+        AssertShortcut(
+            StorageScanSafetyShortcut.HighRisk,
+            StorageReviewFilter.HighRisk,
+            StorageCategoryFilter.All,
+            "High risk");
+        AssertShortcut(
+            StorageScanSafetyShortcut.ProtectedLocations,
+            StorageReviewFilter.All,
+            StorageCategoryFilter.ForCategory(BloatCategory.ProtectedLocation),
+            "Protected locations");
+        AssertShortcut(
+            StorageScanSafetyShortcut.AccessIssues,
+            StorageReviewFilter.AccessIssues,
+            StorageCategoryFilter.All,
+            "Access issues");
+        AssertShortcut(
+            StorageScanSafetyShortcut.ReparsePoints,
+            StorageReviewFilter.All,
+            StorageCategoryFilter.ForCategory(BloatCategory.ReparsePoint),
+            "Reparse points");
+        AssertShortcut(
+            StorageScanSafetyShortcut.QuarantineCandidates,
+            StorageReviewFilter.QuarantineCandidates,
+            StorageCategoryFilter.All,
+            "Quarantine candidates");
+        AssertShortcut(
+            StorageScanSafetyShortcut.Uncategorized,
+            StorageReviewFilter.All,
+            StorageCategoryFilter.NoCategory,
+            "No category");
+    }
+
     public void ReviewShortlistTracksSelectedRowsWithoutModifyingReview()
     {
         using var fixture = TestFixture.Create();
@@ -489,6 +524,18 @@ internal sealed class StorageScanTests
     private static StorageReviewEntry SingleReviewEntry(IEnumerable<StorageReviewEntry> entries, string relativePath)
     {
         return entries.Single(entry => entry.Entry.FullPath.EndsWith(relativePath, StringComparison.OrdinalIgnoreCase));
+    }
+
+    private static void AssertShortcut(
+        StorageScanSafetyShortcut shortcut,
+        StorageReviewFilter expectedReviewFilter,
+        StorageCategoryFilter expectedCategoryFilter,
+        string expectedLabel)
+    {
+        var result = StorageScanSafetyShortcutFilterBuilder.Build(shortcut);
+        Assert(result.ReviewFilter == expectedReviewFilter, $"{shortcut} should map to the expected review filter.");
+        Assert(result.CategoryFilter == expectedCategoryFilter, $"{shortcut} should map to the expected category filter.");
+        Assert(result.Label == expectedLabel, $"{shortcut} should use the expected label.");
     }
 
     private static IEnumerable<StorageEntry> Flatten(StorageEntry entry)

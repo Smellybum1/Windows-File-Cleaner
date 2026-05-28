@@ -129,6 +129,36 @@ public partial class MainWindow : Window
         SetFilter(StorageReviewFilter.AccessIssues);
     }
 
+    private void SafetyHighRiskButton_Click(object sender, RoutedEventArgs e)
+    {
+        ApplySafetyShortcut(StorageScanSafetyShortcut.HighRisk);
+    }
+
+    private void SafetyProtectedButton_Click(object sender, RoutedEventArgs e)
+    {
+        ApplySafetyShortcut(StorageScanSafetyShortcut.ProtectedLocations);
+    }
+
+    private void SafetyAccessIssuesButton_Click(object sender, RoutedEventArgs e)
+    {
+        ApplySafetyShortcut(StorageScanSafetyShortcut.AccessIssues);
+    }
+
+    private void SafetyReparsePointsButton_Click(object sender, RoutedEventArgs e)
+    {
+        ApplySafetyShortcut(StorageScanSafetyShortcut.ReparsePoints);
+    }
+
+    private void SafetyQuarantineCandidatesButton_Click(object sender, RoutedEventArgs e)
+    {
+        ApplySafetyShortcut(StorageScanSafetyShortcut.QuarantineCandidates);
+    }
+
+    private void SafetyNoCategoryButton_Click(object sender, RoutedEventArgs e)
+    {
+        ApplySafetyShortcut(StorageScanSafetyShortcut.Uncategorized);
+    }
+
     private void AddToShortlistButton_Click(object sender, RoutedEventArgs e)
     {
         if (_selectedRow is null)
@@ -373,6 +403,7 @@ public partial class MainWindow : Window
         ExportQuarantinePreviewButton.IsEnabled = !isScanning && _currentQuarantinePreview is not null;
         CategoryFilterBox.IsEnabled = !isScanning && _currentReview is not null && CategoryFilterBox.Items.Count > 1;
         UpdateShortlistControls();
+        UpdateSafetyShortcutButtons();
     }
 
     private void SetFilter(StorageReviewFilter filter)
@@ -384,6 +415,21 @@ public partial class MainWindow : Window
 
         _currentFilter = filter;
         RefreshResults();
+    }
+
+    private void ApplySafetyShortcut(StorageScanSafetyShortcut shortcut)
+    {
+        if (_currentReview is null)
+        {
+            return;
+        }
+
+        var shortcutFilter = StorageScanSafetyShortcutFilterBuilder.Build(shortcut);
+        _currentFilter = shortcutFilter.ReviewFilter;
+        _currentCategoryFilter = shortcutFilter.CategoryFilter;
+        SelectCategoryFilterOption(_currentCategoryFilter);
+        RefreshResults();
+        StatusText.Text = $"Review shortcut applied: {shortcutFilter.Label}. No files were modified.";
     }
 
     private void RefreshResults(string? selectedPath = null)
@@ -601,6 +647,7 @@ public partial class MainWindow : Window
         if (_currentSafetySummary is null)
         {
             SafetySummaryText.Text = "Safety summary appears after a scan.";
+            UpdateSafetyShortcutButtons();
             return;
         }
 
@@ -614,6 +661,42 @@ public partial class MainWindow : Window
             $"Quarantine candidates {summary.QuarantineCandidateCount:N0} | " +
             $"No category {summary.UncategorizedCount:N0}. " +
             string.Join(" ", summary.Notes);
+        UpdateSafetyShortcutButtons();
+    }
+
+    private void UpdateSafetyShortcutButtons()
+    {
+        if (_currentSafetySummary is null)
+        {
+            SafetyHighRiskButton.Content = "Review high risk";
+            SafetyProtectedButton.Content = "Review protected";
+            SafetyAccessIssuesButton.Content = "Review access";
+            SafetyReparsePointsButton.Content = "Review reparse";
+            SafetyQuarantineCandidatesButton.Content = "Review quarantine";
+            SafetyNoCategoryButton.Content = "Review no category";
+            SafetyHighRiskButton.IsEnabled = false;
+            SafetyProtectedButton.IsEnabled = false;
+            SafetyAccessIssuesButton.IsEnabled = false;
+            SafetyReparsePointsButton.IsEnabled = false;
+            SafetyQuarantineCandidatesButton.IsEnabled = false;
+            SafetyNoCategoryButton.IsEnabled = false;
+            return;
+        }
+
+        var summary = _currentSafetySummary;
+        var canUseShortcuts = ScanButton.IsEnabled;
+        SafetyHighRiskButton.Content = $"Review high risk ({summary.HighRiskCount:N0})";
+        SafetyProtectedButton.Content = $"Review protected ({summary.ProtectedLocationCount:N0})";
+        SafetyAccessIssuesButton.Content = $"Review access ({summary.AccessIssueCount:N0})";
+        SafetyReparsePointsButton.Content = $"Review reparse ({summary.ReparsePointCount:N0})";
+        SafetyQuarantineCandidatesButton.Content = $"Review quarantine ({summary.QuarantineCandidateCount:N0})";
+        SafetyNoCategoryButton.Content = $"Review no category ({summary.UncategorizedCount:N0})";
+        SafetyHighRiskButton.IsEnabled = canUseShortcuts && summary.HighRiskCount > 0;
+        SafetyProtectedButton.IsEnabled = canUseShortcuts && summary.ProtectedLocationCount > 0;
+        SafetyAccessIssuesButton.IsEnabled = canUseShortcuts && summary.AccessIssueCount > 0;
+        SafetyReparsePointsButton.IsEnabled = canUseShortcuts && summary.ReparsePointCount > 0;
+        SafetyQuarantineCandidatesButton.IsEnabled = canUseShortcuts && summary.QuarantineCandidateCount > 0;
+        SafetyNoCategoryButton.IsEnabled = canUseShortcuts && summary.UncategorizedCount > 0;
     }
 
     private static string FormatFilter(StorageReviewFilter filter)
@@ -665,6 +748,27 @@ public partial class MainWindow : Window
             StorageCategoryFilterKind.NoCategory => "No category",
             _ => "All categories"
         };
+    }
+
+    private void SelectCategoryFilterOption(StorageCategoryFilter filter)
+    {
+        var option = CategoryFilterBox.Items
+            .Cast<CategoryFilterOption>()
+            .FirstOrDefault(candidate => candidate.Filter == filter);
+        if (option is null)
+        {
+            return;
+        }
+
+        _isUpdatingCategoryFilterOptions = true;
+        try
+        {
+            CategoryFilterBox.SelectedItem = option;
+        }
+        finally
+        {
+            _isUpdatingCategoryFilterOptions = false;
+        }
     }
 
     private static string FormatChildSummary(StorageEntry entry)

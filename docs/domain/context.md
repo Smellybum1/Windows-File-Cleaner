@@ -444,10 +444,12 @@ It summarizes safety-relevant scan signals such as high-risk rows, Protected Loc
 - Uses Storage Scan results and Review Mix counts.
 - Uses Bloat Categories, Importance Ratings, Deletion Recommendations, and scanner access status.
 - Supports Review Shortlist and Quarantine Preview by reminding the user which boundaries remain unresolved.
+- May expose read-only review shortcuts for safety-relevant buckets such as High risk, Protected Locations, Access issues, Reparse points, Quarantine candidates, and Uncategorized Results.
 
 #### Code implications
 
 - Use `StorageScanSafetySummary` and `StorageScanSafetySummaryBuilder`.
+- Use `StorageScanSafetyShortcut` and `StorageScanSafetyShortcutFilterBuilder` to map summary shortcuts to Storage Review Filters and Bloat Category Filters.
 - Keep summary notes derived from scan results only.
 - Do not trigger permission changes, cleanup actions, quarantine actions, or rescans from the summary.
 

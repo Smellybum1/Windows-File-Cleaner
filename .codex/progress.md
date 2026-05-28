@@ -6,11 +6,11 @@ Use it to preserve what was completed, what was verified, what was rejected, and
 
 ## Current status
 
-Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. Review filters, selected-folder child breakdown, selected-path inspection actions, CSV export, Review Mix, Storage Scan Safety Summary, Access issues filtering, Bloat Category Filter, No category filtering, Review Shortlist, Quarantine Preview, and Quarantine Preview CSV export are implemented and verified. Safety Summary is awaiting user retest after push.
+Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. Review filters, selected-folder child breakdown, selected-path inspection actions, CSV export, Review Mix, Storage Scan Safety Summary, Safety Summary review shortcuts, Access issues filtering, Bloat Category Filter, No category filtering, Review Shortlist, Quarantine Preview, and Quarantine Preview CSV export are implemented and verified. Safety Summary shortcuts are awaiting user retest after push.
 
 ## Next recommended work
 
-1. Ask the user to rerun the WPF app and confirm Safety Summary, Review Shortlist, Quarantine Preview, Export preview, Review Mix, Access issues filter, category filter, No category filter, and filter wording are useful.
+1. Ask the user to rerun the WPF app and confirm Safety Summary shortcuts, Review Shortlist, Quarantine Preview, Export preview, Review Mix, Access issues filter, category filter, No category filter, and filter wording are useful.
 2. Use review feedback to refine Protected Locations and category grouping.
 3. Design Restore Manifest and explicit confirmation semantics before any actual Quarantine execution.
 4. Defer actual Quarantine and Undo Quarantine execution until scan review, preview semantics, and restore rules are trustworthy.
@@ -775,3 +775,49 @@ Rejected ideas buffer:
 - Do not use the summary as a Cleanup Action gate yet.
 - Do not make the summary a safety score.
 - Do not hide access issues or protected rows from review.
+
+### 2026-05-28: Add Safety Summary review shortcuts
+
+Status: completed
+
+Evidence:
+
+- Storage Scan Safety Summary exposes warning counts that should be easy to inspect.
+- Existing review and category filters already provide safe read-only lenses.
+
+Implementation:
+
+- Added `StorageScanSafetyShortcut`.
+- Added `StorageScanSafetyShortcutFilter`.
+- Added `StorageScanSafetyShortcutFilterBuilder`.
+- Added WPF shortcut buttons for High risk, Protected, Access issues, Reparse points, Quarantine candidates, and No category.
+- Shortcuts apply existing Storage Review Filter and Bloat Category Filter combinations.
+- Shortcut buttons are disabled before scans, during scans, and for zero-count buckets.
+- No cleanup execution, quarantine execution, manifest write, permission change, or rescan behavior was added.
+
+Verification:
+
+- `dotnet build WindowsFileCleaner.sln --no-restore` passed.
+- `dotnet run --project tests\WindowsFileCleaner.Tests\WindowsFileCleaner.Tests.csproj --no-build` passed.
+
+Docs updated:
+
+- `docs/domain/context.md`
+- `docs/domain/glossary.md`
+- `docs/features/2026-05-28-safety-summary-review-shortcuts.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No new ADR. This is an incremental read-only review UI feature.
+
+Open questions:
+
+- Should shortcut clicks scroll to the first matching row or preserve selection if possible?
+- Should shortcuts be visually grouped with warning severity later?
+
+Rejected ideas buffer:
+
+- Do not create cleanup-specific shortcut actions.
+- Do not treat shortcuts as approvals.
+- Do not add new category synonyms for Uncategorized Results.
