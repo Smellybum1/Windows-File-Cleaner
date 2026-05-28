@@ -331,6 +331,7 @@
                     <DataGridTextColumn Header="Importance" Binding="{Binding Importance}" Width="120" />
                     <DataGridTextColumn Header="Recommendation" Binding="{Binding Recommendation}" Width="155" />
                     <DataGridTextColumn Header="Categories" Binding="{Binding Categories}" Width="220" />
+                    <DataGridTextColumn Header="Access" Binding="{Binding AccessStatus}" Width="105" />
                     <DataGridTextColumn Header="Modified" Binding="{Binding LastModified}" Width="135" />
                 </DataGrid.Columns>
             </DataGrid>

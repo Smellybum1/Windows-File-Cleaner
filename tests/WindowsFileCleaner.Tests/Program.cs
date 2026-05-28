@@ -756,8 +756,10 @@ internal sealed class StorageScanTests
         var csv = QuarantinePreviewCsvExporter.Export(preview);
 
         Assert(csv.Contains("\"Cleanup scope\",\"Quarantine root\",\"Disposition\"", StringComparison.Ordinal), "Preview CSV should include header row.");
+        Assert(csv.Contains("\"Access status\",\"Access issue\",\"Preview note\"", StringComparison.Ordinal), "Preview CSV should include explicit access status columns.");
         Assert(csv.Contains("\"Included\"", StringComparison.Ordinal), "Preview CSV should include included rows.");
         Assert(csv.Contains("\"Blocked\"", StringComparison.Ordinal), "Preview CSV should include blocked rows.");
+        Assert(csv.Contains("\"Readable\",\"\",\"No files were modified.\"", StringComparison.Ordinal), "Preview CSV should export readable access status.");
         Assert(csv.Contains("\"setup, old.msi\"", StringComparison.Ordinal), "Preview CSV should quote names with commas.");
         Assert(csv.Contains("\"No files were modified.\"", StringComparison.Ordinal), "Preview CSV should state that no files were modified.");
         Assert(csv.Contains("High-risk rows require manual review and are blocked from this preview.", StringComparison.Ordinal), "Preview CSV should export blocked reasons.");
@@ -1133,13 +1135,30 @@ internal sealed class StorageScanTests
             DeletionRecommendation: DeletionRecommendation.QuarantineCandidate,
             Evidence: "Installer, old download with \"quoted\" evidence.",
             Children: []);
+        var inaccessible = new StorageEntry(
+            @"C:\Users\moxhe\Locked",
+            "Locked",
+            IsDirectory: true,
+            SizeBytes: 0,
+            LastModifiedUtc: null,
+            IsAccessible: false,
+            IsReparsePoint: false,
+            ErrorMessage: "Access denied.",
+            BloatCategories: [BloatCategory.AccessIssue],
+            ImportanceRating: ImportanceRating.Caution,
+            DeletionRecommendation: DeletionRecommendation.Inspect,
+            Evidence: "The path could not be fully read.",
+            Children: []);
 
-        var csv = StorageScanCsvExporter.Export([new StorageReviewEntry(entry, Depth: 2)]);
+        var csv = StorageScanCsvExporter.Export([new StorageReviewEntry(entry, Depth: 2), new StorageReviewEntry(inaccessible, Depth: 1)]);
 
         Assert(csv.Contains("\"Full path\",\"Parent path\",\"Depth\",\"Name\",\"Type\",\"Size bytes\",\"Size\",\"Contained files\",\"Contained folders\"", StringComparison.Ordinal), "CSV should include header row with contents counts.");
+        Assert(csv.Contains("\"Access status\",\"Access issue\"", StringComparison.Ordinal), "CSV should include explicit access status columns.");
         Assert(csv.Contains("\"C:\\Users\\moxhe\\Downloads\\setup, old.msi\"", StringComparison.Ordinal), "CSV should quote paths with commas.");
         Assert(csv.Contains("\"C:\\Users\\moxhe\\Downloads\",\"2\"", StringComparison.Ordinal), "CSV should include same-scope hierarchy context.");
         Assert(csv.Contains("\"2048\",\"2 KB\",\"1\",\"0\"", StringComparison.Ordinal), "CSV should include contained file/folder counts.");
+        Assert(csv.Contains("\"Readable\",\"\"", StringComparison.Ordinal), "CSV should export readable access status.");
+        Assert(csv.Contains("\"Access issue\",\"Access denied.\"", StringComparison.Ordinal), "CSV should export access issue status and message.");
         Assert(csv.Contains("\"Likely safe\"", StringComparison.Ordinal), "CSV should use user-facing importance labels.");
         Assert(csv.Contains("\"Quarantine candidate\"", StringComparison.Ordinal), "CSV should use user-facing recommendation labels.");
         Assert(csv.Contains("\"Old download; Installer cache\"", StringComparison.Ordinal), "CSV should export formatted categories.");

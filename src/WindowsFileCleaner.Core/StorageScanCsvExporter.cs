@@ -24,6 +24,7 @@ public static class StorageScanCsvExporter
                 "Categories",
                 "Last modified UTC",
                 "Evidence",
+                "Access status",
                 "Access issue"
             ]);
 
@@ -46,6 +47,7 @@ public static class StorageScanCsvExporter
                     FormatCategories(entry.Entry.BloatCategories),
                     entry.Entry.LastModifiedUtc?.ToString("O") ?? "",
                     entry.Entry.Evidence,
+                    FormatAccessStatus(entry.Entry),
                     entry.Entry.ErrorMessage ?? ""
                 ]);
         }
@@ -83,6 +85,11 @@ public static class StorageScanCsvExporter
     private static int GetContainedFolderCount(StorageEntry entry)
     {
         return entry.IsDirectory ? Math.Max(0, entry.FolderCount - 1) : 0;
+    }
+
+    private static string FormatAccessStatus(StorageEntry entry)
+    {
+        return entry.IsAccessible ? "Readable" : "Access issue";
     }
 
     private static string FormatImportance(ImportanceRating rating)

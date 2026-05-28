@@ -189,12 +189,14 @@ internal sealed class MainWindowSmokeTests
 
             var downloads = rows.Single(row =>
                 row.FullPath.EndsWith("Downloads", StringComparison.OrdinalIgnoreCase));
+            Assert(downloads.AccessStatus == "Readable", "Fixture Downloads folder should show readable access status.");
             Assert(window.SelectDisplayedPath(downloads.FullPath), "Fixture Downloads folder should be selectable for contents context.");
             Assert(downloads.Contents.Contains("1 file", StringComparison.OrdinalIgnoreCase), "Folder row should expose contained file count.");
             Assert(
                 window.DetailPathContextTextValue.Contains("Contents:", StringComparison.OrdinalIgnoreCase)
                 && window.DetailPathContextTextValue.Contains("1 file", StringComparison.OrdinalIgnoreCase),
                 "Selected folder detail pane should show contained file/folder counts.");
+            Assert(window.DetailMetaTextValue.Contains("Access: Readable", StringComparison.OrdinalIgnoreCase), "Selected row detail pane should show access status.");
 
             Assert(window.SelectDisplayedPath(fixture.MarkerPath), "Fixture note file should be selectable for preview.");
             Assert(window.CanPreviewSelectedFile, "Selected file preview should be enabled for a selected file.");

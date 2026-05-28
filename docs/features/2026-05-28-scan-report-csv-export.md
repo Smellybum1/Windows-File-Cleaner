@@ -80,6 +80,7 @@ What changed:
 - Later hierarchy-context packet added parent path and depth columns so recursive rows remain understandable in spreadsheets.
 - Later type-filter packet included the active Storage Entry Type Filter in exported row selection and generated filenames.
 - Later contents-context packet added contained file and folder count columns for recursive row comparison.
+- Later access-status packet added an `Access status` column separate from access issue error text.
 
 Files changed:
 
@@ -118,6 +119,9 @@ Tests run:
   - `dotnet run --project tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj --no-build`
   - `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\Invoke-MvpPreflight.ps1`
 - Later contents-context packet:
+  - `dotnet run --project tests\WindowsFileCleaner.Tests\WindowsFileCleaner.Tests.csproj --no-build`
+  - `dotnet run --project tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj --no-build`
+- Later access-status packet:
   - `dotnet run --project tests\WindowsFileCleaner.Tests\WindowsFileCleaner.Tests.csproj --no-build`
   - `dotnet run --project tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj --no-build`
 

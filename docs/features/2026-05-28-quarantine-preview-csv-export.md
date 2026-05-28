@@ -26,7 +26,7 @@ The app can create a Quarantine Preview and show a bounded summary in the detail
 
 ## Desired behavior
 
-After creating a Quarantine Preview, the user can click `Export preview` and save a CSV report. The report includes source paths, destination paths for included rows, disposition, reasons, size, recommendation, categories, evidence, cleanup scope, quarantine root, and a clear no-files-modified note.
+After creating a Quarantine Preview, the user can click `Export preview` and save a CSV report. The report includes source paths, destination paths for included rows, disposition, reasons, size, recommendation, categories, evidence, access status, access issue text, cleanup scope, quarantine root, and a clear no-files-modified note.
 
 ## Domain language changes
 
@@ -151,6 +151,7 @@ Completed on: 2026-05-28
 What changed:
 
 - Added a dedicated Quarantine Preview CSV exporter.
+- Later access-status packet added an `Access status` column separate from access issue error text.
 - Added WPF `Export preview` control enabled only after a current preview exists.
 - Exported source path, destination path, disposition, reasons, size, recommendation, categories, evidence, cleanup scope, quarantine root, and no-files-modified note.
 - Changing the Review Shortlist clears the preview and disables preview export.

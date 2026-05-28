@@ -466,6 +466,48 @@ Recognized field prefixes restrict search to one field:
 - Keep search in-memory and read-only.
 - Do not use search text to change Bloat Categories, Importance Ratings, Deletion Recommendations, or cleanup eligibility.
 
+### Access Status
+
+Status: draft
+Last reviewed: 2026-05-28
+
+#### Definition
+
+Access Status is the read-only label that tells whether a Storage Scan row was readable during the scan.
+
+Initial user-facing values are `Readable` and `Access issue`.
+
+#### Examples
+
+- Show `Readable` for a fixture `Downloads` folder.
+- Show `Access issue` for a path that could not be fully read.
+- Export both Access Status and the scanner access issue message to CSV.
+
+#### Non-examples
+
+- A permission change.
+- A retry-as-admin workflow.
+- Cleanup approval.
+- A reason to hide the row.
+
+#### Lifecycle
+
+- Derived during Storage Scan.
+- Shown in WPF row details and reports after the scan completes.
+- Remains informational and read-only.
+
+#### Relationships
+
+- Supports Storage Review Filter, Storage Review Search, Review Mix, Storage Scan Safety Summary, Scan Report Export, and Quarantine Preview CSV Export.
+- Access issue rows should be reviewed before trusting cleanup recommendations for nearby or parent paths.
+
+#### Code implications
+
+- Use `StorageEntryRow.AccessStatus` for WPF display.
+- Use `Readable` and `Access issue` consistently in UI/tests/docs.
+- Export Access Status separately from access issue error text.
+- Do not retry, elevate, or change permissions based on Access Status.
+
 ### Storage Entry Type Filter
 
 Status: draft
@@ -1150,7 +1192,7 @@ It does not create folders, write manifests, move files, delete files, or approv
 - Generated from the current Review Shortlist on user request.
 - Uses the current Cleanup Scope and default Quarantine root.
 - Shows included, blocked, and redundant rows.
-- May be exported as a read-only CSV report.
+- May be exported as a read-only CSV report, including Access Status and access issue text.
 - Is discarded when scan results or the Review Shortlist change.
 
 #### Relationships
@@ -1202,6 +1244,7 @@ The initial export format is CSV for the currently active Storage Review Filter,
 - Available after a Storage Scan completes.
 - Uses the current Storage Review Filter, Storage Entry Type Filter, selected Bloat Category Filter, and Storage Review Search.
 - Includes parent path and depth columns so recursive rows keep their hierarchy context outside the app.
+- Includes Access Status and access issue text so incomplete scan coverage remains visible outside the app.
 - Writes a user-selected CSV report path and suggests a filename that describes active review filters/type/search.
 - Does not modify scanned files.
 
@@ -1221,6 +1264,7 @@ The initial export format is CSV for the currently active Storage Review Filter,
 - Use `StorageScanCsvExporter` for CSV report generation.
 - Export user-facing labels for Importance Ratings and Deletion Recommendations.
 - Export parent path and depth from the flattened Storage Review row.
+- Export Access Status separately from access issue text.
 - Keep generated report filenames descriptive and filesystem-safe when filters, type, or search are active.
 - Keep exports separate from Quarantine manifests.
 

@@ -24,6 +24,7 @@ public static class QuarantinePreviewCsvExporter
                 "Categories",
                 "Reasons",
                 "Evidence",
+                "Access status",
                 "Access issue",
                 "Preview note"
             ]);
@@ -47,6 +48,7 @@ public static class QuarantinePreviewCsvExporter
                     FormatCategories(entry.Entry.BloatCategories),
                     string.Join("; ", entry.Reasons),
                     entry.Entry.Evidence,
+                    FormatAccessStatus(entry.Entry),
                     entry.Entry.ErrorMessage ?? "",
                     "No files were modified."
                 ]);
@@ -84,6 +86,11 @@ public static class QuarantinePreviewCsvExporter
             QuarantinePreviewDisposition.Redundant => "Redundant",
             _ => disposition.ToString()
         };
+    }
+
+    private static string FormatAccessStatus(StorageEntry entry)
+    {
+        return entry.IsAccessible ? "Readable" : "Access issue";
     }
 
     private static string FormatImportance(ImportanceRating rating)

@@ -107,6 +107,8 @@ public partial class MainWindow : Window
 
     public string DetailPathContextTextValue => DetailPathContextText.Text;
 
+    public string DetailMetaTextValue => DetailMetaText.Text;
+
     public string FilePreviewTextValue => FilePreviewText.Text;
 
     public string QuarantinePreviewTextValue => QuarantinePreviewText.Text;
@@ -667,7 +669,7 @@ public partial class MainWindow : Window
         DetailTitleText.Text = row.Entry.Name;
         DetailPathText.Text = row.FullPath;
         DetailPathContextText.Text = $"Parent: {row.ParentLocation}\nDepth: {row.Depth:N0} | Modified: {row.LastModified}\nContents: {row.Contents}";
-        DetailMetaText.Text = $"{row.Size} | {row.Type} | {row.Importance} | {row.Recommendation}";
+        DetailMetaText.Text = $"{row.Size} | {row.Type} | {row.Importance} | {row.Recommendation} | Access: {row.AccessStatus}";
         DetailEvidenceText.Text = string.IsNullOrWhiteSpace(row.Error)
             ? row.Evidence
             : $"{row.Evidence}\n\nAccess issue: {row.Error}";

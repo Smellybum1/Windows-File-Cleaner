@@ -37,6 +37,7 @@ public sealed class StorageEntryRow
     public string Categories => Entry.BloatCategories.Count == 0
         ? "None"
         : string.Join(", ", Entry.BloatCategories.Select(FormatCategory));
+    public string AccessStatus => Entry.IsAccessible ? "Readable" : "Access issue";
     public string LastModified => Entry.LastModifiedUtc?.ToLocalTime().ToString("yyyy-MM-dd HH:mm") ?? "Unknown";
     public string Evidence => Entry.Evidence;
     public string Error => Entry.ErrorMessage ?? "";
