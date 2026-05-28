@@ -2802,3 +2802,47 @@ Open questions:
 Rejected ideas buffer:
 
 - Do not rank cleanup safety by contained-item count alone.
+
+### 2026-05-28: Add Relative Paths to Scan Report Export
+
+Status: completed
+
+Evidence:
+
+- Real-profile rows all share the long `C:\Users\moxhe` prefix, which can make spreadsheet review harder than the in-app tree context.
+- Earlier progress left a relative-path export column as an open follow-up for Scan Report Export.
+
+Implementation:
+
+- Added a `Relative path` CSV column to `StorageScanCsvExporter`.
+- Derived relative paths from the completed Cleanup Scope when available; unsupported or outside-scope rows leave the relative path blank.
+- Updated WPF export and Review Shortlist export to pass the completed scan scope to CSV generation.
+- Added a WPF test hook for the current Scan Report Export CSV and fixture coverage for relative paths.
+- Kept this report-only; no scanner traversal, cleanup execution, Quarantine execution, Undo Quarantine, manifest writing, real-profile automation, or real user file access was added.
+
+Verification:
+
+- `dotnet build WindowsFileCleaner.sln --no-restore` passed with 0 warnings and 0 errors.
+- `dotnet run --project tests\WindowsFileCleaner.Tests\WindowsFileCleaner.Tests.csproj --no-build` passed.
+- `dotnet run --project tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj --no-build` passed.
+- `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\Invoke-MvpPreflight.ps1` passed.
+
+Docs updated:
+
+- `README.md`
+- `docs/domain/context.md`
+- `docs/domain/glossary.md`
+- `docs/features/2026-05-28-scan-report-csv-export.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No new ADR. This is a reversible CSV report shape improvement.
+
+Open questions:
+
+- None.
+
+Rejected ideas buffer:
+
+- Do not replace full paths in exports; relative paths are additional review context.

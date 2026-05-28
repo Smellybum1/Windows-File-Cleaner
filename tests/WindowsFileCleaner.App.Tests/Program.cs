@@ -208,6 +208,14 @@ internal sealed class MainWindowSmokeTests
                 "Selected folder detail pane should show contained file/folder counts.");
             Assert(window.DetailMetaTextValue.Contains("Access: Readable", StringComparison.OrdinalIgnoreCase), "Selected row detail pane should show access status.");
 
+            var exportCsv = window.CurrentScanReportExportCsv;
+            Assert(
+                exportCsv.Contains("\"Full path\",\"Relative path\",\"Parent path\"", StringComparison.Ordinal),
+                "Scan Report Export CSV should include a cleanup-scope-relative path column.");
+            Assert(
+                exportCsv.Contains("\"Downloads\\old-installer.msi\"", StringComparison.Ordinal),
+                "Scan Report Export CSV should include fixture-relative paths for spreadsheet review.");
+
             Assert(window.SelectDisplayedPath(fixture.MarkerPath), "Fixture note file should be selectable for preview.");
             Assert(window.CanPreviewSelectedFile, "Selected file preview should be enabled for a selected file.");
             window.PreviewSelectedFileContent();

@@ -1296,6 +1296,7 @@ The initial export format is CSV for the currently active Storage Review Filter,
 
 - Available after a Storage Scan completes.
 - Uses the current Storage Review Filter, Storage Entry Type Filter, selected Bloat Category Filter, and Storage Review Search.
+- Includes cleanup-scope-relative paths so repeated `C:\Users\moxhe` prefixes do not hide the meaningful part of each row in spreadsheets.
 - Includes parent path and depth columns so recursive rows keep their hierarchy context outside the app.
 - Includes Access Status and access issue text so incomplete scan coverage remains visible outside the app.
 - Writes a user-selected CSV report path and suggests a filename that describes active review filters/type/search.
@@ -1315,6 +1316,7 @@ The initial export format is CSV for the currently active Storage Review Filter,
 #### Code implications
 
 - Use `StorageScanCsvExporter` for CSV report generation.
+- Export cleanup-scope-relative paths when the completed scan scope is available.
 - Export user-facing labels for Importance Ratings and Deletion Recommendations.
 - Export parent path and depth from the flattened Storage Review row.
 - Export Access Status separately from access issue text.

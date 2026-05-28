@@ -1167,11 +1167,14 @@ internal sealed class StorageScanTests
             Evidence: "The path could not be fully read.",
             Children: []);
 
-        var csv = StorageScanCsvExporter.Export([new StorageReviewEntry(entry, Depth: 2), new StorageReviewEntry(inaccessible, Depth: 1)]);
+        var csv = StorageScanCsvExporter.Export(
+            [new StorageReviewEntry(entry, Depth: 2), new StorageReviewEntry(inaccessible, Depth: 1)],
+            @"C:\Users\moxhe");
 
-        Assert(csv.Contains("\"Full path\",\"Parent path\",\"Depth\",\"Name\",\"Type\",\"Size bytes\",\"Size\",\"Contained files\",\"Contained folders\"", StringComparison.Ordinal), "CSV should include header row with contents counts.");
+        Assert(csv.Contains("\"Full path\",\"Relative path\",\"Parent path\",\"Depth\",\"Name\",\"Type\",\"Size bytes\",\"Size\",\"Contained files\",\"Contained folders\"", StringComparison.Ordinal), "CSV should include header row with relative path and contents counts.");
         Assert(csv.Contains("\"Access status\",\"Access issue\"", StringComparison.Ordinal), "CSV should include explicit access status columns.");
         Assert(csv.Contains("\"C:\\Users\\moxhe\\Downloads\\setup, old.msi\"", StringComparison.Ordinal), "CSV should quote paths with commas.");
+        Assert(csv.Contains("\"Downloads\\setup, old.msi\"", StringComparison.Ordinal), "CSV should include a cleanup-scope-relative path for easier spreadsheet review.");
         Assert(csv.Contains("\"C:\\Users\\moxhe\\Downloads\",\"2\"", StringComparison.Ordinal), "CSV should include same-scope hierarchy context.");
         Assert(csv.Contains("\"2048\",\"2 KB\",\"1\",\"0\"", StringComparison.Ordinal), "CSV should include contained file/folder counts.");
         Assert(csv.Contains("\"Readable\",\"\"", StringComparison.Ordinal), "CSV should export readable access status.");

@@ -4,13 +4,14 @@ namespace WindowsFileCleaner.Core;
 
 public static class StorageScanCsvExporter
 {
-    public static string Export(IReadOnlyList<StorageReviewEntry> entries)
+    public static string Export(IReadOnlyList<StorageReviewEntry> entries, string? cleanupScopePath = null)
     {
         var builder = new StringBuilder();
         AppendRow(
             builder,
             [
                 "Full path",
+                "Relative path",
                 "Parent path",
                 "Depth",
                 "Name",
@@ -34,6 +35,7 @@ public static class StorageScanCsvExporter
                 builder,
                 [
                     entry.Entry.FullPath,
+                    FormatRelativePath(entry, cleanupScopePath),
                     FormatParentPath(entry),
                     entry.Depth.ToString(System.Globalization.CultureInfo.InvariantCulture),
                     entry.Entry.Name,
@@ -80,6 +82,29 @@ public static class StorageScanCsvExporter
         return entry.Depth <= 0
             ? ""
             : Path.GetDirectoryName(entry.Entry.FullPath) ?? "";
+    }
+
+    private static string FormatRelativePath(StorageReviewEntry entry, string? cleanupScopePath)
+    {
+        if (string.IsNullOrWhiteSpace(cleanupScopePath))
+        {
+            return "";
+        }
+
+        try
+        {
+            return PathSafety.IsWithinScope(cleanupScopePath, entry.Entry.FullPath)
+                ? Path.GetRelativePath(PathSafety.GetFullPath(cleanupScopePath), entry.Entry.FullPath)
+                : "";
+        }
+        catch (ArgumentException)
+        {
+            return "";
+        }
+        catch (NotSupportedException)
+        {
+            return "";
+        }
     }
 
     private static int GetContainedFolderCount(StorageEntry entry)

@@ -72,6 +72,10 @@ public partial class MainWindow : Window
 
     public string CurrentScanReportExportFileName => BuildExportFileName();
 
+    public string CurrentScanReportExportCsv => StorageScanCsvExporter.Export(
+        BuildCurrentScanReportExportRows(),
+        _currentCleanupScopePath);
+
     public bool CanUseCategoryFilter => CategoryFilterBox.IsEnabled;
 
     public bool CanUseEntryTypeFilter => EntryTypeFilterBox.IsEnabled;
@@ -626,7 +630,7 @@ public partial class MainWindow : Window
 
         try
         {
-            File.WriteAllText(dialog.FileName, StorageScanCsvExporter.Export(exportRows));
+            File.WriteAllText(dialog.FileName, StorageScanCsvExporter.Export(exportRows, _currentCleanupScopePath));
             StatusText.Text = $"Exported {exportRows.Count:N0} rows to CSV. No scanned files were modified.";
         }
         catch (Exception ex)
@@ -665,7 +669,7 @@ public partial class MainWindow : Window
 
         try
         {
-            File.WriteAllText(dialog.FileName, StorageScanCsvExporter.Export(exportRows));
+            File.WriteAllText(dialog.FileName, StorageScanCsvExporter.Export(exportRows, _currentCleanupScopePath));
             StatusText.Text = $"Exported {exportRows.Count:N0} shortlisted rows to CSV. No scanned files were modified.";
         }
         catch (Exception ex)
