@@ -2443,3 +2443,48 @@ Rejected ideas buffer:
 
 - Do not rescan the filesystem from Quarantine Preview to discover blockers.
 - Do not allow a broad parent to be included just because the parent row itself is a Quarantine candidate.
+
+### 2026-05-28: Add WPF Proof for Quarantine Preview Protected Descendant Blocker
+
+Status: completed
+
+Evidence:
+
+- Core tests proved the protected-descendant blocker, but the WPF workflow also needs to show the blocked reason and readiness blockers clearly.
+- The app should prove the same boundary through selection, Review Shortlist, Preview quarantine, and the preview pane.
+
+Implementation:
+
+- Added a WPF smoke fixture with `.cache` containing protected `codex-runtimes` data.
+- Added WPF smoke coverage that selects the broad `.cache` parent, adds it to Review Shortlist, runs Quarantine Preview, and asserts:
+  - `0 included`
+  - `1 blocked`
+  - blocked preview readiness wording
+  - `codex-runtimes` descendant evidence
+  - narrower-row guidance
+  - no-files-modified wording
+- No production code, cleanup execution, Quarantine execution, Undo Quarantine, manifest writing, scanner traversal, real-profile automation, or real user file access was changed.
+
+Verification:
+
+- `dotnet build WindowsFileCleaner.sln --no-restore` passed with 0 warnings and 0 errors.
+- `dotnet run --project tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj --no-build` passed after rebuilding.
+- `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\Invoke-MvpPreflight.ps1` passed.
+
+Docs updated:
+
+- `docs/features/2026-05-28-quarantine-preview-protected-descendant-blocker.md`
+- `docs/features/2026-05-28-wpf-review-interaction-smoke-test.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No new ADR. This is WPF smoke coverage for an existing read-only preview rule.
+
+Open questions:
+
+- Should the visible preview pane separate row-specific blockers from confirmation-readiness blockers more clearly?
+
+Rejected ideas buffer:
+
+- Do not weaken confirmation readiness just to make the blocked-row count read as a single blocker.

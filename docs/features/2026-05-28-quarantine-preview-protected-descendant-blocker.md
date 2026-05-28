@@ -42,6 +42,7 @@ As the project owner, I want a broad cache-looking parent such as `.cache` to be
 
 - `dotnet build WindowsFileCleaner.sln --no-restore` passed.
 - `dotnet run --project tests\WindowsFileCleaner.Tests\WindowsFileCleaner.Tests.csproj --no-build` passed after rebuilding.
+- `dotnet run --project tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj --no-build` passed after adding WPF preview coverage.
 - `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\Invoke-MvpPreflight.ps1` passed.
 
 ## Completion notes
@@ -52,6 +53,7 @@ What changed:
 
 - Added descendant blocker checks to `QuarantinePreviewBuilder`.
 - Added fixture coverage for `.cache` containing protected `codex-runtimes` data.
+- Added WPF smoke coverage that shortlists the broad cache parent and confirms the preview pane shows the blocked descendant evidence.
 - Updated README and domain docs to describe the broad-parent blocker.
 - No files are moved, deleted, copied, restored, or written by preview generation.
 

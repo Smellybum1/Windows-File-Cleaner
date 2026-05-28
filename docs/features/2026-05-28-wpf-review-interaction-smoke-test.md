@@ -145,7 +145,7 @@ Completed on: 2026-05-28
 What changed:
 
 - Added WPF command methods for Storage Review Filters, Bloat Category Filters, Safety Summary review shortcuts, displayed-row selection, Review Shortlist changes, and Quarantine Preview generation.
-- Added WPF fixture interaction coverage for filters, No category, protected shortcut, shortlist add/remove, Quarantine Preview, Restore Manifest Draft text, Quarantine Confirmation Draft text, disabled execution wording, and fixture file preservation.
+- Added WPF fixture interaction coverage for filters, No category, protected shortcut, shortlist add/remove, Quarantine Preview, Restore Manifest Draft text, Quarantine Confirmation Draft text, disabled execution wording, protected-descendant preview blockers, and fixture file preservation.
 - Kept the workflow read-only; no cleanup execution or manifest writing was added.
 
 Files changed:

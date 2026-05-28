@@ -26,6 +26,7 @@ internal static class Program
                 tests.MainWindowRunsFixtureStorageScanThroughWpfShell();
                 tests.MainWindowShowsDisplayLimitForLargeFixtureScan();
                 tests.MainWindowRunsFixtureReviewInteractionsThroughWpfShell();
+                tests.MainWindowBlocksQuarantinePreviewForParentWithProtectedDescendant();
             }
             finally
             {
@@ -426,6 +427,47 @@ internal sealed class MainWindowSmokeTests
         }
     }
 
+    public void MainWindowBlocksQuarantinePreviewForParentWithProtectedDescendant()
+    {
+        using var fixture = SmokeFixture.CreateProtectedDescendantPreviewCase();
+        var window = new MainWindow(fixture.RootPath);
+        try
+        {
+            RunDispatcherTask(() => window.RunStorageScanForCurrentScopeAsync());
+
+            var cacheParent = window.DisplayedRows.Single(row =>
+                row.FullPath.EndsWith(".cache", StringComparison.OrdinalIgnoreCase));
+
+            Assert(cacheParent.Recommendation == "Quarantine candidate", "Broad cache parent should otherwise look eligible in the fixture.");
+            Assert(window.SelectDisplayedPath(cacheParent.FullPath), "Broad cache parent should be selectable.");
+            Assert(window.CanAddSelectedRowToReviewShortlist, "Broad cache parent should be shortlistable before preview blockers are evaluated.");
+
+            window.AddSelectedPathToReviewShortlist();
+            Assert(window.ReviewShortlistCount == 1, "Selected broad cache parent should be added to Review Shortlist.");
+            Assert(window.CanPreviewQuarantine, "Quarantine Preview should be available for the shortlisted cache parent.");
+
+            window.PreviewQuarantineForReviewShortlist();
+
+            Assert(
+                window.CurrentStatusText.Contains("0 included", StringComparison.OrdinalIgnoreCase)
+                && window.CurrentStatusText.Contains("1 blocked", StringComparison.OrdinalIgnoreCase)
+                && window.CurrentStatusText.Contains("No files were modified", StringComparison.OrdinalIgnoreCase),
+                "Preview status should report the protected-descendant blocker without modifying files.");
+            Assert(window.QuarantinePreviewTextValue.Contains("Included: 0", StringComparison.OrdinalIgnoreCase), "Preview pane should show zero included rows.");
+            Assert(window.QuarantinePreviewTextValue.Contains("Blocked: 1", StringComparison.OrdinalIgnoreCase), "Preview pane should show one blocked row.");
+            Assert(window.QuarantinePreviewTextValue.Contains("Readiness blockers:", StringComparison.OrdinalIgnoreCase), "Confirmation readiness should surface blockers.");
+            Assert(window.QuarantinePreviewTextValue.Contains("blocked preview row", StringComparison.OrdinalIgnoreCase), "Confirmation readiness should call out the blocked preview row.");
+            Assert(window.QuarantinePreviewTextValue.Contains("codex-runtimes", StringComparison.OrdinalIgnoreCase), "Preview pane should show the protected descendant evidence.");
+            Assert(window.QuarantinePreviewTextValue.Contains("Select narrower reviewed child rows", StringComparison.OrdinalIgnoreCase), "Preview pane should guide the user toward narrower rows.");
+            Assert(window.QuarantinePreviewTextValue.Contains("No files were modified", StringComparison.OrdinalIgnoreCase), "Preview pane should preserve read-only wording.");
+            Assert(File.Exists(fixture.MarkerPath), "Protected descendant fixture file should still exist after preview.");
+        }
+        finally
+        {
+            window.Close();
+        }
+    }
+
     private static void RunDispatcherTask(Func<Task> action)
     {
         Exception? exception = null;
@@ -525,6 +567,26 @@ internal sealed class SmokeFixture : IDisposable
                 "Synthetic bulk row.",
                 now.AddMinutes(-index));
         }
+
+        return fixture;
+    }
+
+    public static SmokeFixture CreateProtectedDescendantPreviewCase()
+    {
+        var root = Path.Combine(
+            Environment.CurrentDirectory,
+            "test-fixtures",
+            "app",
+            "protected-descendant",
+            Guid.NewGuid().ToString("N"));
+
+        Directory.CreateDirectory(root);
+        var protectedDescendantPath = Path.Combine(root, ".cache", "codex-runtimes", "python.exe");
+        var fixture = new SmokeFixture(root, protectedDescendantPath);
+        var now = DateTimeOffset.UtcNow;
+
+        fixture.WriteFile(@".cache\general-cache.bin", "Synthetic cache data.", now.AddDays(-30));
+        fixture.WriteFile(@".cache\codex-runtimes\python.exe", "Synthetic protected Codex runtime.", now);
 
         return fixture;
     }
