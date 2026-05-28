@@ -7,6 +7,8 @@ public enum BloatCategory
     ProfileContainer,
     ApplicationDataArea,
     BrowserData,
+    CloudSyncData,
+    CredentialData,
     OldDownload,
     TemporaryFolder,
     InstallerCache,

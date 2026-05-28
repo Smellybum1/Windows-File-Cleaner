@@ -38,6 +38,35 @@ public sealed class CleanupCandidateClassifier
         "User Data"
     ];
 
+    private static readonly string[] CloudSyncDataHints =
+    [
+        @"\OneDrive",
+        @"\Dropbox",
+        @"\Google Drive",
+        @"\iCloudDrive",
+        @"\iCloud Photos",
+        @"\Nextcloud",
+        @"\Syncthing",
+        @"\MEGA"
+    ];
+
+    private static readonly string[] CredentialDataHints =
+    [
+        @"\.ssh",
+        @"\.gnupg",
+        @"\.aws",
+        @"\.azure",
+        @"\.kube",
+        @"\AppData\Roaming\1Password",
+        @"\AppData\Local\1Password",
+        @"\AppData\Roaming\Bitwarden",
+        @"\AppData\Local\Bitwarden",
+        @"\AppData\Roaming\KeePass",
+        @"\AppData\Local\KeePass",
+        @"\AppData\Roaming\KeePassXC",
+        @"\AppData\Local\KeePassXC"
+    ];
+
     private static readonly string[] CodexHints =
     [
         @"\.codex",
@@ -181,6 +210,18 @@ public sealed class CleanupCandidateClassifier
             evidence.Add("This looks browser-related and may include profiles, history, sessions, extensions, or credentials.");
         }
 
+        if (LooksLikeCloudSyncData(fullPath))
+        {
+            categories.Add(BloatCategory.CloudSyncData);
+            evidence.Add("The path looks like cloud sync data and may contain user-owned files that should not be cleaned automatically.");
+        }
+
+        if (LooksLikeCredentialData(path))
+        {
+            categories.Add(BloatCategory.CredentialData);
+            evidence.Add("The path looks like credential, key, password manager, or authentication data.");
+        }
+
         if (ContainsSegment(fullPath, "Downloads") && IsOld(path.LastModifiedUtc, TimeSpan.FromDays(90)))
         {
             categories.Add(BloatCategory.OldDownload);
@@ -293,6 +334,8 @@ public sealed class CleanupCandidateClassifier
         if (categories.Contains(BloatCategory.NodePackageCache)
             || categories.Contains(BloatCategory.PythonPackageCache)
             || categories.Contains(BloatCategory.OldGameFile)
+            || categories.Contains(BloatCategory.CloudSyncData)
+            || categories.Contains(BloatCategory.CredentialData)
             || categories.Contains(BloatCategory.WindowsAppData)
             || categories.Contains(BloatCategory.WindowsAppLeftover)
             || categories.Contains(BloatCategory.InstalledApplication)
@@ -309,7 +352,9 @@ public sealed class CleanupCandidateClassifier
 
     private static bool IsProtected(PathSnapshot path, HashSet<BloatCategory> categories)
     {
-        return categories.Contains(BloatCategory.WindowsAppData)
+        return categories.Contains(BloatCategory.CloudSyncData)
+            || categories.Contains(BloatCategory.CredentialData)
+            || categories.Contains(BloatCategory.WindowsAppData)
             || categories.Contains(BloatCategory.InstalledApplication)
             || categories.Contains(BloatCategory.GameData)
             || ProtectedFolderNames.Any(name => ContainsSegment(path.FullPath, name))
@@ -341,6 +386,20 @@ public sealed class CleanupCandidateClassifier
     {
         return BrowserProfileHints.Any(hint => path.FullPath.Contains(hint, StringComparison.OrdinalIgnoreCase))
             || BrowserContainerNames.Any(name => ContainsSegment(path.FullPath, name));
+    }
+
+    private static bool LooksLikeCloudSyncData(string fullPath)
+    {
+        return CloudSyncDataHints.Any(hint => fullPath.Contains(hint, StringComparison.OrdinalIgnoreCase));
+    }
+
+    private static bool LooksLikeCredentialData(PathSnapshot path)
+    {
+        return CredentialDataHints.Any(hint => path.FullPath.Contains(hint, StringComparison.OrdinalIgnoreCase))
+            || path.Name.EndsWith(".kdbx", StringComparison.OrdinalIgnoreCase)
+            || path.Name.Equals("id_rsa", StringComparison.OrdinalIgnoreCase)
+            || path.Name.Equals("id_ed25519", StringComparison.OrdinalIgnoreCase)
+            || path.Name.Equals("id_ecdsa", StringComparison.OrdinalIgnoreCase);
     }
 
     private static bool IsInstaller(PathSnapshot path)

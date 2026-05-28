@@ -1800,6 +1800,8 @@ public partial class MainWindow : Window
             BloatCategory.ProfileContainer => "Profile container",
             BloatCategory.ApplicationDataArea => "AppData area",
             BloatCategory.BrowserData => "Browser data",
+            BloatCategory.CloudSyncData => "Cloud sync data",
+            BloatCategory.CredentialData => "Credential data",
             BloatCategory.OldDownload => "Old download",
             BloatCategory.TemporaryFolder => "Temporary folder",
             BloatCategory.InstallerCache => "Installer cache",

@@ -8,6 +8,7 @@ tests.LaunchOptionsDefaultAndScopeArgument();
 tests.CleanupScopeSafetyNoteDistinguishesFixtureAndRealProfile();
 tests.CleanupScopeScanGateRequiresRealProfileAcknowledgement();
 tests.ClassifierLabelsRealScanContainerPatterns();
+tests.ClassifierProtectsCloudSyncAndCredentialData();
 tests.ClassifierLabelsLargeOldUnknownFilesConservatively();
 tests.ReviewBuilderSummarizesAndFiltersResults();
 tests.ReviewBuilderFiltersBySizeThreshold();
@@ -234,6 +235,48 @@ internal sealed class StorageScanTests
         Assert(vortex.BloatCategories.Contains(BloatCategory.GameData), "Vortex mod manager folders should be marked as game data.");
         Assert(vortex.ImportanceRating == ImportanceRating.HighRisk, "Vortex mod manager folders should be high risk.");
         Assert(vortex.DeletionRecommendation == DeletionRecommendation.Keep, "Vortex mod manager folders should be kept.");
+    }
+
+    public void ClassifierProtectsCloudSyncAndCredentialData()
+    {
+        using var fixture = TestFixture.Create();
+
+        fixture.WriteFile(@"OneDrive - Personal\Archive\cloud-note.txt", 1024, DateTimeOffset.UtcNow);
+        fixture.WriteFile(@"Dropbox\Exports\shared-file.txt", 1024, DateTimeOffset.UtcNow);
+        fixture.WriteFile(@".ssh\id_ed25519", 1024, DateTimeOffset.UtcNow);
+        fixture.WriteFile(@"AppData\Roaming\Bitwarden\data.json", 1024, DateTimeOffset.UtcNow);
+        fixture.WriteFile(@"Documents\Passwords\vault.kdbx", 1024, DateTimeOffset.UtcNow);
+
+        var scanner = new StorageScanner();
+        var result = scanner.Scan(new StorageScanOptions(fixture.RootPath));
+        var rows = Flatten(result.Root).ToArray();
+
+        var oneDrive = Single(rows, "OneDrive - Personal");
+        Assert(oneDrive.BloatCategories.Contains(BloatCategory.CloudSyncData), "OneDrive folders should be marked as cloud sync data.");
+        Assert(oneDrive.BloatCategories.Contains(BloatCategory.ProtectedLocation), "OneDrive folders should be protected.");
+        Assert(oneDrive.ImportanceRating == ImportanceRating.HighRisk, "OneDrive folders should be high risk.");
+        Assert(oneDrive.DeletionRecommendation == DeletionRecommendation.Keep, "OneDrive folders should be kept.");
+
+        var dropbox = Single(rows, "Dropbox");
+        Assert(dropbox.BloatCategories.Contains(BloatCategory.CloudSyncData), "Dropbox folders should be marked as cloud sync data.");
+        Assert(dropbox.ImportanceRating == ImportanceRating.HighRisk, "Dropbox folders should be high risk.");
+        Assert(dropbox.DeletionRecommendation == DeletionRecommendation.Keep, "Dropbox folders should be kept.");
+
+        var sshKey = Single(rows, "id_ed25519");
+        Assert(sshKey.BloatCategories.Contains(BloatCategory.CredentialData), "SSH private keys should be marked as credential data.");
+        Assert(sshKey.BloatCategories.Contains(BloatCategory.ProtectedLocation), "SSH private keys should be protected.");
+        Assert(sshKey.ImportanceRating == ImportanceRating.HighRisk, "SSH private keys should be high risk.");
+        Assert(sshKey.DeletionRecommendation == DeletionRecommendation.Keep, "SSH private keys should be kept.");
+
+        var bitwarden = Single(rows, "Bitwarden");
+        Assert(bitwarden.BloatCategories.Contains(BloatCategory.CredentialData), "Bitwarden folders should be marked as credential data.");
+        Assert(bitwarden.ImportanceRating == ImportanceRating.HighRisk, "Bitwarden folders should be high risk.");
+        Assert(bitwarden.DeletionRecommendation == DeletionRecommendation.Keep, "Bitwarden folders should be kept.");
+
+        var passwordVault = Single(rows, "vault.kdbx");
+        Assert(passwordVault.BloatCategories.Contains(BloatCategory.CredentialData), "KeePass vault files should be marked as credential data.");
+        Assert(passwordVault.ImportanceRating == ImportanceRating.HighRisk, "KeePass vault files should be high risk.");
+        Assert(passwordVault.DeletionRecommendation == DeletionRecommendation.Keep, "KeePass vault files should be kept.");
     }
 
     public void ClassifierLabelsLargeOldUnknownFilesConservatively()
@@ -1248,6 +1291,19 @@ internal sealed class StorageScanTests
         var rootPreview = SelectedFileContentPreviewBuilder.Build(result.Root);
         Assert(!rootPreview.IsContentShown, "Folder preview should not try to read folder content as a file.");
         Assert(rootPreview.Label.Contains("Folder", StringComparison.OrdinalIgnoreCase), "Folder preview should explain that only files can be previewed.");
+
+        var credentialEntry = binary with
+        {
+            Name = "vault.kdbx",
+            FullPath = Path.Combine(fixture.RootPath, "Unknown", "vault.kdbx"),
+            BloatCategories = [BloatCategory.CredentialData, BloatCategory.ProtectedLocation],
+            Evidence = "Credential data."
+        };
+        var credentialPreview = SelectedFileContentPreviewBuilder.Build(credentialEntry);
+        Assert(!credentialPreview.IsContentShown, "Credential data content should not be shown in the file preview.");
+        Assert(credentialPreview.Label.Contains("Credential", StringComparison.OrdinalIgnoreCase), "Credential preview should explain why content is hidden.");
+        Assert(credentialPreview.Message.Contains("not shown", StringComparison.OrdinalIgnoreCase), "Credential preview should avoid rendering secret content.");
+        Assert(credentialPreview.Message.Contains("No files were modified", StringComparison.OrdinalIgnoreCase), "Credential preview should preserve read-only wording.");
     }
 
     public void CsvExporterWritesEscapedReviewRows()

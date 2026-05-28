@@ -12,6 +12,7 @@ Help the project owner inspect what is inside a selected file without modifying 
 
 - Do not preview folders as file content.
 - Do not render binary or unsupported content as text.
+- Do not render Credential Data content.
 - Do not add cleanup execution, Quarantine execution, Undo Quarantine, permanent deletion, or manifest writing.
 - Do not treat file content preview as cleanup approval.
 
@@ -26,6 +27,7 @@ As the project owner, I want to preview a small text snippet from a selected fil
 - Read a bounded text sample only after the user requests preview.
 - Show text content for plain text files.
 - Explain when the selected file is a folder, inaccessible, binary, or unsupported.
+- Explain when the selected file is Credential Data and do not show its contents.
 - Keep status wording explicit that no files were modified.
 
 ## Domain language changes
@@ -59,6 +61,12 @@ What changed:
 - Added a `File preview` section to the detail pane.
 - Added core tests for text, binary, and folder preview outcomes.
 - Added WPF smoke coverage for selected-file preview.
+- Later cloud/credential guardrail packet blocks Credential Data content from preview and shows a read-only explanation instead.
+
+Additional verification from later cloud/credential guardrail packet:
+
+- `dotnet build WindowsFileCleaner.sln --no-restore` passed.
+- `dotnet run --project tests\WindowsFileCleaner.Tests\WindowsFileCleaner.Tests.csproj --no-build` passed.
 
 ADRs added or skipped:
 

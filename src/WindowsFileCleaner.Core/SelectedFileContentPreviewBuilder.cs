@@ -41,6 +41,13 @@ public static class SelectedFileContentPreviewBuilder
                     : $"The selected file was not accessible during scan: {entry.ErrorMessage}");
         }
 
+        if (entry.BloatCategories.Contains(BloatCategory.CredentialData))
+        {
+            return Unavailable(
+                "Credential data",
+                "The selected file looks like credential, key, password manager, or authentication data, so its contents are not shown.");
+        }
+
         try
         {
             var path = PathSafety.GetFullPath(entry.FullPath);

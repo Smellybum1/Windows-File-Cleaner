@@ -361,7 +361,7 @@ Last reviewed: 2026-05-28
 
 A Bloat Category is a human-readable reason a Cleanup Candidate may be unwanted or removable.
 
-Initial candidate categories include cleanup scope roots, profile containers, AppData areas, browser data, old downloads, temporary folders, installer caches, app caches, GPU shader caches, duplicate files, large old files, old game files, game data, Node or Python package caches, Windows app data, Windows app leftovers, and installed applications.
+Initial candidate categories include cleanup scope roots, profile containers, AppData areas, browser data, cloud sync data, credential data, old downloads, temporary folders, installer caches, app caches, GPU shader caches, duplicate files, large old files, old game files, game data, Node or Python package caches, Windows app data, Windows app leftovers, and installed applications.
 
 #### Examples
 
@@ -370,6 +370,8 @@ Initial candidate categories include cleanup scope roots, profile containers, Ap
 - Profile containers.
 - AppData areas.
 - Browser data.
+- Cloud sync data.
+- Credential data.
 - Temporary folders.
 - Installer caches.
 - App caches.
@@ -409,6 +411,88 @@ Initial candidate categories include cleanup scope roots, profile containers, Ap
 - Use specific category names in code and UI rather than generic labels such as `junk`.
 - Container categories such as Profile container, AppData area, and Browser data should be conservative and should not imply cleanup approval.
 - Specific rebuildable cache rows with strong cache evidence, such as GPU shader caches or package-cache rows under an app cache path, may be `Likely safe` / `Quarantine candidate`; broad parent containers such as `AppData`, `NVIDIA`, or `pip` should remain inspection-first.
+
+### Cloud Sync Data
+
+Status: draft
+Last reviewed: 2026-05-29
+
+#### Definition
+
+Cloud Sync Data is user-owned data managed by a cloud sync provider or local sync client.
+
+It may be large, duplicated, or stale-looking, but it should be treated as high-risk until the user reviews the sync status and the provider-specific recovery path.
+
+#### Examples
+
+- OneDrive folders.
+- Dropbox folders.
+- Google Drive folders.
+- iCloud Drive or iCloud Photos folders.
+- Nextcloud, Syncthing, or MEGA sync folders.
+
+#### Non-examples
+
+- A downloaded installer copied into Downloads.
+- A local cache with clear rebuildable-cache evidence.
+- A cloud sync app cache that has been separately reviewed and classified as a narrow cache path.
+
+#### Lifecycle
+
+- Identified during Storage Scan classification.
+- Shown for review as `Cloud sync data`.
+- Treated as a Protected Location by default.
+
+#### Relationships
+
+- Belongs to Bloat Category.
+- Supports Protected Location and the rule that user-owned files are not cleanup candidates by default.
+
+#### Code implications
+
+- Use `BloatCategory.CloudSyncData`.
+- Keep Cloud Sync Data as `High risk` / `Keep` until the user defines precise reviewed exceptions.
+
+### Credential Data
+
+Status: draft
+Last reviewed: 2026-05-29
+
+#### Definition
+
+Credential Data is authentication, password manager, key, token, or sensitive access configuration data.
+
+It must be treated as high-risk even when it appears small, duplicated, hidden, stale, or cache-like.
+
+#### Examples
+
+- SSH key folders or private key files.
+- `.gnupg`, `.aws`, `.azure`, or `.kube` configuration folders.
+- 1Password, Bitwarden, KeePass, or KeePassXC folders.
+- KeePass `.kdbx` vault files.
+
+#### Non-examples
+
+- Browser cache files without profile or credential evidence.
+- Public documentation about credentials.
+- A test fixture key inside the repo test tree.
+
+#### Lifecycle
+
+- Identified during Storage Scan classification.
+- Shown for review as `Credential data`.
+- Treated as a Protected Location by default.
+
+#### Relationships
+
+- Belongs to Bloat Category.
+- Supports Protected Location, Selected Path Review Guidance, Quarantine Preview blockers, and the rule that credentials must not be cleaned automatically.
+
+#### Code implications
+
+- Use `BloatCategory.CredentialData`.
+- Keep Credential Data as `High risk` / `Keep`.
+- Do not preview or export credential file contents.
 
 ### Storage Review Filter
 
@@ -1183,7 +1267,7 @@ For folder rows, it shows contained files and descendant folders. For file rows,
 ### Selected File Content Preview
 
 Status: draft
-Last reviewed: 2026-05-28
+Last reviewed: 2026-05-29
 
 #### Definition
 
@@ -1196,6 +1280,7 @@ It exists to help the user understand unfamiliar file rows before deciding wheth
 - Preview a small `.txt`, `.json`, `.log`, `.csv`, or config-like file.
 - Show that a selected file is binary or unsupported instead of rendering unreadable bytes.
 - Explain that folders use Child Breakdown rather than file content preview.
+- Explain that Credential Data contents are not shown.
 
 #### Non-examples
 
@@ -1203,6 +1288,7 @@ It exists to help the user understand unfamiliar file rows before deciding wheth
 - Cleanup approval.
 - A full file viewer or editor.
 - A binary, archive, database, browser profile, credential, or installer extractor.
+- A way to view secrets, keys, password vaults, tokens, or authentication configuration.
 
 #### Lifecycle
 
@@ -1222,6 +1308,7 @@ It exists to help the user understand unfamiliar file rows before deciding wheth
 - Use `SelectedFileContentPreview` and `SelectedFileContentPreviewBuilder`.
 - Keep default reads bounded to a small text sample.
 - Do not render binary-looking content as text.
+- Do not render Credential Data content.
 - Keep status wording explicit that no files were modified.
 
 ### Selected Path Review Guidance
@@ -1561,6 +1648,8 @@ Protected Locations may still be scanned for size and shown for inspection, but 
 - Cleanup Scope Roots.
 - Documents, Desktop, Pictures, Videos, Music.
 - Browser profiles and credentials.
+- Cloud sync roots and synced user files.
+- Credential, key, password manager, and authentication configuration folders.
 - Application settings under `AppData`.
 - Windows app package data under `AppData\Local\Packages`.
 - Per-user installed applications under `AppData\Local\Programs`.
