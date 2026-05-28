@@ -18,6 +18,7 @@ public partial class MainWindow : Window
     private RestoreManifestDraft? _currentRestoreManifestDraft;
     private QuarantineConfirmationDraft? _currentQuarantineConfirmationDraft;
     private QuarantineExecutionGate? _currentQuarantineExecutionGate;
+    private QuarantineActionDraft? _currentQuarantineActionDraft;
     private string? _currentCleanupScopePath;
     private StorageReviewFilter _currentFilter = StorageReviewFilter.All;
     private StorageCategoryFilter _currentCategoryFilter = StorageCategoryFilter.All;
@@ -595,6 +596,14 @@ public partial class MainWindow : Window
             _currentRestoreManifestDraft,
             DateTimeOffset.UtcNow,
             BuildDraftId("quarantine-confirmation-draft"));
+        _currentQuarantineActionDraft = _currentQuarantineConfirmationDraft.HasDataBlockers
+            ? null
+            : QuarantineActionDraftBuilder.Build(
+                _currentQuarantinePreview,
+                _currentRestoreManifestDraft,
+                _currentQuarantineConfirmationDraft,
+                DateTimeOffset.UtcNow,
+                BuildDraftId("quarantine-action-draft"));
         SetQuarantineConfirmationTextSilently("");
         UpdateQuarantineExecutionGate();
 
@@ -1010,7 +1019,9 @@ public partial class MainWindow : Window
             QuarantineConfirmationBox.Text);
         QuarantineConfirmationBox.IsEnabled = _currentQuarantineConfirmationDraft is not null && ScanButton.IsEnabled;
         ExecuteQuarantineButton.IsEnabled = _currentQuarantineExecutionGate.CanExecute && ScanButton.IsEnabled;
-        QuarantineExecutionGateText.Text = FormatQuarantineExecutionGate(_currentQuarantineExecutionGate);
+        QuarantineExecutionGateText.Text = FormatQuarantineExecutionGate(
+            _currentQuarantineExecutionGate,
+            _currentQuarantineActionDraft);
     }
 
     public void ApplyStorageReviewFilter(StorageReviewFilter filter)
@@ -1555,6 +1566,7 @@ public partial class MainWindow : Window
         _currentRestoreManifestDraft = null;
         _currentQuarantineConfirmationDraft = null;
         _currentQuarantineExecutionGate = null;
+        _currentQuarantineActionDraft = null;
         SetQuarantineConfirmationTextSilently("");
         QuarantinePreviewText.Text = "Preview and draft readiness appear after using Preview quarantine.";
         ExportQuarantinePreviewButton.IsEnabled = false;
@@ -1638,7 +1650,9 @@ public partial class MainWindow : Window
         return string.Join(Environment.NewLine, lines);
     }
 
-    private static string FormatQuarantineExecutionGate(QuarantineExecutionGate gate)
+    private static string FormatQuarantineExecutionGate(
+        QuarantineExecutionGate gate,
+        QuarantineActionDraft? actionDraft)
     {
         var lines = new List<string>
         {
@@ -1648,6 +1662,13 @@ public partial class MainWindow : Window
             $"Can execute: {FormatYesNo(gate.CanExecute)}",
             "No files were modified."
         };
+
+        if (actionDraft is not null)
+        {
+            lines.Add($"Quarantine Action Draft: {actionDraft.ActionId} | Entries: {actionDraft.EntryCount:N0} | Bytes: {actionDraft.TotalSizeDisplay}");
+            lines.Add($"Action items root: {actionDraft.ItemsRootPath}");
+            lines.Add($"Restore manifest path: {actionDraft.RestoreManifestPath}");
+        }
 
         foreach (var blocker in gate.Blockers.Take(6))
         {

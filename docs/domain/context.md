@@ -1993,6 +1993,51 @@ In the current build the gate can show whether the confirmation text matches, bu
 - Keep `CanExecute` false while actual Quarantine execution is not implemented.
 - Do not create folders, move files, delete files, write manifests, or persist cleanup jobs from gate code.
 
+### Quarantine Action Draft
+
+Status: draft
+Last reviewed: 2026-05-29
+
+#### Definition
+
+Quarantine Action Draft is the in-memory, read-only layout for a future Quarantine Cleanup Action.
+
+It maps included preview rows to action-scoped quarantine item paths and a future Restore Manifest path without creating folders, moving files, or writing a manifest.
+
+#### Examples
+
+- Action items root: `D:\WindowsFileCleanerQuarantine\actions\quarantine-action-20260529_030405\items`
+- Future restore manifest path: `D:\WindowsFileCleanerQuarantine\actions\quarantine-action-20260529_030405\restore-manifest.json`
+- Included item path: `...\items\Downloads\old-installer.msi`
+
+#### Non-examples
+
+- A Cleanup Action.
+- An executed Restore Manifest.
+- A folder creation command.
+- Proof that files were moved.
+
+#### Lifecycle
+
+- Generated after Quarantine Preview, Restore Manifest Draft, and Quarantine Confirmation Draft have no data blockers.
+- Discarded when scan results, Review Shortlist, Quarantine Preview, Restore Manifest Draft, Quarantine Confirmation Draft, or Quarantine Root Selection change.
+- Must remain read-only until future Quarantine execution code exists.
+
+#### Relationships
+
+- Depends on Restore Manifest Draft and Quarantine Confirmation Draft.
+- Uses the action-scoped layout accepted in ADR 0004.
+- Feeds the visible Quarantine Execution Gate readout.
+- Precedes future Quarantine execution and Undo Quarantine.
+
+#### Code implications
+
+- Use `QuarantineActionDraft`, `QuarantineActionEntryDraft`, and `QuarantineActionDraftBuilder`.
+- Use path-safe action ids only.
+- Map future item destinations under `<quarantine-root>\actions\<action-id>\items\`.
+- Map the future Restore Manifest path to `<quarantine-root>\actions\<action-id>\restore-manifest.json`.
+- Do not create folders, move files, delete files, write manifests, or persist cleanup jobs from action draft code.
+
 ### Undo Quarantine
 
 Status: draft  

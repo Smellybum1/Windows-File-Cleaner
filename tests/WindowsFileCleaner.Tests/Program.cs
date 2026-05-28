@@ -26,6 +26,7 @@ tests.RestoreManifestDraftBuildsJsonUndoMetadataFromIncludedPreviewRows();
 tests.QuarantineConfirmationDraftChecksPreviewAndManifestReadiness();
 tests.QuarantineConfirmationDraftReportsPreviewAndManifestBlockers();
 tests.QuarantineExecutionGateRequiresExactConfirmationAndImplementedExecution();
+tests.QuarantineActionDraftBuildsActionScopedLayoutWithoutWritingFiles();
 tests.ChildSummaryShowsLargestImmediateChildren();
 tests.SelectedPathReviewGuidanceExplainsReviewNextSteps();
 tests.PathInspectionPlanBuildsExplorerArguments();
@@ -1121,6 +1122,116 @@ internal sealed class StorageScanTests
         Assert(!blockedGate.CanExecute, "Confirmation data blockers should keep execution closed.");
         Assert(blockedGate.Blockers.Any(blocker => blocker.Contains("blocked preview row", StringComparison.OrdinalIgnoreCase)), "Gate should carry confirmation data blockers forward.");
         Assert(!Directory.Exists(quarantineRoot), "Building execution gates should not create the quarantine root folder.");
+    }
+
+    public void QuarantineActionDraftBuildsActionScopedLayoutWithoutWritingFiles()
+    {
+        using var fixture = TestFixture.Create();
+
+        fixture.WriteFile(@"Downloads\old-installer.msi", 1024 * 1024, DateTimeOffset.UtcNow.AddDays(-120));
+        var scanner = new StorageScanner();
+        var result = scanner.Scan(new StorageScanOptions(fixture.RootPath));
+        var review = StorageScanReviewBuilder.Build(result);
+        var installer = SingleReviewEntry(review.Entries, @"Downloads\old-installer.msi");
+        var quarantineRoot = Path.Combine(fixture.RootPath, "quarantine-root");
+        var preview = QuarantinePreviewBuilder.Build([installer], fixture.RootPath, quarantineRoot);
+        var manifestDraft = RestoreManifestDraftBuilder.Build(
+            preview,
+            new DateTimeOffset(2026, 5, 29, 1, 2, 3, TimeSpan.Zero),
+            "manifest-draft-action");
+        var confirmation = QuarantineConfirmationDraftBuilder.Build(
+            preview,
+            manifestDraft,
+            new DateTimeOffset(2026, 5, 29, 2, 3, 4, TimeSpan.Zero),
+            "confirmation-draft-action");
+
+        var draftedAtUtc = new DateTimeOffset(2026, 5, 29, 3, 4, 5, TimeSpan.Zero);
+        var actionDraft = QuarantineActionDraftBuilder.Build(
+            preview,
+            manifestDraft,
+            confirmation,
+            draftedAtUtc,
+            "quarantine-action-20260529_030405");
+
+        var expectedActionRoot = Path.GetFullPath(Path.Combine(quarantineRoot, "actions", "quarantine-action-20260529_030405"));
+        var expectedItemsRoot = Path.Combine(expectedActionRoot, "items");
+        var expectedManifestPath = Path.Combine(expectedActionRoot, "restore-manifest.json");
+        var expectedActionPath = Path.Combine(expectedItemsRoot, "Downloads", "old-installer.msi");
+        var expectedPreviewPath = Path.Combine(quarantineRoot, "preview", "Downloads", "old-installer.msi");
+
+        Assert(actionDraft.ActionId == "quarantine-action-20260529_030405", "Action draft should preserve the normalized action id.");
+        Assert(actionDraft.DraftedAtUtc == draftedAtUtc, "Action draft should preserve the UTC timestamp.");
+        Assert(actionDraft.ActionRootPath == expectedActionRoot, "Action draft should use an action-scoped root.");
+        Assert(actionDraft.ItemsRootPath == expectedItemsRoot, "Action draft should use an action-scoped items root.");
+        Assert(actionDraft.RestoreManifestPath == expectedManifestPath, "Action draft should place the future restore manifest inside the action root.");
+        Assert(actionDraft.RestoreManifestDraftId == "manifest-draft-action", "Action draft should reference the Restore Manifest Draft it was derived from.");
+        Assert(actionDraft.EntryCount == 1, "Action draft should include the manifest draft rows.");
+        Assert(actionDraft.TotalBytes == installer.Entry.SizeBytes, "Action draft total bytes should match included preview bytes.");
+
+        var entry = actionDraft.Entries.Single();
+        Assert(entry.RelativePath == @"Downloads\old-installer.msi", "Action entry should preserve the cleanup-scope-relative path.");
+        Assert(entry.PreviewQuarantinePath == Path.GetFullPath(expectedPreviewPath), "Action entry should retain the preview destination for comparison.");
+        Assert(entry.ActionQuarantinePath == Path.GetFullPath(expectedActionPath), "Action entry should map to the action-scoped destination.");
+        Assert(!Directory.Exists(quarantineRoot), "Building a Quarantine Action Draft should not create the quarantine root folder.");
+
+        var invalidActionIdFailed = false;
+        try
+        {
+            QuarantineActionDraftBuilder.Build(
+                preview,
+                manifestDraft,
+                confirmation,
+                draftedAtUtc,
+                @"..\escape");
+        }
+        catch (ArgumentException)
+        {
+            invalidActionIdFailed = true;
+        }
+
+        Assert(invalidActionIdFailed, "Action draft should reject path-like action ids.");
+
+        var blockedConfirmation = confirmation with
+        {
+            Blockers = ["1 blocked preview row must be removed before confirmation."]
+        };
+        var blockedConfirmationFailed = false;
+        try
+        {
+            QuarantineActionDraftBuilder.Build(
+                preview,
+                manifestDraft,
+                blockedConfirmation,
+                draftedAtUtc,
+                "blocked-action");
+        }
+        catch (ArgumentException)
+        {
+            blockedConfirmationFailed = true;
+        }
+
+        Assert(blockedConfirmationFailed, "Action draft should require a confirmation draft with no data blockers.");
+
+        var mismatchedConfirmation = confirmation with
+        {
+            RestoreManifestDraftId = "other-manifest-draft"
+        };
+        var mismatchedConfirmationFailed = false;
+        try
+        {
+            QuarantineActionDraftBuilder.Build(
+                preview,
+                manifestDraft,
+                mismatchedConfirmation,
+                draftedAtUtc,
+                "mismatched-action");
+        }
+        catch (ArgumentException)
+        {
+            mismatchedConfirmationFailed = true;
+        }
+
+        Assert(mismatchedConfirmationFailed, "Action draft should require matching preview, manifest draft, and confirmation draft metadata.");
     }
 
     public void ChildSummaryShowsLargestImmediateChildren()

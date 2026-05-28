@@ -197,12 +197,13 @@ ADRs added or skipped:
 
 Follow-up work:
 
-- Decide actual Quarantine execution layout, manifest write order, and failure handling before adding file-moving code.
+- Action-scoped quarantine layout is now captured in ADR 0004 and `2026-05-29-quarantine-action-draft.md`.
+- Decide manifest write order and failure handling before adding file-moving code.
 
 Open questions:
 
 - What exact manifest write order should actual Quarantine execution use?
-- Should future execution require a selected manifest path, a generated action id, or both?
+- How should partial move failures update the executed Restore Manifest?
 
 Risky assumptions:
 

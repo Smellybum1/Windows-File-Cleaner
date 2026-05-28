@@ -553,6 +553,11 @@ internal sealed class MainWindowSmokeTests
             Assert(
                 window.QuarantineExecutionGateTextValue.Contains("Type QUARANTINE", StringComparison.OrdinalIgnoreCase),
                 "Execution gate should require the confirmation phrase before execution can ever be enabled.");
+            Assert(
+                window.QuarantineExecutionGateTextValue.Contains("Quarantine Action Draft", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineExecutionGateTextValue.Contains("Action items root:", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineExecutionGateTextValue.Contains("Restore manifest path:", StringComparison.OrdinalIgnoreCase),
+                "Execution gate should show the read-only action-scoped quarantine layout draft.");
             window.SetQuarantineConfirmationText("NOPE");
             Assert(
                 window.QuarantineExecutionGateTextValue.Contains("Entered confirmation matches: no", StringComparison.OrdinalIgnoreCase),
