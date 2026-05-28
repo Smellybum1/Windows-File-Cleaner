@@ -522,6 +522,11 @@
                                         MinWidth="145"
                                         IsEnabled="False"
                                         Click="ExecuteQuarantineButton_Click" />
+                                <Button x:Name="UndoQuarantineButton"
+                                        Content="Undo fixture quarantine"
+                                        MinWidth="170"
+                                        IsEnabled="False"
+                                        Click="UndoQuarantineButton_Click" />
                             </WrapPanel>
                             <TextBlock x:Name="QuarantineExecutionGateText"
                                        Text="Execution gate appears after using Preview quarantine."

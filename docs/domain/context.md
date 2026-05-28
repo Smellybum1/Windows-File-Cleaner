@@ -2248,7 +2248,7 @@ It lets the WPF app call the core Quarantine Executor after Quarantine Preview r
 #### Non-examples
 
 - Real-profile WPF Quarantine execution.
-- WPF Undo Quarantine.
+- WPF Undo Quarantine, except current-fixture undo.
 - Permanent deletion.
 - Cleanup history.
 - Quarantine folder cleanup.
@@ -2277,6 +2277,53 @@ It lets the WPF app call the core Quarantine Executor after Quarantine Preview r
 - Keep real-profile and custom non-fixture execution blocked in WPF.
 - After execution, disable re-execution for the current preview and mark scan state stale.
 
+### WPF Current Fixture Undo Quarantine
+
+Status: draft
+Last reviewed: 2026-05-29
+
+#### Definition
+
+WPF Current Fixture Undo Quarantine is the visible-app undo path that restores the current fixture-only Quarantine execution from its in-memory Restore Manifest.
+
+It is not a manifest discovery or history workflow.
+
+#### Examples
+
+- After fixture-only WPF execution moves `...\Downloads\old-installer.msi` into action-scoped quarantine, clicking `Undo fixture quarantine` restores that same synthetic file to its original path.
+- Showing Undo result rows and recovery-review state in the same review pane.
+- Updating the Restore Manifest status from Completed to Restored.
+
+#### Non-examples
+
+- Real-profile WPF Undo Quarantine.
+- Restoring an older Restore Manifest from disk.
+- Permanent deletion.
+- Quarantine folder cleanup.
+- Re-scanning or refreshing the filesystem snapshot.
+
+#### Lifecycle
+
+- Available only after current fixture-only WPF Quarantine execution records Moved entries.
+- Calls `UndoQuarantineExecutor.Undo` with the current in-memory Restore Manifest.
+- Displays restored and failed restore counts.
+- Disables repeat undo for the current execution attempt.
+- Keeps stale-state wording visible and tells the user to rescan before further review.
+
+#### Relationships
+
+- Depends on Fixture-only WPF Quarantine Execution.
+- Depends on Undo Quarantine Executor.
+- Implements ADR 0010.
+- Precedes manifest discovery/history and real-profile WPF Undo Quarantine.
+
+#### Code implications
+
+- Use `UndoQuarantineForCurrentExecution` for the WPF current-execution undo action.
+- Use `UndoQuarantineExecutor.Undo`; do not implement restore movement in WPF code.
+- Keep undo unavailable before execution, after an undo attempt, and for real-profile/custom non-fixture scopes.
+- Do not clean up quarantine folders in this action.
+
 ### Quarantine Action Draft
 
 Status: draft
@@ -2286,12 +2333,12 @@ Last reviewed: 2026-05-29
 
 Quarantine Action Draft is the in-memory, read-only layout for a future Quarantine Cleanup Action.
 
-It maps included preview rows to action-scoped quarantine item paths and a future Restore Manifest path without creating folders, moving files, or writing a manifest.
+It maps included preview rows to action-scoped quarantine item paths and a Restore Manifest path without creating folders, moving files, or writing a manifest.
 
 #### Examples
 
 - Action items root: `D:\WindowsFileCleanerQuarantine\actions\quarantine-action-20260529_030405\items`
-- Future restore manifest path: `D:\WindowsFileCleanerQuarantine\actions\quarantine-action-20260529_030405\restore-manifest.json`
+- Restore manifest path: `D:\WindowsFileCleanerQuarantine\actions\quarantine-action-20260529_030405\restore-manifest.json`
 - Included item path: `...\items\Downloads\old-installer.msi`
 
 #### Non-examples
@@ -2305,7 +2352,7 @@ It maps included preview rows to action-scoped quarantine item paths and a futur
 
 - Generated after Quarantine Preview, Restore Manifest Draft, and Quarantine Confirmation Draft have no data blockers.
 - Discarded when scan results, Review Shortlist, Quarantine Preview, Restore Manifest Draft, Quarantine Confirmation Draft, or Quarantine Root Selection change.
-- Must remain read-only until future Quarantine execution code exists.
+- Remains read-only; fixture execution uses the draft to build a planned Restore Manifest.
 
 #### Relationships
 
@@ -2313,7 +2360,7 @@ It maps included preview rows to action-scoped quarantine item paths and a futur
 - Uses the action-scoped layout accepted in ADR 0004.
 - Feeds the planned Restore Manifest model accepted in ADR 0005.
 - Feeds the visible Quarantine Execution Gate readout.
-- Precedes future Quarantine execution and Undo Quarantine.
+- Precedes fixture execution and Undo Quarantine.
 
 #### Code implications
 
@@ -2332,7 +2379,7 @@ Last reviewed: 2026-05-29
 
 Undo Quarantine restores quarantined files or folders to their original locations when feasible.
 
-The current core implementation is fixture-tested through Undo Quarantine Executor, but the WPF app does not expose Undo Quarantine yet.
+The current core implementation is fixture-tested through Undo Quarantine Executor. WPF exposes only current-fixture undo after fixture-only execution.
 
 #### Examples
 
@@ -2350,13 +2397,14 @@ The current core implementation is fixture-tested through Undo Quarantine Execut
 - Uses the Restore Manifest to return files to original paths.
 - Must refuse to overwrite an original path that now exists.
 - Must preserve recovery evidence when restore or manifest writes fail.
-- WPF Undo Quarantine remains a future workflow.
+- Broad WPF Undo Quarantine with manifest discovery remains a future workflow.
 
 #### Relationships
 
 - Depends on Quarantine.
 - Depends on Restore Manifest.
 - Depends on Undo Quarantine Executor for the fixture-tested core restore behavior.
+- Has a current-fixture WPF path for the immediately executed fixture action.
 - Reverses a quarantine Cleanup Action.
 
 #### Code implications

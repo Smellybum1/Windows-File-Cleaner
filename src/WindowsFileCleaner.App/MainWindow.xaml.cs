@@ -21,6 +21,7 @@ public partial class MainWindow : Window
     private QuarantineExecutionGate? _currentQuarantineExecutionGate;
     private QuarantineActionDraft? _currentQuarantineActionDraft;
     private QuarantineExecutionResult? _currentQuarantineExecutionResult;
+    private UndoQuarantineResult? _currentUndoQuarantineResult;
     private string? _currentCleanupScopePath;
     private StorageReviewFilter _currentFilter = StorageReviewFilter.All;
     private StorageCategoryFilter _currentCategoryFilter = StorageCategoryFilter.All;
@@ -172,6 +173,8 @@ public partial class MainWindow : Window
     public string? CurrentRestoreManifestStatus => _currentRestoreManifest?.ActionStatus.ToString();
 
     public string? CurrentFirstQuarantinePath => _currentRestoreManifest?.Entries.FirstOrDefault()?.QuarantinePath;
+
+    public bool CanUndoQuarantine => UndoQuarantineButton.IsEnabled;
 
     public string? SelectedRowFullPath => _selectedRow?.FullPath;
 
@@ -1036,11 +1039,13 @@ public partial class MainWindow : Window
         var hasExecutedCurrentPreview = _currentQuarantineExecutionResult is not null;
         QuarantineConfirmationBox.IsEnabled = _currentQuarantineConfirmationDraft is not null && !hasExecutedCurrentPreview && ScanButton.IsEnabled;
         ExecuteQuarantineButton.IsEnabled = _currentQuarantineExecutionGate.CanExecute && !hasExecutedCurrentPreview && ScanButton.IsEnabled;
+        UndoQuarantineButton.IsEnabled = CanUndoCurrentQuarantineExecution() && ScanButton.IsEnabled;
         QuarantineExecutionGateText.Text = FormatQuarantineExecutionGate(
             _currentQuarantineExecutionGate,
             _currentQuarantineActionDraft,
             _currentRestoreManifest,
-            _currentQuarantineExecutionResult);
+            _currentQuarantineExecutionResult,
+            _currentUndoQuarantineResult);
     }
 
     public void ApplyStorageReviewFilter(StorageReviewFilter filter)
@@ -1273,6 +1278,7 @@ public partial class MainWindow : Window
             ClearShortlistButton.IsEnabled = false;
             PreviewQuarantineButton.IsEnabled = false;
             ExportQuarantinePreviewButton.IsEnabled = false;
+            UndoQuarantineButton.IsEnabled = false;
             AddShownToShortlistButton.IsEnabled = false;
             RemoveShownFromShortlistButton.IsEnabled = false;
             SearchBox.IsEnabled = false;
@@ -1583,6 +1589,15 @@ public partial class MainWindow : Window
         return CleanupScopeSafetyNoteBuilder.Build(_currentCleanupScopePath).IsFixtureScope;
     }
 
+    private bool CanUndoCurrentQuarantineExecution()
+    {
+        return _currentQuarantineExecutionResult is not null
+            && _currentUndoQuarantineResult is null
+            && _currentRestoreManifest is not null
+            && _currentRestoreManifest.Entries.Any(entry => entry.Status == RestoreManifestEntryStatus.Moved)
+            && IsFixtureQuarantineExecutionAvailable();
+    }
+
     private void ReportInvalidQuarantineRootPath(QuarantineRootSafetyNote note)
     {
         ClearQuarantinePreview();
@@ -1599,6 +1614,7 @@ public partial class MainWindow : Window
         _currentQuarantineActionDraft = null;
         _currentRestoreManifest = null;
         _currentQuarantineExecutionResult = null;
+        _currentUndoQuarantineResult = null;
         SetQuarantineConfirmationTextSilently("");
         QuarantinePreviewText.Text = "Preview and draft readiness appear after using Preview quarantine.";
         ExportQuarantinePreviewButton.IsEnabled = false;
@@ -1633,6 +1649,11 @@ public partial class MainWindow : Window
         ExecuteQuarantineForCurrentPreview();
     }
 
+    private void UndoQuarantineButton_Click(object sender, RoutedEventArgs e)
+    {
+        UndoQuarantineForCurrentExecution();
+    }
+
     public void ExecuteQuarantineForCurrentPreview()
     {
         UpdateQuarantineExecutionGate();
@@ -1656,6 +1677,26 @@ public partial class MainWindow : Window
         StatusText.Text = result.Succeeded
             ? $"Fixture Quarantine execution completed: {result.MovedCount:N0} moved, {result.RestoreManifest.TotalSizeDisplay} quarantined. Rescan before further review."
             : $"Fixture Quarantine execution needs recovery review: {result.MovedCount:N0} moved, {result.FailedCount:N0} failed. Rescan before further review.";
+    }
+
+    public void UndoQuarantineForCurrentExecution()
+    {
+        if (!CanUndoCurrentQuarantineExecution())
+        {
+            StatusText.Text = "Undo fixture quarantine is not available. No files were modified.";
+            return;
+        }
+
+        _currentUndoQuarantineResult = UndoQuarantineExecutor.Undo(_currentRestoreManifest!);
+        _currentRestoreManifest = _currentUndoQuarantineResult.RestoreManifest;
+        QuarantinePreviewText.Text = FormatUndoQuarantineResult(_currentUndoQuarantineResult);
+        UpdateShortlistControls();
+        UpdateQuarantineExecutionGate();
+
+        var result = _currentUndoQuarantineResult;
+        StatusText.Text = result.Succeeded
+            ? $"Fixture Undo Quarantine completed: {result.RestoredCount:N0} restored. Rescan before further review."
+            : $"Fixture Undo Quarantine needs recovery review: {result.RestoredCount:N0} restored, {result.FailedCount:N0} failed. Rescan before further review.";
     }
 
     private static string FormatQuarantinePreview(
@@ -1708,7 +1749,8 @@ public partial class MainWindow : Window
         QuarantineExecutionGate gate,
         QuarantineActionDraft? actionDraft,
         RestoreManifest? restoreManifest,
-        QuarantineExecutionResult? executionResult)
+        QuarantineExecutionResult? executionResult,
+        UndoQuarantineResult? undoResult)
     {
         var lines = new List<string>
         {
@@ -1716,7 +1758,9 @@ public partial class MainWindow : Window
             $"Entered confirmation matches: {FormatYesNo(gate.IsConfirmationTextMatched)}",
             $"Execution implemented: {FormatYesNo(gate.IsExecutionImplemented)}",
             $"Can execute: {FormatYesNo(gate.CanExecute)}",
-            executionResult is null
+            undoResult is not null
+                ? "Fixture Undo Quarantine has restored synthetic files where possible. Current scan results are stale."
+                : executionResult is null
                 ? "No files were modified."
                 : "Fixture Quarantine execution has moved synthetic files. Current scan results are stale."
         };
@@ -1753,6 +1797,24 @@ public partial class MainWindow : Window
             if (executionResult.Entries.Count > 6)
             {
                 lines.Add($"... {executionResult.Entries.Count - 6:N0} more execution row(s) not shown in this pane.");
+            }
+        }
+
+        if (undoResult is not null)
+        {
+            lines.Add($"Undo result: restored {undoResult.RestoredCount:N0}, failed {undoResult.FailedCount:N0}, blockers {undoResult.Blockers.Count:N0}, recovery review: {FormatYesNo(undoResult.RequiresRecoveryReview)}");
+            foreach (var resultEntry in undoResult.Entries.Take(6))
+            {
+                var status = resultEntry.WasRestored ? "Restored" : "Not restored";
+                var error = string.IsNullOrWhiteSpace(resultEntry.ErrorMessage)
+                    ? ""
+                    : $" | Error: {resultEntry.ErrorMessage}";
+                lines.Add($"Undo row | {status} | {resultEntry.QuarantinePath} -> {resultEntry.OriginalPath}{error}");
+            }
+
+            if (undoResult.Entries.Count > 6)
+            {
+                lines.Add($"... {undoResult.Entries.Count - 6:N0} more undo row(s) not shown in this pane.");
             }
         }
 
@@ -1796,6 +1858,38 @@ public partial class MainWindow : Window
         if (result.Entries.Count > 12)
         {
             lines.Add($"... {result.Entries.Count - 12:N0} more execution row(s) not shown in this pane.");
+        }
+
+        return string.Join(Environment.NewLine, lines);
+    }
+
+    private static string FormatUndoQuarantineResult(UndoQuarantineResult result)
+    {
+        var lines = new List<string>
+        {
+            $"Fixture Undo Quarantine result: {FormatRestoreManifestActionStatus(result.RestoreManifest.ActionStatus)}",
+            $"Restored: {result.RestoredCount:N0} | Failed: {result.FailedCount:N0} | Recovery review: {FormatYesNo(result.RequiresRecoveryReview)}",
+            $"Restore manifest path: {result.RestoreManifest.ManifestPath}",
+            "Current scan and review rows are stale after undo. Rescan before selecting more cleanup candidates."
+        };
+
+        foreach (var blocker in result.Blockers.Take(6))
+        {
+            lines.Add($"Undo blocker | {blocker}");
+        }
+
+        foreach (var entry in result.Entries.Take(12))
+        {
+            var status = entry.WasRestored ? "Restored" : "Failed";
+            var error = string.IsNullOrWhiteSpace(entry.ErrorMessage)
+                ? ""
+                : $" | Error: {entry.ErrorMessage}";
+            lines.Add($"Undo row | {status} | {entry.QuarantinePath} -> {entry.OriginalPath}{error}");
+        }
+
+        if (result.Entries.Count > 12)
+        {
+            lines.Add($"... {result.Entries.Count - 12:N0} more undo row(s) not shown in this pane.");
         }
 
         return string.Join(Environment.NewLine, lines);

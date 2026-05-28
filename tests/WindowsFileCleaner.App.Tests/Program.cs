@@ -653,6 +653,7 @@ internal sealed class MainWindowSmokeTests
 
             Assert(!window.CanExecuteQuarantine, "Execution gate should close after the fixture execution attempt.");
             Assert(!window.CanEnterQuarantineConfirmation, "Confirmation text should disable after the fixture execution attempt.");
+            Assert(window.CanUndoQuarantine, "Fixture undo should become available after a successful fixture execution.");
             Assert(!window.CanExportQuarantinePreview, "Preview export should disable after execution because preview state is stale.");
             Assert(window.ReviewShortlistCount == 0, "Fixture execution should clear Review Shortlist to prevent stale re-execution.");
             Assert(window.CurrentRestoreManifestStatus == RestoreManifestActionStatus.Completed.ToString(), "Successful fixture execution should complete the Restore Manifest.");
@@ -672,6 +673,26 @@ internal sealed class MainWindowSmokeTests
                 window.QuarantineExecutionGateTextValue.Contains("Execution result:", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantineExecutionGateTextValue.Contains("Current scan results are stale", StringComparison.OrdinalIgnoreCase),
                 "Execution gate should retain execution evidence after the gate closes.");
+
+            window.UndoQuarantineForCurrentExecution();
+
+            Assert(!window.CanUndoQuarantine, "Fixture undo should disable after the undo attempt.");
+            Assert(window.CurrentRestoreManifestStatus == RestoreManifestActionStatus.Restored.ToString(), "Successful fixture undo should mark the Restore Manifest restored.");
+            Assert(File.Exists(installer.FullPath), "Fixture undo should restore the selected source file.");
+            Assert(!File.Exists(quarantinePath!), "Fixture undo should move the selected file out of quarantine.");
+            Assert(File.Exists(manifestPath!), "Fixture undo should keep the Restore Manifest for recovery evidence.");
+            Assert(
+                window.CurrentStatusText.Contains("Fixture Undo Quarantine completed", StringComparison.OrdinalIgnoreCase)
+                && window.CurrentStatusText.Contains("Rescan", StringComparison.OrdinalIgnoreCase),
+                "Fixture undo status should report completion and stale scan state.");
+            Assert(
+                window.QuarantinePreviewTextValue.Contains("Fixture Undo Quarantine result", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantinePreviewTextValue.Contains("Current scan and review rows are stale", StringComparison.OrdinalIgnoreCase),
+                "Preview pane should be replaced with undo result and stale-state wording.");
+            Assert(
+                window.QuarantineExecutionGateTextValue.Contains("Undo result:", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineExecutionGateTextValue.Contains("Fixture Undo Quarantine has restored", StringComparison.OrdinalIgnoreCase),
+                "Execution gate should retain undo evidence after undo.");
         }
         finally
         {
@@ -698,6 +719,7 @@ internal sealed class MainWindowSmokeTests
             window.SetQuarantineConfirmationText("QUARANTINE");
 
             Assert(!window.CanExecuteQuarantine, "Custom non-fixture scope should keep WPF execution unavailable.");
+            Assert(!window.CanUndoQuarantine, "Custom non-fixture scope should not expose fixture undo.");
             Assert(
                 window.QuarantinePreviewTextValue.Contains("Execution implemented: no", StringComparison.OrdinalIgnoreCase),
                 "Custom-scope preview should state execution is unavailable.");

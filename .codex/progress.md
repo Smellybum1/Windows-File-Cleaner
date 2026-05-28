@@ -6,16 +6,16 @@ Use it to preserve what was completed, what was verified, what was rejected, and
 
 ## Current status
 
-Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. The app has a broad read-only review workflow, fixture launch/preflight tooling, Quarantine Preview, Restore Manifest Draft, Quarantine Confirmation Draft, Quarantine Action Draft, write-ahead Restore Manifest persistence, core Quarantine execution, core Undo Quarantine, and fixture-only WPF Quarantine execution. Real-profile WPF Quarantine execution, WPF Undo Quarantine, permanent deletion, and persisted cleanup history remain unavailable.
+Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. The app has a broad read-only review workflow, fixture launch/preflight tooling, Quarantine Preview, Restore Manifest Draft, Quarantine Confirmation Draft, Quarantine Action Draft, write-ahead Restore Manifest persistence, core Quarantine execution, core Undo Quarantine, fixture-only WPF Quarantine execution, and WPF undo for the current fixture execution. Real-profile WPF Quarantine execution, broad WPF Undo Quarantine with manifest discovery, permanent deletion, and persisted cleanup history remain unavailable.
 
 ## Next recommended work
 
-1. Run `.\tools\Start-MvpFixtureReview.ps1`, confirm the launched app shows Fixture Cleanup Scope, click `Scan`, and manually inspect layout, visible wording, Storage Review Search, Storage Review Display Window controls, the `Relative path` and `Parent` columns, Selected Path Hierarchy Context, Selected File Content Preview, Selected Path Review Guidance, export dialogs, Safety Summary shortcuts, Review Shortlist, Shortlist shown, Remove shown, typed/browsed Quarantine Root Selection, Quarantine Root Safety Note, Quarantine Preview, Quarantine Execution Gate, Quarantine Action Draft, fixture-only `Execute quarantine`, Review Mix, Access issues filter, category filter, No category filter, Size filter, and filter wording.
+1. Run `.\tools\Start-MvpFixtureReview.ps1`, confirm the launched app shows Fixture Cleanup Scope, click `Scan`, and manually inspect layout, visible wording, Storage Review Search, Storage Review Display Window controls, the `Relative path` and `Parent` columns, Selected Path Hierarchy Context, Selected File Content Preview, Selected Path Review Guidance, export dialogs, Safety Summary shortcuts, Review Shortlist, Shortlist shown, Remove shown, typed/browsed Quarantine Root Selection, Quarantine Root Safety Note, Quarantine Preview, Quarantine Execution Gate, Quarantine Action Draft, fixture-only `Execute quarantine`, current-fixture `Undo fixture quarantine`, Review Mix, Access issues filter, category filter, No category filter, Size filter, and filter wording.
 2. Use `README.md` and `docs/features/2026-05-28-mvp-readiness-audit.md` to rerun the WPF app against `C:\Users\moxhe`; confirm `Scan` is disabled until the real-profile preflight acknowledgement is checked.
 3. Run `.\tools\Invoke-MvpPreflight.ps1` before any later real-profile scan if the worktree changes.
 4. Rerun the real scan and check whether the cleanup scope root row, `Relative path`, `Parent`, `Contents`, and `Access` columns, Size filter, `access:readable` / `access:access issue` search, Previous rows / Next rows, Safety Summary candidate and no-category examples, selected-row relative/parent/depth/access context, cache-specific Review guidance, specific rebuildable cache candidates such as `DXCache` and `pip\Cache`, conservative game/mod-manager labels such as OptiFine/CurseForge/Vortex, Cloud sync data and Credential data labels, and `Preview file` action make unfamiliar rows easier to triage.
 5. Retest the Quarantine Readiness UI with a real scan and confirm typed Quarantine root destinations, broad-parent protected descendant blockers, readable relative examples, draft/readiness wording, and real-profile execution blockers are understandable.
-6. Defer real-profile Quarantine execution and WPF Undo Quarantine until scan review, preview semantics, confirmation semantics, restore rules, manifest write order, and failure handling are trustworthy.
+6. Defer real-profile Quarantine execution and broad WPF Undo Quarantine until scan review, preview semantics, confirmation semantics, restore rules, manifest write order, and failure handling are trustworthy.
 7. Revisit .NET 10 before packaging or long-term distribution.
 
 ## Completed packets
@@ -3874,3 +3874,57 @@ Rejected ideas buffer:
 - Do not implement file movement directly in WPF.
 - Do not leave the gate enabled after execution.
 - Do not imply WPF Undo Quarantine exists after fixture execution.
+
+### 2026-05-29: Add WPF Current Fixture Undo Quarantine
+
+Status: completed
+
+Evidence:
+
+- Core Undo Quarantine is fixture-tested.
+- WPF fixture-only Quarantine execution produces a current in-memory Restore Manifest.
+- ADR 0010 selects current-fixture-execution WPF undo before broad manifest discovery or real-profile undo.
+
+Implementation:
+
+- Added ADR 0010 for WPF current fixture undo.
+- Added `Undo fixture quarantine` to the WPF execution gate area.
+- Wired WPF undo to `UndoQuarantineExecutor.Undo` for the current fixture Restore Manifest.
+- WPF undo restores the synthetic source file, updates Restore Manifest status, shows undo result evidence, disables repeat undo, and preserves stale-state wording.
+- Kept real-profile WPF undo and manifest discovery unavailable.
+- Extended WPF smoke coverage to execute and undo a fixture Quarantine action.
+
+Verification:
+
+- `dotnet build WindowsFileCleaner.sln --no-restore` passed with 0 warnings and 0 errors.
+- `dotnet run --project tests\WindowsFileCleaner.Tests\WindowsFileCleaner.Tests.csproj --no-build` passed.
+- `dotnet run --project tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj --no-build` passed.
+- `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\Invoke-MvpPreflight.ps1` passed.
+- Preflight restored, built, ran core tests, ran WPF app tests, ran fixture `-WhatIf`, ran `git diff --check`, and reported that no real user files were scanned or modified.
+
+Docs updated:
+
+- `README.md`
+- `docs/domain/context.md`
+- `docs/domain/glossary.md`
+- `docs/decisions/0010-use-current-fixture-execution-wpf-undo.md`
+- `docs/features/2026-05-28-mvp-readiness-audit.md`
+- `docs/features/2026-05-29-wpf-current-fixture-undo-quarantine.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- Added `docs/decisions/0010-use-current-fixture-execution-wpf-undo.md`.
+
+Open questions:
+
+- What UI should discover and select old Restore Manifests?
+- Should successful undo offer to clean up empty action folders?
+- What additional confirmation should real-profile undo require?
+
+Rejected ideas buffer:
+
+- Do not add manifest discovery in this packet.
+- Do not enable real-profile undo.
+- Do not delete quarantine folders after undo.
+- Do not implement restore movement in WPF.
