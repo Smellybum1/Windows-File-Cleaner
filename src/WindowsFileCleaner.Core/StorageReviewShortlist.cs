@@ -30,6 +30,20 @@ public sealed class StorageReviewShortlist
         return _paths.Remove(entry.FullPath);
     }
 
+    public int RemoveMany(IEnumerable<StorageEntry> entries)
+    {
+        var removedCount = 0;
+        foreach (var entry in entries)
+        {
+            if (Remove(entry))
+            {
+                removedCount++;
+            }
+        }
+
+        return removedCount;
+    }
+
     public bool Contains(StorageEntry entry)
     {
         return _paths.Contains(entry.FullPath);

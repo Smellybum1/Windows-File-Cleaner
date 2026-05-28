@@ -229,6 +229,11 @@
                             MinWidth="125"
                             IsEnabled="False"
                             Click="AddShownToShortlistButton_Click" />
+                    <Button x:Name="RemoveShownFromShortlistButton"
+                            Content="Remove shown"
+                            MinWidth="115"
+                            IsEnabled="False"
+                            Click="RemoveShownFromShortlistButton_Click" />
                     <Button x:Name="ExportShortlistCsvButton"
                             Content="Export shortlist"
                             MinWidth="125"

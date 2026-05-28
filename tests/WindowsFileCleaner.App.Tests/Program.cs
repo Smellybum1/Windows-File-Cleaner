@@ -259,6 +259,7 @@ internal sealed class MainWindowSmokeTests
                 "Selected-row review guidance should not imply deletion approval.");
             Assert(window.CanAddSelectedRowToReviewShortlist, "Selected fixture installer should be addable to Review Shortlist.");
             Assert(window.CanAddShownRowsToReviewShortlist, "Displayed quarantine candidates should be bulk-addable to Review Shortlist.");
+            Assert(!window.CanRemoveShownRowsFromReviewShortlist, "Shown rows should not be removable before they are shortlisted.");
             Assert(!window.CanPreviewQuarantine, "Quarantine Preview should be disabled before a shortlist exists.");
 
             window.AddShownRowsToReviewShortlist();
@@ -267,11 +268,23 @@ internal sealed class MainWindowSmokeTests
                 window.CurrentStatusText.Contains("not cleanup approval", StringComparison.OrdinalIgnoreCase),
                 "Bulk shortlisting status should preserve the non-approval boundary.");
             Assert(!window.CanAddShownRowsToReviewShortlist, "Bulk shortlist should disable once every shown row is already shortlisted.");
+            Assert(window.CanRemoveShownRowsFromReviewShortlist, "Bulk-shortlisted shown rows should be removable as the current review window.");
             Assert(window.CanRemoveSelectedRowFromReviewShortlist, "Shortlisted row should be removable.");
             Assert(window.CanPreviewQuarantine, "Quarantine Preview should be available after shortlisting a row.");
             Assert(
                 window.DisplayedRows.Any(row => row.FullPath == installer.FullPath && row.Shortlist == "Yes"),
                 "Shortlisted row should be marked in the WPF grid.");
+
+            window.RemoveShownRowsFromReviewShortlist();
+            Assert(window.ReviewShortlistCount == 0, "Removing shown rows should update Review Shortlist count.");
+            Assert(
+                window.CurrentStatusText.Contains("Removed 1 shown", StringComparison.OrdinalIgnoreCase),
+                "Removing shown rows should report the visible-window removal.");
+            Assert(window.CanAddShownRowsToReviewShortlist, "Shown rows should be bulk-addable after visible-window removal.");
+            Assert(!window.CanRemoveShownRowsFromReviewShortlist, "Shown rows should not be removable after visible-window removal.");
+
+            window.AddShownRowsToReviewShortlist();
+            Assert(window.ReviewShortlistCount == 1, "Bulk shortlisting shown rows should be repeatable after visible-window removal.");
 
             window.PreviewQuarantineForReviewShortlist();
             Assert(window.CurrentStatusText.Contains("Quarantine Preview created", StringComparison.OrdinalIgnoreCase), "Preview action should update status text.");

@@ -87,6 +87,8 @@ public partial class MainWindow : Window
 
     public bool CanAddShownRowsToReviewShortlist => AddShownToShortlistButton.IsEnabled;
 
+    public bool CanRemoveShownRowsFromReviewShortlist => RemoveShownFromShortlistButton.IsEnabled;
+
     public bool CanPreviewQuarantine => PreviewQuarantineButton.IsEnabled;
 
     public bool CanExportQuarantinePreview => ExportQuarantinePreviewButton.IsEnabled;
@@ -286,6 +288,11 @@ public partial class MainWindow : Window
         AddShownRowsToReviewShortlist();
     }
 
+    private void RemoveShownFromShortlistButton_Click(object sender, RoutedEventArgs e)
+    {
+        RemoveShownRowsFromReviewShortlist();
+    }
+
     private void ClearShortlistButton_Click(object sender, RoutedEventArgs e)
     {
         ClearReviewShortlist();
@@ -351,6 +358,35 @@ public partial class MainWindow : Window
         StatusText.Text =
             $"Shortlisted {addedCount:N0} shown path(s) ({_shortlist.Count:N0} total). " +
             "Review Shortlist is not cleanup approval. No files were modified.";
+    }
+
+    public void RemoveShownRowsFromReviewShortlist()
+    {
+        if (_currentReview is null)
+        {
+            return;
+        }
+
+        var rows = DisplayedRows;
+        if (rows.Count == 0)
+        {
+            return;
+        }
+
+        var removedCount = _shortlist.RemoveMany(rows.Select(row => row.Entry));
+        if (removedCount == 0)
+        {
+            StatusText.Text = $"No shown paths were in Review Shortlist ({_shortlist.Count:N0}). No files were modified.";
+            UpdateShortlistControls();
+            return;
+        }
+
+        ClearQuarantinePreview();
+        var selectedPath = _selectedRow?.FullPath;
+        RefreshResults(selectedPath);
+        StatusText.Text =
+            $"Removed {removedCount:N0} shown path(s) from Review Shortlist ({_shortlist.Count:N0} total). " +
+            "No files were modified.";
     }
 
     public void ClearReviewShortlist()
@@ -726,6 +762,7 @@ public partial class MainWindow : Window
             PreviewQuarantineButton.IsEnabled = false;
             ExportQuarantinePreviewButton.IsEnabled = false;
             AddShownToShortlistButton.IsEnabled = false;
+            RemoveShownFromShortlistButton.IsEnabled = false;
             SearchBox.IsEnabled = false;
             ClearSearchButton.IsEnabled = false;
             return;
@@ -853,7 +890,9 @@ public partial class MainWindow : Window
 
         var hasShortlist = _shortlist.Count > 0;
         var hasUnshortlistedDisplayedRows = DisplayedRows.Any(row => !_shortlist.Contains(row.Entry));
+        var hasShortlistedDisplayedRows = DisplayedRows.Any(row => _shortlist.Contains(row.Entry));
         AddShownToShortlistButton.IsEnabled = _currentReview is not null && hasUnshortlistedDisplayedRows && ScanButton.IsEnabled;
+        RemoveShownFromShortlistButton.IsEnabled = _currentReview is not null && hasShortlistedDisplayedRows && ScanButton.IsEnabled;
         ExportShortlistCsvButton.IsEnabled = _currentReview is not null && hasShortlist && ScanButton.IsEnabled;
         ClearShortlistButton.IsEnabled = hasShortlist && ScanButton.IsEnabled;
         PreviewQuarantineButton.IsEnabled = _currentReview is not null && hasShortlist && ScanButton.IsEnabled;

@@ -1,4 +1,4 @@
-# Feature: Shortlist Shown Review Rows
+# Feature: Shown Row Review Shortlist Actions
 
 Date started: 2026-05-28
 Status: completed
@@ -6,28 +6,29 @@ Owner: project-owner
 
 ## Goal
 
-Make large Storage Scan review sessions less tedious by letting the user add the currently shown rows to Review Shortlist in one read-only action.
+Make large Storage Scan review sessions less tedious by letting the user add or remove the currently shown rows from Review Shortlist in read-only actions.
 
 ## Non-goals
 
-- Do not shortlist hidden matched rows beyond the Storage Review Display Limit.
+- Do not shortlist or remove hidden matched rows beyond the Storage Review Display Limit.
 - Do not persist the Review Shortlist.
 - Do not approve cleanup, execute Quarantine, Undo Quarantine, delete files, move files, or write manifests.
 
 ## User story / job story
 
-As the project owner, I want to shortlist the currently shown review rows after narrowing with filters/search, so that I can preview a focused set without clicking each row one by one.
+As the project owner, I want to shortlist or remove the currently shown review rows after narrowing with filters/search, so that I can adjust a focused review set without clicking each row one by one.
 
 ## Current behavior
 
-The WPF app lets the user add or remove only the selected row from Review Shortlist. On a large real scan, that is slow when a focused filter/search already shows the review window the user wants to inspect.
+The WPF app lets the user add or remove only the selected row from Review Shortlist, and already has a `Shortlist shown` action. On a large real scan, one-way bulk shortlisting is still clumsy if the user applies a broad filter and wants to reverse only the visible review window.
 
 ## Desired behavior
 
 After a Storage Scan:
 
 - `Shortlist shown` adds only rows currently visible in the grid.
-- It does not add hidden matched rows beyond the 2,000-row display window.
+- `Remove shown` removes only rows currently visible in the grid.
+- Neither action touches hidden matched rows beyond the 2,000-row display window.
 - It clears stale Quarantine Preview data only when the shortlist actually changes.
 - Status text states that Review Shortlist is not cleanup approval and no files were modified.
 
@@ -37,7 +38,7 @@ No new terms.
 
 | Term | Change | Docs updated? |
 |---|---|---|
-| Review Shortlist | Clarified that bulk additions use only currently displayed rows. | yes |
+| Review Shortlist | Clarified that bulk additions/removals use only currently displayed rows. | yes |
 
 ## Open questions
 
@@ -47,7 +48,7 @@ Questions that must be answered before implementation:
 
 Questions that can be deferred:
 
-- Should a later review UI support selecting a specific subset of displayed rows before bulk shortlisting?
+- Should a later review UI support selecting a specific subset of displayed rows before bulk shortlisting/removal?
 
 ## Grill notes
 
@@ -55,11 +56,12 @@ Questions that can be deferred:
 
 - The user tested a real `C:\Users\moxhe` scan with a large result set.
 - The app now reports when the grid is capped at the first 2,000 matched rows.
-- Bulk shortlisting should respect that display boundary rather than quietly adding rows the user cannot see.
+- Bulk shortlist actions should respect that display boundary rather than quietly changing rows the user cannot see.
 
 ### Edge cases
 
 - Pressing `Shortlist shown` when every displayed row is already shortlisted should not clear the current preview.
+- Pressing `Remove shown` when no displayed row is shortlisted should not clear the current preview.
 - Running a new Storage Scan still clears the Review Shortlist.
 - Quarantine Preview remains a read-only dry run and may still block high-risk or ineligible shortlisted rows.
 
@@ -79,7 +81,7 @@ Evidence gathered:
 Tests/checks planned:
 
 - Core coverage for bulk shortlist uniqueness.
-- WPF smoke coverage for `Shortlist shown` status, count, disabled state after all shown rows are shortlisted, and read-only preview flow.
+- WPF smoke coverage for `Shortlist shown` / `Remove shown` status, counts, enabled states, and read-only preview flow.
 - MVP preflight.
 
 Validation gate before implementation:
@@ -91,7 +93,7 @@ Validation gate before implementation:
 
 Rejected ideas buffer:
 
-- Do not add all matched rows when the grid is capped.
+- Do not add or remove all matched rows when the grid is capped.
 - Do not name the action as cleanup approval.
 - Do not add cleanup execution from the shortlist toolbar.
 
@@ -99,8 +101,8 @@ Rejected ideas buffer:
 
 Small feature-level decisions:
 
-- Add a `Shortlist shown` WPF action in the review toolbar.
-- Keep the action tied to `DisplayedRows`, not the full filtered/matched set.
+- Add `Shortlist shown` and `Remove shown` WPF actions in the review toolbar.
+- Keep both actions tied to `DisplayedRows`, not the full filtered/matched set.
 - Reuse `StorageReviewShortlist` and add a small `AddMany` helper.
 
 ADR-worthy decisions:
@@ -109,8 +111,8 @@ ADR-worthy decisions:
 
 ## Implementation plan
 
-1. Add bulk-add support to `StorageReviewShortlist`.
-2. Add a WPF `Shortlist shown` control and command method.
+1. Add bulk add/remove support to `StorageReviewShortlist`.
+2. Add WPF `Shortlist shown` / `Remove shown` controls and command methods.
 3. Update WPF smoke tests.
 4. Update docs and progress.
 
@@ -136,7 +138,7 @@ Possible:
 
 Manual checks:
 
-- Run a fixture scan, filter to Quarantine candidates, click `Shortlist shown`, and verify only visible rows are shortlisted.
+- Run a fixture scan, filter to Quarantine candidates, click `Shortlist shown`, then `Remove shown`, and verify only visible rows are changed.
 - Preview quarantine and verify no files are modified.
 
 Automated tests:
@@ -155,7 +157,7 @@ Risks:
 
 Assumptions:
 
-- Limiting bulk shortlisting to visible rows is safer and clearer than adding all matched rows.
+- Limiting bulk shortlist changes to visible rows is safer and clearer than changing all matched rows.
 
 ## Completion notes
 
@@ -163,8 +165,8 @@ Completed on: 2026-05-28
 
 What changed:
 
-- Added `StorageReviewShortlist.AddMany`.
-- Added a WPF `Shortlist shown` action for currently displayed rows.
+- Added `StorageReviewShortlist.AddMany` and `RemoveMany`.
+- Added WPF `Shortlist shown` and `Remove shown` actions for currently displayed rows.
 - Added WPF status wording that says Review Shortlist is not cleanup approval.
 - Updated core and WPF smoke coverage.
 
@@ -206,11 +208,11 @@ ADRs added or skipped:
 
 Follow-up work:
 
-- Include `Shortlist shown` in the next visible fixture and real-profile review pass.
+- Include `Shortlist shown` and `Remove shown` in the next visible fixture and real-profile review pass.
 
 Open questions:
 
-- Should a later review UI support selecting a specific subset of displayed rows before bulk shortlisting?
+- Should a later review UI support selecting a specific subset of displayed rows before bulk shortlisting/removal?
 
 Risky assumptions:
 
