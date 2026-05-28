@@ -1,7 +1,8 @@
 [CmdletBinding()]
 param(
     [switch]$SkipRestore,
-    [switch]$SkipFixtureWhatIf
+    [switch]$SkipFixtureWhatIf,
+    [switch]$SkipDiffCheck
 )
 
 Set-StrictMode -Version Latest
@@ -48,6 +49,12 @@ try {
     if (-not $SkipFixtureWhatIf) {
         Invoke-PreflightStep -Name "Fixture dry run" -Command {
             & powershell.exe -NoProfile -ExecutionPolicy Bypass -File $fixtureScript -WhatIf
+        }
+    }
+
+    if (-not $SkipDiffCheck) {
+        Invoke-PreflightStep -Name "Whitespace diff check" -Command {
+            & git -c "safe.directory=$repoRoot" diff --check
         }
     }
 

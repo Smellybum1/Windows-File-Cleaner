@@ -30,7 +30,7 @@ Run the MVP preflight from the repository root before scanning real user files:
 .\tools\Invoke-MvpPreflight.ps1
 ```
 
-The preflight restores, builds, runs both test harnesses, and runs the fixture generator in `-WhatIf` mode. It does not scan `C:\Users\moxhe`.
+The preflight restores, builds, runs both test harnesses, runs the fixture generator in `-WhatIf` mode, and runs `git diff --check`. It does not scan `C:\Users\moxhe`.
 
 The individual commands are:
 
@@ -40,6 +40,7 @@ dotnet build WindowsFileCleaner.sln --no-restore
 dotnet run --project tests\WindowsFileCleaner.Tests\WindowsFileCleaner.Tests.csproj --no-build
 dotnet run --project tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj --no-build
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\New-StorageScanSmokeFixture.ps1 -WhatIf
+git -c safe.directory='D:/Codex/Windows File Cleaner' diff --check
 ```
 
 Expected test output:

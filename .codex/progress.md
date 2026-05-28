@@ -1382,15 +1382,15 @@ Evidence:
 Implementation:
 
 - Added `tools/Invoke-MvpPreflight.ps1`.
-- Preflight runs restore, build, core tests, WPF app tests, and the fixture generator in `-WhatIf` mode.
+- Preflight runs restore, build, core tests, WPF app tests, the fixture generator in `-WhatIf` mode, and `git diff --check`.
 - Preflight prints the next manual fixture creation and launch commands.
-- Added `-SkipRestore` and `-SkipFixtureWhatIf` switches for focused local loops.
+- Added `-SkipRestore`, `-SkipFixtureWhatIf`, and `-SkipDiffCheck` switches for focused local loops.
 - No real profile scan, WPF launch, fixture creation, cleanup execution, quarantine execution, or manifest writing was added.
 
 Verification:
 
 - `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\Invoke-MvpPreflight.ps1` passed.
-- Preflight restored, built, ran core tests, ran WPF app tests, ran fixture `-WhatIf`, and reported that no real user files were scanned or modified.
+- Preflight restored, built, ran core tests, ran WPF app tests, ran fixture `-WhatIf`, ran `git diff --check`, and reported that no real user files were scanned or modified.
 - `git -c safe.directory='D:/Codex/Windows File Cleaner' diff --check` passed with line-ending normalization warnings only.
 
 Docs updated:
