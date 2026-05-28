@@ -168,10 +168,12 @@ internal sealed class MainWindowSmokeTests
             Assert(
                 window.ContentsColumnSortMemberPath == "ContainedTotalCount",
                 "Contents column should sort by numeric contained item count rather than formatted display text.");
+            Assert(window.HasRelativePathColumn, "Results grid should expose a cleanup-scope-relative path column.");
 
             var rows = window.DisplayedRows;
             var rootRow = rows.Single(row =>
                 row.FullPath.Equals(Path.GetFullPath(fixture.RootPath), StringComparison.OrdinalIgnoreCase));
+            Assert(rootRow.RelativePath == ".", "Cleanup Scope root row should show '.' as its relative path.");
             Assert(
                 rootRow.Importance == "High risk"
                 && rootRow.Recommendation == "Keep"
@@ -198,6 +200,7 @@ internal sealed class MainWindowSmokeTests
 
             var downloads = rows.Single(row =>
                 row.FullPath.EndsWith("Downloads", StringComparison.OrdinalIgnoreCase));
+            Assert(downloads.RelativePath == "Downloads", "Fixture Downloads folder should show a cleanup-scope-relative path.");
             Assert(downloads.AccessStatus == "Readable", "Fixture Downloads folder should show readable access status.");
             Assert(
                 downloads.Contents.Contains("1 file", StringComparison.OrdinalIgnoreCase)
@@ -208,8 +211,10 @@ internal sealed class MainWindowSmokeTests
             Assert(downloads.Contents.Contains("1 file", StringComparison.OrdinalIgnoreCase), "Folder row should expose contained file count.");
             Assert(
                 window.DetailPathContextTextValue.Contains("Contents:", StringComparison.OrdinalIgnoreCase)
+                && window.DetailPathContextTextValue.Contains("Relative:", StringComparison.OrdinalIgnoreCase)
+                && window.DetailPathContextTextValue.Contains("Downloads", StringComparison.OrdinalIgnoreCase)
                 && window.DetailPathContextTextValue.Contains("1 file", StringComparison.OrdinalIgnoreCase),
-                "Selected folder detail pane should show contained file/folder counts.");
+                "Selected folder detail pane should show relative path and contained file/folder counts.");
             Assert(window.DetailMetaTextValue.Contains("Access: Readable", StringComparison.OrdinalIgnoreCase), "Selected row detail pane should show access status.");
 
             var exportCsv = window.CurrentScanReportExportCsv;

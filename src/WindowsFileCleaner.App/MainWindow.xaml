@@ -344,6 +344,7 @@
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Shortlist" Binding="{Binding Shortlist}" Width="80" />
                     <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="1.4*" />
+                    <DataGridTextColumn Header="Relative path" Binding="{Binding RelativePath}" Width="1.5*" />
                     <DataGridTextColumn Header="Parent" Binding="{Binding ParentLocation}" Width="1.6*" />
                     <DataGridTextColumn Header="Type" Binding="{Binding Type}" Width="90" />
                     <DataGridTextColumn Header="Size" Binding="{Binding Size}" SortMemberPath="SizeBytes" Width="100" />

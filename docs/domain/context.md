@@ -1045,13 +1045,14 @@ Last reviewed: 2026-05-28
 
 #### Definition
 
-Selected Path Hierarchy Context is read-only parent-path and depth information shown for Storage Scan review rows.
+Selected Path Hierarchy Context is read-only cleanup-scope-relative path, parent-path, and depth information shown for Storage Scan review rows.
 
 It helps explain short or hashed names in deep cache folders without changing the row's Importance Rating, Deletion Recommendation, or cleanup eligibility.
 
 #### Examples
 
 - Show the parent path for a row named `e` inside a package cache.
+- Show `AppData\Local\pip\Cache` instead of making the user infer location from full parent paths.
 - Show hierarchy depth for a selected recursive scan row.
 - Use parent/depth context alongside Evidence, Review Guidance, and Child Breakdown.
 
@@ -1072,13 +1073,14 @@ It helps explain short or hashed names in deep cache folders without changing th
 
 - Supports manual review of deeply nested Storage Scan rows.
 - Complements Storage Review Search, Storage Entry Type Filter, Selected Row Contents Context, Child Breakdown, and Selected Path Inspection.
-- Scan Report Export also includes parent/depth context for offline review.
+- Scan Report Export also includes relative path and parent/depth context for offline review.
 
 #### Code implications
 
 - Use `StorageEntryRow.ParentLocation` for the WPF review grid.
-- Keep parent/depth display derived from scan results.
-- Do not use parent/depth context as cleanup approval.
+- Use `StorageEntryRow.RelativePath` for cleanup-scope-relative display in the WPF review grid and selected-row detail pane.
+- Keep relative path and parent/depth display derived from scan results.
+- Do not use relative path, parent path, or depth context as cleanup approval.
 
 ### Selected Row Contents Context
 

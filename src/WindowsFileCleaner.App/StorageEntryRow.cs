@@ -5,15 +5,16 @@ namespace WindowsFileCleaner.App;
 
 public sealed class StorageEntryRow
 {
-    public StorageEntryRow(StorageEntry entry, int depth, bool isShortlisted = false)
+    public StorageEntryRow(StorageEntry entry, int depth, bool isShortlisted = false, string? cleanupScopePath = null)
     {
         Entry = entry;
         Depth = depth;
         IsShortlisted = isShortlisted;
+        RelativePath = FormatRelativePath(entry.FullPath, cleanupScopePath);
     }
 
-    public StorageEntryRow(StorageReviewEntry reviewEntry, bool isShortlisted = false)
-        : this(reviewEntry.Entry, reviewEntry.Depth, isShortlisted)
+    public StorageEntryRow(StorageReviewEntry reviewEntry, bool isShortlisted = false, string? cleanupScopePath = null)
+        : this(reviewEntry.Entry, reviewEntry.Depth, isShortlisted, cleanupScopePath)
     {
     }
 
@@ -22,6 +23,7 @@ public sealed class StorageEntryRow
     public bool IsShortlisted { get; }
     public string Shortlist => IsShortlisted ? "Yes" : "";
     public string Name => $"{new string(' ', Depth * 2)}{Entry.Name}";
+    public string RelativePath { get; }
     public string ParentLocation => FormatParentLocation(Entry.FullPath);
     public string FullPath => Entry.FullPath;
     public string Type => Entry.IsDirectory ? "Folder" : "File";
@@ -53,6 +55,29 @@ public sealed class StorageEntryRow
         catch (ArgumentException)
         {
             return "(unknown)";
+        }
+    }
+
+    private static string FormatRelativePath(string fullPath, string? cleanupScopePath)
+    {
+        if (string.IsNullOrWhiteSpace(cleanupScopePath))
+        {
+            return "";
+        }
+
+        try
+        {
+            return PathSafety.IsWithinScope(cleanupScopePath, fullPath)
+                ? Path.GetRelativePath(PathSafety.GetFullPath(cleanupScopePath), fullPath)
+                : "";
+        }
+        catch (ArgumentException)
+        {
+            return "";
+        }
+        catch (NotSupportedException)
+        {
+            return "";
         }
     }
 

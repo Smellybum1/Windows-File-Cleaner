@@ -101,6 +101,10 @@ public partial class MainWindow : Window
         .FirstOrDefault(column => string.Equals(column.Header?.ToString(), "Contents", StringComparison.OrdinalIgnoreCase))
         ?.SortMemberPath;
 
+    public bool HasRelativePathColumn => ResultsGrid.Columns
+        .OfType<DataGridTextColumn>()
+        .Any(column => string.Equals(column.Header?.ToString(), "Relative path", StringComparison.OrdinalIgnoreCase));
+
     public string TotalSizeTextValue => TotalSizeText.Text;
 
     public string FolderCountTextValue => FolderCountText.Text;
@@ -723,7 +727,7 @@ public partial class MainWindow : Window
         _selectedRow = row;
         DetailTitleText.Text = row.Entry.Name;
         DetailPathText.Text = row.FullPath;
-        DetailPathContextText.Text = $"Parent: {row.ParentLocation}\nDepth: {row.Depth:N0} | Modified: {row.LastModified}\nContents: {row.Contents}";
+        DetailPathContextText.Text = $"Relative: {row.RelativePath}\nParent: {row.ParentLocation}\nDepth: {row.Depth:N0} | Modified: {row.LastModified}\nContents: {row.Contents}";
         DetailMetaText.Text = $"{row.Size} | {row.Type} | {row.Importance} | {row.Recommendation} | Access: {row.AccessStatus}";
         DetailEvidenceText.Text = string.IsNullOrWhiteSpace(row.Error)
             ? row.Evidence
@@ -1093,7 +1097,7 @@ public partial class MainWindow : Window
         return entries
             .Skip(_currentDisplayStartIndex)
             .Take(MaxDisplayedRows)
-            .Select(entry => new StorageEntryRow(entry, _shortlist.Contains(entry.Entry)))
+            .Select(entry => new StorageEntryRow(entry, _shortlist.Contains(entry.Entry), _currentCleanupScopePath))
             .ToArray();
     }
 
