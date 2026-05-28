@@ -6,11 +6,11 @@ Use it to preserve what was completed, what was verified, what was rejected, and
 
 ## Current status
 
-Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. Review filters, selected-folder child breakdown, selected-path inspection actions, CSV export, Review Mix, and Access issues filtering are pushed. Bloat Category Filter is implemented and awaiting user retest after push.
+Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. Review filters, selected-folder child breakdown, selected-path inspection actions, CSV export, Review Mix, Access issues filtering, and Bloat Category Filter are pushed. No category filtering is implemented and awaiting user retest after push.
 
 ## Next recommended work
 
-1. Ask the user to rerun the WPF app and confirm Review Mix, Access issues filter, category filter, and filter wording are useful.
+1. Ask the user to rerun the WPF app and confirm Review Mix, Access issues filter, category filter, No category filter, and filter wording are useful.
 2. Use review feedback to refine Protected Locations and category grouping.
 3. Add a safer Quarantine preview only after review categories feel trustworthy.
 4. Defer actual Quarantine and Undo Quarantine execution until scan review is trustworthy.
@@ -553,3 +553,46 @@ Rejected ideas buffer:
 
 - Do not treat category matches as cleanup approval.
 - Do not sum category rows as Storage Savings while recursive parent/child rows overlap.
+
+### 2026-05-28: Add No category filter
+
+Status: completed
+
+Evidence:
+
+- The first real scan showed many rows with `None` in the Categories column.
+- The Bloat Category Filter packet left uncategorized rows as an open question.
+
+Implementation:
+
+- Added `StorageCategoryFilter` and `StorageCategoryFilterKind`.
+- Added core filtering for No category rows.
+- Added WPF No category dropdown option when uncategorized rows exist.
+- Added fixture coverage for No category filtering and combined review/category filtering.
+- No cleanup execution was added.
+
+Verification:
+
+- `dotnet build WindowsFileCleaner.sln --no-restore` passed.
+- `dotnet run --project tests\WindowsFileCleaner.Tests\WindowsFileCleaner.Tests.csproj --no-build` passed.
+
+Docs updated:
+
+- `docs/domain/context.md`
+- `docs/domain/glossary.md`
+- `docs/features/2026-05-28-no-category-filter.md`
+- `docs/features/2026-05-28-bloat-category-filter.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No new ADR. This is an incremental read-only review feature.
+
+Open questions:
+
+- Which uncategorized real-scan folders should become explicit Bloat Categories or Protected Locations?
+
+Rejected ideas buffer:
+
+- Do not turn uncategorized rows into `Unknown` categories just to make them filterable.
+- Do not treat No category rows as safe or unsafe by default.

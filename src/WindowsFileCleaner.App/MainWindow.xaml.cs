@@ -13,7 +13,7 @@ public partial class MainWindow : Window
     private CancellationTokenSource? _scanCancellation;
     private StorageScanReview? _currentReview;
     private StorageReviewFilter _currentFilter = StorageReviewFilter.All;
-    private BloatCategory? _currentCategoryFilter;
+    private StorageCategoryFilter _currentCategoryFilter = StorageCategoryFilter.All;
     private StorageEntryRow? _selectedRow;
     private bool _isUpdatingCategoryFilterOptions;
 
@@ -46,7 +46,7 @@ public partial class MainWindow : Window
             var result = await Task.Run(() => scanner.Scan(options, cancellationToken), cancellationToken);
             _currentReview = StorageScanReviewBuilder.Build(result);
             _currentFilter = StorageReviewFilter.All;
-            _currentCategoryFilter = null;
+            _currentCategoryFilter = StorageCategoryFilter.All;
             UpdateCategoryFilterOptions();
             var rows = ApplyCurrentFilter();
 
@@ -124,7 +124,7 @@ public partial class MainWindow : Window
             return;
         }
 
-        _currentCategoryFilter = option.Category;
+        _currentCategoryFilter = option.Filter;
         RefreshResults();
     }
 
@@ -232,7 +232,7 @@ public partial class MainWindow : Window
         CancelButton.IsEnabled = isScanning;
         ScopePathBox.IsEnabled = !isScanning;
         ExportCsvButton.IsEnabled = !isScanning && _currentReview is not null;
-        CategoryFilterBox.IsEnabled = !isScanning && _currentReview is not null && _currentReview.CategorySummaries.Count > 0;
+        CategoryFilterBox.IsEnabled = !isScanning && _currentReview is not null && CategoryFilterBox.Items.Count > 1;
     }
 
     private void SetFilter(StorageReviewFilter filter)
@@ -314,7 +314,7 @@ public partial class MainWindow : Window
             {
                 CategoryFilterBox.ItemsSource = new[]
                 {
-                    new CategoryFilterOption(null, "All categories", "all-categories")
+                    new CategoryFilterOption(StorageCategoryFilter.All, "All categories", "all-categories")
                 };
                 CategoryFilterBox.SelectedIndex = 0;
                 CategoryFilterBox.IsEnabled = false;
@@ -323,12 +323,22 @@ public partial class MainWindow : Window
 
             var options = new List<CategoryFilterOption>
             {
-                new(null, "All categories", "all-categories")
+                new(StorageCategoryFilter.All, "All categories", "all-categories")
             };
+
+            var noCategoryRows = _currentReview.ApplyFilter(StorageReviewFilter.All, StorageCategoryFilter.NoCategory);
+            if (noCategoryRows.Count > 0)
+            {
+                var largestNoCategoryBytes = noCategoryRows.Select(row => row.Entry.SizeBytes).DefaultIfEmpty(0).Max();
+                options.Add(new CategoryFilterOption(
+                    StorageCategoryFilter.NoCategory,
+                    $"No category ({noCategoryRows.Count:N0}, largest {ByteSizeFormatter.Format(largestNoCategoryBytes)})",
+                    "no-category"));
+            }
 
             options.AddRange(_currentReview.CategorySummaries.Select(summary =>
                 new CategoryFilterOption(
-                    summary.Category,
+                    StorageCategoryFilter.ForCategory(summary.Category),
                     $"{FormatCategory(summary.Category)} ({summary.Count:N0}, largest {ByteSizeFormatter.Format(summary.LargestEntryBytes)})",
                     FormatFileNameCategory(summary.Category))));
 
@@ -352,7 +362,7 @@ public partial class MainWindow : Window
 
         var rows = ApplyCurrentFilter();
         var largestShownBytes = rows.Select(row => row.SizeBytes).DefaultIfEmpty(0).Max();
-        var categoryLabel = _currentCategoryFilter is null ? "" : $" + {FormatCategory(_currentCategoryFilter.Value)}";
+        var categoryLabel = _currentCategoryFilter.Kind == StorageCategoryFilterKind.All ? "" : $" + {FormatCategoryFilter(_currentCategoryFilter)}";
         FilterSummaryText.Text = $"{FormatFilter(_currentFilter)}{categoryLabel}: {rows.Length:N0} shown, largest row {ByteSizeFormatter.Format(largestShownBytes)}";
     }
 
@@ -413,6 +423,16 @@ public partial class MainWindow : Window
         return FormatCategory(category)
             .ToLowerInvariant()
             .Replace(" ", "-", StringComparison.Ordinal);
+    }
+
+    private static string FormatCategoryFilter(StorageCategoryFilter filter)
+    {
+        return filter.Kind switch
+        {
+            StorageCategoryFilterKind.Category when filter.Category is not null => FormatCategory(filter.Category.Value),
+            StorageCategoryFilterKind.NoCategory => "No category",
+            _ => "All categories"
+        };
     }
 
     private static string FormatChildSummary(StorageEntry entry)

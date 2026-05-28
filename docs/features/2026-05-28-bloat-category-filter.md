@@ -25,6 +25,7 @@ As the project owner, I want to filter Storage Scan rows by Bloat Category, so t
 
 - Show a Category dropdown after Storage Scan.
 - Include All categories plus categories found in the current scan.
+- Later packet adds No category when the scan has Uncategorized Results.
 - Show each category option with row count and largest row.
 - Combine the selected category with the existing Storage Review Filter.
 - Export CSV using both the current Storage Review Filter and selected Bloat Category Filter.
@@ -46,7 +47,7 @@ As the project owner, I want to filter Storage Scan rows by Bloat Category, so t
 ## Implementation plan
 
 1. Add category summaries to `StorageScanReview`.
-2. Add combined filter support for `StorageReviewFilter` plus optional `BloatCategory`.
+2. Add combined filter support for `StorageReviewFilter` plus category filtering.
 3. Add WPF Category dropdown.
 4. Include category in CSV export filenames and exported row selection.
 5. Add fixture coverage for category summaries and combined filtering.
@@ -114,7 +115,7 @@ Follow-up work:
 
 Open questions:
 
-- Should `None` become its own filter option for uncategorized large rows?
+- Resolved in later packet: `No category` is its own filter option for uncategorized rows.
 - Which category labels should be treated as Protected Locations in future cleanup preview work?
 
 Risky assumptions:

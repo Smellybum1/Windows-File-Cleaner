@@ -121,6 +121,15 @@ internal sealed class StorageScanTests
         Assert(appDataCautionRows.Count > 0, "Category filter should combine with the selected review filter.");
         Assert(appDataCautionRows.All(row => row.Entry.ImportanceRating == ImportanceRating.Caution), "Combined filter should preserve the review filter.");
         Assert(appDataCautionRows.All(row => row.Entry.BloatCategories.Contains(BloatCategory.ApplicationDataArea)), "Combined filter should preserve the category filter.");
+
+        var noCategoryRows = review.ApplyFilter(StorageReviewFilter.All, StorageCategoryFilter.NoCategory);
+        Assert(noCategoryRows.Count > 0, "No category filter should return uncategorized rows.");
+        Assert(noCategoryRows.All(row => row.Entry.BloatCategories.Count == 0), "No category filter should only return uncategorized rows.");
+
+        var noCategoryCautionRows = review.ApplyFilter(StorageReviewFilter.Caution, StorageCategoryFilter.NoCategory);
+        Assert(noCategoryCautionRows.Count > 0, "No category filter should combine with the selected review filter.");
+        Assert(noCategoryCautionRows.All(row => row.Entry.ImportanceRating == ImportanceRating.Caution), "No category combined filter should preserve the review filter.");
+        Assert(noCategoryCautionRows.All(row => row.Entry.BloatCategories.Count == 0), "No category combined filter should preserve the no-category filter.");
     }
 
     public void ReviewBuilderFiltersAccessIssues()

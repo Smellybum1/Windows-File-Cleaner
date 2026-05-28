@@ -4,14 +4,14 @@ namespace WindowsFileCleaner.App;
 
 public sealed class CategoryFilterOption
 {
-    public CategoryFilterOption(BloatCategory? category, string label, string fileNameSegment)
+    public CategoryFilterOption(StorageCategoryFilter filter, string label, string fileNameSegment)
     {
-        Category = category;
+        Filter = filter;
         Label = label;
         FileNameSegment = fileNameSegment;
     }
 
-    public BloatCategory? Category { get; }
+    public StorageCategoryFilter Filter { get; }
     public string Label { get; }
     public string FileNameSegment { get; }
 }

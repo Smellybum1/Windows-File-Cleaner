@@ -7,10 +7,20 @@ public sealed record StorageScanReview(
 {
     public IReadOnlyList<StorageReviewEntry> ApplyFilter(StorageReviewFilter filter, BloatCategory? category = null)
     {
+        return ApplyFilter(filter, category is null ? StorageCategoryFilter.All : StorageCategoryFilter.ForCategory(category.Value));
+    }
+
+    public IReadOnlyList<StorageReviewEntry> ApplyFilter(StorageReviewFilter filter, StorageCategoryFilter categoryFilter)
+    {
         var filtered = ApplyReviewFilter(filter);
-        return category is null
-            ? filtered
-            : filtered.Where(row => row.Entry.BloatCategories.Contains(category.Value)).ToArray();
+        return categoryFilter.Kind switch
+        {
+            StorageCategoryFilterKind.Category when categoryFilter.Category is not null =>
+                filtered.Where(row => row.Entry.BloatCategories.Contains(categoryFilter.Category.Value)).ToArray(),
+            StorageCategoryFilterKind.NoCategory =>
+                filtered.Where(row => row.Entry.BloatCategories.Count == 0).ToArray(),
+            _ => filtered
+        };
     }
 
     private IReadOnlyList<StorageReviewEntry> ApplyReviewFilter(StorageReviewFilter filter)

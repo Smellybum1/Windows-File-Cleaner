@@ -214,6 +214,7 @@ Initial candidate categories include profile containers, AppData areas, browser 
 - "Unknown folder" by itself.
 - Any category that implies deletion is safe without evidence.
 - A container category by itself; containers should usually be inspected through their children.
+- `No category`; uncategorized rows are filterable but do not have a Bloat Category.
 
 #### Lifecycle
 
@@ -282,7 +283,7 @@ Last reviewed: 2026-05-28
 
 #### Definition
 
-A Bloat Category Filter narrows Storage Scan results to rows that match one Bloat Category.
+A Bloat Category Filter narrows Storage Scan results to rows that match one Bloat Category, or to rows with no category.
 
 It is a read-only lens that can be combined with the active Storage Review Filter.
 
@@ -292,6 +293,7 @@ It is a read-only lens that can be combined with the active Storage Review Filte
 - Filter Caution rows to Python package cache.
 - Filter High risk rows to Protected location.
 - Filter Access issues rows to Access issue.
+- Filter to No category to inspect uncategorized rows.
 
 #### Non-examples
 
@@ -303,6 +305,7 @@ It is a read-only lens that can be combined with the active Storage Review Filte
 
 - Available after a Storage Scan completes.
 - Built from Bloat Categories found in the current scan.
+- Includes No category when the current scan contains Uncategorized Results.
 - Resets to All categories at the start of a new scan.
 - Does not modify files.
 
@@ -311,13 +314,53 @@ It is a read-only lens that can be combined with the active Storage Review Filte
 - Uses Bloat Categories.
 - Combines with Storage Review Filters.
 - A row may match more than one Bloat Category Filter because a row may have multiple categories.
+- No category matches Uncategorized Results and is not itself a Bloat Category.
 
 #### Code implications
 
 - Use `StorageCategorySummaryEntry` for category counts and largest-row size.
-- Use optional `BloatCategory` values for category filtering.
+- Use `StorageCategoryFilter` to represent All categories, a named Bloat Category, or No category.
 - Do not sum recursive row sizes across category summaries.
 - Keep category filtering separate from Cleanup Actions.
+
+### Uncategorized Result
+
+Status: draft
+Last reviewed: 2026-05-28
+
+#### Definition
+
+An Uncategorized Result is a Storage Scan row with no assigned Bloat Category.
+
+It appears as `None` in the Categories column and can be reviewed through the No category filter.
+
+#### Examples
+
+- A large app folder that has not matched any classifier rule.
+- A file whose name, path, age, and location do not match current cleanup evidence.
+
+#### Non-examples
+
+- A row with the `Unknown` Bloat Category.
+- A row that is safe to remove.
+- A row that should be ignored.
+
+#### Lifecycle
+
+- Created implicitly when classifier rules assign no Bloat Category.
+- Can become categorized later if classifier rules improve.
+- Remains read-only.
+
+#### Relationships
+
+- Is visible through the Bloat Category Filter's No category option.
+- Helps identify classifier gaps.
+
+#### Code implications
+
+- Represent as an empty `BloatCategories` list.
+- Do not add `BloatCategory.Unknown` just to make the row filterable.
+- Use `StorageCategoryFilter.NoCategory` to filter these rows.
 
 ### Review Mix
 
