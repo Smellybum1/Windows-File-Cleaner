@@ -115,7 +115,7 @@ After the app opens:
 14. Try category filters such as Cleanup scope root, App cache, Python package cache, GPU shader cache, Large old file, Cloud sync data, Credential data, Windows app data, Installed application, Game data, Protected location, and No category.
 15. Use `Reset view` after stacking filters/search; it clears the review lens but keeps Review Shortlist.
 16. Add a likely-safe cleanup candidate to the Review Shortlist; specific rebuildable cache rows such as `DXCache` or `pip\Cache` may appear here, while broad parent folders should stay inspection-first. Use `Shortlist shown` / `Remove shown` only after narrowing or paging the grid to rows you intentionally want to review.
-17. Click `Preview quarantine` and confirm broad parent rows are blocked when protected descendants are present; blocked descendant examples should use relative paths, confirmation readiness blockers should be separate from preview row details, and Restore Manifest Draft / Quarantine Confirmation Draft should still say no files were modified and execution is not implemented.
+17. Confirm the Quarantine root points to the intended read-only preview destination, then click `Preview quarantine`; broad parent rows should be blocked when protected descendants are present, blocked descendant examples should use relative paths, confirmation readiness blockers should be separate from preview row details, and Restore Manifest Draft / Quarantine Confirmation Draft should still say no files were modified and execution is not implemented.
 18. Export CSV reports only when you intentionally choose an output file; the main report export follows the active filters/type/size/search, includes relative path, parent/depth, and access-status context for recursive rows, and the suggested filename includes the search term when one is active.
 
 ## Current Workflow
@@ -132,7 +132,7 @@ The intended review flow is:
 8. Use `Reset view` when the active review lens becomes too narrow; it does not clear Review Shortlist.
 9. Use Selected Path Hierarchy Context, Selected File Content Preview, Selected Path Review Guidance, Child Breakdown, and Open in Explorer for manual inspection.
 10. Add interesting rows to Review Shortlist; use `Shortlist shown` and `Remove shown` only for the currently displayed review window.
-11. Generate Quarantine Preview for read-only readiness review.
+11. Check the Quarantine root and generate Quarantine Preview for read-only readiness review.
 12. Stop before cleanup execution.
 
 ## Not Implemented Yet

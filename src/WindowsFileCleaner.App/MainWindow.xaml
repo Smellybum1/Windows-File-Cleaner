@@ -318,6 +318,21 @@
                             MinWidth="145"
                             IsEnabled="False"
                             Click="PreviewQuarantineButton_Click" />
+                    <StackPanel Orientation="Horizontal"
+                                Margin="6,0,0,0"
+                                VerticalAlignment="Center">
+                        <TextBlock Text="Quarantine root"
+                                   VerticalAlignment="Center"
+                                   Foreground="#526171"
+                                   Margin="0,0,8,0" />
+                        <TextBox x:Name="QuarantineRootBox"
+                                 Width="260"
+                                 Height="30"
+                                 VerticalContentAlignment="Center"
+                                 Text="D:\WindowsFileCleanerQuarantine"
+                                 ToolTip="Read-only preview destination root. Preview does not create this folder or move files."
+                                 TextChanged="QuarantineRootBox_TextChanged" />
+                    </StackPanel>
                     <Button x:Name="ExportQuarantinePreviewButton"
                             Content="Export preview"
                             MinWidth="120"

@@ -26,7 +26,7 @@ The user can scan, filter, inspect paths, export reports, and maintain a Review 
 
 ## Desired behavior
 
-The user can click `Preview quarantine` after adding rows to the Review Shortlist. The app shows a read-only summary of included, blocked, and redundant rows, the non-overlapping previewed bytes, and the default quarantine root. The preview must clearly state that no files were modified.
+The user can click `Preview quarantine` after adding rows to the Review Shortlist. The app shows a read-only summary of included, blocked, and redundant rows, the non-overlapping previewed bytes, and the quarantine root used for destination paths. The preview must clearly state that no files were modified.
 
 ## Domain language changes
 
@@ -43,7 +43,7 @@ Questions that must be answered before implementation:
 
 Questions that can be deferred:
 
-- Should the actual Quarantine execution root remain `D:\WindowsFileCleanerQuarantine`, or should the user choose it at execution time?
+- Should the actual Quarantine execution root use the typed preview root, require a fresh confirmation-time choice, or become a persisted local setting?
 - Should a later Quarantine Preview export a restore-manifest-shaped draft?
 
 ## Grill notes
@@ -199,9 +199,10 @@ Follow-up work:
 
 Open questions:
 
-- Should the actual Quarantine execution root remain `D:\WindowsFileCleanerQuarantine`, or should the user choose it at execution time?
+- Should the actual Quarantine execution root use the typed preview root, require a fresh confirmation-time choice, or become a persisted local setting?
 - Should a later preview export a restore-manifest-shaped draft?
 
 Risky assumptions:
 
 - `D:\WindowsFileCleanerQuarantine` is acceptable as the preview default because the user asked for quarantine preferably on `D:`.
+- Later packet `2026-05-29-quarantine-root-preview-selection.md` added a typed read-only Quarantine Root Selection for preview destinations.

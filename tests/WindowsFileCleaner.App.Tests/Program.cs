@@ -66,6 +66,10 @@ internal sealed class MainWindowSmokeTests
             Assert(window.CurrentStatusText == "Ready", "MainWindow should not start scanning when constructed.");
             Assert(!window.CanStartStorageScan, "MainWindow should require preflight acknowledgement before scanning the real profile.");
             Assert(window.CanBrowseCleanupScope, "MainWindow should allow choosing a Cleanup Scope without starting a scan.");
+            Assert(window.CanEditQuarantineRoot, "MainWindow should allow editing the read-only Quarantine Preview root before scanning.");
+            Assert(
+                window.CurrentQuarantineRootPath == QuarantinePreviewBuilder.DefaultQuarantineRootPath,
+                "MainWindow should default Quarantine Preview to the D: root requested by the user.");
             Assert(window.BrowseCleanupScopeButtonText.Contains("Browse", StringComparison.OrdinalIgnoreCase), "Cleanup Scope browse action should be visible in the header.");
             Assert(window.IsRealProfilePreflightConfirmationVisible, "MainWindow should show the real-profile preflight acknowledgement.");
             Assert(!window.IsRealProfilePreflightConfirmed, "Real-profile preflight acknowledgement should start unchecked.");
@@ -510,19 +514,40 @@ internal sealed class MainWindowSmokeTests
             window.AddShownRowsToReviewShortlist();
             Assert(window.ReviewShortlistCount == 1, "Bulk shortlisting shown rows should be repeatable after visible-window removal.");
 
+            var customQuarantineRoot = Path.GetFullPath(Path.Combine(fixture.RootPath, "..", "custom-quarantine-root"));
+            window.SetQuarantineRootForPreview(customQuarantineRoot);
+            Assert(window.CurrentQuarantineRootPath == customQuarantineRoot, "Quarantine root should be editable before preview.");
+
             window.PreviewQuarantineForReviewShortlist();
             Assert(window.CurrentStatusText.Contains("Quarantine Preview created", StringComparison.OrdinalIgnoreCase), "Preview action should update status text.");
             Assert(window.CurrentStatusText.Contains("No files were modified", StringComparison.OrdinalIgnoreCase), "Preview status should preserve the read-only boundary.");
             Assert(window.CanExportQuarantinePreview, "Quarantine Preview export should be enabled after preview creation.");
+            Assert(window.CurrentQuarantinePreviewRootPath == customQuarantineRoot, "Quarantine Preview should use the typed quarantine root.");
+            Assert(window.QuarantinePreviewTextValue.Contains("Quarantine root:", StringComparison.OrdinalIgnoreCase), "Preview pane should label the quarantine root.");
+            Assert(window.QuarantinePreviewTextValue.Contains(customQuarantineRoot, StringComparison.OrdinalIgnoreCase), "Preview pane should show the typed quarantine root.");
             Assert(window.QuarantinePreviewTextValue.Contains("Included: 1", StringComparison.OrdinalIgnoreCase), "Preview pane should show one included fixture row.");
             Assert(window.QuarantinePreviewTextValue.Contains("Restore Manifest Draft", StringComparison.OrdinalIgnoreCase), "Preview pane should show Restore Manifest Draft readiness.");
             Assert(window.QuarantinePreviewTextValue.Contains("Quarantine Confirmation Draft", StringComparison.OrdinalIgnoreCase), "Preview pane should show Quarantine Confirmation Draft readiness.");
             Assert(window.QuarantinePreviewTextValue.Contains("Execution implemented: no", StringComparison.OrdinalIgnoreCase), "Preview pane should state execution is not implemented.");
             Assert(window.QuarantinePreviewTextValue.Contains("Preview rows:", StringComparison.OrdinalIgnoreCase), "Preview pane should label row-level preview details.");
             Assert(window.QuarantinePreviewTextValue.Contains("Preview row | Included", StringComparison.OrdinalIgnoreCase), "Preview pane should distinguish included row details from readiness blockers.");
+            Assert(
+                window.QuarantinePreviewTextValue.Contains(Path.Combine(customQuarantineRoot, "preview", "Downloads", "old-installer.msi"), StringComparison.OrdinalIgnoreCase),
+                "Preview pane should map included rows under the typed quarantine root.");
             Assert(window.QuarantinePreviewTextValue.Contains("No files were modified", StringComparison.OrdinalIgnoreCase), "Preview pane should preserve the read-only boundary.");
             Assert(File.Exists(installer.FullPath), "Shortlisted fixture installer should still exist after preview.");
             Assert(File.Exists(fixture.MarkerPath), "Fixture marker file should still exist after review interactions.");
+            Assert(!Directory.Exists(customQuarantineRoot), "Quarantine Preview should not create the typed quarantine root.");
+
+            var changedQuarantineRoot = Path.GetFullPath(Path.Combine(fixture.RootPath, "..", "changed-quarantine-root"));
+            window.SetQuarantineRootForPreview(changedQuarantineRoot);
+            Assert(window.CurrentStatusText.Contains("Quarantine root changed", StringComparison.OrdinalIgnoreCase), "Changing the quarantine root should invalidate stale preview destinations.");
+            Assert(window.CanPreviewQuarantine, "Changing the quarantine root should keep preview available while the shortlist exists.");
+            Assert(!window.CanExportQuarantinePreview, "Changing the quarantine root should disable exporting the stale preview.");
+            Assert(
+                window.QuarantinePreviewTextValue.Contains("Preview and draft readiness appear", StringComparison.OrdinalIgnoreCase),
+                "Changing the quarantine root should clear stale preview readiness text.");
+            Assert(!Directory.Exists(changedQuarantineRoot), "Changing the preview root should not create folders.");
 
             window.RemoveSelectedPathFromReviewShortlist();
             Assert(window.ReviewShortlistCount == 0, "Removing selected row should clear Review Shortlist count.");

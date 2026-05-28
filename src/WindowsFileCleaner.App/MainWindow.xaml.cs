@@ -150,6 +150,10 @@ public partial class MainWindow : Window
 
     public string QuarantinePreviewTextValue => QuarantinePreviewText.Text;
 
+    public string CurrentQuarantineRootPath => QuarantineRootBox.Text;
+
+    public string? CurrentQuarantinePreviewRootPath => _currentQuarantinePreview?.QuarantineRootPath;
+
     public string? SelectedRowFullPath => _selectedRow?.FullPath;
 
     public int ReviewShortlistCount => _shortlist.Count;
@@ -167,6 +171,8 @@ public partial class MainWindow : Window
     public bool CanPreviewQuarantine => PreviewQuarantineButton.IsEnabled;
 
     public bool CanExportQuarantinePreview => ExportQuarantinePreviewButton.IsEnabled;
+
+    public bool CanEditQuarantineRoot => QuarantineRootBox.IsEnabled;
 
     public bool ReviewToolbarsUseWrappingLayout =>
         ReviewFilterToolbar is WrapPanel && ReviewActionToolbar is WrapPanel;
@@ -527,7 +533,25 @@ public partial class MainWindow : Window
         }
 
         var shortlistedRows = _shortlist.ApplyTo(_currentReview.Entries);
-        _currentQuarantinePreview = QuarantinePreviewBuilder.Build(shortlistedRows, _currentCleanupScopePath);
+        var quarantineRootPath = GetQuarantineRootPathForPreview();
+        try
+        {
+            _currentQuarantinePreview = QuarantinePreviewBuilder.Build(
+                shortlistedRows,
+                _currentCleanupScopePath,
+                quarantineRootPath);
+        }
+        catch (ArgumentException)
+        {
+            ReportInvalidQuarantineRootPath();
+            return;
+        }
+        catch (NotSupportedException)
+        {
+            ReportInvalidQuarantineRootPath();
+            return;
+        }
+
         _currentRestoreManifestDraft = RestoreManifestDraftBuilder.Build(
             _currentQuarantinePreview,
             DateTimeOffset.UtcNow,
@@ -632,6 +656,17 @@ public partial class MainWindow : Window
         _currentSearch = StorageReviewSearch.FromText(SearchBox.Text);
         _currentDisplayStartIndex = 0;
         RefreshResults();
+    }
+
+    private void QuarantineRootBox_TextChanged(object sender, TextChangedEventArgs e)
+    {
+        if (_currentQuarantinePreview is null)
+        {
+            return;
+        }
+
+        ClearQuarantinePreview();
+        StatusText.Text = "Quarantine root changed. Recreate Quarantine Preview to review destinations. No files were modified.";
     }
 
     private void ClearSearchButton_Click(object sender, RoutedEventArgs e)
@@ -825,6 +860,7 @@ public partial class MainWindow : Window
         CancelButton.IsEnabled = isScanning;
         ScopePathBox.IsEnabled = !isScanning;
         BrowseScopeButton.IsEnabled = !isScanning;
+        QuarantineRootBox.IsEnabled = !isScanning;
         UpdateCleanupScopeSafetyNote();
         ExportCsvButton.IsEnabled = !isScanning && _currentReview is not null;
         ExportShortlistCsvButton.IsEnabled = !isScanning && _currentReview is not null && _shortlist.Count > 0;
@@ -961,6 +997,11 @@ public partial class MainWindow : Window
         {
             CategoryFilterBox.SelectedItem = option;
         }
+    }
+
+    public void SetQuarantineRootForPreview(string quarantineRootPath)
+    {
+        QuarantineRootBox.Text = quarantineRootPath;
     }
 
     public void ApplyStorageReviewSearch(string searchText)
@@ -1393,6 +1434,20 @@ public partial class MainWindow : Window
         }
     }
 
+    private string GetQuarantineRootPathForPreview()
+    {
+        var root = QuarantineRootBox.Text.Trim();
+        return string.IsNullOrWhiteSpace(root)
+            ? QuarantinePreviewBuilder.DefaultQuarantineRootPath
+            : root;
+    }
+
+    private void ReportInvalidQuarantineRootPath()
+    {
+        ClearQuarantinePreview();
+        StatusText.Text = "Quarantine Preview could not be created because the quarantine root path is invalid. No files were modified.";
+    }
+
     private void ClearQuarantinePreview()
     {
         _currentQuarantinePreview = null;
@@ -1410,7 +1465,7 @@ public partial class MainWindow : Window
         const int maxRows = 12;
         var lines = new List<string>
         {
-            $"Default root: {preview.QuarantineRootPath}",
+            $"Quarantine root: {preview.QuarantineRootPath}",
             $"Included: {preview.IncludedCount:N0} | Blocked: {preview.BlockedCount:N0} | Redundant: {preview.RedundantCount:N0}",
             $"Previewed size: {preview.IncludedSizeDisplay}",
             $"Restore Manifest Draft: {restoreManifestDraft.DraftId} | Entries: {restoreManifestDraft.EntryCount:N0} | Bytes: {restoreManifestDraft.TotalSizeDisplay} | Executed manifest: {FormatYesNo(restoreManifestDraft.IsExecutedManifest)}",

@@ -1,7 +1,7 @@
 # Domain Context
 
 ---
-last_reviewed: 2026-05-28
+last_reviewed: 2026-05-29
 owner: project-owner
 stability: evolving
 ---
@@ -1402,7 +1402,7 @@ It is not a cleanup approval and does not modify files.
 ### Quarantine Preview
 
 Status: draft
-Last reviewed: 2026-05-28
+Last reviewed: 2026-05-29
 
 #### Definition
 
@@ -1413,6 +1413,7 @@ It does not create folders, write manifests, move files, delete files, or approv
 #### Examples
 
 - Preview a Review Shortlist and show that `old-installer.msi` would move under `D:\WindowsFileCleanerQuarantine`.
+- Preview the same shortlist against a typed Quarantine Root Selection on `D:`.
 - Block a high-risk browser profile row from the preview.
 - Block a broad `.cache` parent row when its scanned subtree contains protected Codex runtime data.
 - Show blocked descendant examples as cleanup-scope-relative paths so broad-parent blockers stay readable.
@@ -1429,10 +1430,10 @@ It does not create folders, write manifests, move files, delete files, or approv
 #### Lifecycle
 
 - Generated from the current Review Shortlist on user request.
-- Uses the current Cleanup Scope and default Quarantine root.
+- Uses the current Cleanup Scope and Quarantine Root Selection.
 - Shows included, blocked, and redundant rows.
 - May be exported as a read-only CSV report, including Access Status and access issue text.
-- Is discarded when scan results or the Review Shortlist change.
+- Is discarded when scan results, the Review Shortlist, or the Quarantine Root Selection change.
 
 #### Relationships
 
@@ -1452,6 +1453,50 @@ It does not create folders, write manifests, move files, delete files, or approv
 - Block high-risk, inaccessible, reparse-point, outside-scope, protected-location, and non-quarantine-candidate rows.
 - Block parent rows that contain protected, high-risk, inaccessible, reparse-point, or Cleanup Scope Root descendants.
 - Format blocked descendant examples as cleanup-scope-relative paths when possible.
+- Build destination paths from the current Quarantine Root Selection.
+- Clear stale preview and draft readiness output when the Quarantine Root Selection changes.
+
+### Quarantine Root Selection
+
+Status: draft
+Last reviewed: 2026-05-29
+
+#### Definition
+
+Quarantine Root Selection is the read-only preview setting that chooses the destination root used when building Quarantine Preview destination paths.
+
+It does not create folders, move files, write manifests, or approve future Quarantine execution.
+
+#### Examples
+
+- Use the default `D:\WindowsFileCleanerQuarantine`.
+- Type another absolute `D:` folder before creating a Quarantine Preview.
+
+#### Non-examples
+
+- A Cleanup Action.
+- A folder creation command.
+- A persisted app setting.
+- Approval to execute Quarantine.
+
+#### Lifecycle
+
+- Visible before and after Storage Scan.
+- Used when the user creates a Quarantine Preview.
+- Changing it clears stale Quarantine Preview, Restore Manifest Draft, and Quarantine Confirmation Draft output.
+
+#### Relationships
+
+- Feeds Quarantine Preview destination paths.
+- Supports the user's preference for a quarantine location on `D:`.
+- Must remain separate from Quarantine execution approval.
+
+#### Code implications
+
+- Use `QuarantineRootBox` for the WPF input.
+- Use the typed value when calling `QuarantinePreviewBuilder`.
+- Keep the default as `D:\WindowsFileCleanerQuarantine`.
+- Do not create or validate the folder by touching the filesystem during preview.
 
 ### Scan Report Export
 
@@ -1717,13 +1762,13 @@ Storage Savings is the amount of disk space expected or confirmed to be recovere
 ### Quarantine
 
 Status: draft  
-Last reviewed: 2026-05-28
+Last reviewed: 2026-05-29
 
 #### Definition
 
 Quarantine is a reversible holding area for Cleanup Candidates that the user has approved for removal from the original location but may want to restore.
 
-The preferred quarantine location is on `D:`. The current preview default is `D:\WindowsFileCleanerQuarantine`; actual cleanup execution can revisit whether that should remain configurable.
+The preferred quarantine location is on `D:`. The current preview default is `D:\WindowsFileCleanerQuarantine`, and Quarantine Root Selection can change the read-only preview destination root before any cleanup execution exists.
 
 #### Examples
 
@@ -1754,6 +1799,7 @@ The preferred quarantine location is on `D:`. The current preview default is `D:
 - Use `Quarantine` for the holding area concept.
 - Use `quarantinePath` for the destination path.
 - Persist a restore manifest before moving files.
+- Do not treat Quarantine Root Selection as approval to create folders or move files.
 
 ### Restore Manifest
 

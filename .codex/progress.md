@@ -6,15 +6,15 @@ Use it to preserve what was completed, what was verified, what was rejected, and
 
 ## Current status
 
-Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. Cleanup Scope Selection with folder browsing, Cleanup Scope Safety Note, Cleanup Scope Scan Gate, Cleanup Scope Root classification, review filters, Review View Reset, Storage Review Search with field prefixes, Storage Entry Type Filter, Storage Size Threshold Filter, Storage Review Display Limit wording, Storage Review Display Window navigation, Storage Review Size Note, selected-folder child breakdown, selected-path inspection actions, Selected Path Hierarchy Context including relative-path grid/detail context, Selected Row Contents Context including a grid Contents column, explicit Access Status, Access Status Search, Selected File Content Preview with Credential Data preview blocking, Selected Path Review Guidance including cache-specific guidance and scope-root guidance, CSV export including active search, searched filenames, hierarchy/contents/access/relative-path context and type- and size-filtered rows, Review Mix, Storage Scan Safety Summary with bounded access issue, Quarantine candidate, and No category examples, Safety Summary review shortcuts, Access issues filtering, Bloat Category Filter, Large old file classification, No category filtering, specific rebuildable cache candidate classification, conservative app/game/mod-manager/cloud-sync/credential data classification, Review Shortlist, Shortlist shown, Remove shown, Quarantine Preview with protected-descendant blocking and relative blocker examples, Quarantine Preview CSV export, Restore Manifest Draft, Quarantine Confirmation Draft, Quarantine Readiness UI, read-only safety regression checks, the MVP runbook, the MVP readiness audit, fixture-driven WPF launch support, WPF shell smoke testing, WPF fixture scan smoke testing, WPF display-limit smoke testing, WPF review interaction smoke testing, WPF review toolbar layout polish, the MVP preflight script, CI MVP preflight workflow, and the MVP fixture review launcher are implemented and verified. Quarantine remains preview-only; no cleanup execution, manifest writing, or Undo Quarantine execution exists.
+Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. Cleanup Scope Selection with folder browsing, Cleanup Scope Safety Note, Cleanup Scope Scan Gate, Cleanup Scope Root classification, review filters, Review View Reset, Storage Review Search with field prefixes, Storage Entry Type Filter, Storage Size Threshold Filter, Storage Review Display Limit wording, Storage Review Display Window navigation, Storage Review Size Note, selected-folder child breakdown, selected-path inspection actions, Selected Path Hierarchy Context including relative-path grid/detail context, Selected Row Contents Context including a grid Contents column, explicit Access Status, Access Status Search, Selected File Content Preview with Credential Data preview blocking, Selected Path Review Guidance including cache-specific guidance and scope-root guidance, CSV export including active search, searched filenames, hierarchy/contents/access/relative-path context and type- and size-filtered rows, Review Mix, Storage Scan Safety Summary with bounded access issue, Quarantine candidate, and No category examples, Safety Summary review shortcuts, Access issues filtering, Bloat Category Filter, Large old file classification, No category filtering, specific rebuildable cache candidate classification, conservative app/game/mod-manager/cloud-sync/credential data classification, Review Shortlist, Shortlist shown, Remove shown, Quarantine Preview with typed Quarantine Root Selection, protected-descendant blocking, and relative blocker examples, Quarantine Preview CSV export, Restore Manifest Draft, Quarantine Confirmation Draft, Quarantine Readiness UI, read-only safety regression checks, the MVP runbook, the MVP readiness audit, fixture-driven WPF launch support, WPF shell smoke testing, WPF fixture scan smoke testing, WPF display-limit smoke testing, WPF review interaction smoke testing, WPF review toolbar layout polish, the MVP preflight script, CI MVP preflight workflow, and the MVP fixture review launcher are implemented and verified. Quarantine remains preview-only; no cleanup execution, manifest writing, or Undo Quarantine execution exists.
 
 ## Next recommended work
 
-1. Run `.\tools\Start-MvpFixtureReview.ps1`, confirm the launched app shows Fixture Cleanup Scope, click `Scan`, and manually inspect layout, visible wording, Storage Review Search, Storage Review Display Window controls, the `Relative path` and `Parent` columns, Selected Path Hierarchy Context, Selected File Content Preview, Selected Path Review Guidance, export dialogs, Safety Summary shortcuts, Review Shortlist, Shortlist shown, Remove shown, Quarantine Preview, Review Mix, Access issues filter, category filter, No category filter, Size filter, and filter wording.
+1. Run `.\tools\Start-MvpFixtureReview.ps1`, confirm the launched app shows Fixture Cleanup Scope, click `Scan`, and manually inspect layout, visible wording, Storage Review Search, Storage Review Display Window controls, the `Relative path` and `Parent` columns, Selected Path Hierarchy Context, Selected File Content Preview, Selected Path Review Guidance, export dialogs, Safety Summary shortcuts, Review Shortlist, Shortlist shown, Remove shown, Quarantine Root Selection, Quarantine Preview, Review Mix, Access issues filter, category filter, No category filter, Size filter, and filter wording.
 2. Use `README.md` and `docs/features/2026-05-28-mvp-readiness-audit.md` to rerun the WPF app against `C:\Users\moxhe`; confirm `Scan` is disabled until the real-profile preflight acknowledgement is checked.
 3. Run `.\tools\Invoke-MvpPreflight.ps1` before any later real-profile scan if the worktree changes.
 4. Rerun the real scan and check whether the cleanup scope root row, `Relative path`, `Parent`, `Contents`, and `Access` columns, Size filter, `access:readable` / `access:access issue` search, Previous rows / Next rows, Safety Summary candidate and no-category examples, selected-row relative/parent/depth/access context, cache-specific Review guidance, specific rebuildable cache candidates such as `DXCache` and `pip\Cache`, conservative game/mod-manager labels such as OptiFine/CurseForge/Vortex, Cloud sync data and Credential data labels, and `Preview file` action make unfamiliar rows easier to triage.
-5. Retest the Quarantine Readiness UI with a real scan and confirm broad-parent protected descendant blockers use readable relative examples and draft/readiness wording is understandable.
+5. Retest the Quarantine Readiness UI with a real scan and confirm typed Quarantine root destinations, broad-parent protected descendant blockers, readable relative examples, and draft/readiness wording are understandable.
 6. Defer actual Quarantine and Undo Quarantine execution until scan review, preview semantics, confirmation semantics, and restore rules are trustworthy.
 7. Revisit .NET 10 before packaging or long-term distribution.
 
@@ -3330,3 +3330,49 @@ Rejected ideas buffer:
 
 - Do not preview credential file contents merely because the file is small or text-like.
 - Do not classify cloud sync roots as cleanup candidates without provider-specific review.
+
+### 2026-05-29: Add Quarantine Root Preview Selection
+
+Status: completed
+
+Evidence:
+
+- The user requested a quarantine folder preferably on `D:` and easy undo later.
+- Quarantine Preview already showed destination paths, but the preview root was an invisible fixed default.
+- Keeping the root visible and editable improves review without adding cleanup execution.
+
+Implementation:
+
+- Added a WPF Quarantine root text box defaulting to `D:\WindowsFileCleanerQuarantine`.
+- Routed Quarantine Preview destination paths through the typed Quarantine Root Selection.
+- Cleared stale Quarantine Preview, Restore Manifest Draft, and Quarantine Confirmation Draft output when the root changes.
+- Added WPF smoke coverage proving custom preview roots affect destination paths and do not create folders.
+- Kept the change read-only; no cleanup execution, Quarantine execution, Undo Quarantine, manifest writing, folder creation, or real-profile automation was added.
+
+Verification:
+
+- `dotnet build WindowsFileCleaner.sln --no-restore` passed with 0 warnings and 0 errors.
+- `dotnet run --project tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj --no-build` passed.
+- `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\Invoke-MvpPreflight.ps1` passed.
+
+Docs updated:
+
+- `README.md`
+- `docs/domain/context.md`
+- `docs/domain/glossary.md`
+- `docs/features/2026-05-28-quarantine-preview.md`
+- `docs/features/2026-05-29-quarantine-root-preview-selection.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No new ADR. This is a reversible read-only preview UI refinement and does not change cleanup execution, persistence, deployment, or manifest writes.
+
+Open questions:
+
+- In the next manual fixture or real-profile pass, is the Quarantine root field readable in the wrapped review toolbar?
+
+Rejected ideas buffer:
+
+- Do not persist the Quarantine Root Selection until actual Quarantine execution needs local settings.
+- Do not create or validate the quarantine folder by touching the filesystem during preview.

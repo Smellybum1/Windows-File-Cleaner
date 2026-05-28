@@ -1,7 +1,7 @@
 # Glossary
 
 ---
-last_reviewed: 2026-05-28
+last_reviewed: 2026-05-29
 owner: project-owner
 stability: evolving
 ---
@@ -71,6 +71,7 @@ If a term needs to change, update this glossary first, then update code and docs
 | Selected Path Review Guidance | Read-only next-step wording for the selected Storage Scan row. | `SelectedPathReviewGuidance`, `SelectedPathReviewGuidanceBuilder` | Explains whether to inspect children, keep by default, shortlist after review, or classify before cleanup. Not cleanup approval. |
 | Review Shortlist | Temporary in-memory set of Storage Scan rows marked for follow-up review. | `StorageReviewShortlist` | Not a Cleanup Action, Quarantine approval, or persisted history. Bulk additions/removals use only currently displayed rows. |
 | Quarantine Preview | Read-only dry run showing eligible, blocked, and redundant shortlisted rows before any quarantine action. | `QuarantinePreview`, `QuarantinePreviewEntry`, `QuarantinePreviewBuilder`, `QuarantinePreviewCsvExporter` | Blocks broad parent rows with protected/high-risk descendants and shows blocked descendant examples as cleanup-scope-relative paths. Does not create folders, write manifests, move files, delete files, or approve cleanup. |
+| Quarantine Root Selection | Read-only preview setting for the destination root used when building Quarantine Preview paths. | `QuarantineRootBox`, `CurrentQuarantineRootPath` | Defaults to `D:\WindowsFileCleanerQuarantine`. Changing it clears stale previews. Does not create folders or execute Quarantine. |
 | Scan Report Export | Read-only report generated from Storage Scan results. | `StorageScanCsvExporter` | Initial format is CSV for the active Storage Review Filter, Bloat Category Filter, Storage Entry Type Filter, Storage Size Threshold Filter, and Storage Review Search. Exports include cleanup-scope-relative path, parent/depth hierarchy context, access status, and suggested filenames describe active filters/search. |
 | Quarantine | A reversible holding location for selected files or folders before deletion. | `Quarantine`, `quarantinePath` | Preferred on `D:`. Current preview default is `D:\WindowsFileCleanerQuarantine`. |
 | Undo Quarantine | Restore a quarantined file or folder to its original path. | `UndoQuarantine`, `undoQuarantine` | Requires a restore manifest. |
