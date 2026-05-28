@@ -1,0 +1,18 @@
+# Build outputs
+bin/
+obj/
+TestResults/
+
+# Local test fixtures
+test-fixtures/
+
+# User and IDE files
+.vs/
+.vscode/
+*.user
+*.suo
+*.rsuser
+
+# Logs
+*.log
+
