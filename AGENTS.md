@@ -28,6 +28,9 @@ The project stack is C# with WPF for a Windows-only desktop app. The initial tar
 # No package restore beyond the .NET SDK is expected for the initial app.
 dotnet restore WindowsFileCleaner.sln --configfile NuGet.Config
 
+# Run full MVP preflight before any real-profile scan
+.\tools\Invoke-MvpPreflight.ps1
+
 # Start local development
 dotnet run --project src/WindowsFileCleaner.App
 
