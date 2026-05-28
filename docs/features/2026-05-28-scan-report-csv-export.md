@@ -76,7 +76,7 @@ What changed:
 - Added CSV export for Storage Scan review rows.
 - Added Export CSV button in the Storage Scan toolbar.
 - Added fixture coverage for CSV header, escaping, labels, categories, and evidence.
-- Later packets included the selected Bloat Category Filter in the exported row set and generated filename, then aligned the export row set with active Storage Review Search.
+- Later packets included the selected Bloat Category Filter in the exported row set and generated filename, aligned the export row set with active Storage Review Search, and added a sanitized search segment to suggested export filenames.
 
 Files changed:
 
@@ -93,6 +93,14 @@ Tests run:
 - `dotnet build WindowsFileCleaner.sln --no-restore`
 - `dotnet run --project tests\WindowsFileCleaner.Tests\WindowsFileCleaner.Tests.csproj --no-build`
 - Later search-alignment packet:
+  - `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\Invoke-MvpPreflight.ps1`
+  - `dotnet restore WindowsFileCleaner.sln --configfile NuGet.Config`
+  - `dotnet build WindowsFileCleaner.sln --no-restore`
+  - `dotnet run --project tests\WindowsFileCleaner.Tests\WindowsFileCleaner.Tests.csproj --no-build`
+  - `dotnet run --project tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj --no-build`
+  - `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\New-StorageScanSmokeFixture.ps1 -WhatIf`
+  - `git -c safe.directory='D:/Codex/Windows File Cleaner' diff --check`
+- Later filename packet:
   - `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\Invoke-MvpPreflight.ps1`
   - `dotnet restore WindowsFileCleaner.sln --configfile NuGet.Config`
   - `dotnet build WindowsFileCleaner.sln --no-restore`

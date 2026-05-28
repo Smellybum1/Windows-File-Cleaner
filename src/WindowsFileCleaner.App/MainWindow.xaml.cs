@@ -55,6 +55,8 @@ public partial class MainWindow : Window
         .Select(row => row.Entry.FullPath)
         .ToArray();
 
+    public string CurrentScanReportExportFileName => BuildExportFileName();
+
     public bool CanUseCategoryFilter => CategoryFilterBox.IsEnabled;
 
     public int DisplayedRowCount => DisplayedRows.Count;
@@ -1107,7 +1109,26 @@ public partial class MainWindow : Window
         var categorySegment = CategoryFilterBox.SelectedItem is CategoryFilterOption option
             ? option.FileNameSegment
             : "all-categories";
-        return $"storage-scan-{DateTime.Now:yyyyMMdd-HHmmss}-{FormatFileNameFilter(_currentFilter)}-{categorySegment}.csv";
+        var searchSegment = _currentSearch.IsActive
+            ? $"-search-{FormatFileNameSearch(_currentSearch.Query)}"
+            : "";
+        return $"storage-scan-{DateTime.Now:yyyyMMdd-HHmmss}-{FormatFileNameFilter(_currentFilter)}-{categorySegment}{searchSegment}.csv";
+    }
+
+    private static string FormatFileNameSearch(string searchQuery)
+    {
+        var characters = searchQuery
+            .Trim()
+            .ToLowerInvariant()
+            .Select(character => char.IsLetterOrDigit(character) ? character : '-')
+            .ToArray();
+        var segment = string.Join(
+            "-",
+            new string(characters)
+                .Split('-', StringSplitOptions.RemoveEmptyEntries));
+        return string.IsNullOrWhiteSpace(segment)
+            ? "query"
+            : segment.Length > 48 ? segment[..48] : segment;
     }
 
     private static string FormatFileNameCategory(BloatCategory category)

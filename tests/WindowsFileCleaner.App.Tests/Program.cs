@@ -173,10 +173,16 @@ internal sealed class MainWindowSmokeTests
             Assert(
                 window.CurrentScanReportExportPaths.All(path => path.Contains("pip", StringComparison.OrdinalIgnoreCase)),
                 "Scan Report Export paths should honor the active Storage Review Search.");
+            Assert(
+                window.CurrentScanReportExportFileName.Contains("-search-pip.csv", StringComparison.OrdinalIgnoreCase),
+                "Scan Report Export filename should include a sanitized active search segment.");
 
             window.ApplyStorageReviewSearch("");
             Assert(window.CurrentSearchText == "", "Clearing Storage Review Search should clear WPF search text.");
             Assert(!window.FilterSummaryTextValue.Contains("Search \"", StringComparison.OrdinalIgnoreCase), "Cleared search should be removed from the filter summary.");
+            Assert(
+                !window.CurrentScanReportExportFileName.Contains("-search-", StringComparison.OrdinalIgnoreCase),
+                "Scan Report Export filename should omit the search segment after search is cleared.");
 
             Assert(File.Exists(fixture.MarkerPath), "Fixture marker file should still exist after the read-only scan.");
         }
