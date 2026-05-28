@@ -6,13 +6,13 @@ Use it to preserve what was completed, what was verified, what was rejected, and
 
 ## Current status
 
-Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. Review filters and selected-folder child breakdown are pushed. Selected-path inspection actions have been implemented locally and are ready to commit/push.
+Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. Review filters, selected-folder child breakdown, and selected-path inspection actions are pushed. Scan report CSV export has been implemented locally and is ready to commit/push.
 
 ## Next recommended work
 
-1. Commit and push selected-path inspection actions.
-2. Ask the user to rerun the WPF app and try Copy path and Open in Explorer on selected results.
-3. Use inspection feedback to refine Protected Locations and category grouping.
+1. Commit and push Scan Report CSV export.
+2. Ask the user to rerun the WPF app, choose filters, and export CSV reports.
+3. Use report feedback to refine Protected Locations and category grouping.
 4. Defer Quarantine and Undo Quarantine implementation until scan review is trustworthy.
 5. Revisit .NET 10 before packaging or long-term distribution.
 
@@ -377,3 +377,46 @@ Open questions:
 Rejected ideas buffer:
 
 - Do not add destructive selected-row actions next to read-only inspection actions yet.
+
+### 2026-05-28: Add Scan Report CSV export
+
+Status: completed
+
+Evidence:
+
+- Storage Scan now produces enough review data that exporting filtered results will help manual analysis.
+- Exporting a report keeps the app read-only with respect to scanned files.
+
+Implementation:
+
+- Added `StorageScanCsvExporter`.
+- Added Export CSV button to the Storage Scan toolbar.
+- Export uses the current Storage Review Filter.
+- Export includes path, name, type, size, importance, recommendation, categories, modified time, evidence, and access issue.
+- Export writes a user-selected CSV report file.
+- No cleanup execution was added.
+
+Verification:
+
+- `dotnet build WindowsFileCleaner.sln --no-restore` passed.
+- `dotnet run --project tests\WindowsFileCleaner.Tests\WindowsFileCleaner.Tests.csproj --no-build` passed.
+
+Docs updated:
+
+- `docs/domain/context.md`
+- `docs/domain/glossary.md`
+- `docs/features/2026-05-28-scan-report-csv-export.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No new ADR. This is a reversible read-only report feature.
+
+Open questions:
+
+- User should verify CSV export after a real scan.
+
+Rejected ideas buffer:
+
+- Do not export file contents.
+- Do not treat CSV export as scan history or restore metadata.

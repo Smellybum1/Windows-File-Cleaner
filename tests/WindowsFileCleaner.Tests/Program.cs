@@ -7,6 +7,7 @@ tests.ClassifierLabelsRealScanContainerPatterns();
 tests.ReviewBuilderSummarizesAndFiltersResults();
 tests.ChildSummaryShowsLargestImmediateChildren();
 tests.PathInspectionPlanBuildsExplorerArguments();
+tests.CsvExporterWritesEscapedReviewRows();
 tests.ByteSizeFormatterUsesReadableUnits();
 
 Console.WriteLine("All WindowsFileCleaner.Tests checks passed.");
@@ -148,6 +149,33 @@ internal sealed class StorageScanTests
         var filePlan = PathInspectionPlanBuilder.Build(installer);
         Assert(filePlan.PathToCopy == installer.FullPath, "File path should be copied exactly.");
         Assert(filePlan.ExplorerArguments == $"/select,\"{installer.FullPath}\"", "File plan should ask Explorer to select the file.");
+    }
+
+    public void CsvExporterWritesEscapedReviewRows()
+    {
+        var entry = new StorageEntry(
+            @"C:\Users\moxhe\Downloads\setup, old.msi",
+            "setup, old.msi",
+            IsDirectory: false,
+            SizeBytes: 2048,
+            LastModifiedUtc: new DateTimeOffset(2026, 5, 28, 1, 2, 3, TimeSpan.Zero),
+            IsAccessible: true,
+            IsReparsePoint: false,
+            ErrorMessage: null,
+            BloatCategories: [BloatCategory.OldDownload, BloatCategory.InstallerCache],
+            ImportanceRating: ImportanceRating.LikelySafe,
+            DeletionRecommendation: DeletionRecommendation.QuarantineCandidate,
+            Evidence: "Installer, old download with \"quoted\" evidence.",
+            Children: []);
+
+        var csv = StorageScanCsvExporter.Export([new StorageReviewEntry(entry, Depth: 0)]);
+
+        Assert(csv.Contains("\"Full path\",\"Name\",\"Type\",\"Size bytes\"", StringComparison.Ordinal), "CSV should include header row.");
+        Assert(csv.Contains("\"C:\\Users\\moxhe\\Downloads\\setup, old.msi\"", StringComparison.Ordinal), "CSV should quote paths with commas.");
+        Assert(csv.Contains("\"Likely safe\"", StringComparison.Ordinal), "CSV should use user-facing importance labels.");
+        Assert(csv.Contains("\"Quarantine candidate\"", StringComparison.Ordinal), "CSV should use user-facing recommendation labels.");
+        Assert(csv.Contains("\"Old download; Installer cache\"", StringComparison.Ordinal), "CSV should export formatted categories.");
+        Assert(csv.Contains("\"Installer, old download with \"\"quoted\"\" evidence.\"", StringComparison.Ordinal), "CSV should escape quotes in evidence.");
     }
 
     public void ByteSizeFormatterUsesReadableUnits()

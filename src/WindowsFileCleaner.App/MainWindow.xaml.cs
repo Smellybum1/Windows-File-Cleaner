@@ -1,6 +1,8 @@
 using System.Diagnostics;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
+using Microsoft.Win32;
 using WindowsFileCleaner.Core;
 
 namespace WindowsFileCleaner.App;
@@ -104,6 +106,40 @@ public partial class MainWindow : Window
         SetFilter(StorageReviewFilter.QuarantineCandidates);
     }
 
+    private void ExportCsvButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (_currentReview is null)
+        {
+            return;
+        }
+
+        var exportRows = _currentReview.ApplyFilter(_currentFilter);
+        var dialog = new SaveFileDialog
+        {
+            Title = "Export Storage Scan CSV",
+            Filter = "CSV files (*.csv)|*.csv|All files (*.*)|*.*",
+            FileName = $"storage-scan-{DateTime.Now:yyyyMMdd-HHmmss}-{FormatFileNameFilter(_currentFilter)}.csv",
+            AddExtension = true,
+            DefaultExt = ".csv"
+        };
+
+        if (dialog.ShowDialog(this) != true)
+        {
+            return;
+        }
+
+        try
+        {
+            File.WriteAllText(dialog.FileName, StorageScanCsvExporter.Export(exportRows));
+            StatusText.Text = $"Exported {exportRows.Count:N0} rows to CSV. No scanned files were modified.";
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(this, ex.Message, "Export CSV failed", MessageBoxButton.OK, MessageBoxImage.Error);
+            StatusText.Text = "CSV export failed. No scanned files were modified.";
+        }
+    }
+
     private void ResultsGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         if (ResultsGrid.SelectedItem is not StorageEntryRow row)
@@ -173,6 +209,7 @@ public partial class MainWindow : Window
         ScanButton.IsEnabled = !isScanning;
         CancelButton.IsEnabled = isScanning;
         ScopePathBox.IsEnabled = !isScanning;
+        ExportCsvButton.IsEnabled = !isScanning && _currentReview is not null;
     }
 
     private void SetFilter(StorageReviewFilter filter)
@@ -216,6 +253,7 @@ public partial class MainWindow : Window
         CautionFilterButton.Content = $"Caution ({summary.CautionCount:N0})";
         HighRiskFilterButton.Content = $"High risk ({summary.HighRiskCount:N0})";
         QuarantineCandidateFilterButton.Content = $"Quarantine candidates ({summary.QuarantineCandidateCount:N0})";
+        ExportCsvButton.IsEnabled = true;
     }
 
     private StorageEntryRow[] ApplyCurrentFilter()
@@ -254,6 +292,18 @@ public partial class MainWindow : Window
             StorageReviewFilter.HighRisk => "High risk",
             StorageReviewFilter.QuarantineCandidates => "Quarantine candidates",
             _ => "All"
+        };
+    }
+
+    private static string FormatFileNameFilter(StorageReviewFilter filter)
+    {
+        return filter switch
+        {
+            StorageReviewFilter.LikelySafe => "likely-safe",
+            StorageReviewFilter.Caution => "caution",
+            StorageReviewFilter.HighRisk => "high-risk",
+            StorageReviewFilter.QuarantineCandidates => "quarantine-candidates",
+            _ => "all"
         };
     }
 

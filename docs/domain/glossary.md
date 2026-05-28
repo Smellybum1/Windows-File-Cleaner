@@ -46,6 +46,7 @@ If a term needs to change, update this glossary first, then update code and docs
 | Storage Review Filter | Read-only filter applied to Storage Scan results. | `StorageReviewFilter`, `storageReviewFilter` | Initial filters: All, Likely safe, Caution, High risk, Quarantine candidates. |
 | Child Breakdown | Read-only summary of the largest immediate children inside a selected folder. | `StorageChildSummary`, `StorageChildSummaryBuilder` | Helps inspect large containers without marking the container safe. |
 | Selected Path Inspection | Read-only action for inspecting a selected scan result. | `PathInspectionPlan`, `PathInspectionPlanBuilder` | Initial actions: copy path, open in File Explorer. Not a Cleanup Action. |
+| Scan Report Export | Read-only report generated from Storage Scan results. | `StorageScanCsvExporter` | Initial format is CSV for the active Storage Review Filter. |
 | Quarantine | A reversible holding location for selected files or folders before deletion. | `Quarantine`, `quarantinePath` | Preferred on `D:`. Exact path is still open. |
 | Undo Quarantine | Restore a quarantined file or folder to its original path. | `UndoQuarantine`, `undoQuarantine` | Requires a restore manifest. |
 | Restore Manifest | Metadata needed to undo a quarantine action. | `RestoreManifest`, `restoreManifestPath` | Should include original path, quarantine path, size, timestamps, and action time. |

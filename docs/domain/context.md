@@ -354,6 +354,49 @@ Initial actions are copying the selected path and opening the selected path in F
 - Keep inspection actions separate from Cleanup Actions.
 - Status messages should state that no files were modified.
 
+### Scan Report Export
+
+Status: draft  
+Last reviewed: 2026-05-28
+
+#### Definition
+
+A Scan Report Export is a read-only report file generated from Storage Scan results.
+
+The initial export format is CSV for the currently active Storage Review Filter.
+
+#### Examples
+
+- Export all Storage Scan rows to CSV.
+- Export only High risk rows to CSV.
+- Export Quarantine candidates to CSV for spreadsheet review.
+
+#### Non-examples
+
+- A Cleanup Action.
+- A restore manifest.
+- A backup of files.
+- A permanent scan history feature.
+
+#### Lifecycle
+
+- Available after a Storage Scan completes.
+- Uses the current Storage Review Filter.
+- Writes a user-selected CSV report path.
+- Does not modify scanned files.
+
+#### Relationships
+
+- Uses Storage Scan results.
+- Uses Storage Review Filters.
+- Supports manual review before Quarantine or any future cleanup action.
+
+#### Code implications
+
+- Use `StorageScanCsvExporter` for CSV report generation.
+- Export user-facing labels for Importance Ratings and Deletion Recommendations.
+- Keep exports separate from Quarantine manifests.
+
 ### Importance Rating
 
 Status: draft  

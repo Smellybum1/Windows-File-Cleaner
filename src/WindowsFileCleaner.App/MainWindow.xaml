@@ -117,6 +117,7 @@
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
 
@@ -141,8 +142,14 @@
                         Content="Quarantine candidates"
                         MinWidth="150"
                         Click="QuarantineCandidateFilterButton_Click" />
+                <Button x:Name="ExportCsvButton"
+                        Grid.Column="5"
+                        Content="Export CSV"
+                        MinWidth="110"
+                        IsEnabled="False"
+                        Click="ExportCsvButton_Click" />
                 <TextBlock x:Name="FilterSummaryText"
-                           Grid.Column="5"
+                           Grid.Column="6"
                            VerticalAlignment="Center"
                            HorizontalAlignment="Right"
                            Foreground="#526171"
