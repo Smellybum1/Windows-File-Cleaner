@@ -585,6 +585,12 @@ internal sealed class StorageScanTests
             DeletionRecommendation: DeletionRecommendation.Inspect,
             Evidence: "No cleanup-specific category matched this file.",
             Children: []);
+        var largerUncategorized = uncategorized with
+        {
+            FullPath = @"C:\Users\moxhe\Unknown\large.bin",
+            Name = "large.bin",
+            SizeBytes = 1536
+        };
         var root = new StorageEntry(
             @"C:\Users\moxhe",
             "moxhe",
@@ -598,13 +604,13 @@ internal sealed class StorageScanTests
             ImportanceRating: ImportanceRating.Caution,
             DeletionRecommendation: DeletionRecommendation.Inspect,
             Evidence: "Root.",
-            Children: [protectedEntry, inaccessible, reparsePoint, quarantineCandidate, largerQuarantineCandidate, uncategorized]);
+            Children: [protectedEntry, inaccessible, reparsePoint, quarantineCandidate, largerQuarantineCandidate, uncategorized, largerUncategorized]);
         var result = new StorageScanResult(@"C:\Users\moxhe", now, now, root);
         var review = StorageScanReviewBuilder.Build(result);
 
         var summary = StorageScanSafetySummaryBuilder.Build(result, review);
 
-        Assert(summary.TotalEntries == 7, "Safety summary should count flattened scan rows.");
+        Assert(summary.TotalEntries == 8, "Safety summary should count flattened scan rows.");
         Assert(summary.HighRiskCount == 1, "Safety summary should count high-risk rows.");
         Assert(summary.ProtectedLocationCount == 1, "Safety summary should count protected locations.");
         Assert(summary.AccessIssueCount == 1, "Safety summary should count access issues.");
@@ -623,7 +629,15 @@ internal sealed class StorageScanTests
         Assert(
             summary.QuarantineCandidateExamples[1].Contains(@"Downloads\setup.msi", StringComparison.OrdinalIgnoreCase),
             "Safety summary candidate examples should include additional relative candidate paths.");
-        Assert(summary.UncategorizedCount == 1, "Safety summary should count uncategorized rows.");
+        Assert(summary.UncategorizedCount == 2, "Safety summary should count uncategorized rows.");
+        Assert(summary.UncategorizedExamples.Count == 2, "Safety summary should expose bounded uncategorized examples.");
+        Assert(
+            summary.UncategorizedExamples[0].Contains(@"Unknown\large.bin", StringComparison.OrdinalIgnoreCase)
+            && summary.UncategorizedExamples[0].Contains("1.5 KB", StringComparison.OrdinalIgnoreCase),
+            "Safety summary no-category examples should show largest relative uncategorized path and size first.");
+        Assert(
+            summary.UncategorizedExamples[1].Contains(@"Unknown\notes.txt", StringComparison.OrdinalIgnoreCase),
+            "Safety summary no-category examples should include additional relative uncategorized paths.");
         Assert(summary.StatusLabel == "Review needed", "Safety summary should require review when warning signals exist.");
         Assert(summary.Notes.Any(note => note.Contains("No files were modified", StringComparison.OrdinalIgnoreCase)), "Safety notes should preserve the read-only boundary.");
         Assert(summary.Notes.Any(note => note.Contains("no permissions were changed", StringComparison.OrdinalIgnoreCase)), "Safety notes should not imply permission changes.");

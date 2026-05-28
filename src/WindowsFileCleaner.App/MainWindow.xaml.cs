@@ -1399,6 +1399,7 @@ public partial class MainWindow : Window
             $"No category {summary.UncategorizedCount:N0}. " +
             FormatAccessIssueExamples(summary) +
             FormatQuarantineCandidateExamples(summary) +
+            FormatUncategorizedExamples(summary) +
             string.Join(" ", summary.Notes);
         UpdateSafetyShortcutButtons();
     }
@@ -1415,6 +1416,13 @@ public partial class MainWindow : Window
         return summary.QuarantineCandidateExamples.Count == 0
             ? ""
             : $"Candidate examples: {string.Join("; ", summary.QuarantineCandidateExamples)}. ";
+    }
+
+    private static string FormatUncategorizedExamples(StorageScanSafetySummary summary)
+    {
+        return summary.UncategorizedExamples.Count == 0
+            ? ""
+            : $"No category examples: {string.Join("; ", summary.UncategorizedExamples)}. ";
     }
 
     private void UpdateSafetyShortcutButtons()

@@ -25,7 +25,7 @@ The app shows Review Mix, filters, row evidence, Review Shortlist, and Quarantin
 
 ## Desired behavior
 
-After a Storage Scan, the app shows a Storage Scan Safety Summary with the Cleanup Scope, read-only status, high-risk count, Protected Location count, access issue count, bounded access issue examples, reparse point count, Quarantine candidate count, bounded Quarantine candidate examples, Uncategorized Result count, and short safety notes.
+After a Storage Scan, the app shows a Storage Scan Safety Summary with the Cleanup Scope, read-only status, high-risk count, Protected Location count, access issue count, bounded access issue examples, reparse point count, Quarantine candidate count, bounded Quarantine candidate examples, Uncategorized Result count, bounded Uncategorized Result examples, and short safety notes.
 
 ## Domain language changes
 
@@ -93,6 +93,7 @@ Small feature-level decisions:
 - Derive notes from existing row categories, ratings, recommendations, and access status.
 - Show up to three access issue examples in the summary when incomplete scan coverage exists.
 - Later candidate-example packet: show up to three largest Quarantine candidate examples in the summary, using cleanup-scope-relative paths and sizes.
+- Later no-category-example packet: show up to three largest Uncategorized Result examples in the summary, using cleanup-scope-relative paths and sizes.
 
 ADR-worthy decisions:
 
@@ -135,6 +136,7 @@ Automated tests:
 - Verify notes keep cleanup/read-only boundaries explicit.
 - Later access-example packet verified bounded access issue examples include the relative path and scanner error text.
 - Later candidate-example packet verified bounded Quarantine candidate examples are largest-first, cleanup-scope-relative, and size-labeled.
+- Later no-category-example packet verified bounded Uncategorized Result examples are largest-first, cleanup-scope-relative, and size-labeled.
 
 ## Risks and assumptions
 
@@ -157,6 +159,7 @@ What changed:
 - Summarized Cleanup Scope, read-only status, high-risk rows, Protected Locations, access issues, reparse points, Quarantine candidates, Uncategorized Results, and safety notes.
 - Later access-example packet added up to three relative access issue examples to the summary text.
 - Later candidate-example packet added up to three largest Quarantine candidate examples to the summary text.
+- Later no-category-example packet added up to three largest Uncategorized Result examples to the summary text.
 - Cleared the previous safety summary when a new scan starts.
 
 Files changed:
