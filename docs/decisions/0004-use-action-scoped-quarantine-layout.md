@@ -92,7 +92,7 @@ Moderate after the first executed manifest is written. Reversing later would req
 
 ## Follow-up work
 
-- Decide manifest write order and failure handling before adding file-moving code.
+- Manifest write order and failure handling are decided in ADR 0005.
 - Implement Quarantine execution only after action layout, confirmation gate, and restore behavior are tested against fixtures.
 - Implement Undo Quarantine using action-scoped restore manifests.
 
@@ -102,4 +102,4 @@ Moderate after the first executed manifest is written. Reversing later would req
 
 ## Superseded by
 
-- None.
+- None. ADR 0005 refines manifest write order and partial-failure state for this layout.

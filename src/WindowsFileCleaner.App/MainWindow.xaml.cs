@@ -16,6 +16,7 @@ public partial class MainWindow : Window
     private StorageScanSafetySummary? _currentSafetySummary;
     private QuarantinePreview? _currentQuarantinePreview;
     private RestoreManifestDraft? _currentRestoreManifestDraft;
+    private RestoreManifest? _currentRestoreManifest;
     private QuarantineConfirmationDraft? _currentQuarantineConfirmationDraft;
     private QuarantineExecutionGate? _currentQuarantineExecutionGate;
     private QuarantineActionDraft? _currentQuarantineActionDraft;
@@ -604,6 +605,13 @@ public partial class MainWindow : Window
                 _currentQuarantineConfirmationDraft,
                 DateTimeOffset.UtcNow,
                 BuildDraftId("quarantine-action-draft"));
+        _currentRestoreManifest = _currentQuarantineActionDraft is null
+            ? null
+            : RestoreManifestBuilder.BuildPlanned(
+                _currentQuarantineActionDraft,
+                _currentRestoreManifestDraft,
+                DateTimeOffset.UtcNow,
+                BuildDraftId("restore-manifest"));
         SetQuarantineConfirmationTextSilently("");
         UpdateQuarantineExecutionGate();
 
@@ -1021,7 +1029,8 @@ public partial class MainWindow : Window
         ExecuteQuarantineButton.IsEnabled = _currentQuarantineExecutionGate.CanExecute && ScanButton.IsEnabled;
         QuarantineExecutionGateText.Text = FormatQuarantineExecutionGate(
             _currentQuarantineExecutionGate,
-            _currentQuarantineActionDraft);
+            _currentQuarantineActionDraft,
+            _currentRestoreManifest);
     }
 
     public void ApplyStorageReviewFilter(StorageReviewFilter filter)
@@ -1567,6 +1576,7 @@ public partial class MainWindow : Window
         _currentQuarantineConfirmationDraft = null;
         _currentQuarantineExecutionGate = null;
         _currentQuarantineActionDraft = null;
+        _currentRestoreManifest = null;
         SetQuarantineConfirmationTextSilently("");
         QuarantinePreviewText.Text = "Preview and draft readiness appear after using Preview quarantine.";
         ExportQuarantinePreviewButton.IsEnabled = false;
@@ -1652,7 +1662,8 @@ public partial class MainWindow : Window
 
     private static string FormatQuarantineExecutionGate(
         QuarantineExecutionGate gate,
-        QuarantineActionDraft? actionDraft)
+        QuarantineActionDraft? actionDraft,
+        RestoreManifest? restoreManifest)
     {
         var lines = new List<string>
         {
@@ -1668,6 +1679,16 @@ public partial class MainWindow : Window
             lines.Add($"Quarantine Action Draft: {actionDraft.ActionId} | Entries: {actionDraft.EntryCount:N0} | Bytes: {actionDraft.TotalSizeDisplay}");
             lines.Add($"Action items root: {actionDraft.ItemsRootPath}");
             lines.Add($"Restore manifest path: {actionDraft.RestoreManifestPath}");
+        }
+
+        if (restoreManifest is not null)
+        {
+            lines.Add($"Write-ahead Restore Manifest: {restoreManifest.ManifestId} | Status: {FormatRestoreManifestActionStatus(restoreManifest.ActionStatus)} | Entries: {restoreManifest.EntryCount:N0}");
+            lines.Add("Manifest write order: write planned manifest before the first move, then update each entry before and after its move attempt.");
+            foreach (var note in restoreManifest.WriteOrderNotes.Take(3))
+            {
+                lines.Add($"Manifest note | {note}");
+            }
         }
 
         foreach (var blocker in gate.Blockers.Take(6))
@@ -1702,6 +1723,19 @@ public partial class MainWindow : Window
             QuarantinePreviewDisposition.Blocked => "Blocked",
             QuarantinePreviewDisposition.Redundant => "Redundant",
             _ => disposition.ToString()
+        };
+    }
+
+    private static string FormatRestoreManifestActionStatus(RestoreManifestActionStatus status)
+    {
+        return status switch
+        {
+            RestoreManifestActionStatus.Planned => "Planned",
+            RestoreManifestActionStatus.Moving => "Moving",
+            RestoreManifestActionStatus.Completed => "Completed",
+            RestoreManifestActionStatus.PartialFailure => "Partial failure",
+            RestoreManifestActionStatus.Failed => "Failed",
+            _ => status.ToString()
         };
     }
 

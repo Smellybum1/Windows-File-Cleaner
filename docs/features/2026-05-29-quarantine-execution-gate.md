@@ -48,8 +48,9 @@ Questions that must be answered before implementation:
 
 Questions that can be deferred:
 
-- What exact manifest write order should actual Quarantine execution use?
-- Should future execution require a selected manifest path, a generated action id, or both?
+- Answered by ADR 0005: actual Quarantine execution should use a write-ahead Restore Manifest with per-entry status updates.
+- Answered by ADR 0004: future execution should use a generated action id and action-scoped manifest path.
+- Deferred follow-up: implement a manifest file writer and recovery UI for Moving or Failed entries.
 
 ## Grill notes
 
@@ -193,17 +194,17 @@ Docs updated:
 
 ADRs added or skipped:
 
-- No ADR. This is a reversible read-only gate and does not decide file-moving layout, manifest write order, persistence beyond existing ADR 0003, or Undo Quarantine behavior.
+- No ADR for the original gate packet. Later ADRs 0004 and 0005 decide action layout and manifest write order.
 
 Follow-up work:
 
 - Action-scoped quarantine layout is now captured in ADR 0004 and `2026-05-29-quarantine-action-draft.md`.
-- Decide manifest write order and failure handling before adding file-moving code.
+- Implement manifest file writing and file-moving only after ADR 0005's write-ahead model is proven against fixtures.
 
 Open questions:
 
-- What exact manifest write order should actual Quarantine execution use?
-- How should partial move failures update the executed Restore Manifest?
+- What exact recovery UI should handle Moving entries after interruption?
+- Which local file replacement pattern should the manifest writer use?
 
 Risky assumptions:
 

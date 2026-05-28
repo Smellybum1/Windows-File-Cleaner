@@ -1853,26 +1853,31 @@ The preferred quarantine location is on `D:`. The current preview default is `D:
 
 - Use `Quarantine` for the holding area concept.
 - Use `quarantinePath` for the destination path.
-- Persist a restore manifest before moving files.
+- Persist a planned Restore Manifest before moving files.
 - Do not treat Quarantine Root Selection as approval to create folders or move files.
 
 ### Restore Manifest
 
 Status: draft
-Last reviewed: 2026-05-28
+Last reviewed: 2026-05-29
 
 #### Definition
 
-A Restore Manifest is versioned metadata that records enough information to undo a completed Quarantine action.
+A Restore Manifest is versioned JSON metadata that records enough information to recover, inspect, or undo a Quarantine action after explicit execution begins.
 
 The selected durable format is JSON with schema version `restore-manifest.v1`.
+
+The selected write order is write-ahead: after explicit confirmation opens a future execution flow, the app should write a planned Restore Manifest before the first file or folder move, then update that manifest before and after each move attempt.
 
 #### Examples
 
 - Original path for each quarantined file or folder.
-- Quarantine path for each moved entry.
+- Action-scoped quarantine path for each selected entry.
 - Size, last modified time, Importance Rating, Deletion Recommendation, Bloat Categories, and evidence captured at action time.
-- Cleanup Scope and Quarantine root used for the action.
+- Cleanup Scope, Quarantine root, action root, items root, and manifest path used for the action.
+- Action status such as Planned, Moving, Completed, Partial failure, or Failed.
+- Entry status such as Planned, Moving, Moved, or Failed.
+- Failure message for an entry that could not be moved.
 
 #### Non-examples
 
@@ -1880,17 +1885,24 @@ The selected durable format is JSON with schema version `restore-manifest.v1`.
 - A Restore Manifest Draft.
 - A scan report.
 - A backup of file contents.
+- Proof that every selected file was moved successfully.
 
 #### Lifecycle
 
 - A Restore Manifest Draft may be generated in memory from included Quarantine Preview rows.
-- An executed Restore Manifest should be written only after explicit user confirmation and after Quarantine execution is attempted.
-- Undo Quarantine uses the executed manifest to restore files when feasible.
+- A planned Restore Manifest may be generated in memory from a Quarantine Action Draft before file-moving code exists.
+- A future executed Restore Manifest should be written only after explicit user confirmation starts Quarantine execution.
+- The first future write should happen before the first move, with every entry in Planned status.
+- Before moving an entry, future execution should update that entry to Moving and write the manifest again.
+- After each move attempt, future execution should update that entry to Moved or Failed and write the manifest again.
+- Undo Quarantine uses Moved entries from the executed manifest to restore files when feasible.
+- Moving or Failed entries require recovery review because the app may need to inspect source and destination paths before undo.
 - Schema changes require versioning and migration consideration.
 
 #### Relationships
 
 - Depends on Quarantine Preview for draft shape.
+- Depends on Quarantine Action Draft for action-scoped paths.
 - Depends on Quarantine execution for actual manifest writing.
 - Is checked by Quarantine Confirmation Draft before any future execution flow.
 - Required by Undo Quarantine.
@@ -1898,9 +1910,71 @@ The selected durable format is JSON with schema version `restore-manifest.v1`.
 #### Code implications
 
 - Use `RestoreManifestDraft`, `RestoreManifestEntryDraft`, `RestoreManifestDraftBuilder`, and `RestoreManifestDraftJsonSerializer` for draft-only proof.
+- Use `RestoreManifest`, `RestoreManifestEntry`, `RestoreManifestBuilder`, and `RestoreManifestJsonSerializer` for the planned/executed action record shape.
+- Use `RestoreManifestActionStatus` and `RestoreManifestEntryStatus` for future partial-failure and recovery state.
 - Do not write Restore Manifest files in preview or draft code.
+- Do not write Restore Manifest files from `RestoreManifestBuilder`; it models the JSON action record only.
 - Use a versioned JSON schema for future executed manifests.
 - Keep preview CSV exports separate from Restore Manifest drafts and executed manifests.
+
+### Restore Manifest Action Status
+
+Status: draft
+Last reviewed: 2026-05-29
+
+#### Definition
+
+Restore Manifest Action Status is the overall state of a Quarantine action recorded in the Restore Manifest.
+
+Initial values are Planned, Moving, Completed, Partial failure, and Failed.
+
+#### Examples
+
+- Planned: the write-ahead manifest exists before any move has begun.
+- Moving: at least one entry is moving or has moved, and the action has not reached a final state.
+- Completed: all entries are recorded as moved.
+- Partial failure: at least one entry moved and at least one entry failed.
+- Failed: every attempted entry failed or no recoverable move completed.
+
+#### Non-examples
+
+- A user approval.
+- A Cleanup Action recommendation.
+- A replacement for per-entry status.
+
+#### Code implications
+
+- Use `RestoreManifestActionStatus`.
+- Treat Partial failure and Failed as recovery-review states.
+
+### Restore Manifest Entry Status
+
+Status: draft
+Last reviewed: 2026-05-29
+
+#### Definition
+
+Restore Manifest Entry Status is the per-entry move state recorded in the Restore Manifest.
+
+Initial values are Planned, Moving, Moved, and Failed.
+
+#### Examples
+
+- Planned before a selected file or folder is touched.
+- Moving after the manifest is updated immediately before a move attempt.
+- Moved after the move succeeds and the manifest is updated.
+- Failed after a move attempt fails and the manifest records the error.
+
+#### Non-examples
+
+- A scan access status.
+- A deletion recommendation.
+- Proof that Undo Quarantine has run.
+
+#### Code implications
+
+- Use `RestoreManifestEntryStatus`.
+- Future Undo Quarantine should restore Moved entries and require recovery review for Moving or Failed entries.
 
 ### Quarantine Confirmation Draft
 
@@ -2027,6 +2101,7 @@ It maps included preview rows to action-scoped quarantine item paths and a futur
 
 - Depends on Restore Manifest Draft and Quarantine Confirmation Draft.
 - Uses the action-scoped layout accepted in ADR 0004.
+- Feeds the planned Restore Manifest model accepted in ADR 0005.
 - Feeds the visible Quarantine Execution Gate readout.
 - Precedes future Quarantine execution and Undo Quarantine.
 
@@ -2133,6 +2208,7 @@ Implementation implications:
 
 - Cleanup Actions should have dry-run or preview output where possible.
 - Future Quarantine execution should pass a Quarantine Confirmation Draft with no data blockers before asking for explicit approval.
+- Future Quarantine execution should write a planned Restore Manifest before the first file or folder move, then update entry statuses before and after each move attempt.
 - The app should log attempted paths, outcomes, and errors.
 - Reversible actions are preferred over permanent deletion.
 

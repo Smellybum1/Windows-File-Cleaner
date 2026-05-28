@@ -558,6 +558,11 @@ internal sealed class MainWindowSmokeTests
                 && window.QuarantineExecutionGateTextValue.Contains("Action items root:", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantineExecutionGateTextValue.Contains("Restore manifest path:", StringComparison.OrdinalIgnoreCase),
                 "Execution gate should show the read-only action-scoped quarantine layout draft.");
+            Assert(
+                window.QuarantineExecutionGateTextValue.Contains("Write-ahead Restore Manifest", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineExecutionGateTextValue.Contains("Manifest write order", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineExecutionGateTextValue.Contains("before the first move", StringComparison.OrdinalIgnoreCase),
+                "Execution gate should show the planned manifest write order before file-moving code exists.");
             window.SetQuarantineConfirmationText("NOPE");
             Assert(
                 window.QuarantineExecutionGateTextValue.Contains("Entered confirmation matches: no", StringComparison.OrdinalIgnoreCase),

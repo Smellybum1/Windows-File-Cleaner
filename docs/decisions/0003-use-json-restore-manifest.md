@@ -22,7 +22,7 @@ Constraints:
 
 Use a JSON Restore Manifest schema with an explicit schema version.
 
-The first schema version will be `restore-manifest.v1`. A Restore Manifest Draft may be generated in memory from included Quarantine Preview rows, but it is not an executed manifest and must not be written as proof of cleanup. Future Quarantine execution will persist an executed Restore Manifest only after explicit user confirmation and after file moves are attempted.
+The first schema version will be `restore-manifest.v1`. A Restore Manifest Draft may be generated in memory from included Quarantine Preview rows, but it is not an executed manifest and must not be written as proof of cleanup. Future Quarantine execution will persist an executed Restore Manifest only after explicit user confirmation starts the execution flow. ADR 0005 refines the write order: the first durable Restore Manifest write should happen before the first file or folder move, then the manifest should be updated before and after each move attempt.
 
 The manifest shape includes:
 
@@ -32,11 +32,14 @@ The manifest shape includes:
 - Cleanup Scope path
 - Quarantine root path
 - entry list
+- action status
 - original path
 - quarantine path
+- entry status
 - file/folder type
 - size bytes
 - last modified UTC when known
+- move timestamps and failure message when applicable
 - Importance Rating
 - Deletion Recommendation
 - Bloat Categories
@@ -110,7 +113,7 @@ Moderate after the first executed manifest is written. Reversing later would req
 
 - Add a Restore Manifest Draft model and tests.
 - Design explicit Quarantine confirmation flow before file-moving code.
-- Implement executed manifest writing only in the future Quarantine execution packet.
+- Implement executed manifest writing only in the future Quarantine execution packet, following ADR 0005.
 
 ## Supersedes
 
@@ -118,4 +121,4 @@ Moderate after the first executed manifest is written. Reversing later would req
 
 ## Superseded by
 
-- None.
+- None. ADR 0005 refines write order and partial-failure state without replacing this format decision.

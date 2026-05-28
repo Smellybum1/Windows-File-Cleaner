@@ -3599,3 +3599,57 @@ Rejected ideas buffer:
 
 - Do not reuse preview paths as executed quarantine paths.
 - Do not use a flat quarantine root for all moved items.
+
+### 2026-05-29: Add Write-Ahead Restore Manifest Model
+
+Status: completed
+
+Evidence:
+
+- Sidecar safety review found a manifest timing conflict: domain context said to persist a Restore Manifest before moving files, while ADR 0003 still said after file moves are attempted.
+- Actual Quarantine execution needs a recoverable write order and partial-failure states before any file-moving code exists.
+
+Implementation:
+
+- Added ADR 0005 for write-ahead Restore Manifest ordering.
+- Added `RestoreManifest`, `RestoreManifestEntry`, `RestoreManifestBuilder`, and `RestoreManifestJsonSerializer`.
+- Added `RestoreManifestActionStatus` and `RestoreManifestEntryStatus`.
+- Built a planned Restore Manifest from the Quarantine Action Draft using action-scoped quarantine paths, not preview paths.
+- Added in-memory status transitions for Moving, Moved, Failed, Completed, Partial failure, and Failed action outcomes.
+- Added WPF Quarantine Execution Gate readout for write-ahead manifest status and write order.
+- Kept the change read-only; no cleanup execution, Quarantine execution, Undo Quarantine, manifest file writing, folder creation, or real-profile automation was added.
+
+Verification:
+
+- `dotnet build WindowsFileCleaner.sln --no-restore` passed with 0 warnings and 0 errors.
+- `dotnet run --project tests\WindowsFileCleaner.Tests\WindowsFileCleaner.Tests.csproj --no-build` passed.
+- `dotnet run --project tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj --no-build` passed.
+- `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\Invoke-MvpPreflight.ps1` passed.
+
+Docs updated:
+
+- `README.md`
+- `docs/domain/context.md`
+- `docs/domain/glossary.md`
+- `docs/decisions/0003-use-json-restore-manifest.md`
+- `docs/decisions/0004-use-action-scoped-quarantine-layout.md`
+- `docs/decisions/0005-use-write-ahead-restore-manifest.md`
+- `docs/features/2026-05-29-quarantine-action-draft.md`
+- `docs/features/2026-05-29-quarantine-execution-gate.md`
+- `docs/features/2026-05-29-write-ahead-restore-manifest.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- Added `docs/decisions/0005-use-write-ahead-restore-manifest.md`.
+
+Open questions:
+
+- What exact recovery UI should handle Moving entries after interruption?
+- Which local file replacement pattern should the manifest writer use?
+
+Rejected ideas buffer:
+
+- Do not write a final-only manifest after all moves succeed.
+- Do not keep the old write-after-attempt wording; it creates a recovery gap.
+- Do not add file-moving API allowlists until a narrow execution component exists.

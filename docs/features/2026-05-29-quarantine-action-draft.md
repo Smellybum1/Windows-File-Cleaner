@@ -47,8 +47,8 @@ Questions that must be answered before implementation:
 
 Questions that can be deferred:
 
-- What exact manifest write order should actual Quarantine execution use?
-- How should partial move failures update the executed Restore Manifest?
+- Answered by ADR 0005: actual Quarantine execution should use a write-ahead Restore Manifest with per-entry status updates.
+- Deferred follow-up: implement a manifest file writer and recovery UI for Moving or Failed entries.
 
 ## Grill notes
 
@@ -199,12 +199,12 @@ ADRs added or skipped:
 
 Follow-up work:
 
-- Decide manifest write order and failure handling before adding file-moving code.
+- Implement manifest file writing and file-moving only after ADR 0005's write-ahead model is proven against fixtures.
 
 Open questions:
 
-- What exact manifest write order should actual Quarantine execution use?
-- How should partial move failures update the executed Restore Manifest?
+- What exact recovery UI should handle Moving entries after interruption?
+- Which local file replacement pattern should the manifest writer use?
 
 Risky assumptions:
 

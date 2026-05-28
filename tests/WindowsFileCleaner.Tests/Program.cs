@@ -27,6 +27,8 @@ tests.QuarantineConfirmationDraftChecksPreviewAndManifestReadiness();
 tests.QuarantineConfirmationDraftReportsPreviewAndManifestBlockers();
 tests.QuarantineExecutionGateRequiresExactConfirmationAndImplementedExecution();
 tests.QuarantineActionDraftBuildsActionScopedLayoutWithoutWritingFiles();
+tests.RestoreManifestBuildsWriteAheadActionRecordFromActionDraft();
+tests.RestoreManifestTracksPartialFailureStatusForFutureExecution();
 tests.ChildSummaryShowsLargestImmediateChildren();
 tests.SelectedPathReviewGuidanceExplainsReviewNextSteps();
 tests.PathInspectionPlanBuildsExplorerArguments();
@@ -1232,6 +1234,150 @@ internal sealed class StorageScanTests
         }
 
         Assert(mismatchedConfirmationFailed, "Action draft should require matching preview, manifest draft, and confirmation draft metadata.");
+    }
+
+    public void RestoreManifestBuildsWriteAheadActionRecordFromActionDraft()
+    {
+        using var fixture = TestFixture.Create();
+
+        fixture.WriteFile(@"Downloads\old-installer.msi", 1024 * 1024, DateTimeOffset.UtcNow.AddDays(-120));
+        var scanner = new StorageScanner();
+        var result = scanner.Scan(new StorageScanOptions(fixture.RootPath));
+        var review = StorageScanReviewBuilder.Build(result);
+        var installer = SingleReviewEntry(review.Entries, @"Downloads\old-installer.msi");
+        var quarantineRoot = Path.Combine(fixture.RootPath, "quarantine-root");
+        var preview = QuarantinePreviewBuilder.Build([installer], fixture.RootPath, quarantineRoot);
+        var manifestDraft = RestoreManifestDraftBuilder.Build(
+            preview,
+            new DateTimeOffset(2026, 5, 29, 1, 2, 3, TimeSpan.Zero),
+            "manifest-draft-write-ahead");
+        var confirmation = QuarantineConfirmationDraftBuilder.Build(
+            preview,
+            manifestDraft,
+            new DateTimeOffset(2026, 5, 29, 2, 3, 4, TimeSpan.Zero),
+            "confirmation-draft-write-ahead");
+        var actionDraft = QuarantineActionDraftBuilder.Build(
+            preview,
+            manifestDraft,
+            confirmation,
+            new DateTimeOffset(2026, 5, 29, 3, 4, 5, TimeSpan.Zero),
+            "quarantine-action-write-ahead");
+
+        var createdAtUtc = new DateTimeOffset(2026, 5, 29, 4, 5, 6, TimeSpan.Zero);
+        var manifest = RestoreManifestBuilder.BuildPlanned(
+            actionDraft,
+            manifestDraft,
+            createdAtUtc,
+            "restore-manifest-write-ahead");
+        var json = RestoreManifestJsonSerializer.Serialize(manifest);
+
+        Assert(manifest.SchemaVersion == RestoreManifest.CurrentSchemaVersion, "Restore Manifest should use the current schema version.");
+        Assert(manifest.ManifestId == "restore-manifest-write-ahead", "Restore Manifest should preserve the provided manifest id.");
+        Assert(manifest.RestoreManifestDraftId == manifestDraft.DraftId, "Restore Manifest should reference the draft it was built from.");
+        Assert(manifest.ActionId == actionDraft.ActionId, "Restore Manifest should reference the Quarantine Action Draft action id.");
+        Assert(manifest.CreatedAtUtc == createdAtUtc, "Restore Manifest should preserve the created timestamp as UTC.");
+        Assert(manifest.UpdatedAtUtc == createdAtUtc, "Planned Restore Manifest should start with matching created and updated timestamps.");
+        Assert(manifest.ManifestPath == actionDraft.RestoreManifestPath, "Restore Manifest path should match the action-scoped manifest path.");
+        Assert(manifest.ActionStatus == RestoreManifestActionStatus.Planned, "Write-ahead Restore Manifest should start as planned.");
+        Assert(manifest.IsExecutedManifest, "Write-ahead Restore Manifest should be an execution record, not a draft.");
+        Assert(manifest.EntryCount == 1, "Restore Manifest should include the action entries.");
+        Assert(manifest.TotalBytes == installer.Entry.SizeBytes, "Restore Manifest total bytes should match the included entry.");
+        Assert(manifest.WriteOrderNotes.Any(note => note.Contains("before the first", StringComparison.OrdinalIgnoreCase)), "Restore Manifest should document write-before-move ordering.");
+
+        var entry = manifest.Entries.Single();
+        var actionEntry = actionDraft.Entries.Single();
+        Assert(entry.OriginalPath == actionEntry.OriginalPath, "Manifest entry should preserve the original path.");
+        Assert(entry.RelativePath == actionEntry.RelativePath, "Manifest entry should preserve the cleanup-scope-relative path.");
+        Assert(entry.QuarantinePath == actionEntry.ActionQuarantinePath, "Manifest entry should use the action-scoped quarantine path, not the preview path.");
+        Assert(entry.QuarantinePath != actionEntry.PreviewQuarantinePath, "Executed manifest entry should not reuse the preview quarantine path.");
+        Assert(entry.Status == RestoreManifestEntryStatus.Planned, "Manifest entry should start as planned before any move.");
+        Assert(entry.ErrorMessage is null, "Planned manifest entries should not have errors.");
+        Assert(json.Contains("\"isExecutedManifest\": true", StringComparison.Ordinal), "JSON should identify the planned action record as an executed manifest record.");
+        Assert(json.Contains("\"actionStatus\": \"Planned\"", StringComparison.Ordinal), "JSON should include the planned action status.");
+        Assert(json.Contains("\"status\": \"Planned\"", StringComparison.Ordinal), "JSON should include planned entry status.");
+        Assert(!Directory.Exists(quarantineRoot), "Building and serializing a write-ahead Restore Manifest should not create the quarantine root folder.");
+    }
+
+    public void RestoreManifestTracksPartialFailureStatusForFutureExecution()
+    {
+        using var fixture = TestFixture.Create();
+
+        fixture.WriteFile(@"Downloads\old-one.msi", 1024 * 1024, DateTimeOffset.UtcNow.AddDays(-120));
+        fixture.WriteFile(@"Downloads\old-two.msi", 1024 * 1024 * 2, DateTimeOffset.UtcNow.AddDays(-130));
+        var scanner = new StorageScanner();
+        var result = scanner.Scan(new StorageScanOptions(fixture.RootPath));
+        var review = StorageScanReviewBuilder.Build(result);
+        var firstInstaller = SingleReviewEntry(review.Entries, @"Downloads\old-one.msi");
+        var secondInstaller = SingleReviewEntry(review.Entries, @"Downloads\old-two.msi");
+        var quarantineRoot = Path.Combine(fixture.RootPath, "quarantine-root");
+        var preview = QuarantinePreviewBuilder.Build([firstInstaller, secondInstaller], fixture.RootPath, quarantineRoot);
+        var manifestDraft = RestoreManifestDraftBuilder.Build(
+            preview,
+            new DateTimeOffset(2026, 5, 29, 1, 2, 3, TimeSpan.Zero),
+            "manifest-draft-partial");
+        var confirmation = QuarantineConfirmationDraftBuilder.Build(
+            preview,
+            manifestDraft,
+            new DateTimeOffset(2026, 5, 29, 2, 3, 4, TimeSpan.Zero),
+            "confirmation-draft-partial");
+        var actionDraft = QuarantineActionDraftBuilder.Build(
+            preview,
+            manifestDraft,
+            confirmation,
+            new DateTimeOffset(2026, 5, 29, 3, 4, 5, TimeSpan.Zero),
+            "quarantine-action-partial");
+        var manifest = RestoreManifestBuilder.BuildPlanned(
+            actionDraft,
+            manifestDraft,
+            new DateTimeOffset(2026, 5, 29, 4, 5, 6, TimeSpan.Zero),
+            "restore-manifest-partial");
+
+        var firstPath = firstInstaller.Entry.FullPath;
+        var secondPath = secondInstaller.Entry.FullPath;
+        var moving = RestoreManifestBuilder.WithEntryStatus(
+            manifest,
+            firstPath,
+            RestoreManifestEntryStatus.Moving,
+            new DateTimeOffset(2026, 5, 29, 4, 6, 0, TimeSpan.Zero));
+        var failedBeforeAnyMove = RestoreManifestBuilder.WithEntryStatus(
+            manifest,
+            firstPath,
+            RestoreManifestEntryStatus.Failed,
+            new DateTimeOffset(2026, 5, 29, 4, 6, 30, TimeSpan.Zero),
+            "Source missing.");
+        var moved = RestoreManifestBuilder.WithEntryStatus(
+            moving,
+            firstPath,
+            RestoreManifestEntryStatus.Moved,
+            new DateTimeOffset(2026, 5, 29, 4, 7, 0, TimeSpan.Zero));
+        var partial = RestoreManifestBuilder.WithEntryStatus(
+            moved,
+            secondPath,
+            RestoreManifestEntryStatus.Failed,
+            new DateTimeOffset(2026, 5, 29, 4, 8, 0, TimeSpan.Zero),
+            "Destination already exists.");
+
+        Assert(moving.ActionStatus == RestoreManifestActionStatus.Moving, "A moving entry should put the manifest action in Moving status.");
+        Assert(moving.MovingCount == 1, "Moving manifest should count moving entries.");
+        Assert(failedBeforeAnyMove.ActionStatus == RestoreManifestActionStatus.Failed, "A failure before any completed move should mark the action failed.");
+        Assert(moved.ActionStatus == RestoreManifestActionStatus.Moving, "A partially moved action without failures should remain Moving until all entries finish.");
+        Assert(moved.MovedCount == 1, "Moved manifest should count moved entries.");
+        Assert(partial.ActionStatus == RestoreManifestActionStatus.PartialFailure, "A mix of moved and failed entries should become partial failure.");
+        Assert(partial.MovedCount == 1, "Partial failure should keep the moved count for undo.");
+        Assert(partial.FailedCount == 1, "Partial failure should keep the failed count for recovery review.");
+        Assert(partial.RequiresRecoveryReview, "Partial failure should require recovery review.");
+        Assert(partial.Entries.Single(entry => entry.OriginalPath == secondPath).ErrorMessage == "Destination already exists.", "Failed entries should preserve failure evidence.");
+
+        var completed = actionDraft.Entries.Aggregate(
+            manifest,
+            (current, entry) => RestoreManifestBuilder.WithEntryStatus(
+                current,
+                entry.OriginalPath,
+                RestoreManifestEntryStatus.Moved,
+                new DateTimeOffset(2026, 5, 29, 4, 9, 0, TimeSpan.Zero)));
+        Assert(completed.ActionStatus == RestoreManifestActionStatus.Completed, "All moved entries should complete the action.");
+        Assert(!completed.RequiresRecoveryReview, "Completed actions should not require recovery review.");
+        Assert(!Directory.Exists(quarantineRoot), "Updating in-memory Restore Manifest statuses should not create the quarantine root folder.");
     }
 
     public void ChildSummaryShowsLargestImmediateChildren()
