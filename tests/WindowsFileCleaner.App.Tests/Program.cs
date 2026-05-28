@@ -319,13 +319,21 @@ internal sealed class MainWindowSmokeTests
             Assert(window.ReviewWindowTextValue.Contains("rows 1-2,000", StringComparison.OrdinalIgnoreCase), "Previous review window should restore the first row window.");
 
             window.ShowNextReviewWindow();
-            window.ApplyEntryTypeFilter(StorageEntryTypeFilter.Files);
+            window.SelectEntryTypeFilterThroughCombo(StorageEntryTypeFilter.Files);
             Assert(
                 window.ReviewWindowTextValue.Contains("rows 1-2,000", StringComparison.OrdinalIgnoreCase),
-                "Changing the review lens should reset the review window to the first matched rows.");
+                "Changing the type filter through the WPF combo should reset the review window to the first matched rows.");
             Assert(
                 window.CurrentScanReportExportTypes.All(type => type == "File"),
                 "Scan Report Export rows should honor the active file type filter.");
+            window.ShowNextReviewWindow();
+            window.SelectBloatCategoryFilterThroughCombo(StorageCategoryFilter.NoCategory);
+            Assert(
+                window.ReviewWindowTextValue.Contains("rows 1-2,000", StringComparison.OrdinalIgnoreCase),
+                "Changing the category filter through the WPF combo should reset the review window to the first matched rows.");
+            Assert(
+                window.DisplayedRows.All(row => row.Categories == "None"),
+                "No-category combo selection should show only uncategorized rows.");
             Assert(File.Exists(fixture.MarkerPath), "Large fixture marker file should still exist after the read-only scan.");
         }
         finally

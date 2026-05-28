@@ -2678,3 +2678,43 @@ Rejected ideas buffer:
 
 - Do not rescan or discard matched rows when changing display windows.
 - Do not make `Shortlist shown` apply to rows outside the current display window.
+
+### 2026-05-28: Tighten Display Window Reset for Combo Filters
+
+Status: completed
+
+Evidence:
+
+- Storage Review Display Window should reset when the active review lens changes.
+- Programmatic filter helpers already reset the display window, but the actual WPF category/type combo-box event handlers needed the same reset path for manual UI selection.
+
+Implementation:
+
+- Reset `_currentDisplayStartIndex` in `CategoryFilterBox_SelectionChanged`.
+- Reset `_currentDisplayStartIndex` in `EntryTypeFilterBox_SelectionChanged`.
+- Added WPF test hooks that select type/category options through the real combo boxes.
+- Added WPF fixture coverage proving combo-driven type and no-category filter changes reset the display window to the first matched rows.
+- No scanner traversal, cleanup execution, Quarantine execution, Undo Quarantine, manifest writing, real-profile automation, or real user file access was added.
+
+Verification:
+
+- `dotnet build WindowsFileCleaner.sln --no-restore` passed with 0 warnings and 0 errors.
+- `dotnet run --project tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj --no-build` passed.
+- `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\Invoke-MvpPreflight.ps1` passed.
+
+Docs updated:
+
+- `docs/features/2026-05-28-storage-review-display-window.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No new ADR. This is a small WPF state-consistency fix inside an existing read-only review behavior.
+
+Open questions:
+
+- None.
+
+Rejected ideas buffer:
+
+- Do not rely only on programmatic helper methods when the visible WPF controls use separate event handlers.

@@ -56,6 +56,7 @@ What changed:
 - Reset the display window when filters, type filters, category filters, search, safety shortcuts, or Review View Reset change the active review lens.
 - Corrected Scan Report Export row selection to include the active Storage Entry Type Filter.
 - Added WPF fixture coverage for next/previous row windows, display-window reset, read-only status wording, and type-filtered exports.
+- Later combo-reset packet made the WPF category and type combo-box event handlers reset the display window and added coverage for the actual combo selection path.
 
 ADRs added or skipped:
 

@@ -549,6 +549,7 @@ public partial class MainWindow : Window
         }
 
         _currentCategoryFilter = option.Filter;
+        _currentDisplayStartIndex = 0;
         RefreshResults();
     }
 
@@ -560,6 +561,7 @@ public partial class MainWindow : Window
         }
 
         _currentEntryTypeFilter = option.Filter;
+        _currentDisplayStartIndex = 0;
         RefreshResults();
     }
 
@@ -835,6 +837,28 @@ public partial class MainWindow : Window
         _currentDisplayStartIndex = 0;
         SelectEntryTypeFilterOption(_currentEntryTypeFilter);
         RefreshResults();
+    }
+
+    public void SelectEntryTypeFilterThroughCombo(StorageEntryTypeFilter filter)
+    {
+        var option = EntryTypeFilterBox.Items
+            .Cast<EntryTypeFilterOption>()
+            .FirstOrDefault(candidate => candidate.Filter == filter);
+        if (option is not null)
+        {
+            EntryTypeFilterBox.SelectedItem = option;
+        }
+    }
+
+    public void SelectBloatCategoryFilterThroughCombo(StorageCategoryFilter filter)
+    {
+        var option = CategoryFilterBox.Items
+            .Cast<CategoryFilterOption>()
+            .FirstOrDefault(candidate => candidate.Filter == filter);
+        if (option is not null)
+        {
+            CategoryFilterBox.SelectedItem = option;
+        }
     }
 
     public void ApplyStorageReviewSearch(string searchText)
