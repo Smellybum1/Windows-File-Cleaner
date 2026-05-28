@@ -45,7 +45,7 @@ No new domain terms.
 
 - `dotnet build WindowsFileCleaner.sln --no-restore` passed locally.
 - `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\Invoke-MvpPreflight.ps1` passed locally.
-- Remote CI will run after this commit is pushed.
+- GitHub Actions `MVP Preflight` run `26575441204` for commit `711cfb6` completed with conclusion `success`.
 
 ## Completion notes
 
@@ -63,7 +63,7 @@ ADRs added or skipped:
 
 Follow-up work:
 
-- Check the GitHub Actions run after push and inspect failures if the hosted runner behaves differently from the local Windows environment.
+- Inspect future hosted-runner failures if they differ from the local Windows environment.
 
 Rejected ideas buffer:
 

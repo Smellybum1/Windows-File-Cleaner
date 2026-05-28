@@ -6,18 +6,17 @@ Use it to preserve what was completed, what was verified, what was rejected, and
 
 ## Current status
 
-Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. Cleanup Scope Safety Note, Cleanup Scope Scan Gate, Cleanup Scope Root classification, review filters, Review View Reset, Storage Review Search with field prefixes, Storage Entry Type Filter, Storage Review Display Limit wording, Storage Review Display Window navigation, Storage Review Size Note, selected-folder child breakdown, selected-path inspection actions, Selected Path Hierarchy Context, Selected Row Contents Context including a grid Contents column, explicit Access Status, Access Status Search, Selected File Content Preview, Selected Path Review Guidance including cache-specific guidance and scope-root guidance, CSV export including active search, searched filenames, hierarchy/contents/access/relative-path context and type-filtered rows, Review Mix, Storage Scan Safety Summary with bounded access issue examples, Safety Summary review shortcuts, Access issues filtering, Bloat Category Filter, Large old file classification, No category filtering, Review Shortlist, Shortlist shown, Remove shown, Quarantine Preview with protected-descendant blocking, Quarantine Preview CSV export, Restore Manifest Draft, Quarantine Confirmation Draft, Quarantine Readiness UI, conservative app data classification, read-only safety regression checks, the MVP runbook, the MVP readiness audit, fixture-driven WPF launch support, WPF shell smoke testing, WPF fixture scan smoke testing, WPF display-limit smoke testing, WPF review interaction smoke testing, WPF review toolbar layout polish, the MVP preflight script, CI MVP preflight workflow, and the MVP fixture review launcher are implemented and verified locally. Quarantine remains preview-only; no cleanup execution, manifest writing, or Undo Quarantine execution exists.
+Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. Cleanup Scope Safety Note, Cleanup Scope Scan Gate, Cleanup Scope Root classification, review filters, Review View Reset, Storage Review Search with field prefixes, Storage Entry Type Filter, Storage Review Display Limit wording, Storage Review Display Window navigation, Storage Review Size Note, selected-folder child breakdown, selected-path inspection actions, Selected Path Hierarchy Context, Selected Row Contents Context including a grid Contents column, explicit Access Status, Access Status Search, Selected File Content Preview, Selected Path Review Guidance including cache-specific guidance and scope-root guidance, CSV export including active search, searched filenames, hierarchy/contents/access/relative-path context and type-filtered rows, Review Mix, Storage Scan Safety Summary with bounded access issue examples, Safety Summary review shortcuts, Access issues filtering, Bloat Category Filter, Large old file classification, No category filtering, Review Shortlist, Shortlist shown, Remove shown, Quarantine Preview with protected-descendant blocking, Quarantine Preview CSV export, Restore Manifest Draft, Quarantine Confirmation Draft, Quarantine Readiness UI, conservative app data classification, read-only safety regression checks, the MVP runbook, the MVP readiness audit, fixture-driven WPF launch support, WPF shell smoke testing, WPF fixture scan smoke testing, WPF display-limit smoke testing, WPF review interaction smoke testing, WPF review toolbar layout polish, the MVP preflight script, CI MVP preflight workflow, and the MVP fixture review launcher are implemented and verified. Quarantine remains preview-only; no cleanup execution, manifest writing, or Undo Quarantine execution exists.
 
 ## Next recommended work
 
 1. Run `.\tools\Start-MvpFixtureReview.ps1`, confirm the launched app shows Fixture Cleanup Scope, click `Scan`, and manually inspect layout, visible wording, Storage Review Search, Storage Review Display Window controls, the `Parent` column, Selected Path Hierarchy Context, Selected File Content Preview, Selected Path Review Guidance, export dialogs, Safety Summary shortcuts, Review Shortlist, Shortlist shown, Remove shown, Quarantine Preview, Review Mix, Access issues filter, category filter, No category filter, and filter wording.
 2. Use `README.md` and `docs/features/2026-05-28-mvp-readiness-audit.md` to rerun the WPF app against `C:\Users\moxhe`; confirm `Scan` is disabled until the real-profile preflight acknowledgement is checked.
-3. After the CI workflow commit is pushed, check the GitHub Actions MVP Preflight run and inspect any hosted-runner differences.
-4. Run `.\tools\Invoke-MvpPreflight.ps1` before any later real-profile scan if the worktree changes.
-5. Rerun the real scan and check whether the cleanup scope root row, `Parent`, `Contents`, and `Access` columns, `access:readable` / `access:access issue` search, Previous rows / Next rows, selected-row parent/depth/access context, cache-specific Review guidance, and `Preview file` action make unfamiliar rows easier to triage.
-6. Retest the Quarantine Readiness UI with a real scan and confirm broad-parent protected descendant blockers and draft/readiness wording are understandable.
-7. Defer actual Quarantine and Undo Quarantine execution until scan review, preview semantics, confirmation semantics, and restore rules are trustworthy.
-8. Revisit .NET 10 before packaging or long-term distribution.
+3. Run `.\tools\Invoke-MvpPreflight.ps1` before any later real-profile scan if the worktree changes.
+4. Rerun the real scan and check whether the cleanup scope root row, `Parent`, `Contents`, and `Access` columns, `access:readable` / `access:access issue` search, Previous rows / Next rows, selected-row parent/depth/access context, cache-specific Review guidance, and `Preview file` action make unfamiliar rows easier to triage.
+5. Retest the Quarantine Readiness UI with a real scan and confirm broad-parent protected descendant blockers and draft/readiness wording are understandable.
+6. Defer actual Quarantine and Undo Quarantine execution until scan review, preview semantics, confirmation semantics, and restore rules are trustworthy.
+7. Revisit .NET 10 before packaging or long-term distribution.
 
 ## Completed packets
 
@@ -2913,6 +2912,7 @@ Verification:
 
 - `dotnet build WindowsFileCleaner.sln --no-restore` passed with 0 warnings and 0 errors.
 - `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\Invoke-MvpPreflight.ps1` passed.
+- GitHub Actions `MVP Preflight` run `26575441204` for commit `711cfb6` completed with conclusion `success`.
 
 Docs updated:
 
@@ -2926,7 +2926,7 @@ ADRs:
 
 Open questions:
 
-- Does the hosted Windows runner have any WPF test differences from the local environment?
+- None.
 
 Rejected ideas buffer:
 
