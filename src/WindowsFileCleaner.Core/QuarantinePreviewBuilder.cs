@@ -92,7 +92,56 @@ public static class QuarantinePreviewBuilder
             blockers.Add("Only rows recommended as Quarantine candidate are included.");
         }
 
+        if (blockers.Count == 0)
+        {
+            var blockedDescendants = FindBlockedDescendants(entry).ToArray();
+            if (blockedDescendants.Length > 0)
+            {
+                blockers.Add(FormatBlockedDescendantReason(blockedDescendants));
+            }
+        }
+
         return blockers;
+    }
+
+    private static IEnumerable<StorageEntry> FindBlockedDescendants(StorageEntry entry)
+    {
+        foreach (var child in entry.Children)
+        {
+            if (IsBlockedDescendant(child))
+            {
+                yield return child;
+            }
+
+            foreach (var descendant in FindBlockedDescendants(child))
+            {
+                yield return descendant;
+            }
+        }
+    }
+
+    private static bool IsBlockedDescendant(StorageEntry entry)
+    {
+        return !entry.IsAccessible
+            || entry.IsReparsePoint
+            || entry.ImportanceRating == ImportanceRating.HighRisk
+            || entry.BloatCategories.Contains(BloatCategory.ProtectedLocation)
+            || entry.BloatCategories.Contains(BloatCategory.ReparsePoint)
+            || entry.BloatCategories.Contains(BloatCategory.AccessIssue)
+            || entry.BloatCategories.Contains(BloatCategory.CleanupScopeRoot);
+    }
+
+    private static string FormatBlockedDescendantReason(IReadOnlyList<StorageEntry> blockedDescendants)
+    {
+        var examples = blockedDescendants
+            .Take(3)
+            .Select(entry => entry.FullPath)
+            .ToArray();
+        var suffix = blockedDescendants.Count > examples.Length
+            ? $" and {blockedDescendants.Count - examples.Length:N0} more"
+            : "";
+
+        return $"Contains protected, high-risk, inaccessible, or reparse-point descendant rows: {string.Join("; ", examples)}{suffix}. Select narrower reviewed child rows instead.";
     }
 
     private static string BuildDestinationPath(string cleanupScopePath, string quarantineRootPath, string sourcePath)

@@ -6,7 +6,7 @@ Use it to preserve what was completed, what was verified, what was rejected, and
 
 ## Current status
 
-Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. Cleanup Scope Safety Note, Cleanup Scope Scan Gate, Cleanup Scope Root classification, review filters, Review View Reset, Storage Review Search with field prefixes, Storage Entry Type Filter, Storage Review Display Limit wording, Storage Review Size Note, selected-folder child breakdown, selected-path inspection actions, Selected Path Hierarchy Context, Selected Row Contents Context, Selected File Content Preview, Selected Path Review Guidance including cache-specific guidance and scope-root guidance, CSV export including active search, searched filenames, and hierarchy/contents context, Review Mix, Storage Scan Safety Summary, Safety Summary review shortcuts, Access issues filtering, Bloat Category Filter, Large old file classification, No category filtering, Review Shortlist, Shortlist shown, Remove shown, Quarantine Preview, Quarantine Preview CSV export, Restore Manifest Draft, Quarantine Confirmation Draft, Quarantine Readiness UI, conservative app data classification, read-only safety regression checks, the MVP runbook, the MVP readiness audit, fixture-driven WPF launch support, WPF shell smoke testing, WPF fixture scan smoke testing, WPF display-limit smoke testing, WPF review interaction smoke testing, WPF review toolbar layout polish, the MVP preflight script, and the MVP fixture review launcher are implemented and verified. Quarantine remains preview-only; no cleanup execution, manifest writing, or Undo Quarantine execution exists.
+Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. Cleanup Scope Safety Note, Cleanup Scope Scan Gate, Cleanup Scope Root classification, review filters, Review View Reset, Storage Review Search with field prefixes, Storage Entry Type Filter, Storage Review Display Limit wording, Storage Review Size Note, selected-folder child breakdown, selected-path inspection actions, Selected Path Hierarchy Context, Selected Row Contents Context, Selected File Content Preview, Selected Path Review Guidance including cache-specific guidance and scope-root guidance, CSV export including active search, searched filenames, and hierarchy/contents context, Review Mix, Storage Scan Safety Summary, Safety Summary review shortcuts, Access issues filtering, Bloat Category Filter, Large old file classification, No category filtering, Review Shortlist, Shortlist shown, Remove shown, Quarantine Preview with protected-descendant blocking, Quarantine Preview CSV export, Restore Manifest Draft, Quarantine Confirmation Draft, Quarantine Readiness UI, conservative app data classification, read-only safety regression checks, the MVP runbook, the MVP readiness audit, fixture-driven WPF launch support, WPF shell smoke testing, WPF fixture scan smoke testing, WPF display-limit smoke testing, WPF review interaction smoke testing, WPF review toolbar layout polish, the MVP preflight script, and the MVP fixture review launcher are implemented and verified. Quarantine remains preview-only; no cleanup execution, manifest writing, or Undo Quarantine execution exists.
 
 ## Next recommended work
 
@@ -14,7 +14,7 @@ Storage Scan MVP packet implemented and tested by the user against `C:\Users\mox
 2. Use `README.md` and `docs/features/2026-05-28-mvp-readiness-audit.md` to rerun the WPF app against `C:\Users\moxhe`; confirm `Scan` is disabled until the real-profile preflight acknowledgement is checked.
 3. Run `.\tools\Invoke-MvpPreflight.ps1` before any later real-profile scan if the worktree changes.
 4. Rerun the real scan and check whether the cleanup scope root row, `Parent` column, selected-row parent/depth context, contents counts, cache-specific Review guidance, and `Preview file` action make unfamiliar rows easier to triage.
-5. Retest the Quarantine Readiness UI with a real scan and confirm the draft/readiness wording is understandable.
+5. Retest the Quarantine Readiness UI with a real scan and confirm broad-parent protected descendant blockers and draft/readiness wording are understandable.
 6. Defer actual Quarantine and Undo Quarantine execution until scan review, preview semantics, confirmation semantics, and restore rules are trustworthy.
 7. Revisit .NET 10 before packaging or long-term distribution.
 
@@ -2398,3 +2398,48 @@ Rejected ideas buffer:
 
 - Do not infer Cleanup Scope Root solely from `C:\Users` path shape.
 - Do not allow the scope root into cleanup execution or quarantine.
+
+### 2026-05-28: Add Quarantine Preview Protected Descendant Blocker
+
+Status: completed
+
+Evidence:
+
+- Broad cache-like rows can contain protected descendants, including Codex runtime data.
+- A broad parent row may otherwise appear to be a Quarantine candidate even though moving it would also move protected child data.
+- Quarantine Preview already has the scanned child tree in memory, so it can block broad parent preview without touching the filesystem again.
+
+Implementation:
+
+- Added descendant blocker checks to `QuarantinePreviewBuilder`.
+- Blocked parent preview when descendants are protected, high-risk, inaccessible, reparse points, or Cleanup Scope Roots.
+- Added blocked reason text with example descendant paths and guidance to select narrower reviewed child rows.
+- Added fixture coverage for a synthetic `.cache` parent containing protected `codex-runtimes` data.
+- No cleanup execution, Quarantine execution, Undo Quarantine, manifest writing, scanner traversal, real-profile automation, or additional filesystem reads were added.
+
+Verification:
+
+- `dotnet build WindowsFileCleaner.sln --no-restore` passed with 0 warnings and 0 errors.
+- `dotnet run --project tests\WindowsFileCleaner.Tests\WindowsFileCleaner.Tests.csproj --no-build` passed after rebuilding.
+- `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\Invoke-MvpPreflight.ps1` passed.
+
+Docs updated:
+
+- `README.md`
+- `docs/domain/context.md`
+- `docs/domain/glossary.md`
+- `docs/features/2026-05-28-quarantine-preview-protected-descendant-blocker.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No new ADR. This is a conservative read-only preview rule within existing Quarantine Preview behavior.
+
+Open questions:
+
+- In the next real scan, are broad cache-parent blocker reasons readable enough when paths are long?
+
+Rejected ideas buffer:
+
+- Do not rescan the filesystem from Quarantine Preview to discover blockers.
+- Do not allow a broad parent to be included just because the parent row itself is a Quarantine candidate.

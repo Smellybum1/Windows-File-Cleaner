@@ -1134,6 +1134,7 @@ It does not create folders, write manifests, move files, delete files, or approv
 
 - Preview a Review Shortlist and show that `old-installer.msi` would move under `D:\WindowsFileCleanerQuarantine`.
 - Block a high-risk browser profile row from the preview.
+- Block a broad `.cache` parent row when its scanned subtree contains protected Codex runtime data.
 - Mark a child row as redundant when its selected parent is already included.
 
 #### Non-examples
@@ -1168,6 +1169,7 @@ It does not create folders, write manifests, move files, delete files, or approv
 - Do not create the quarantine folder or restore manifest during preview.
 - Compute previewed bytes from non-overlapping included rows only.
 - Block high-risk, inaccessible, reparse-point, outside-scope, protected-location, and non-quarantine-candidate rows.
+- Block parent rows that contain protected, high-risk, inaccessible, reparse-point, or Cleanup Scope Root descendants.
 
 ### Scan Report Export
 

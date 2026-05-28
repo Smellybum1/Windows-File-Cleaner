@@ -111,7 +111,7 @@ After the app opens:
 14. Try category filters such as Cleanup scope root, App cache, Python package cache, GPU shader cache, Large old file, Windows app data, Installed application, Game data, Protected location, and No category.
 15. Use `Reset view` after stacking filters/search; it clears the review lens but keeps Review Shortlist.
 16. Add a likely-safe cleanup candidate to the Review Shortlist, or use `Shortlist shown` / `Remove shown` only after narrowing the grid to rows you intentionally want to review.
-17. Click `Preview quarantine` and confirm the preview, Restore Manifest Draft, and Quarantine Confirmation Draft all say no files were modified and execution is not implemented.
+17. Click `Preview quarantine` and confirm broad parent rows are blocked when protected descendants are present; Restore Manifest Draft and Quarantine Confirmation Draft should still say no files were modified and execution is not implemented.
 18. Export CSV reports only when you intentionally choose an output file; the main report export follows the active filters/search, includes parent/depth context for recursive rows, and the suggested filename includes the search term when one is active.
 
 ## Current Workflow

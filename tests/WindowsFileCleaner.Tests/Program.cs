@@ -17,6 +17,7 @@ tests.StorageScanSafetySummaryHighlightsReviewBoundaries();
 tests.StorageScanSafetyShortcutsMapToReadOnlyFilters();
 tests.ReviewShortlistTracksSelectedRowsWithoutModifyingReview();
 tests.QuarantinePreviewBuildsReadOnlyPlanFromShortlist();
+tests.QuarantinePreviewBlocksParentsWithProtectedDescendants();
 tests.QuarantinePreviewCsvExporterWritesReviewReport();
 tests.RestoreManifestDraftBuildsJsonUndoMetadataFromIncludedPreviewRows();
 tests.QuarantineConfirmationDraftChecksPreviewAndManifestReadiness();
@@ -704,6 +705,37 @@ internal sealed class StorageScanTests
         Assert(nonCandidatePreview.Disposition == QuarantinePreviewDisposition.Blocked, "Non-candidate row should be blocked.");
         Assert(nonCandidatePreview.Reasons.Any(reason => reason.Contains("Quarantine candidate", StringComparison.OrdinalIgnoreCase)), "Non-candidate row should explain recommendation blocking.");
         Assert(!Directory.Exists(quarantineRoot), "Preview should not create the quarantine root folder.");
+    }
+
+    public void QuarantinePreviewBlocksParentsWithProtectedDescendants()
+    {
+        using var fixture = TestFixture.Create();
+
+        fixture.WriteFile(@".cache\general-cache.bin", 1024 * 1024, DateTimeOffset.UtcNow.AddDays(-30));
+        fixture.WriteFile(@".cache\codex-runtimes\python.exe", 1024, DateTimeOffset.UtcNow);
+
+        var scanner = new StorageScanner();
+        var result = scanner.Scan(new StorageScanOptions(fixture.RootPath));
+        var review = StorageScanReviewBuilder.Build(result);
+        var cacheParent = SingleReviewEntry(review.Entries, @".cache");
+        var codexRuntime = SingleReviewEntry(review.Entries, @"codex-runtimes");
+        var quarantineRoot = Path.Combine(fixture.RootPath, "quarantine-root");
+
+        Assert(cacheParent.Entry.DeletionRecommendation == DeletionRecommendation.QuarantineCandidate, "Synthetic cache parent should otherwise look eligible.");
+        Assert(codexRuntime.Entry.BloatCategories.Contains(BloatCategory.ProtectedLocation), "Codex runtime descendant should be protected.");
+
+        var preview = QuarantinePreviewBuilder.Build([cacheParent], fixture.RootPath, quarantineRoot);
+        var cachePreview = preview.Entries.Single();
+
+        Assert(preview.IncludedCount == 0, "Preview should not include a parent that contains protected descendants.");
+        Assert(preview.BlockedCount == 1, "Preview should block the broad parent row.");
+        Assert(cachePreview.Disposition == QuarantinePreviewDisposition.Blocked, "Cache parent should be blocked because of its protected descendant.");
+        Assert(
+            cachePreview.Reasons.Any(reason =>
+                reason.Contains("descendant", StringComparison.OrdinalIgnoreCase)
+                && reason.Contains("codex-runtimes", StringComparison.OrdinalIgnoreCase)),
+            "Blocked parent should explain the protected descendant evidence.");
+        Assert(!Directory.Exists(quarantineRoot), "Blocked descendant preview should not create the quarantine root folder.");
     }
 
     public void QuarantinePreviewCsvExporterWritesReviewReport()
