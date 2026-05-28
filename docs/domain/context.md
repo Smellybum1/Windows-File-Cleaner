@@ -538,6 +538,46 @@ Initial actions are copying the selected path and opening the selected path in F
 - Keep inspection actions separate from Cleanup Actions.
 - Status messages should state that no files were modified.
 
+### Selected Path Review Guidance
+
+Status: draft
+Last reviewed: 2026-05-28
+
+#### Definition
+
+Selected Path Review Guidance is read-only wording shown for the currently selected Storage Scan row. It explains the safest next review step for that row, based on access status, reparse-point status, Bloat Categories, Importance Rating, and Deletion Recommendation.
+
+#### Examples
+
+- Tell the user to inspect children instead of shortlisting a whole profile container.
+- Tell the user to keep Protected Location rows by default.
+- Tell the user that a Quarantine candidate may be added to Review Shortlist only after recognition and review.
+- Tell the user to classify Uncategorized Results before cleanup.
+
+#### Non-examples
+
+- A Cleanup Action.
+- Cleanup approval.
+- A replacement for category evidence or Child Breakdown.
+- A persisted user decision.
+
+#### Lifecycle
+
+- Generated when a Storage Scan result row is selected.
+- Updates when selection changes.
+- Remains read-only and is discarded with the current in-memory scan state.
+
+#### Relationships
+
+- Uses Storage Scan results, Bloat Categories, Importance Ratings, Deletion Recommendations, Protected Locations, Access issues, Reparse points, Review Shortlist, Quarantine Preview, and Child Breakdown.
+- Supports manual review before any future Cleanup Action.
+
+#### Code implications
+
+- Use `SelectedPathReviewGuidance` and `SelectedPathReviewGuidanceBuilder`.
+- Keep guidance conservative and action-oriented.
+- Do not let guidance create, move, delete, quarantine, restore, or persist files.
+
 ### Review Shortlist
 
 Status: draft
@@ -1075,6 +1115,7 @@ The app should help the user understand what is inside a folder before rating it
 Implementation implications:
 
 - The scan should show folder contents, size contributors, modified dates, and category evidence where feasible.
+- The selected row should explain the safest next review step through Selected Path Review Guidance.
 - Protected Locations can be shown for awareness but should default to high importance.
 - Recommendations should be explainable, not just a score.
 

@@ -66,6 +66,8 @@ public partial class MainWindow : Window
 
     public string FilterSummaryTextValue => FilterSummaryText.Text;
 
+    public string DetailGuidanceTextValue => DetailGuidanceText.Text;
+
     public string QuarantinePreviewTextValue => QuarantinePreviewText.Text;
 
     public string? SelectedRowFullPath => _selectedRow?.FullPath;
@@ -458,6 +460,7 @@ public partial class MainWindow : Window
             DetailPathText.Text = "";
             DetailMetaText.Text = "";
             DetailEvidenceText.Text = "";
+            DetailGuidanceText.Text = "";
             DetailChildrenText.Text = "";
             CopyPathButton.IsEnabled = false;
             OpenInExplorerButton.IsEnabled = false;
@@ -472,6 +475,7 @@ public partial class MainWindow : Window
         DetailEvidenceText.Text = string.IsNullOrWhiteSpace(row.Error)
             ? row.Evidence
             : $"{row.Evidence}\n\nAccess issue: {row.Error}";
+        DetailGuidanceText.Text = FormatSelectedPathReviewGuidance(row.Entry);
         DetailChildrenText.Text = FormatChildSummary(row.Entry);
         CopyPathButton.IsEnabled = true;
         OpenInExplorerButton.IsEnabled = true;
@@ -966,6 +970,12 @@ public partial class MainWindow : Window
             Environment.NewLine,
             children.Select(child =>
                 $"{child.Name} | {child.SizeDisplay} | {FormatImportance(child.ImportanceRating)} | {FormatRecommendation(child.DeletionRecommendation)} | {FormatCategories(child.BloatCategories)}"));
+    }
+
+    private static string FormatSelectedPathReviewGuidance(StorageEntry entry)
+    {
+        var guidance = SelectedPathReviewGuidanceBuilder.Build(entry);
+        return $"{guidance.ActionLabel}: {string.Join(" ", guidance.Notes)}";
     }
 
     private static string FormatImportance(ImportanceRating rating)

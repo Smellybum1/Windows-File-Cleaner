@@ -16,6 +16,7 @@ tests.RestoreManifestDraftBuildsJsonUndoMetadataFromIncludedPreviewRows();
 tests.QuarantineConfirmationDraftChecksPreviewAndManifestReadiness();
 tests.QuarantineConfirmationDraftReportsPreviewAndManifestBlockers();
 tests.ChildSummaryShowsLargestImmediateChildren();
+tests.SelectedPathReviewGuidanceExplainsReviewNextSteps();
 tests.PathInspectionPlanBuildsExplorerArguments();
 tests.CsvExporterWritesEscapedReviewRows();
 tests.ByteSizeFormatterUsesReadableUnits();
@@ -626,6 +627,88 @@ internal sealed class StorageScanTests
 
         var file = Flatten(result.Root).Single(entry => entry.Name.Equals("outside.bin", StringComparison.OrdinalIgnoreCase));
         Assert(StorageChildSummaryBuilder.Build(file).Count == 0, "Files should not have child summaries.");
+    }
+
+    public void SelectedPathReviewGuidanceExplainsReviewNextSteps()
+    {
+        var now = DateTimeOffset.UtcNow;
+        var profile = new StorageEntry(
+            @"C:\Users\moxhe",
+            "moxhe",
+            IsDirectory: true,
+            SizeBytes: 1024,
+            LastModifiedUtc: now,
+            IsAccessible: true,
+            IsReparsePoint: false,
+            ErrorMessage: null,
+            BloatCategories: [BloatCategory.ProfileContainer],
+            ImportanceRating: ImportanceRating.Caution,
+            DeletionRecommendation: DeletionRecommendation.Inspect,
+            Evidence: "Profile container.",
+            Children: []);
+        var protectedEntry = new StorageEntry(
+            @"C:\Users\moxhe\Documents",
+            "Documents",
+            IsDirectory: true,
+            SizeBytes: 1024,
+            LastModifiedUtc: now,
+            IsAccessible: true,
+            IsReparsePoint: false,
+            ErrorMessage: null,
+            BloatCategories: [BloatCategory.ProtectedLocation],
+            ImportanceRating: ImportanceRating.HighRisk,
+            DeletionRecommendation: DeletionRecommendation.Keep,
+            Evidence: "Protected location.",
+            Children: []);
+        var installer = new StorageEntry(
+            @"C:\Users\moxhe\Downloads\old-installer.msi",
+            "old-installer.msi",
+            IsDirectory: false,
+            SizeBytes: 1024,
+            LastModifiedUtc: now.AddDays(-120),
+            IsAccessible: true,
+            IsReparsePoint: false,
+            ErrorMessage: null,
+            BloatCategories: [BloatCategory.OldDownload, BloatCategory.InstallerCache],
+            ImportanceRating: ImportanceRating.LikelySafe,
+            DeletionRecommendation: DeletionRecommendation.QuarantineCandidate,
+            Evidence: "Old installer.",
+            Children: []);
+        var uncategorized = new StorageEntry(
+            @"C:\Users\moxhe\Unknown\notes.txt",
+            "notes.txt",
+            IsDirectory: false,
+            SizeBytes: 1024,
+            LastModifiedUtc: now,
+            IsAccessible: true,
+            IsReparsePoint: false,
+            ErrorMessage: null,
+            BloatCategories: [],
+            ImportanceRating: ImportanceRating.Caution,
+            DeletionRecommendation: DeletionRecommendation.Inspect,
+            Evidence: "No cleanup-specific category matched this file.",
+            Children: []);
+
+        var profileGuidance = SelectedPathReviewGuidanceBuilder.Build(profile);
+        Assert(profileGuidance.ActionLabel == "Inspect children, not the container", "Profile containers should direct review to child rows.");
+        Assert(
+            profileGuidance.Notes.Any(note => note.Contains("whole profile container", StringComparison.OrdinalIgnoreCase)),
+            "Profile guidance should warn against whole-container cleanup.");
+
+        var protectedGuidance = SelectedPathReviewGuidanceBuilder.Build(protectedEntry);
+        Assert(protectedGuidance.ActionLabel == "Keep by default", "Protected rows should be keep-by-default guidance.");
+        Assert(
+            protectedGuidance.Notes.Any(note => note.Contains("specific reviewed cache rows", StringComparison.OrdinalIgnoreCase)),
+            "Protected guidance should steer cleanup toward specific reviewed cache rows later.");
+
+        var installerGuidance = SelectedPathReviewGuidanceBuilder.Build(installer);
+        Assert(installerGuidance.ActionLabel == "Shortlist after review", "Likely-safe quarantine candidates should still require review before shortlisting.");
+        Assert(
+            installerGuidance.Notes.Any(note => note.Contains("not deletion approval", StringComparison.OrdinalIgnoreCase)),
+            "Quarantine candidate guidance should not imply deletion approval.");
+
+        var uncategorizedGuidance = SelectedPathReviewGuidanceBuilder.Build(uncategorized);
+        Assert(uncategorizedGuidance.ActionLabel == "Classify before cleanup", "Uncategorized rows should require classification before cleanup.");
     }
 
     public void PathInspectionPlanBuildsExplorerArguments()

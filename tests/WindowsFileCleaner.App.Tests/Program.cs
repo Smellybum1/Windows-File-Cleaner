@@ -191,6 +191,12 @@ internal sealed class MainWindowSmokeTests
 
             Assert(window.SelectDisplayedPath(installer.FullPath), "Fixture installer should be selectable in WPF results.");
             Assert(window.SelectedRowFullPath == installer.FullPath, "Selecting a displayed row should update selected path state.");
+            Assert(
+                window.DetailGuidanceTextValue.Contains("Shortlist after review", StringComparison.OrdinalIgnoreCase),
+                "Selecting a quarantine candidate should show review guidance before shortlisting.");
+            Assert(
+                window.DetailGuidanceTextValue.Contains("not deletion approval", StringComparison.OrdinalIgnoreCase),
+                "Selected-row review guidance should not imply deletion approval.");
             Assert(window.CanAddSelectedRowToReviewShortlist, "Selected fixture installer should be addable to Review Shortlist.");
             Assert(!window.CanPreviewQuarantine, "Quarantine Preview should be disabled before a shortlist exists.");
 

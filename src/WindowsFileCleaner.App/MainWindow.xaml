@@ -322,6 +322,12 @@
                             <TextBlock x:Name="DetailEvidenceText"
                                        Text=""
                                        TextWrapping="Wrap" />
+                            <TextBlock Text="Review guidance"
+                                       FontWeight="SemiBold"
+                                       Margin="0,18,0,4" />
+                            <TextBlock x:Name="DetailGuidanceText"
+                                       Text=""
+                                       TextWrapping="Wrap" />
                             <TextBlock Text="Largest immediate children"
                                        FontWeight="SemiBold"
                                        Margin="0,18,0,4" />

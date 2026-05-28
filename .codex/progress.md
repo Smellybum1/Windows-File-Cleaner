@@ -6,11 +6,11 @@ Use it to preserve what was completed, what was verified, what was rejected, and
 
 ## Current status
 
-Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. Review filters, selected-folder child breakdown, selected-path inspection actions, CSV export, Review Mix, Storage Scan Safety Summary, Safety Summary review shortcuts, Access issues filtering, Bloat Category Filter, No category filtering, Review Shortlist, Quarantine Preview, Quarantine Preview CSV export, Restore Manifest Draft, Quarantine Confirmation Draft, Quarantine Readiness UI, conservative app data classification, read-only safety regression checks, the MVP runbook, the MVP readiness audit, fixture-driven WPF launch support, WPF shell smoke testing, WPF fixture scan smoke testing, WPF review interaction smoke testing, WPF review toolbar layout polish, the MVP preflight script, and the MVP fixture review launcher are implemented and verified. Quarantine remains preview-only; no cleanup execution, manifest writing, or Undo Quarantine execution exists.
+Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. Review filters, selected-folder child breakdown, selected-path inspection actions, Selected Path Review Guidance, CSV export, Review Mix, Storage Scan Safety Summary, Safety Summary review shortcuts, Access issues filtering, Bloat Category Filter, No category filtering, Review Shortlist, Quarantine Preview, Quarantine Preview CSV export, Restore Manifest Draft, Quarantine Confirmation Draft, Quarantine Readiness UI, conservative app data classification, read-only safety regression checks, the MVP runbook, the MVP readiness audit, fixture-driven WPF launch support, WPF shell smoke testing, WPF fixture scan smoke testing, WPF review interaction smoke testing, WPF review toolbar layout polish, the MVP preflight script, and the MVP fixture review launcher are implemented and verified. Quarantine remains preview-only; no cleanup execution, manifest writing, or Undo Quarantine execution exists.
 
 ## Next recommended work
 
-1. Run `.\tools\Start-MvpFixtureReview.ps1`, click `Scan` in the launched fixture app, and manually inspect layout, visible wording, export dialogs, Safety Summary shortcuts, Review Shortlist, Quarantine Preview, Review Mix, Access issues filter, category filter, No category filter, and filter wording.
+1. Run `.\tools\Start-MvpFixtureReview.ps1`, click `Scan` in the launched fixture app, and manually inspect layout, visible wording, Selected Path Review Guidance, export dialogs, Safety Summary shortcuts, Review Shortlist, Quarantine Preview, Review Mix, Access issues filter, category filter, No category filter, and filter wording.
 2. Use `README.md` and `docs/features/2026-05-28-mvp-readiness-audit.md` to rerun the WPF app against `C:\Users\moxhe`.
 3. Run `.\tools\Invoke-MvpPreflight.ps1` before any later real-profile scan if the worktree changes.
 4. Rerun the real scan and check whether Windows app data, installed applications, and game data labels make the large app/game rows easier to triage.
@@ -1461,3 +1461,49 @@ Rejected ideas buffer:
 - Do not make the launcher scan automatically.
 - Do not point the launcher at `C:\Users\moxhe`.
 - Do not make fixture creation happen from production app code.
+
+### 2026-05-28: Add Selected Path Review Guidance
+
+Status: completed
+
+Evidence:
+
+- The user-tested real scan showed very large rows where `Caution` plus passive evidence was not enough to guide review.
+- Existing selected-row detail already showed evidence and Child Breakdown, so the smallest improvement was next-step wording for the selected path.
+
+Implementation:
+
+- Added `SelectedPathReviewGuidance` and `SelectedPathReviewGuidanceBuilder`.
+- Added a Review guidance section to the WPF selected-row detail pane.
+- Guidance covers access issues, reparse points, profile containers, protected/high-risk rows, quarantine candidates, cache/package rows, Uncategorized Results, and generic evidence review.
+- Added core guidance coverage and WPF smoke coverage that selected Quarantine candidates show guidance before shortlisting.
+- No cleanup execution, Quarantine execution, Undo Quarantine, manifest writing, or real-profile automation was added.
+
+Verification:
+
+- `dotnet build WindowsFileCleaner.sln --no-restore` passed.
+- `dotnet run --project tests\WindowsFileCleaner.Tests\WindowsFileCleaner.Tests.csproj --no-build` passed.
+- `dotnet run --project tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj --no-build` passed.
+- `git -c safe.directory='D:/Codex/Windows File Cleaner' diff --check` passed with line-ending normalization warnings only.
+
+Docs updated:
+
+- `README.md`
+- `docs/domain/context.md`
+- `docs/domain/glossary.md`
+- `docs/features/2026-05-28-selected-path-review-guidance.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No new ADR. This is a reversible selected-row review improvement and does not change architecture, persistence, security, deployment, or cleanup execution.
+
+Open questions:
+
+- Should guidance become user-customizable after actual cleanup execution exists?
+
+Rejected ideas buffer:
+
+- Do not turn selected-row guidance into cleanup approval language.
+- Do not hide High risk rows; explain the safest next review step.
+- Do not use Selected Path Review Guidance as a cleanup executor.

@@ -97,7 +97,7 @@ After the app opens:
 3. Confirm the status says no files were modified.
 4. Review the summary cards for total size, folders, files, and access issues.
 5. Use Review Mix and Safety Summary to inspect high-risk, protected, access issue, reparse point, quarantine candidate, and no-category rows.
-6. Select large folders and inspect Evidence plus Largest immediate children.
+6. Select large folders and inspect Evidence, Review guidance, and Largest immediate children.
 7. Try category filters such as App cache, Python package cache, GPU shader cache, Windows app data, Installed application, Game data, Protected location, and No category.
 8. Add a likely-safe cleanup candidate to the Review Shortlist.
 9. Click `Preview quarantine` and confirm the preview, Restore Manifest Draft, and Quarantine Confirmation Draft all say no files were modified and execution is not implemented.
@@ -112,7 +112,7 @@ The intended review flow is:
 3. Run Storage Scan.
 4. Inspect high-risk and protected rows first.
 5. Use category filters to understand large buckets.
-6. Use Child Breakdown and Open in Explorer for manual inspection.
+6. Use Selected Path Review Guidance, Child Breakdown, and Open in Explorer for manual inspection.
 7. Add interesting rows to Review Shortlist.
 8. Generate Quarantine Preview for read-only readiness review.
 9. Stop before cleanup execution.
