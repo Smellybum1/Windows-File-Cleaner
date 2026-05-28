@@ -56,7 +56,7 @@ dotnet run --project src\WindowsFileCleaner.App -- --scope "D:\Codex\Windows Fil
 
 This only fills the Cleanup Scope box. Click `Scan` yourself after the app opens.
 
-The automated `WindowsFileCleaner.App.Tests` project also scans a synthetic fixture through the WPF shell, but it does not replace checking the visible layout and controls by eye.
+The automated `WindowsFileCleaner.App.Tests` project also scans a synthetic fixture through the WPF shell and exercises read-only review interactions, but it does not replace checking the visible layout and controls by eye.
 
 ## Run The App
 

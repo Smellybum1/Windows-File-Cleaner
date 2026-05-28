@@ -23,6 +23,7 @@ internal static class Program
                 tests.MainWindowDefaultsToCurrentUserCleanupScope();
                 tests.MainWindowUsesLaunchCleanupScopeWithoutStartingScan();
                 tests.MainWindowRunsFixtureStorageScanThroughWpfShell();
+                tests.MainWindowRunsFixtureReviewInteractionsThroughWpfShell();
             }
             finally
             {
@@ -127,6 +128,83 @@ internal sealed class MainWindowSmokeTests
                 rows.Any(row => row.Categories.Contains("Python package cache", StringComparison.OrdinalIgnoreCase)),
                 "Fixture scan should surface Python package cache category evidence.");
             Assert(File.Exists(fixture.MarkerPath), "Fixture marker file should still exist after the read-only scan.");
+        }
+        finally
+        {
+            window.Close();
+        }
+    }
+
+    public void MainWindowRunsFixtureReviewInteractionsThroughWpfShell()
+    {
+        using var fixture = SmokeFixture.Create();
+        var window = new MainWindow(fixture.RootPath);
+        try
+        {
+            RunDispatcherTask(() => window.RunStorageScanForCurrentScopeAsync());
+
+            window.ApplyStorageReviewFilter(StorageReviewFilter.QuarantineCandidates);
+            Assert(window.FilterSummaryTextValue.Contains("Quarantine candidates:", StringComparison.OrdinalIgnoreCase), "Quarantine candidate filter should update the filter summary.");
+            Assert(window.DisplayedRows.Count > 0, "Quarantine candidate filter should show fixture rows.");
+            Assert(
+                window.DisplayedRows.All(row => row.Recommendation == "Quarantine candidate"),
+                "Quarantine candidate filter should only show quarantine candidates.");
+
+            window.ApplyBloatCategoryFilter(StorageCategoryFilter.ForCategory(BloatCategory.InstallerCache));
+            Assert(window.FilterSummaryTextValue.Contains("Installer cache", StringComparison.OrdinalIgnoreCase), "Category filter should update the filter summary.");
+            Assert(
+                window.DisplayedRows.All(row => row.Categories.Contains("Installer cache", StringComparison.OrdinalIgnoreCase)),
+                "Installer cache category filter should only show installer cache rows.");
+
+            window.ApplySafetyReviewShortcut(StorageScanSafetyShortcut.ProtectedLocations);
+            Assert(window.CurrentStatusText.Contains("Review shortcut applied", StringComparison.OrdinalIgnoreCase), "Safety shortcut should report a read-only review action.");
+            Assert(window.FilterSummaryTextValue.Contains("Protected location", StringComparison.OrdinalIgnoreCase), "Protected shortcut should update the filter summary.");
+            Assert(
+                window.DisplayedRows.Count > 0 && window.DisplayedRows.All(row => row.Categories.Contains("Protected location", StringComparison.OrdinalIgnoreCase)),
+                "Protected shortcut should show protected rows.");
+
+            window.ApplySafetyReviewShortcut(StorageScanSafetyShortcut.Uncategorized);
+            Assert(window.FilterSummaryTextValue.Contains("No category", StringComparison.OrdinalIgnoreCase), "No-category shortcut should update the filter summary.");
+            Assert(
+                window.DisplayedRows.Count > 0 && window.DisplayedRows.All(row => row.Categories == "None"),
+                "No-category shortcut should show only uncategorized rows.");
+
+            window.ApplySafetyReviewShortcut(StorageScanSafetyShortcut.QuarantineCandidates);
+            var installer = window.DisplayedRows.Single(row =>
+                row.FullPath.EndsWith(@"Downloads\old-installer.msi", StringComparison.OrdinalIgnoreCase));
+
+            Assert(window.SelectDisplayedPath(installer.FullPath), "Fixture installer should be selectable in WPF results.");
+            Assert(window.SelectedRowFullPath == installer.FullPath, "Selecting a displayed row should update selected path state.");
+            Assert(window.CanAddSelectedRowToReviewShortlist, "Selected fixture installer should be addable to Review Shortlist.");
+            Assert(!window.CanPreviewQuarantine, "Quarantine Preview should be disabled before a shortlist exists.");
+
+            window.AddSelectedPathToReviewShortlist();
+            Assert(window.ReviewShortlistCount == 1, "Adding selected row should update Review Shortlist count.");
+            Assert(window.CanRemoveSelectedRowFromReviewShortlist, "Shortlisted row should be removable.");
+            Assert(window.CanPreviewQuarantine, "Quarantine Preview should be available after shortlisting a row.");
+            Assert(
+                window.DisplayedRows.Any(row => row.FullPath == installer.FullPath && row.Shortlist == "Yes"),
+                "Shortlisted row should be marked in the WPF grid.");
+
+            window.PreviewQuarantineForReviewShortlist();
+            Assert(window.CurrentStatusText.Contains("Quarantine Preview created", StringComparison.OrdinalIgnoreCase), "Preview action should update status text.");
+            Assert(window.CurrentStatusText.Contains("No files were modified", StringComparison.OrdinalIgnoreCase), "Preview status should preserve the read-only boundary.");
+            Assert(window.CanExportQuarantinePreview, "Quarantine Preview export should be enabled after preview creation.");
+            Assert(window.QuarantinePreviewTextValue.Contains("Included: 1", StringComparison.OrdinalIgnoreCase), "Preview pane should show one included fixture row.");
+            Assert(window.QuarantinePreviewTextValue.Contains("Restore Manifest Draft", StringComparison.OrdinalIgnoreCase), "Preview pane should show Restore Manifest Draft readiness.");
+            Assert(window.QuarantinePreviewTextValue.Contains("Quarantine Confirmation Draft", StringComparison.OrdinalIgnoreCase), "Preview pane should show Quarantine Confirmation Draft readiness.");
+            Assert(window.QuarantinePreviewTextValue.Contains("Execution implemented: no", StringComparison.OrdinalIgnoreCase), "Preview pane should state execution is not implemented.");
+            Assert(window.QuarantinePreviewTextValue.Contains("No files were modified", StringComparison.OrdinalIgnoreCase), "Preview pane should preserve the read-only boundary.");
+            Assert(File.Exists(installer.FullPath), "Shortlisted fixture installer should still exist after preview.");
+            Assert(File.Exists(fixture.MarkerPath), "Fixture marker file should still exist after review interactions.");
+
+            window.RemoveSelectedPathFromReviewShortlist();
+            Assert(window.ReviewShortlistCount == 0, "Removing selected row should clear Review Shortlist count.");
+            Assert(!window.CanPreviewQuarantine, "Quarantine Preview should be disabled after shortlist removal.");
+            Assert(!window.CanExportQuarantinePreview, "Quarantine Preview export should be disabled after shortlist removal clears preview state.");
+            Assert(
+                window.QuarantinePreviewTextValue.Contains("Preview and draft readiness appear", StringComparison.OrdinalIgnoreCase),
+                "Removing the shortlisted row should clear preview readiness text.");
         }
         finally
         {
