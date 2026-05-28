@@ -10,6 +10,11 @@ public sealed class StorageEntryRow
         Depth = depth;
     }
 
+    public StorageEntryRow(StorageReviewEntry reviewEntry)
+        : this(reviewEntry.Entry, reviewEntry.Depth)
+    {
+    }
+
     public StorageEntry Entry { get; }
     public int Depth { get; }
     public string Name => $"{new string(' ', Depth * 2)}{Entry.Name}";
@@ -54,10 +59,14 @@ public sealed class StorageEntryRow
         return category switch
         {
             BloatCategory.Unknown => "Unknown",
+            BloatCategory.ProfileContainer => "Profile container",
+            BloatCategory.ApplicationDataArea => "AppData area",
+            BloatCategory.BrowserData => "Browser data",
             BloatCategory.OldDownload => "Old download",
             BloatCategory.TemporaryFolder => "Temporary folder",
             BloatCategory.InstallerCache => "Installer cache",
             BloatCategory.AppCache => "App cache",
+            BloatCategory.GpuShaderCache => "GPU shader cache",
             BloatCategory.DuplicateFileCandidate => "Duplicate file candidate",
             BloatCategory.OldGameFile => "Old game file",
             BloatCategory.NodePackageCache => "Node package cache",
@@ -70,4 +79,3 @@ public sealed class StorageEntryRow
         };
     }
 }
-

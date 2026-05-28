@@ -3,6 +3,8 @@ using WindowsFileCleaner.Core;
 var tests = new StorageScanTests();
 tests.ScannerTotalsFilesAndClassifiesCandidates();
 tests.ScannerRefusesToLeaveCleanupScope();
+tests.ClassifierLabelsRealScanContainerPatterns();
+tests.ReviewBuilderSummarizesAndFiltersResults();
 tests.ByteSizeFormatterUsesReadableUnits();
 
 Console.WriteLine("All WindowsFileCleaner.Tests checks passed.");
@@ -46,6 +48,60 @@ internal sealed class StorageScanTests
 
         var outside = Path.GetFullPath(Path.Combine(fixture.RootPath, "..", "outside.txt"));
         Assert(!PathSafety.IsWithinScope(fixture.RootPath, outside), "Sibling path must not be inside Cleanup Scope.");
+    }
+
+    public void ClassifierLabelsRealScanContainerPatterns()
+    {
+        using var fixture = TestFixture.Create();
+
+        fixture.WriteFile(@"AppData\Local\pip\Cache\http-v2\response.body", 1024, DateTimeOffset.UtcNow.AddDays(-30));
+        fixture.WriteFile(@"AppData\Local\NVIDIA\DXCache\shader.bin", 2048, DateTimeOffset.UtcNow.AddDays(-5));
+        fixture.WriteFile(@"AppData\Local\Google\Chrome\User Data\Default\Preferences", 1024, DateTimeOffset.UtcNow);
+
+        var scanner = new StorageScanner();
+        var result = scanner.Scan(new StorageScanOptions(fixture.RootPath));
+        var rows = Flatten(result.Root).ToArray();
+
+        var pip = Single(rows, "pip");
+        Assert(pip.BloatCategories.Contains(BloatCategory.ApplicationDataArea), "pip should be marked as AppData area.");
+        Assert(pip.BloatCategories.Contains(BloatCategory.PythonPackageCache), "pip should be marked as Python package cache.");
+        Assert(pip.ImportanceRating == ImportanceRating.Caution, "pip cache container should stay caution.");
+
+        var dxCache = Single(rows, "DXCache");
+        Assert(dxCache.BloatCategories.Contains(BloatCategory.GpuShaderCache), "DXCache should be marked as GPU shader cache.");
+        Assert(dxCache.ImportanceRating == ImportanceRating.Caution, "GPU shader cache should stay caution.");
+
+        var userData = Single(rows, "User Data");
+        Assert(userData.BloatCategories.Contains(BloatCategory.BrowserData), "Browser User Data should be marked as browser data.");
+        Assert(userData.ImportanceRating == ImportanceRating.HighRisk, "Browser User Data should be high risk.");
+        Assert(userData.DeletionRecommendation == DeletionRecommendation.Keep, "Browser User Data should be kept.");
+    }
+
+    public void ReviewBuilderSummarizesAndFiltersResults()
+    {
+        using var fixture = TestFixture.Create();
+
+        fixture.WriteFile(@"Downloads\old-installer.msi", 1024 * 1024, DateTimeOffset.UtcNow.AddDays(-120));
+        fixture.WriteFile(@"AppData\Local\Temp\scratch.tmp", 1024, DateTimeOffset.UtcNow.AddDays(-2));
+        fixture.WriteFile(@".codex\config.json", 1024, DateTimeOffset.UtcNow);
+        fixture.WriteFile(@"Unknown\notes.txt", 1024, DateTimeOffset.UtcNow);
+
+        var scanner = new StorageScanner();
+        var result = scanner.Scan(new StorageScanOptions(fixture.RootPath));
+        var review = StorageScanReviewBuilder.Build(result);
+
+        Assert(review.Summary.TotalEntries > 0, "Review should include flattened entries.");
+        Assert(review.Summary.LikelySafeCount > 0, "Review should count likely safe entries.");
+        Assert(review.Summary.CautionCount > 0, "Review should count caution entries.");
+        Assert(review.Summary.HighRiskCount > 0, "Review should count high-risk entries.");
+        Assert(review.Summary.QuarantineCandidateCount > 0, "Review should count quarantine candidates.");
+        Assert(review.Summary.QuarantineCandidateBytes > 0, "Review should total quarantine candidate bytes.");
+
+        var highRiskRows = review.ApplyFilter(StorageReviewFilter.HighRisk);
+        Assert(highRiskRows.All(row => row.Entry.ImportanceRating == ImportanceRating.HighRisk), "High risk filter should only return high-risk entries.");
+
+        var quarantineRows = review.ApplyFilter(StorageReviewFilter.QuarantineCandidates);
+        Assert(quarantineRows.All(row => row.Entry.DeletionRecommendation == DeletionRecommendation.QuarantineCandidate), "Quarantine filter should only return quarantine candidates.");
     }
 
     public void ByteSizeFormatterUsesReadableUnits()

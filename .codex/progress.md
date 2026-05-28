@@ -6,14 +6,14 @@ Use it to preserve what was completed, what was verified, what was rejected, and
 
 ## Current status
 
-Storage Scan MVP packet implemented. The repo now has a .NET 8 WPF app, a testable core scanner, and fixture verification. Real `C:\Users\moxhe` scanning should be triggered by the user from the desktop UI.
+Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. A follow-up review-filter packet has been implemented locally and is ready to commit/push.
 
 ## Next recommended work
 
-1. Commit the current buildable Storage Scan checkpoint.
-2. Ask the user to launch the WPF app and run Storage Scan against `C:\Users\moxhe`.
-3. Use the user's first scan feedback to refine categories, Protected Locations, and UI grouping.
-4. Defer Quarantine and Undo Quarantine implementation until after Storage Scan is tested by the user.
+1. Commit and push the Storage Scan review-filter checkpoint.
+2. Ask the user to rerun the WPF app and try the new filters.
+3. Use the user's filter feedback to refine Protected Locations and category grouping.
+4. Defer Quarantine and Undo Quarantine implementation until scan review is trustworthy.
 5. Revisit .NET 10 before packaging or long-term distribution.
 
 ## Completed packets
@@ -239,3 +239,57 @@ Rejected ideas buffer:
 
 - Do not run the real `C:\Users\moxhe` scan automatically from the background.
 - Do not add deletion or quarantine buttons before the user reviews real scan output.
+
+### 2026-05-28: Add Storage Scan review filters from real scan feedback
+
+Status: completed
+
+Evidence:
+
+- User ran the WPF app against `C:\Users\moxhe`.
+- Real scan completed successfully.
+- Reported totals from screenshot:
+  - Total size: 58.02 GB.
+  - Folders: 37,740.
+  - Files: 188,580.
+  - Access issues: 3.
+- The scan surfaced UX/classification issues:
+  - Results table was too broad without filters.
+  - Large container folders such as `AppData`, `Local`, `Roaming`, `Google`, `Chrome`, and `pip` showed too many `None` categories.
+  - Cache subfolders such as `NVIDIA\DXCache` and Python cache paths need clearer but still conservative labeling.
+
+Implementation:
+
+- Added `StorageReviewFilter`, `StorageReviewEntry`, `StorageReviewSummary`, `StorageScanReview`, and `StorageScanReviewBuilder`.
+- Added WPF filter buttons for All, Likely safe, Caution, High risk, and Quarantine candidates.
+- Added filter counts and displayed-size summary.
+- Lightened DataGrid row presentation.
+- Added conservative categories for Profile container, AppData area, Browser data, and GPU shader cache.
+- Improved Python `pip` cache recognition.
+- Preserved read-only behavior; no cleanup execution was added.
+
+Verification:
+
+- `dotnet build WindowsFileCleaner.sln --no-restore` passed.
+- `dotnet run --project tests\WindowsFileCleaner.Tests\WindowsFileCleaner.Tests.csproj --no-build` passed.
+
+Docs updated:
+
+- `docs/domain/context.md`
+- `docs/domain/glossary.md`
+- `docs/features/2026-05-28-storage-scan-review-filters.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No new ADR. This is an incremental review/filter improvement.
+
+Open questions:
+
+- User should rerun the app and confirm whether filters help.
+- Need user feedback on which real rows should be explicit Protected Locations.
+
+Rejected ideas buffer:
+
+- Do not make AppData-derived cache rows "Likely safe" just because they are caches.
+- Do not add cleanup buttons based only on the first successful scan.

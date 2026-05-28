@@ -3,10 +3,14 @@ namespace WindowsFileCleaner.Core;
 public enum BloatCategory
 {
     Unknown,
+    ProfileContainer,
+    ApplicationDataArea,
+    BrowserData,
     OldDownload,
     TemporaryFolder,
     InstallerCache,
     AppCache,
+    GpuShaderCache,
     DuplicateFileCandidate,
     OldGameFile,
     NodePackageCache,
@@ -16,4 +20,3 @@ public enum BloatCategory
     ReparsePoint,
     AccessIssue
 }
-

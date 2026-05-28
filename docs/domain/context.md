@@ -190,14 +190,18 @@ Last reviewed: 2026-05-28
 
 A Bloat Category is a human-readable reason a Cleanup Candidate may be unwanted or removable.
 
-Initial candidate categories include old downloads, temporary folders, installer caches, app caches, duplicate files, old game files, Node or Python package caches, and Windows app leftovers.
+Initial candidate categories include profile containers, AppData areas, browser data, old downloads, temporary folders, installer caches, app caches, GPU shader caches, duplicate files, old game files, Node or Python package caches, and Windows app leftovers.
 
 #### Examples
 
 - Old downloads.
+- Profile containers.
+- AppData areas.
+- Browser data.
 - Temporary folders.
 - Installer caches.
 - App caches.
+- GPU shader caches.
 - Duplicate files.
 - Old game files.
 - Node package caches.
@@ -209,6 +213,7 @@ Initial candidate categories include old downloads, temporary folders, installer
 - "Large file" by itself.
 - "Unknown folder" by itself.
 - Any category that implies deletion is safe without evidence.
+- A container category by itself; containers should usually be inspected through their children.
 
 #### Lifecycle
 
@@ -225,6 +230,47 @@ Initial candidate categories include old downloads, temporary folders, installer
 
 - Use `BloatCategory` for the category concept.
 - Use specific category names in code and UI rather than generic labels such as `junk`.
+- Container categories such as Profile container, AppData area, and Browser data should be conservative and should not imply cleanup approval.
+
+### Storage Review Filter
+
+Status: draft  
+Last reviewed: 2026-05-28
+
+#### Definition
+
+A Storage Review Filter narrows Storage Scan results so the user can inspect a focused set of paths.
+
+Initial filters are All, Likely safe, Caution, High risk, and Quarantine candidates.
+
+#### Examples
+
+- Filter to High risk rows to review protected paths.
+- Filter to Quarantine candidates to inspect likely cleanup opportunities.
+- Filter to Caution rows to review cache and package-cache areas.
+
+#### Non-examples
+
+- A Cleanup Action.
+- A deletion approval.
+- A hidden rule that changes scanner results.
+
+#### Lifecycle
+
+- Available after a Storage Scan completes.
+- Applies to the in-memory review results.
+- Does not modify files.
+
+#### Relationships
+
+- Uses Importance Ratings and Deletion Recommendations.
+- Helps review Cleanup Candidates.
+
+#### Code implications
+
+- Use `StorageReviewFilter` for filter values.
+- Keep filters read-only.
+- Show counts so the user can understand scan composition.
 
 ### Importance Rating
 

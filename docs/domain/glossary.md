@@ -40,9 +40,10 @@ If a term needs to change, update this glossary first, then update code and docs
 | Protected Location | A path or category treated as high-risk or blocked from cleanup. | `ProtectedLocation`, `protectedLocationPath` | Includes profile essentials and sensitive app/user data until exceptions are defined. |
 | Storage Savings | Estimated or confirmed recoverable disk space. | `StorageSavings`, `estimatedStorageSavings`, `confirmedStorageSavings` | Use explicit units. |
 | Dry Run | A preview of what would happen without modifying files. | `DryRun`, `dryRunResult` | Prefer before Cleanup Actions. |
-| Bloat Category | A reason a candidate may be unwanted or removable. | `BloatCategory`, `bloatCategory` | Initial categories include old downloads, temp folders, caches, duplicate files, old game files, package caches, and Windows app leftovers. |
+| Bloat Category | A reason a candidate may be unwanted, removable, or worth conservative review. | `BloatCategory`, `bloatCategory` | Includes profile containers, AppData areas, browser data, old downloads, temp folders, caches, GPU shader caches, duplicate files, old game files, package caches, and Windows app leftovers. |
 | Importance Rating | Conservative estimate of how important a file or folder may be. | `ImportanceRating`, `importanceRating` | User-facing values: `Likely safe`, `Caution`, `High risk`. |
 | Deletion Recommendation | Suggested action for a candidate after inspection. | `DeletionRecommendation`, `deletionRecommendation` | Examples: keep, inspect, quarantine candidate, delete later. |
+| Storage Review Filter | Read-only filter applied to Storage Scan results. | `StorageReviewFilter`, `storageReviewFilter` | Initial filters: All, Likely safe, Caution, High risk, Quarantine candidates. |
 | Quarantine | A reversible holding location for selected files or folders before deletion. | `Quarantine`, `quarantinePath` | Preferred on `D:`. Exact path is still open. |
 | Undo Quarantine | Restore a quarantined file or folder to its original path. | `UndoQuarantine`, `undoQuarantine` | Requires a restore manifest. |
 | Restore Manifest | Metadata needed to undo a quarantine action. | `RestoreManifest`, `restoreManifestPath` | Should include original path, quarantine path, size, timestamps, and action time. |

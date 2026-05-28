@@ -8,6 +8,8 @@ public partial class MainWindow : Window
 {
     private const int MaxDisplayedRows = 2000;
     private CancellationTokenSource? _scanCancellation;
+    private StorageScanReview? _currentReview;
+    private StorageReviewFilter _currentFilter = StorageReviewFilter.All;
 
     public MainWindow()
     {
@@ -35,18 +37,18 @@ public partial class MainWindow : Window
             var scanner = new StorageScanner();
 
             var result = await Task.Run(() => scanner.Scan(options, cancellationToken), cancellationToken);
-            var rows = Flatten(result.Root)
-                .OrderByDescending(row => row.SizeBytes)
-                .ThenBy(row => row.FullPath, StringComparer.OrdinalIgnoreCase)
-                .Take(MaxDisplayedRows)
-                .ToArray();
+            _currentReview = StorageScanReviewBuilder.Build(result);
+            _currentFilter = StorageReviewFilter.All;
+            var rows = ApplyCurrentFilter();
 
             ResultsGrid.ItemsSource = rows;
             TotalSizeText.Text = result.TotalSizeDisplay;
             FolderCountText.Text = result.FolderCount.ToString("N0");
             FileCountText.Text = result.FileCount.ToString("N0");
             AccessIssueCountText.Text = result.InaccessibleCount.ToString("N0");
-            StatusText.Text = $"Storage Scan completed. Showing {rows.Length:N0} largest paths. No files were modified.";
+            StatusText.Text = $"Storage Scan completed. Showing {rows.Length:N0} paths. No files were modified.";
+            UpdateFilterButtons();
+            UpdateFilterSummary();
 
             if (rows.Length > 0)
             {
@@ -75,6 +77,31 @@ public partial class MainWindow : Window
         _scanCancellation?.Cancel();
     }
 
+    private void AllFilterButton_Click(object sender, RoutedEventArgs e)
+    {
+        SetFilter(StorageReviewFilter.All);
+    }
+
+    private void LikelySafeFilterButton_Click(object sender, RoutedEventArgs e)
+    {
+        SetFilter(StorageReviewFilter.LikelySafe);
+    }
+
+    private void CautionFilterButton_Click(object sender, RoutedEventArgs e)
+    {
+        SetFilter(StorageReviewFilter.Caution);
+    }
+
+    private void HighRiskFilterButton_Click(object sender, RoutedEventArgs e)
+    {
+        SetFilter(StorageReviewFilter.HighRisk);
+    }
+
+    private void QuarantineCandidateFilterButton_Click(object sender, RoutedEventArgs e)
+    {
+        SetFilter(StorageReviewFilter.QuarantineCandidates);
+    }
+
     private void ResultsGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         if (ResultsGrid.SelectedItem is not StorageEntryRow row)
@@ -101,19 +128,85 @@ public partial class MainWindow : Window
         ScopePathBox.IsEnabled = !isScanning;
     }
 
-    private static IEnumerable<StorageEntryRow> Flatten(StorageEntry root)
+    private void SetFilter(StorageReviewFilter filter)
     {
-        return Flatten(root, depth: 0);
-    }
-
-    private static IEnumerable<StorageEntryRow> Flatten(StorageEntry entry, int depth)
-    {
-        yield return new StorageEntryRow(entry, depth);
-
-        foreach (var child in entry.Children.SelectMany(child => Flatten(child, depth + 1)))
+        if (_currentReview is null)
         {
-            yield return child;
+            return;
+        }
+
+        _currentFilter = filter;
+        var rows = ApplyCurrentFilter();
+        ResultsGrid.ItemsSource = rows;
+        UpdateFilterButtons();
+        UpdateFilterSummary();
+
+        if (rows.Length > 0)
+        {
+            ResultsGrid.SelectedIndex = 0;
+        }
+        else
+        {
+            ResultsGrid.SelectedItem = null;
         }
     }
-}
 
+    private void UpdateFilterButtons()
+    {
+        if (_currentReview is null)
+        {
+            AllFilterButton.Content = "All";
+            LikelySafeFilterButton.Content = "Likely safe";
+            CautionFilterButton.Content = "Caution";
+            HighRiskFilterButton.Content = "High risk";
+            QuarantineCandidateFilterButton.Content = "Quarantine candidates";
+            return;
+        }
+
+        var summary = _currentReview.Summary;
+        AllFilterButton.Content = $"All ({summary.TotalEntries:N0})";
+        LikelySafeFilterButton.Content = $"Likely safe ({summary.LikelySafeCount:N0})";
+        CautionFilterButton.Content = $"Caution ({summary.CautionCount:N0})";
+        HighRiskFilterButton.Content = $"High risk ({summary.HighRiskCount:N0})";
+        QuarantineCandidateFilterButton.Content = $"Quarantine candidates ({summary.QuarantineCandidateCount:N0})";
+    }
+
+    private StorageEntryRow[] ApplyCurrentFilter()
+    {
+        if (_currentReview is null)
+        {
+            return [];
+        }
+
+        return _currentReview
+            .ApplyFilter(_currentFilter)
+            .Take(MaxDisplayedRows)
+            .Select(entry => new StorageEntryRow(entry))
+            .ToArray();
+    }
+
+    private void UpdateFilterSummary()
+    {
+        if (_currentReview is null)
+        {
+            FilterSummaryText.Text = "No scan loaded";
+            return;
+        }
+
+        var rows = ApplyCurrentFilter();
+        var shownBytes = rows.Sum(row => row.SizeBytes);
+        FilterSummaryText.Text = $"{FormatFilter(_currentFilter)}: {rows.Length:N0} shown, {ByteSizeFormatter.Format(shownBytes)}";
+    }
+
+    private static string FormatFilter(StorageReviewFilter filter)
+    {
+        return filter switch
+        {
+            StorageReviewFilter.LikelySafe => "Likely safe",
+            StorageReviewFilter.Caution => "Caution",
+            StorageReviewFilter.HighRisk => "High risk",
+            StorageReviewFilter.QuarantineCandidates => "Quarantine candidates",
+            _ => "All"
+        };
+    }
+}

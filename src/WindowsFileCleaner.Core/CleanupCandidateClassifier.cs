@@ -23,6 +23,18 @@ public sealed class CleanupCandidateClassifier
         @"\AppData\Local\BraveSoftware\Brave-Browser\User Data"
     ];
 
+    private static readonly string[] BrowserContainerNames =
+    [
+        "Google",
+        "Chrome",
+        "Edge",
+        "Firefox",
+        "Mozilla",
+        "Brave-Browser",
+        "Opera Software",
+        "User Data"
+    ];
+
     private static readonly string[] CodexHints =
     [
         @"\.codex",
@@ -62,6 +74,8 @@ public sealed class CleanupCandidateClassifier
             return Build(categories, ImportanceRating.Caution, DeletionRecommendation.Inspect, evidence);
         }
 
+        AddCategoryHints(path, categories, evidence);
+
         if (IsProtected(path))
         {
             categories.Add(BloatCategory.ProtectedLocation);
@@ -69,14 +83,18 @@ public sealed class CleanupCandidateClassifier
             return Build(categories, ImportanceRating.HighRisk, DeletionRecommendation.Keep, evidence);
         }
 
-        AddCategoryHints(path, categories, evidence);
-
         if (categories.Count == 0)
         {
             evidence.Add(path.IsDirectory
                 ? "No cleanup-specific category matched this folder."
                 : "No cleanup-specific category matched this file.");
             return Build(categories, ImportanceRating.Caution, DeletionRecommendation.Inspect, evidence);
+        }
+
+        if (categories.Contains(BloatCategory.ProfileContainer)
+            || categories.Contains(BloatCategory.BrowserData))
+        {
+            return Build(categories, ImportanceRating.HighRisk, DeletionRecommendation.Keep, evidence);
         }
 
         if (IsCautionCategory(categories, path))
@@ -91,6 +109,24 @@ public sealed class CleanupCandidateClassifier
     {
         var name = path.Name;
         var fullPath = path.FullPath;
+
+        if (IsProfileContainer(path))
+        {
+            categories.Add(BloatCategory.ProfileContainer);
+            evidence.Add("This is a profile container. Review child folders instead of cleaning the container itself.");
+        }
+
+        if (ContainsSegment(fullPath, "AppData"))
+        {
+            categories.Add(BloatCategory.ApplicationDataArea);
+            evidence.Add("This is inside AppData, which mixes caches with active app settings and should be reviewed conservatively.");
+        }
+
+        if (LooksLikeBrowserData(path))
+        {
+            categories.Add(BloatCategory.BrowserData);
+            evidence.Add("This looks browser-related and may include profiles, history, sessions, extensions, or credentials.");
+        }
 
         if (ContainsSegment(fullPath, "Downloads") && IsOld(path.LastModifiedUtc, TimeSpan.FromDays(90)))
         {
@@ -116,13 +152,22 @@ public sealed class CleanupCandidateClassifier
             evidence.Add("The path looks like an application cache.");
         }
 
+        if (LooksLikeGpuShaderCache(fullPath, name))
+        {
+            categories.Add(BloatCategory.GpuShaderCache);
+            evidence.Add("The path looks like a GPU shader cache that applications can usually rebuild, but cleanup may cause temporary recompile delays.");
+        }
+
         if (ContainsSegment(fullPath, "node_modules") || ContainsSegment(fullPath, ".npm") || ContainsSegment(fullPath, "npm-cache"))
         {
             categories.Add(BloatCategory.NodePackageCache);
             evidence.Add("The path looks like a Node package cache or dependency folder.");
         }
 
-        if (ContainsSegment(fullPath, "__pycache__") || ContainsSegment(fullPath, ".pytest_cache") || ContainsSegment(fullPath, "pip") && ContainsSegment(fullPath, "Cache"))
+        if (ContainsSegment(fullPath, "__pycache__")
+            || ContainsSegment(fullPath, ".pytest_cache")
+            || ContainsSegment(fullPath, "pip")
+            || ContainsSegment(fullPath, "pip-cache"))
         {
             categories.Add(BloatCategory.PythonPackageCache);
             evidence.Add("The path looks like a Python cache.");
@@ -160,7 +205,9 @@ public sealed class CleanupCandidateClassifier
         if (categories.Contains(BloatCategory.NodePackageCache)
             || categories.Contains(BloatCategory.PythonPackageCache)
             || categories.Contains(BloatCategory.OldGameFile)
-            || categories.Contains(BloatCategory.WindowsAppLeftover))
+            || categories.Contains(BloatCategory.WindowsAppLeftover)
+            || categories.Contains(BloatCategory.ApplicationDataArea)
+            || categories.Contains(BloatCategory.GpuShaderCache))
         {
             return true;
         }
@@ -184,6 +231,24 @@ public sealed class CleanupCandidateClassifier
             || name.StartsWith("tmp", StringComparison.OrdinalIgnoreCase);
     }
 
+    private static bool IsProfileContainer(PathSnapshot path)
+    {
+        if (!path.IsDirectory)
+        {
+            return false;
+        }
+
+        var parent = Directory.GetParent(path.FullPath);
+        return parent is not null
+            && parent.FullName.Equals(@"C:\Users", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static bool LooksLikeBrowserData(PathSnapshot path)
+    {
+        return BrowserProfileHints.Any(hint => path.FullPath.Contains(hint, StringComparison.OrdinalIgnoreCase))
+            || BrowserContainerNames.Any(name => ContainsSegment(path.FullPath, name));
+    }
+
     private static bool IsInstaller(PathSnapshot path)
     {
         return path.Name.EndsWith(".msi", StringComparison.OrdinalIgnoreCase)
@@ -202,6 +267,15 @@ public sealed class CleanupCandidateClassifier
             || name.EndsWith("cache", StringComparison.OrdinalIgnoreCase);
     }
 
+    private static bool LooksLikeGpuShaderCache(string fullPath, string name)
+    {
+        return ContainsSegment(fullPath, "DXCache")
+            || ContainsSegment(fullPath, "GLCache")
+            || ContainsSegment(fullPath, "D3DSCache")
+            || name.Contains("shadercache", StringComparison.OrdinalIgnoreCase)
+            || fullPath.Contains(@"\NVIDIA\", StringComparison.OrdinalIgnoreCase) && LooksLikeAppCache(fullPath, name);
+    }
+
     private static bool ContainsSegment(string fullPath, string segment)
     {
         var normalized = fullPath.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
@@ -214,4 +288,3 @@ public sealed class CleanupCandidateClassifier
         return lastModifiedUtc is not null && DateTimeOffset.UtcNow - lastModifiedUtc.Value > threshold;
     }
 }
-
