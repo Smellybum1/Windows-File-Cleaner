@@ -27,7 +27,7 @@ The scanner already labels AppData areas, browser data, package caches, and GPU 
 
 - `AppData\Local\Packages` paths are labeled as Windows app data and Protected Location.
 - `AppData\Local\Programs` paths are labeled as installed applications and Protected Location.
-- Known game folders such as Larian/Baldur's Gate/Stellaris/IronyMod paths are labeled as game data and Protected Location.
+- Known game and mod-manager folders such as Larian/Baldur's Gate/Stellaris/IronyMod, Minecraft/OptiFine, CurseForge, Modrinth, Vortex, and Nexus Mods paths are labeled as game data and Protected Location.
 - These rows stay `High risk` / `Keep`.
 - Cache-specific rows such as GPU shader caches remain conservative `Caution` / `Inspect`.
 
@@ -46,20 +46,20 @@ Questions that must be answered before implementation:
 
 Questions that can be deferred:
 
-- Which specific app or game folders should get user-approved cleanup exceptions later?
+- Which specific app, game, or mod-manager folders should get user-approved cleanup exceptions later?
 - Should some Windows app package subfolders, such as `TempState`, become Caution instead of High risk after manual review?
 
 ## Grill notes
 
 ### Scenarios discussed
 
-- The first real scan showed large app and game folders mixed with cache rows.
+- The first real scan showed large app, game, and mod-related folders mixed with cache rows.
 - The app must not break current apps such as Codex or installed tools.
 - The user wants to remove bloat, but only when it will not affect current apps.
 
 ### Edge cases
 
-- A known game folder may contain saves, mods, profiles, or configuration, so it should be protected even if large.
+- A known game or mod-manager folder may contain saves, mods, profiles, load orders, or configuration, so it should be protected even if large.
 - `AppData\Local\Programs` can contain per-user app installations, so it should not be treated as cache.
 - Windows app package data can contain active app state even when stale-looking.
 
@@ -86,7 +86,7 @@ Validation gate before implementation:
 Rejected ideas buffer:
 
 - Do not mark Windows app package data as likely safe by default.
-- Do not classify game folders as removable just because they look old.
+- Do not classify game or mod-manager folders as removable just because they look old.
 - Do not make `AppData\Local\Programs` a cleanup candidate.
 
 ## Decisions made
@@ -104,7 +104,7 @@ ADR-worthy decisions:
 ## Implementation plan
 
 1. Add new category values and display labels.
-2. Add conservative classifier hints for Windows app package data, installed app folders, and known game folders.
+2. Add conservative classifier hints for Windows app package data, installed app folders, and known game/mod-manager folders.
 3. Add fixture coverage for the new patterns.
 4. Update docs and progress log.
 5. Run build, tests, and diff checks.
@@ -133,14 +133,14 @@ Possible:
 
 Manual checks:
 
-- Rerun Storage Scan and inspect Windows app package, per-user installed app, and known game folders.
+- Rerun Storage Scan and inspect Windows app package, per-user installed app, and known game/mod-manager folders.
 - Confirm these rows are clearer and remain High risk / Keep.
 
 Automated tests:
 
 - Verify `Packages` is Windows app data and Protected Location.
 - Verify `Programs` is installed application data and High risk.
-- Verify known game folders are game data and High risk.
+- Verify known game/mod-manager folders are game data and High risk.
 - Verify build and full fixture test harness pass.
 
 ## Risks and assumptions
@@ -160,7 +160,7 @@ Completed on: 2026-05-28
 What changed:
 
 - Added Windows app data, installed application, and game data category values.
-- Added conservative classifier hints for `AppData\Local\Packages`, `AppData\Local\Programs`, and known game folders.
+- Added conservative classifier hints for `AppData\Local\Packages`, `AppData\Local\Programs`, known game folders, and later Minecraft/OptiFine, CurseForge, Modrinth, Vortex, and Nexus Mods mod-manager folders.
 - Kept these rows High risk / Keep and blocked from Quarantine Preview through Protected Location.
 - Added display/export labels and fixture coverage.
 
@@ -182,6 +182,10 @@ Tests run:
 
 - `dotnet build WindowsFileCleaner.sln --no-restore`
 - `dotnet run --project tests\WindowsFileCleaner.Tests\WindowsFileCleaner.Tests.csproj --no-build`
+- Later game/mod-manager packet:
+  - `dotnet build WindowsFileCleaner.sln --no-restore`
+  - `dotnet run --project tests\WindowsFileCleaner.Tests\WindowsFileCleaner.Tests.csproj --no-build`
+  - `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\Invoke-MvpPreflight.ps1`
 
 Docs updated:
 
@@ -200,7 +204,7 @@ Follow-up work:
 
 Open questions:
 
-- Which specific app or game folders should get cleanup exceptions later?
+- Which specific app, game, or mod-manager folders should get cleanup exceptions later?
 - Should some Windows app package subfolders be downgraded after manual review?
 
 Risky assumptions:

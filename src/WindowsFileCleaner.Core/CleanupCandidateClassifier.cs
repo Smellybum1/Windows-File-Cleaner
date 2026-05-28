@@ -77,7 +77,15 @@ public sealed class CleanupCandidateClassifier
         "Baldur's Gate 3",
         "Stellaris",
         "IronyMod",
-        "IronyModManager"
+        "IronyModManager",
+        ".minecraft",
+        "Minecraft",
+        "OptiFine",
+        "CurseForge",
+        "ModrinthApp",
+        "Modrinth",
+        "Vortex",
+        "Nexus Mods"
     ];
 
     public ClassifiedPath Classify(PathSnapshot path, long sizeBytes = 0, bool isCleanupScopeRoot = false)

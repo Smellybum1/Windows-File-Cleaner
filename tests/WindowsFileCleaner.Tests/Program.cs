@@ -174,6 +174,9 @@ internal sealed class StorageScanTests
         fixture.WriteFile(@"AppData\Local\Packages\Microsoft.WindowsStore_8wekyb3d8bbwe\Settings\settings.dat", 1024, DateTimeOffset.UtcNow);
         fixture.WriteFile(@"AppData\Local\Programs\SomeApp\app.exe", 1024, DateTimeOffset.UtcNow);
         fixture.WriteFile(@"AppData\Local\Larian Studios\Baldur's Gate 3\PlayerProfiles\profile.dat", 1024, DateTimeOffset.UtcNow);
+        fixture.WriteFile(@"AppData\Roaming\.minecraft\mods\OptiFine\config.json", 1024, DateTimeOffset.UtcNow);
+        fixture.WriteFile(@"AppData\Roaming\CurseForge\minecraft\Instances\SomePack\options.txt", 1024, DateTimeOffset.UtcNow);
+        fixture.WriteFile(@"AppData\Roaming\Vortex\downloads\skyrim\mod.zip", 1024, DateTimeOffset.UtcNow);
 
         var scanner = new StorageScanner();
         var result = scanner.Scan(new StorageScanOptions(fixture.RootPath));
@@ -215,6 +218,22 @@ internal sealed class StorageScanTests
         Assert(baldursGate.BloatCategories.Contains(BloatCategory.GameData), "Known game folders should be marked as game data.");
         Assert(baldursGate.ImportanceRating == ImportanceRating.HighRisk, "Game data should be high risk.");
         Assert(baldursGate.DeletionRecommendation == DeletionRecommendation.Keep, "Game data should be kept.");
+
+        var optifine = Single(rows, "OptiFine");
+        Assert(optifine.BloatCategories.Contains(BloatCategory.GameData), "OptiFine folders should be marked as game data.");
+        Assert(optifine.BloatCategories.Contains(BloatCategory.ProtectedLocation), "OptiFine folders should be protected.");
+        Assert(optifine.ImportanceRating == ImportanceRating.HighRisk, "OptiFine folders should be high risk.");
+        Assert(optifine.DeletionRecommendation == DeletionRecommendation.Keep, "OptiFine folders should be kept.");
+
+        var curseForge = Single(rows, "CurseForge");
+        Assert(curseForge.BloatCategories.Contains(BloatCategory.GameData), "CurseForge folders should be marked as game data.");
+        Assert(curseForge.ImportanceRating == ImportanceRating.HighRisk, "CurseForge folders should be high risk.");
+        Assert(curseForge.DeletionRecommendation == DeletionRecommendation.Keep, "CurseForge folders should be kept.");
+
+        var vortex = Single(rows, "Vortex");
+        Assert(vortex.BloatCategories.Contains(BloatCategory.GameData), "Vortex mod manager folders should be marked as game data.");
+        Assert(vortex.ImportanceRating == ImportanceRating.HighRisk, "Vortex mod manager folders should be high risk.");
+        Assert(vortex.DeletionRecommendation == DeletionRecommendation.Keep, "Vortex mod manager folders should be kept.");
     }
 
     public void ClassifierLabelsLargeOldUnknownFilesConservatively()

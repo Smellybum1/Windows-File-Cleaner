@@ -377,7 +377,7 @@ Initial candidate categories include cleanup scope roots, profile containers, Ap
 - Duplicate files.
 - Large old files.
 - Old game files.
-- Game data.
+- Game data, including game saves, game profiles, mod managers, and mod-loader configuration.
 - Node package caches.
 - Python package caches.
 - Windows app data.
@@ -1566,6 +1566,7 @@ Protected Locations may still be scanned for size and shown for inspection, but 
 - Per-user installed applications under `AppData\Local\Programs`.
 - Source code folders.
 - Game saves, game profiles, game mods, and game configuration.
+- Mod-manager folders such as Minecraft/OptiFine, CurseForge, Modrinth, Vortex, and Nexus Mods data.
 
 #### Non-examples
 
