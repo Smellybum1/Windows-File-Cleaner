@@ -27,6 +27,7 @@ The app shows scan results, filters, child breakdowns, and selected-path inspect
 
 - Export CSV is available after a Storage Scan completes.
 - Export uses the active Storage Review Filter.
+- Later packet also applies the selected Bloat Category Filter.
 - Export includes path, name, type, size, importance, recommendation, categories, modified time, evidence, and access issue.
 - Export uses user-facing labels such as `Likely safe` and `Quarantine candidate`.
 - Export does not modify scanned files.
@@ -75,6 +76,7 @@ What changed:
 - Added CSV export for Storage Scan review rows.
 - Added Export CSV button in the Storage Scan toolbar.
 - Added fixture coverage for CSV header, escaping, labels, categories, and evidence.
+- Later packet included the selected Bloat Category Filter in the exported row set and generated filename.
 
 Files changed:
 

@@ -6,11 +6,11 @@ Use it to preserve what was completed, what was verified, what was rejected, and
 
 ## Current status
 
-Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. Review filters, selected-folder child breakdown, selected-path inspection actions, CSV export, and Review Mix are pushed. Access issues review filter is implemented and awaiting user retest after push.
+Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. Review filters, selected-folder child breakdown, selected-path inspection actions, CSV export, Review Mix, and Access issues filtering are pushed. Bloat Category Filter is implemented and awaiting user retest after push.
 
 ## Next recommended work
 
-1. Ask the user to rerun the WPF app and confirm Review Mix, Access issues filter, and filter wording are useful.
+1. Ask the user to rerun the WPF app and confirm Review Mix, Access issues filter, category filter, and filter wording are useful.
 2. Use review feedback to refine Protected Locations and category grouping.
 3. Add a safer Quarantine preview only after review categories feel trustworthy.
 4. Defer actual Quarantine and Undo Quarantine execution until scan review is trustworthy.
@@ -507,3 +507,49 @@ Rejected ideas buffer:
 
 - Do not request elevation automatically.
 - Do not change permissions to resolve access issues.
+
+### 2026-05-28: Add Bloat Category Filter
+
+Status: completed
+
+Evidence:
+
+- The real scan surfaced many category-relevant rows such as app caches, Python package caches, GPU shader caches, browser data, protected locations, and access issues.
+- Risk filters alone do not let the user inspect one category of evidence at a time.
+
+Implementation:
+
+- Added `StorageCategorySummaryEntry`.
+- Added category summaries to `StorageScanReview`.
+- Added combined filtering for `StorageReviewFilter` plus optional `BloatCategory`.
+- Added a WPF Category dropdown below the filter buttons.
+- CSV export now uses the current review filter and selected category filter.
+- Added fixture coverage for category summaries and combined filtering.
+- No cleanup execution was added.
+
+Verification:
+
+- `dotnet build WindowsFileCleaner.sln --no-restore` passed.
+- `dotnet run --project tests\WindowsFileCleaner.Tests\WindowsFileCleaner.Tests.csproj --no-build` passed.
+
+Docs updated:
+
+- `docs/domain/context.md`
+- `docs/domain/glossary.md`
+- `docs/features/2026-05-28-bloat-category-filter.md`
+- `docs/features/2026-05-28-scan-report-csv-export.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No new ADR. This is an incremental read-only review feature.
+
+Open questions:
+
+- Should uncategorized rows get a `None` category filter option?
+- Which category labels need stronger Protected Location behavior before any cleanup preview?
+
+Rejected ideas buffer:
+
+- Do not treat category matches as cleanup approval.
+- Do not sum category rows as Storage Savings while recursive parent/child rows overlap.

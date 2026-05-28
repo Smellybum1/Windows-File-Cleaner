@@ -103,11 +103,24 @@ internal sealed class StorageScanTests
         Assert(review.Summary.LargestEntryBytes >= 1024 * 1024, "Review should record the largest row size.");
         Assert(review.Summary.QuarantineCandidateLargestEntryBytes == 1024 * 1024, "Review should record the largest quarantine candidate row without summing recursive rows.");
 
+        var installerSummary = review.CategorySummaries.Single(summary => summary.Category == BloatCategory.InstallerCache);
+        Assert(installerSummary.Count > 0, "Review should summarize installer cache rows by category.");
+        Assert(installerSummary.LargestEntryBytes == 1024 * 1024, "Category summary should record largest category row without summing recursive rows.");
+
         var highRiskRows = review.ApplyFilter(StorageReviewFilter.HighRisk);
         Assert(highRiskRows.All(row => row.Entry.ImportanceRating == ImportanceRating.HighRisk), "High risk filter should only return high-risk entries.");
 
         var quarantineRows = review.ApplyFilter(StorageReviewFilter.QuarantineCandidates);
         Assert(quarantineRows.All(row => row.Entry.DeletionRecommendation == DeletionRecommendation.QuarantineCandidate), "Quarantine filter should only return quarantine candidates.");
+
+        var installerRows = review.ApplyFilter(StorageReviewFilter.All, BloatCategory.InstallerCache);
+        Assert(installerRows.Count > 0, "Category filter should return matching category rows.");
+        Assert(installerRows.All(row => row.Entry.BloatCategories.Contains(BloatCategory.InstallerCache)), "Category filter should only return rows with that category.");
+
+        var appDataCautionRows = review.ApplyFilter(StorageReviewFilter.Caution, BloatCategory.ApplicationDataArea);
+        Assert(appDataCautionRows.Count > 0, "Category filter should combine with the selected review filter.");
+        Assert(appDataCautionRows.All(row => row.Entry.ImportanceRating == ImportanceRating.Caution), "Combined filter should preserve the review filter.");
+        Assert(appDataCautionRows.All(row => row.Entry.BloatCategories.Contains(BloatCategory.ApplicationDataArea)), "Combined filter should preserve the category filter.");
     }
 
     public void ReviewBuilderFiltersAccessIssues()

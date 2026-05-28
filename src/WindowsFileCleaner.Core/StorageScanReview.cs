@@ -2,9 +2,18 @@ namespace WindowsFileCleaner.Core;
 
 public sealed record StorageScanReview(
     IReadOnlyList<StorageReviewEntry> Entries,
-    StorageReviewSummary Summary)
+    StorageReviewSummary Summary,
+    IReadOnlyList<StorageCategorySummaryEntry> CategorySummaries)
 {
-    public IReadOnlyList<StorageReviewEntry> ApplyFilter(StorageReviewFilter filter)
+    public IReadOnlyList<StorageReviewEntry> ApplyFilter(StorageReviewFilter filter, BloatCategory? category = null)
+    {
+        var filtered = ApplyReviewFilter(filter);
+        return category is null
+            ? filtered
+            : filtered.Where(row => row.Entry.BloatCategories.Contains(category.Value)).ToArray();
+    }
+
+    private IReadOnlyList<StorageReviewEntry> ApplyReviewFilter(StorageReviewFilter filter)
     {
         return filter switch
         {

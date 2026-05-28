@@ -124,6 +124,10 @@
             </Grid.ColumnDefinitions>
 
             <Grid Grid.ColumnSpan="3" Margin="0,0,0,10">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="Auto" />
@@ -167,12 +171,36 @@
                         MinWidth="110"
                         IsEnabled="False"
                         Click="ExportCsvButton_Click" />
-                <TextBlock x:Name="FilterSummaryText"
-                           Grid.Column="7"
-                           VerticalAlignment="Center"
-                           HorizontalAlignment="Right"
-                           Foreground="#526171"
-                           Text="No scan loaded" />
+                <Grid Grid.Row="1"
+                      Grid.Column="0"
+                      Grid.ColumnSpan="8"
+                      Margin="6,6,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock x:Name="FilterSummaryText"
+                               Grid.Column="0"
+                               VerticalAlignment="Center"
+                               Foreground="#526171"
+                               Margin="0,2,16,0"
+                               Text="No scan loaded"
+                               TextWrapping="Wrap" />
+                    <StackPanel Grid.Column="1"
+                                Orientation="Horizontal"
+                                HorizontalAlignment="Right">
+                        <TextBlock Text="Category"
+                                   VerticalAlignment="Center"
+                                   Foreground="#526171"
+                                   Margin="0,0,8,0" />
+                        <ComboBox x:Name="CategoryFilterBox"
+                                  Width="290"
+                                  Height="30"
+                                  DisplayMemberPath="Label"
+                                  IsEnabled="False"
+                                  SelectionChanged="CategoryFilterBox_SelectionChanged" />
+                    </StackPanel>
+                </Grid>
             </Grid>
 
             <DataGrid x:Name="ResultsGrid"

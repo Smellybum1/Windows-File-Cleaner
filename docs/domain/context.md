@@ -28,7 +28,7 @@ The preferred product shape is a Windows-only desktop app built with C# and WPF.
 
 ### System Drive
 
-Status: draft  
+Status: draft
 Last reviewed: 2026-05-28
 
 #### Definition
@@ -275,6 +275,50 @@ Initial filters are All, Likely safe, Caution, High risk, Quarantine candidates,
 - Show counts so the user can understand scan composition.
 - Access issues are informational and must not trigger permission changes or cleanup actions.
 
+### Bloat Category Filter
+
+Status: draft
+Last reviewed: 2026-05-28
+
+#### Definition
+
+A Bloat Category Filter narrows Storage Scan results to rows that match one Bloat Category.
+
+It is a read-only lens that can be combined with the active Storage Review Filter.
+
+#### Examples
+
+- Filter all rows to App cache.
+- Filter Caution rows to Python package cache.
+- Filter High risk rows to Protected location.
+- Filter Access issues rows to Access issue.
+
+#### Non-examples
+
+- A Cleanup Action.
+- A deletion approval.
+- A guarantee that every row in the category is safe to remove.
+
+#### Lifecycle
+
+- Available after a Storage Scan completes.
+- Built from Bloat Categories found in the current scan.
+- Resets to All categories at the start of a new scan.
+- Does not modify files.
+
+#### Relationships
+
+- Uses Bloat Categories.
+- Combines with Storage Review Filters.
+- A row may match more than one Bloat Category Filter because a row may have multiple categories.
+
+#### Code implications
+
+- Use `StorageCategorySummaryEntry` for category counts and largest-row size.
+- Use optional `BloatCategory` values for category filtering.
+- Do not sum recursive row sizes across category summaries.
+- Keep category filtering separate from Cleanup Actions.
+
 ### Review Mix
 
 Status: draft  
@@ -411,13 +455,14 @@ Last reviewed: 2026-05-28
 
 A Scan Report Export is a read-only report file generated from Storage Scan results.
 
-The initial export format is CSV for the currently active Storage Review Filter.
+The initial export format is CSV for the currently active Storage Review Filter and selected Bloat Category Filter.
 
 #### Examples
 
 - Export all Storage Scan rows to CSV.
 - Export only High risk rows to CSV.
 - Export Quarantine candidates to CSV for spreadsheet review.
+- Export App cache rows within the current review filter to CSV.
 
 #### Non-examples
 
@@ -429,7 +474,7 @@ The initial export format is CSV for the currently active Storage Review Filter.
 #### Lifecycle
 
 - Available after a Storage Scan completes.
-- Uses the current Storage Review Filter.
+- Uses the current Storage Review Filter and selected Bloat Category Filter.
 - Writes a user-selected CSV report path.
 - Does not modify scanned files.
 
@@ -437,6 +482,7 @@ The initial export format is CSV for the currently active Storage Review Filter.
 
 - Uses Storage Scan results.
 - Uses Storage Review Filters.
+- Uses Bloat Category Filters.
 - Supports manual review before Quarantine or any future cleanup action.
 
 #### Code implications

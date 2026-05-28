@@ -9,7 +9,7 @@ public static class StorageScanReviewBuilder
             .ThenBy(row => row.Entry.FullPath, StringComparer.OrdinalIgnoreCase)
             .ToArray();
 
-        return new StorageScanReview(entries, BuildSummary(entries));
+        return new StorageScanReview(entries, BuildSummary(entries), BuildCategorySummaries(entries));
     }
 
     private static StorageReviewSummary BuildSummary(IReadOnlyList<StorageReviewEntry> entries)
@@ -35,6 +35,21 @@ public static class StorageScanReviewBuilder
             .Select(row => row.Entry.SizeBytes)
             .DefaultIfEmpty(0)
             .Max();
+    }
+
+    private static IReadOnlyList<StorageCategorySummaryEntry> BuildCategorySummaries(IReadOnlyList<StorageReviewEntry> entries)
+    {
+        return entries
+            .SelectMany(row => row.Entry.BloatCategories.Select(category => new { category, row }))
+            .GroupBy(pair => pair.category)
+            .Select(group => new StorageCategorySummaryEntry(
+                group.Key,
+                group.Count(),
+                Largest(group.Select(pair => pair.row))))
+            .OrderByDescending(summary => summary.Count)
+            .ThenByDescending(summary => summary.LargestEntryBytes)
+            .ThenBy(summary => summary.Category.ToString(), StringComparer.OrdinalIgnoreCase)
+            .ToArray();
     }
 
     private static IEnumerable<StorageReviewEntry> Flatten(StorageEntry root)

@@ -13,12 +13,15 @@ public partial class MainWindow : Window
     private CancellationTokenSource? _scanCancellation;
     private StorageScanReview? _currentReview;
     private StorageReviewFilter _currentFilter = StorageReviewFilter.All;
+    private BloatCategory? _currentCategoryFilter;
     private StorageEntryRow? _selectedRow;
+    private bool _isUpdatingCategoryFilterOptions;
 
     public MainWindow()
     {
         InitializeComponent();
         ResultsGrid.ItemsSource = Array.Empty<StorageEntryRow>();
+        UpdateCategoryFilterOptions();
     }
 
     private async void ScanButton_Click(object sender, RoutedEventArgs e)
@@ -43,6 +46,8 @@ public partial class MainWindow : Window
             var result = await Task.Run(() => scanner.Scan(options, cancellationToken), cancellationToken);
             _currentReview = StorageScanReviewBuilder.Build(result);
             _currentFilter = StorageReviewFilter.All;
+            _currentCategoryFilter = null;
+            UpdateCategoryFilterOptions();
             var rows = ApplyCurrentFilter();
 
             ResultsGrid.ItemsSource = rows;
@@ -112,6 +117,17 @@ public partial class MainWindow : Window
         SetFilter(StorageReviewFilter.AccessIssues);
     }
 
+    private void CategoryFilterBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (_isUpdatingCategoryFilterOptions || CategoryFilterBox.SelectedItem is not CategoryFilterOption option)
+        {
+            return;
+        }
+
+        _currentCategoryFilter = option.Category;
+        RefreshResults();
+    }
+
     private void ExportCsvButton_Click(object sender, RoutedEventArgs e)
     {
         if (_currentReview is null)
@@ -119,12 +135,12 @@ public partial class MainWindow : Window
             return;
         }
 
-        var exportRows = _currentReview.ApplyFilter(_currentFilter);
+        var exportRows = _currentReview.ApplyFilter(_currentFilter, _currentCategoryFilter);
         var dialog = new SaveFileDialog
         {
             Title = "Export Storage Scan CSV",
             Filter = "CSV files (*.csv)|*.csv|All files (*.*)|*.*",
-            FileName = $"storage-scan-{DateTime.Now:yyyyMMdd-HHmmss}-{FormatFileNameFilter(_currentFilter)}.csv",
+            FileName = BuildExportFileName(),
             AddExtension = true,
             DefaultExt = ".csv"
         };
@@ -216,6 +232,7 @@ public partial class MainWindow : Window
         CancelButton.IsEnabled = isScanning;
         ScopePathBox.IsEnabled = !isScanning;
         ExportCsvButton.IsEnabled = !isScanning && _currentReview is not null;
+        CategoryFilterBox.IsEnabled = !isScanning && _currentReview is not null && _currentReview.CategorySummaries.Count > 0;
     }
 
     private void SetFilter(StorageReviewFilter filter)
@@ -226,6 +243,16 @@ public partial class MainWindow : Window
         }
 
         _currentFilter = filter;
+        RefreshResults();
+    }
+
+    private void RefreshResults()
+    {
+        if (_currentReview is null)
+        {
+            return;
+        }
+
         var rows = ApplyCurrentFilter();
         ResultsGrid.ItemsSource = rows;
         UpdateFilterButtons();
@@ -272,10 +299,47 @@ public partial class MainWindow : Window
         }
 
         return _currentReview
-            .ApplyFilter(_currentFilter)
+            .ApplyFilter(_currentFilter, _currentCategoryFilter)
             .Take(MaxDisplayedRows)
             .Select(entry => new StorageEntryRow(entry))
             .ToArray();
+    }
+
+    private void UpdateCategoryFilterOptions()
+    {
+        _isUpdatingCategoryFilterOptions = true;
+        try
+        {
+            if (_currentReview is null)
+            {
+                CategoryFilterBox.ItemsSource = new[]
+                {
+                    new CategoryFilterOption(null, "All categories", "all-categories")
+                };
+                CategoryFilterBox.SelectedIndex = 0;
+                CategoryFilterBox.IsEnabled = false;
+                return;
+            }
+
+            var options = new List<CategoryFilterOption>
+            {
+                new(null, "All categories", "all-categories")
+            };
+
+            options.AddRange(_currentReview.CategorySummaries.Select(summary =>
+                new CategoryFilterOption(
+                    summary.Category,
+                    $"{FormatCategory(summary.Category)} ({summary.Count:N0}, largest {ByteSizeFormatter.Format(summary.LargestEntryBytes)})",
+                    FormatFileNameCategory(summary.Category))));
+
+            CategoryFilterBox.ItemsSource = options;
+            CategoryFilterBox.SelectedIndex = 0;
+            CategoryFilterBox.IsEnabled = options.Count > 1;
+        }
+        finally
+        {
+            _isUpdatingCategoryFilterOptions = false;
+        }
     }
 
     private void UpdateFilterSummary()
@@ -288,7 +352,8 @@ public partial class MainWindow : Window
 
         var rows = ApplyCurrentFilter();
         var largestShownBytes = rows.Select(row => row.SizeBytes).DefaultIfEmpty(0).Max();
-        FilterSummaryText.Text = $"{FormatFilter(_currentFilter)}: {rows.Length:N0} shown, largest row {ByteSizeFormatter.Format(largestShownBytes)}";
+        var categoryLabel = _currentCategoryFilter is null ? "" : $" + {FormatCategory(_currentCategoryFilter.Value)}";
+        FilterSummaryText.Text = $"{FormatFilter(_currentFilter)}{categoryLabel}: {rows.Length:N0} shown, largest row {ByteSizeFormatter.Format(largestShownBytes)}";
     }
 
     private void UpdateReviewMix()
@@ -333,6 +398,21 @@ public partial class MainWindow : Window
             StorageReviewFilter.AccessIssues => "access-issues",
             _ => "all"
         };
+    }
+
+    private string BuildExportFileName()
+    {
+        var categorySegment = CategoryFilterBox.SelectedItem is CategoryFilterOption option
+            ? option.FileNameSegment
+            : "all-categories";
+        return $"storage-scan-{DateTime.Now:yyyyMMdd-HHmmss}-{FormatFileNameFilter(_currentFilter)}-{categorySegment}.csv";
+    }
+
+    private static string FormatFileNameCategory(BloatCategory category)
+    {
+        return FormatCategory(category)
+            .ToLowerInvariant()
+            .Replace(" ", "-", StringComparison.Ordinal);
     }
 
     private static string FormatChildSummary(StorageEntry entry)
