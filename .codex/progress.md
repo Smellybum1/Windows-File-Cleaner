@@ -6,7 +6,7 @@ Use it to preserve what was completed, what was verified, what was rejected, and
 
 ## Current status
 
-Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. Cleanup Scope Safety Note, review filters, Storage Review Search with field prefixes, Storage Review Display Limit wording, Storage Review Size Note, selected-folder child breakdown, selected-path inspection actions, Selected Path Review Guidance, CSV export including active search, searched filenames, and hierarchy context, Review Mix, Storage Scan Safety Summary, Safety Summary review shortcuts, Access issues filtering, Bloat Category Filter, Large old file classification, No category filtering, Review Shortlist, Shortlist shown, Remove shown, Quarantine Preview, Quarantine Preview CSV export, Restore Manifest Draft, Quarantine Confirmation Draft, Quarantine Readiness UI, conservative app data classification, read-only safety regression checks, the MVP runbook, the MVP readiness audit, fixture-driven WPF launch support, WPF shell smoke testing, WPF fixture scan smoke testing, WPF display-limit smoke testing, WPF review interaction smoke testing, WPF review toolbar layout polish, the MVP preflight script, and the MVP fixture review launcher are implemented and verified. Quarantine remains preview-only; no cleanup execution, manifest writing, or Undo Quarantine execution exists.
+Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. Cleanup Scope Safety Note, review filters, Storage Review Search with field prefixes, Storage Entry Type Filter, Storage Review Display Limit wording, Storage Review Size Note, selected-folder child breakdown, selected-path inspection actions, Selected Path Review Guidance, CSV export including active search, searched filenames, and hierarchy context, Review Mix, Storage Scan Safety Summary, Safety Summary review shortcuts, Access issues filtering, Bloat Category Filter, Large old file classification, No category filtering, Review Shortlist, Shortlist shown, Remove shown, Quarantine Preview, Quarantine Preview CSV export, Restore Manifest Draft, Quarantine Confirmation Draft, Quarantine Readiness UI, conservative app data classification, read-only safety regression checks, the MVP runbook, the MVP readiness audit, fixture-driven WPF launch support, WPF shell smoke testing, WPF fixture scan smoke testing, WPF display-limit smoke testing, WPF review interaction smoke testing, WPF review toolbar layout polish, the MVP preflight script, and the MVP fixture review launcher are implemented and verified. Quarantine remains preview-only; no cleanup execution, manifest writing, or Undo Quarantine execution exists.
 
 ## Next recommended work
 
@@ -2027,3 +2027,50 @@ Rejected ideas buffer:
 
 - Do not classify directories as Large old file from recursive size because parent and child rows overlap.
 - Do not treat large old files as cleanup approval without stronger category evidence.
+
+### 2026-05-28: Add Storage Entry Type Filter
+
+Status: completed
+
+Evidence:
+
+- Recursive scan review mixes folders and files in one flattened grid.
+- The user needs to inspect both container folders and individual files, especially after adding Large old file classification.
+
+Implementation:
+
+- Added `StorageEntryTypeFilter` with `All`, `Files`, and `Folders`.
+- Added core filtering that combines entry type with review filter, Bloat Category Filter, and Storage Review Search.
+- Added a WPF Type filter combo box.
+- Included active type in Filter Summary and Scan Report Export filenames.
+- Added core and WPF smoke coverage.
+- No cleanup execution, Quarantine execution, Undo Quarantine, manifest writing, or real-profile automation was added.
+
+Verification:
+
+- `dotnet build WindowsFileCleaner.sln --no-restore` passed with 0 warnings and 0 errors.
+- `dotnet run --project tests\WindowsFileCleaner.Tests\WindowsFileCleaner.Tests.csproj --no-build` passed.
+- `dotnet run --project tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj --no-build` passed.
+- `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\Invoke-MvpPreflight.ps1` passed.
+
+Docs updated:
+
+- `README.md`
+- `docs/domain/context.md`
+- `docs/domain/glossary.md`
+- `docs/features/2026-05-28-scan-report-csv-export.md`
+- `docs/features/2026-05-28-storage-entry-type-filter.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No new ADR. This is reversible read-only review filtering and does not change architecture, persistence, security, deployment, or cleanup execution.
+
+Open questions:
+
+- Does Files plus Large old file help the next real scan review?
+
+Rejected ideas buffer:
+
+- Do not treat file-only rows as automatically safer than folders.
+- Do not hide the underlying completed scan rows; type is only an active review lens.

@@ -248,6 +248,36 @@ internal sealed class StorageScanTests
         Assert(noCategoryCautionRows.Count > 0, "No category filter should combine with the selected review filter.");
         Assert(noCategoryCautionRows.All(row => row.Entry.ImportanceRating == ImportanceRating.Caution), "No category combined filter should preserve the review filter.");
         Assert(noCategoryCautionRows.All(row => row.Entry.BloatCategories.Count == 0), "No category combined filter should preserve the no-category filter.");
+
+        var fileRows = review.ApplyFilter(
+            StorageReviewFilter.All,
+            StorageCategoryFilter.All,
+            StorageEntryTypeFilter.Files,
+            StorageReviewSearch.Empty);
+        Assert(fileRows.Count > 0, "File type filter should return file rows.");
+        Assert(fileRows.All(row => !row.Entry.IsDirectory), "File type filter should only return files.");
+
+        var folderRows = review.ApplyFilter(
+            StorageReviewFilter.All,
+            StorageCategoryFilter.All,
+            StorageEntryTypeFilter.Folders,
+            StorageReviewSearch.Empty);
+        Assert(folderRows.Count > 0, "Folder type filter should return folder rows.");
+        Assert(folderRows.All(row => row.Entry.IsDirectory), "Folder type filter should only return folders.");
+
+        var searchedInstallerFiles = review.ApplyFilter(
+            StorageReviewFilter.QuarantineCandidates,
+            StorageCategoryFilter.ForCategory(BloatCategory.InstallerCache),
+            StorageEntryTypeFilter.Files,
+            StorageReviewSearch.FromText("old-installer"));
+        Assert(searchedInstallerFiles.Count > 0, "Type filter should combine with review, category, and search filters.");
+        Assert(
+            searchedInstallerFiles.All(row =>
+                !row.Entry.IsDirectory
+                && row.Entry.DeletionRecommendation == DeletionRecommendation.QuarantineCandidate
+                && row.Entry.BloatCategories.Contains(BloatCategory.InstallerCache)
+                && row.Entry.FullPath.Contains("old-installer", StringComparison.OrdinalIgnoreCase)),
+            "Combined type-filtered rows should preserve all active review lenses.");
     }
 
     public void ReviewBuilderFiltersAccessIssues()

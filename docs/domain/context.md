@@ -377,6 +377,51 @@ Recognized field prefixes restrict search to one field:
 - Keep search in-memory and read-only.
 - Do not use search text to change Bloat Categories, Importance Ratings, Deletion Recommendations, or cleanup eligibility.
 
+### Storage Entry Type Filter
+
+Status: draft
+Last reviewed: 2026-05-28
+
+#### Definition
+
+The Storage Entry Type Filter is a read-only lens that narrows completed Storage Scan review rows to all rows, files only, or folders only.
+
+It helps the user separate actual files from container folders in a recursive scan.
+
+#### Examples
+
+- Show only files while looking for individual large stale files.
+- Show only folders while inspecting large containers and child breakdowns.
+- Combine Files with `Large old file` or `Installer cache`.
+- Combine Folders with `Protected location` or `No category`.
+
+#### Non-examples
+
+- A Cleanup Action.
+- A confirmation that files are safe to delete.
+- A change to scanner traversal.
+- A replacement for Bloat Category Filter or Storage Review Search.
+
+#### Lifecycle
+
+- Available after a Storage Scan completes.
+- Resets to `All types` after a new Storage Scan completes.
+- Combines with Storage Review Filter, Bloat Category Filter, and Storage Review Search.
+- Does not modify files.
+
+#### Relationships
+
+- Uses Storage Scan review results.
+- Helps interpret recursive scan output where folders and files appear together.
+- Applies to Scan Report Export row selection and suggested filenames.
+
+#### Code implications
+
+- Use `StorageEntryTypeFilter`.
+- Apply type filtering in `StorageScanReview` before search.
+- Keep type filtering read-only and in-memory.
+- Do not use type filters as cleanup approval.
+
 ### Storage Review Display Limit
 
 Status: draft
@@ -863,13 +908,14 @@ Last reviewed: 2026-05-28
 
 A Scan Report Export is a read-only report file generated from Storage Scan results.
 
-The initial export format is CSV for the currently active Storage Review Filter and selected Bloat Category Filter.
+The initial export format is CSV for the currently active Storage Review Filter, Storage Entry Type Filter, and selected Bloat Category Filter.
 
 #### Examples
 
 - Export all Storage Scan rows to CSV.
 - Export only High risk rows to CSV.
 - Export Quarantine candidates to CSV for spreadsheet review.
+- Export files-only rows for large file review.
 - Export App cache rows within the current review filter to CSV.
 
 #### Non-examples
@@ -882,15 +928,16 @@ The initial export format is CSV for the currently active Storage Review Filter 
 #### Lifecycle
 
 - Available after a Storage Scan completes.
-- Uses the current Storage Review Filter, selected Bloat Category Filter, and Storage Review Search.
+- Uses the current Storage Review Filter, Storage Entry Type Filter, selected Bloat Category Filter, and Storage Review Search.
 - Includes parent path and depth columns so recursive rows keep their hierarchy context outside the app.
-- Writes a user-selected CSV report path and suggests a filename that describes active review filters/search.
+- Writes a user-selected CSV report path and suggests a filename that describes active review filters/type/search.
 - Does not modify scanned files.
 
 #### Relationships
 
 - Uses Storage Scan results.
 - Uses Storage Review Filters.
+- Uses Storage Entry Type Filter.
 - Uses Bloat Category Filters.
 - Uses Storage Review Search.
 - May export a Review Shortlist, but that export remains a report rather than a Cleanup Action.
@@ -902,7 +949,7 @@ The initial export format is CSV for the currently active Storage Review Filter 
 - Use `StorageScanCsvExporter` for CSV report generation.
 - Export user-facing labels for Importance Ratings and Deletion Recommendations.
 - Export parent path and depth from the flattened Storage Review row.
-- Keep generated report filenames descriptive and filesystem-safe when filters or search are active.
+- Keep generated report filenames descriptive and filesystem-safe when filters, type, or search are active.
 - Keep exports separate from Quarantine manifests.
 
 ### Importance Rating

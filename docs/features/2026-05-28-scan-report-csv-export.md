@@ -27,7 +27,7 @@ The app shows scan results, filters, child breakdowns, and selected-path inspect
 
 - Export CSV is available after a Storage Scan completes.
 - Export uses the active Storage Review Filter.
-- Later packets also apply the selected Bloat Category Filter and Storage Review Search.
+- Later packets also apply the selected Bloat Category Filter, Storage Entry Type Filter, and Storage Review Search.
 - Export includes path, parent path, depth, name, type, size, importance, recommendation, categories, modified time, evidence, and access issue.
 - Export uses user-facing labels such as `Likely safe` and `Quarantine candidate`.
 - Export does not modify scanned files.
@@ -78,6 +78,7 @@ What changed:
 - Added fixture coverage for CSV header, escaping, labels, categories, and evidence.
 - Later packets included the selected Bloat Category Filter in the exported row set and generated filename, aligned the export row set with active Storage Review Search, and added a sanitized search segment to suggested export filenames.
 - Later hierarchy-context packet added parent path and depth columns so recursive rows remain understandable in spreadsheets.
+- Later type-filter packet included the active Storage Entry Type Filter in exported row selection and generated filenames.
 
 Files changed:
 

@@ -20,6 +20,15 @@ public sealed record StorageScanReview(
         StorageCategoryFilter categoryFilter,
         StorageReviewSearch search)
     {
+        return ApplyFilter(filter, categoryFilter, StorageEntryTypeFilter.All, search);
+    }
+
+    public IReadOnlyList<StorageReviewEntry> ApplyFilter(
+        StorageReviewFilter filter,
+        StorageCategoryFilter categoryFilter,
+        StorageEntryTypeFilter typeFilter,
+        StorageReviewSearch search)
+    {
         var filtered = ApplyReviewFilter(filter);
         filtered = categoryFilter.Kind switch
         {
@@ -27,6 +36,13 @@ public sealed record StorageScanReview(
                 filtered.Where(row => row.Entry.BloatCategories.Contains(categoryFilter.Category.Value)).ToArray(),
             StorageCategoryFilterKind.NoCategory =>
                 filtered.Where(row => row.Entry.BloatCategories.Count == 0).ToArray(),
+            _ => filtered
+        };
+
+        filtered = typeFilter switch
+        {
+            StorageEntryTypeFilter.Files => filtered.Where(row => !row.Entry.IsDirectory).ToArray(),
+            StorageEntryTypeFilter.Folders => filtered.Where(row => row.Entry.IsDirectory).ToArray(),
             _ => filtered
         };
 

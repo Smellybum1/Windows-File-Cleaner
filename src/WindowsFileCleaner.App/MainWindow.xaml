@@ -230,6 +230,20 @@
                             MinWidth="110"
                             IsEnabled="False"
                             Click="ClearSearchButton_Click" />
+                    <StackPanel Orientation="Horizontal"
+                                Margin="6,0,0,0"
+                                VerticalAlignment="Center">
+                        <TextBlock Text="Type"
+                                   VerticalAlignment="Center"
+                                   Foreground="#526171"
+                                   Margin="0,0,8,0" />
+                        <ComboBox x:Name="EntryTypeFilterBox"
+                                  Width="135"
+                                  Height="30"
+                                  DisplayMemberPath="Label"
+                                  IsEnabled="False"
+                                  SelectionChanged="EntryTypeFilterBox_SelectionChanged" />
+                    </StackPanel>
                     <Button x:Name="AddShownToShortlistButton"
                             Content="Shortlist shown"
                             MinWidth="125"

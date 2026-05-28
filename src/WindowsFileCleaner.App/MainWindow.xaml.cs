@@ -20,9 +20,11 @@ public partial class MainWindow : Window
     private string? _currentCleanupScopePath;
     private StorageReviewFilter _currentFilter = StorageReviewFilter.All;
     private StorageCategoryFilter _currentCategoryFilter = StorageCategoryFilter.All;
+    private StorageEntryTypeFilter _currentEntryTypeFilter = StorageEntryTypeFilter.All;
     private StorageReviewSearch _currentSearch = StorageReviewSearch.Empty;
     private StorageEntryRow? _selectedRow;
     private bool _isUpdatingCategoryFilterOptions;
+    private bool _isUpdatingEntryTypeFilterOptions;
     private bool _isUpdatingSearchBox;
 
     public MainWindow()
@@ -36,6 +38,7 @@ public partial class MainWindow : Window
         ScopePathBox.Text = initialCleanupScopePath;
         ResultsGrid.ItemsSource = Array.Empty<StorageEntryRow>();
         UpdateCategoryFilterOptions();
+        UpdateEntryTypeFilterOptions();
         UpdateCleanupScopeSafetyNote();
     }
 
@@ -58,6 +61,12 @@ public partial class MainWindow : Window
     public string CurrentScanReportExportFileName => BuildExportFileName();
 
     public bool CanUseCategoryFilter => CategoryFilterBox.IsEnabled;
+
+    public bool CanUseEntryTypeFilter => EntryTypeFilterBox.IsEnabled;
+
+    public string CurrentEntryTypeFilterLabel => EntryTypeFilterBox.SelectedItem is EntryTypeFilterOption option
+        ? option.Label
+        : "";
 
     public int DisplayedRowCount => DisplayedRows.Count;
 
@@ -184,11 +193,13 @@ public partial class MainWindow : Window
         _currentCleanupScopePath = result.CleanupScopePath;
         _currentFilter = StorageReviewFilter.All;
         _currentCategoryFilter = StorageCategoryFilter.All;
+        _currentEntryTypeFilter = StorageEntryTypeFilter.All;
         _currentSearch = StorageReviewSearch.Empty;
         _shortlist.Clear();
         ClearQuarantinePreview();
         SetSearchTextSilently("");
         UpdateCategoryFilterOptions();
+        UpdateEntryTypeFilterOptions();
         var matchedEntries = ApplyCurrentReviewFilters();
         var rows = BuildDisplayedRows(matchedEntries);
 
@@ -487,6 +498,17 @@ public partial class MainWindow : Window
         RefreshResults();
     }
 
+    private void EntryTypeFilterBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (_isUpdatingEntryTypeFilterOptions || EntryTypeFilterBox.SelectedItem is not EntryTypeFilterOption option)
+        {
+            return;
+        }
+
+        _currentEntryTypeFilter = option.Filter;
+        RefreshResults();
+    }
+
     private void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
     {
         if (_isUpdatingSearchBox || _currentReview is null)
@@ -656,6 +678,7 @@ public partial class MainWindow : Window
         PreviewQuarantineButton.IsEnabled = !isScanning && _currentReview is not null && _shortlist.Count > 0;
         ExportQuarantinePreviewButton.IsEnabled = !isScanning && _currentQuarantinePreview is not null;
         CategoryFilterBox.IsEnabled = !isScanning && _currentReview is not null && CategoryFilterBox.Items.Count > 1;
+        EntryTypeFilterBox.IsEnabled = !isScanning && _currentReview is not null;
         SearchBox.IsEnabled = !isScanning && _currentReview is not null;
         ClearSearchButton.IsEnabled = !isScanning && _currentReview is not null && _currentSearch.IsActive;
         UpdateShortlistControls();
@@ -693,6 +716,18 @@ public partial class MainWindow : Window
 
         _currentCategoryFilter = filter;
         SelectCategoryFilterOption(_currentCategoryFilter);
+        RefreshResults();
+    }
+
+    public void ApplyEntryTypeFilter(StorageEntryTypeFilter filter)
+    {
+        if (_currentReview is null)
+        {
+            return;
+        }
+
+        _currentEntryTypeFilter = filter;
+        SelectEntryTypeFilterOption(_currentEntryTypeFilter);
         RefreshResults();
     }
 
@@ -781,6 +816,7 @@ public partial class MainWindow : Window
             AddShownToShortlistButton.IsEnabled = false;
             RemoveShownFromShortlistButton.IsEnabled = false;
             SearchBox.IsEnabled = false;
+            EntryTypeFilterBox.IsEnabled = false;
             ClearSearchButton.IsEnabled = false;
             return;
         }
@@ -808,7 +844,7 @@ public partial class MainWindow : Window
 
     private IReadOnlyList<StorageReviewEntry> ApplyCurrentReviewFilters()
     {
-        return _currentReview?.ApplyFilter(_currentFilter, _currentCategoryFilter, _currentSearch) ?? [];
+        return _currentReview?.ApplyFilter(_currentFilter, _currentCategoryFilter, _currentEntryTypeFilter, _currentSearch) ?? [];
     }
 
     private StorageEntryRow[] BuildDisplayedRows(IReadOnlyList<StorageReviewEntry> entries)
@@ -866,6 +902,39 @@ public partial class MainWindow : Window
         }
     }
 
+    private void UpdateEntryTypeFilterOptions()
+    {
+        _isUpdatingEntryTypeFilterOptions = true;
+        try
+        {
+            if (_currentReview is null)
+            {
+                EntryTypeFilterBox.ItemsSource = new[]
+                {
+                    new EntryTypeFilterOption(StorageEntryTypeFilter.All, "All types", "all-types")
+                };
+                EntryTypeFilterBox.SelectedIndex = 0;
+                EntryTypeFilterBox.IsEnabled = false;
+                return;
+            }
+
+            var fileCount = _currentReview.Entries.Count(row => !row.Entry.IsDirectory);
+            var folderCount = _currentReview.Entries.Count(row => row.Entry.IsDirectory);
+            EntryTypeFilterBox.ItemsSource = new[]
+            {
+                new EntryTypeFilterOption(StorageEntryTypeFilter.All, "All types", "all-types"),
+                new EntryTypeFilterOption(StorageEntryTypeFilter.Files, $"Files ({fileCount:N0})", "files"),
+                new EntryTypeFilterOption(StorageEntryTypeFilter.Folders, $"Folders ({folderCount:N0})", "folders")
+            };
+            SelectEntryTypeFilterOption(_currentEntryTypeFilter);
+            EntryTypeFilterBox.IsEnabled = true;
+        }
+        finally
+        {
+            _isUpdatingEntryTypeFilterOptions = false;
+        }
+    }
+
     private void UpdateFilterSummary()
     {
         if (_currentReview is null)
@@ -878,6 +947,7 @@ public partial class MainWindow : Window
         var displayedCount = Math.Min(matchedEntries.Count, MaxDisplayedRows);
         var largestMatchedBytes = matchedEntries.Select(row => row.Entry.SizeBytes).DefaultIfEmpty(0).Max();
         var categoryLabel = _currentCategoryFilter.Kind == StorageCategoryFilterKind.All ? "" : $" + {FormatCategoryFilter(_currentCategoryFilter)}";
+        var typeLabel = _currentEntryTypeFilter == StorageEntryTypeFilter.All ? "" : $" + {FormatEntryTypeFilter(_currentEntryTypeFilter)}";
         var searchLabel = _currentSearch.IsActive ? $" + Search \"{_currentSearch.Query}\"" : "";
         var matchLabel = matchedEntries.Count > displayedCount
             ? $"{displayedCount:N0} shown of {matchedEntries.Count:N0} matched"
@@ -886,7 +956,7 @@ public partial class MainWindow : Window
             ? $" Display limit {MaxDisplayedRows:N0}; narrow filters/search to inspect more matches."
             : "";
         FilterSummaryText.Text =
-            $"{FormatFilter(_currentFilter)}{categoryLabel}{searchLabel}: {matchLabel}, " +
+            $"{FormatFilter(_currentFilter)}{categoryLabel}{typeLabel}{searchLabel}: {matchLabel}, " +
             $"largest matched row {ByteSizeFormatter.Format(largestMatchedBytes)}, " +
             $"shortlist {_shortlist.Count:N0}.{limitLabel}";
     }
@@ -1113,10 +1183,13 @@ public partial class MainWindow : Window
         var categorySegment = CategoryFilterBox.SelectedItem is CategoryFilterOption option
             ? option.FileNameSegment
             : "all-categories";
+        var typeSegment = EntryTypeFilterBox.SelectedItem is EntryTypeFilterOption typeOption
+            ? typeOption.FileNameSegment
+            : "all-types";
         var searchSegment = _currentSearch.IsActive
             ? $"-search-{FormatFileNameSearch(_currentSearch.Query)}"
             : "";
-        return $"storage-scan-{DateTime.Now:yyyyMMdd-HHmmss}-{FormatFileNameFilter(_currentFilter)}-{categorySegment}{searchSegment}.csv";
+        return $"storage-scan-{DateTime.Now:yyyyMMdd-HHmmss}-{FormatFileNameFilter(_currentFilter)}-{categorySegment}-{typeSegment}{searchSegment}.csv";
     }
 
     private static string FormatFileNameSearch(string searchQuery)
@@ -1152,6 +1225,16 @@ public partial class MainWindow : Window
         };
     }
 
+    private static string FormatEntryTypeFilter(StorageEntryTypeFilter filter)
+    {
+        return filter switch
+        {
+            StorageEntryTypeFilter.Files => "Files",
+            StorageEntryTypeFilter.Folders => "Folders",
+            _ => "All types"
+        };
+    }
+
     private void SelectCategoryFilterOption(StorageCategoryFilter filter)
     {
         var option = CategoryFilterBox.Items
@@ -1170,6 +1253,27 @@ public partial class MainWindow : Window
         finally
         {
             _isUpdatingCategoryFilterOptions = false;
+        }
+    }
+
+    private void SelectEntryTypeFilterOption(StorageEntryTypeFilter filter)
+    {
+        var option = EntryTypeFilterBox.Items
+            .Cast<EntryTypeFilterOption>()
+            .FirstOrDefault(candidate => candidate.Filter == filter);
+        if (option is null)
+        {
+            return;
+        }
+
+        _isUpdatingEntryTypeFilterOptions = true;
+        try
+        {
+            EntryTypeFilterBox.SelectedItem = option;
+        }
+        finally
+        {
+            _isUpdatingEntryTypeFilterOptions = false;
         }
     }
 

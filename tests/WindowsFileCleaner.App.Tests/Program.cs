@@ -65,6 +65,7 @@ internal sealed class MainWindowSmokeTests
             Assert(window.CurrentStatusText == "Ready", "MainWindow should not start scanning when constructed.");
             Assert(window.CanStartStorageScan, "MainWindow should allow a user-triggered Storage Scan.");
             Assert(!window.CanExportScanCsv, "MainWindow should not allow CSV export before a scan.");
+            Assert(!window.CanUseEntryTypeFilter, "MainWindow should not allow type filtering before a scan.");
             Assert(window.SearchHelpToolTipValue.Contains("path:", StringComparison.OrdinalIgnoreCase), "Search tooltip should show field-prefix examples.");
             Assert(window.SearchHelpToolTipValue.Contains("category:", StringComparison.OrdinalIgnoreCase), "Search tooltip should include category-prefix guidance.");
         }
@@ -132,6 +133,8 @@ internal sealed class MainWindowSmokeTests
             Assert(window.CanStartStorageScan, "Scan button should be re-enabled after the fixture scan.");
             Assert(window.CanExportScanCsv, "CSV export should be enabled after a completed scan.");
             Assert(window.CanUseCategoryFilter, "Category filter should be enabled after a categorized fixture scan.");
+            Assert(window.CanUseEntryTypeFilter, "Type filter should be enabled after a completed scan.");
+            Assert(window.CurrentEntryTypeFilterLabel.Contains("All types", StringComparison.OrdinalIgnoreCase), "Type filter should start on All types.");
             Assert(window.TotalSizeTextValue != "-", "Total size card should be populated after scan.");
             Assert(window.FolderCountTextValue != "-", "Folder count card should be populated after scan.");
             Assert(window.FileCountTextValue != "-", "File count card should be populated after scan.");
@@ -243,6 +246,20 @@ internal sealed class MainWindowSmokeTests
         try
         {
             RunDispatcherTask(() => window.RunStorageScanForCurrentScopeAsync());
+
+            window.ApplyEntryTypeFilter(StorageEntryTypeFilter.Files);
+            Assert(window.FilterSummaryTextValue.Contains("Files", StringComparison.OrdinalIgnoreCase), "File type filter should update the filter summary.");
+            Assert(window.DisplayedRows.Count > 0, "File type filter should show fixture files.");
+            Assert(window.DisplayedRows.All(row => row.Type == "File"), "File type filter should only show files.");
+            Assert(window.CurrentScanReportExportFileName.Contains("-files", StringComparison.OrdinalIgnoreCase), "Scan Report Export filename should include active file type filter.");
+
+            window.ApplyEntryTypeFilter(StorageEntryTypeFilter.Folders);
+            Assert(window.FilterSummaryTextValue.Contains("Folders", StringComparison.OrdinalIgnoreCase), "Folder type filter should update the filter summary.");
+            Assert(window.DisplayedRows.Count > 0, "Folder type filter should show fixture folders.");
+            Assert(window.DisplayedRows.All(row => row.Type == "Folder"), "Folder type filter should only show folders.");
+
+            window.ApplyEntryTypeFilter(StorageEntryTypeFilter.All);
+            Assert(window.CurrentEntryTypeFilterLabel.Contains("All types", StringComparison.OrdinalIgnoreCase), "Type filter should return to All types.");
 
             window.ApplyStorageReviewFilter(StorageReviewFilter.QuarantineCandidates);
             Assert(window.FilterSummaryTextValue.Contains("Quarantine candidates:", StringComparison.OrdinalIgnoreCase), "Quarantine candidate filter should update the filter summary.");
