@@ -97,7 +97,7 @@ public static class QuarantinePreviewBuilder
             var blockedDescendants = FindBlockedDescendants(entry).ToArray();
             if (blockedDescendants.Length > 0)
             {
-                blockers.Add(FormatBlockedDescendantReason(blockedDescendants));
+                blockers.Add(FormatBlockedDescendantReason(cleanupScopePath, blockedDescendants));
             }
         }
 
@@ -131,17 +131,35 @@ public static class QuarantinePreviewBuilder
             || entry.BloatCategories.Contains(BloatCategory.CleanupScopeRoot);
     }
 
-    private static string FormatBlockedDescendantReason(IReadOnlyList<StorageEntry> blockedDescendants)
+    private static string FormatBlockedDescendantReason(string cleanupScopePath, IReadOnlyList<StorageEntry> blockedDescendants)
     {
         var examples = blockedDescendants
             .Take(3)
-            .Select(entry => entry.FullPath)
+            .Select(entry => FormatScopeRelativePath(cleanupScopePath, entry.FullPath))
             .ToArray();
         var suffix = blockedDescendants.Count > examples.Length
             ? $" and {blockedDescendants.Count - examples.Length:N0} more"
             : "";
 
         return $"Contains protected, high-risk, inaccessible, or reparse-point descendant rows: {string.Join("; ", examples)}{suffix}. Select narrower reviewed child rows instead.";
+    }
+
+    private static string FormatScopeRelativePath(string cleanupScopePath, string fullPath)
+    {
+        try
+        {
+            return PathSafety.IsWithinScope(cleanupScopePath, fullPath)
+                ? Path.GetRelativePath(PathSafety.GetFullPath(cleanupScopePath), fullPath)
+                : fullPath;
+        }
+        catch (ArgumentException)
+        {
+            return fullPath;
+        }
+        catch (NotSupportedException)
+        {
+            return fullPath;
+        }
     }
 
     private static string BuildDestinationPath(string cleanupScopePath, string quarantineRootPath, string sourcePath)

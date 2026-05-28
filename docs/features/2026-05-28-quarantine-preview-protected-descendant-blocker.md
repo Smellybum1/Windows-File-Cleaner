@@ -22,7 +22,7 @@ As the project owner, I want a broad cache-looking parent such as `.cache` to be
 ## Desired behavior
 
 - Quarantine Preview blocks a selected parent row when any descendant is protected, high-risk, inaccessible, or a reparse point.
-- The blocked reason includes example descendant paths so the user can narrow review to safer child rows.
+- The blocked reason includes cleanup-scope-relative example descendant paths so the user can narrow review to safer child rows.
 - Included preview bytes exclude blocked broad parent rows.
 - Preview remains read-only and does not create the quarantine root.
 
@@ -55,6 +55,7 @@ What changed:
 - Added fixture coverage for `.cache` containing protected `codex-runtimes` data.
 - Added WPF smoke coverage that shortlists the broad cache parent and confirms the preview pane shows the blocked descendant evidence.
 - Later readability packet separated confirmation-readiness blockers from row-level preview details in the WPF pane.
+- Later relative-blocker packet changed protected-descendant examples from absolute paths to cleanup-scope-relative paths.
 - Updated README and domain docs to describe the broad-parent blocker.
 - No files are moved, deleted, copied, restored, or written by preview generation.
 

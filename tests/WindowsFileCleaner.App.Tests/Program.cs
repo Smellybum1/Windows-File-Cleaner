@@ -554,7 +554,12 @@ internal sealed class MainWindowSmokeTests
             Assert(window.QuarantinePreviewTextValue.Contains("blocked preview row", StringComparison.OrdinalIgnoreCase), "Confirmation readiness should call out the blocked preview row.");
             Assert(window.QuarantinePreviewTextValue.Contains("Preview rows:", StringComparison.OrdinalIgnoreCase), "Preview pane should label row-level preview details.");
             Assert(window.QuarantinePreviewTextValue.Contains("Preview row | Blocked", StringComparison.OrdinalIgnoreCase), "Blocked row details should be labeled as preview rows.");
-            Assert(window.QuarantinePreviewTextValue.Contains("codex-runtimes", StringComparison.OrdinalIgnoreCase), "Preview pane should show the protected descendant evidence.");
+            Assert(window.QuarantinePreviewTextValue.Contains(@".cache\codex-runtimes", StringComparison.OrdinalIgnoreCase), "Preview pane should show relative protected descendant evidence.");
+            var protectedDescendantReasonLine = window.QuarantinePreviewTextValue
+                .Split(Environment.NewLine)
+                .Single(line => line.Contains("Contains protected", StringComparison.OrdinalIgnoreCase));
+            var reasonText = protectedDescendantReasonLine[(protectedDescendantReasonLine.IndexOf("Reasons:", StringComparison.OrdinalIgnoreCase) + "Reasons:".Length)..];
+            Assert(!reasonText.Contains(fixture.RootPath, StringComparison.OrdinalIgnoreCase), "Preview blocker reason should not repeat the absolute fixture scope.");
             Assert(window.QuarantinePreviewTextValue.Contains("Select narrower reviewed child rows", StringComparison.OrdinalIgnoreCase), "Preview pane should guide the user toward narrower rows.");
             Assert(window.QuarantinePreviewTextValue.Contains("No files were modified", StringComparison.OrdinalIgnoreCase), "Preview pane should preserve read-only wording.");
             Assert(File.Exists(fixture.MarkerPath), "Protected descendant fixture file should still exist after preview.");

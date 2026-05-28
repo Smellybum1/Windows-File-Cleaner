@@ -779,8 +779,11 @@ internal sealed class StorageScanTests
         Assert(
             cachePreview.Reasons.Any(reason =>
                 reason.Contains("descendant", StringComparison.OrdinalIgnoreCase)
-                && reason.Contains("codex-runtimes", StringComparison.OrdinalIgnoreCase)),
-            "Blocked parent should explain the protected descendant evidence.");
+                && reason.Contains(@".cache\codex-runtimes", StringComparison.OrdinalIgnoreCase)),
+            "Blocked parent should explain protected descendant evidence with cleanup-scope-relative paths.");
+        Assert(
+            cachePreview.Reasons.All(reason => !reason.Contains(fixture.RootPath, StringComparison.OrdinalIgnoreCase)),
+            "Blocked descendant reasons should not repeat the absolute Cleanup Scope path.");
         Assert(!Directory.Exists(quarantineRoot), "Blocked descendant preview should not create the quarantine root folder.");
     }
 
