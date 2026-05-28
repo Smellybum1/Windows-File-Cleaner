@@ -6,6 +6,7 @@ tests.ScannerRefusesToLeaveCleanupScope();
 tests.LaunchOptionsDefaultAndScopeArgument();
 tests.CleanupScopeSafetyNoteDistinguishesFixtureAndRealProfile();
 tests.ClassifierLabelsRealScanContainerPatterns();
+tests.ClassifierLabelsLargeOldUnknownFilesConservatively();
 tests.ReviewBuilderSummarizesAndFiltersResults();
 tests.ReviewBuilderFiltersAccessIssues();
 tests.ReviewSearchCombinesWithReviewAndCategoryFilters();
@@ -167,6 +168,35 @@ internal sealed class StorageScanTests
         Assert(baldursGate.BloatCategories.Contains(BloatCategory.GameData), "Known game folders should be marked as game data.");
         Assert(baldursGate.ImportanceRating == ImportanceRating.HighRisk, "Game data should be high risk.");
         Assert(baldursGate.DeletionRecommendation == DeletionRecommendation.Keep, "Game data should be kept.");
+    }
+
+    public void ClassifierLabelsLargeOldUnknownFilesConservatively()
+    {
+        var classifier = new CleanupCandidateClassifier();
+        var oldLargeFile = new PathSnapshot(
+            @"C:\Users\moxhe\Downloads\fa3a693d7c1f.bin",
+            "fa3a693d7c1f.bin",
+            IsDirectory: false,
+            IsAccessible: true,
+            IsReparsePoint: false,
+            LastModifiedUtc: DateTimeOffset.UtcNow.AddDays(-180));
+
+        var oldLargeClassification = classifier.Classify(oldLargeFile, sizeBytes: 2L * 1024 * 1024 * 1024);
+
+        Assert(oldLargeClassification.BloatCategories.Contains(BloatCategory.LargeOldFile), "Large stale files should be labeled for review.");
+        Assert(oldLargeClassification.ImportanceRating == ImportanceRating.LikelySafe, "Old large Downloads files with download evidence can remain likely-safe candidates.");
+        Assert(oldLargeClassification.DeletionRecommendation == DeletionRecommendation.QuarantineCandidate, "Old large Downloads files should still use quarantine candidate recommendation.");
+        Assert(oldLargeClassification.Evidence.Contains("large file", StringComparison.OrdinalIgnoreCase), "Large stale files should explain their evidence.");
+
+        var unknownOldLargeFile = oldLargeFile with
+        {
+            FullPath = @"C:\Users\moxhe\Unknown\fa3a693d7c1f.bin"
+        };
+        var unknownClassification = classifier.Classify(unknownOldLargeFile, sizeBytes: 2L * 1024 * 1024 * 1024);
+
+        Assert(unknownClassification.BloatCategories.Contains(BloatCategory.LargeOldFile), "Large stale unknown files should be labeled for review.");
+        Assert(unknownClassification.ImportanceRating == ImportanceRating.Caution, "Large stale unknown files should stay caution.");
+        Assert(unknownClassification.DeletionRecommendation == DeletionRecommendation.Inspect, "Large stale unknown files should require inspection.");
     }
 
     public void ReviewBuilderSummarizesAndFiltersResults()

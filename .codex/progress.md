@@ -6,7 +6,7 @@ Use it to preserve what was completed, what was verified, what was rejected, and
 
 ## Current status
 
-Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. Cleanup Scope Safety Note, review filters, Storage Review Search with field prefixes, Storage Review Display Limit wording, Storage Review Size Note, selected-folder child breakdown, selected-path inspection actions, Selected Path Review Guidance, CSV export including active search, searched filenames, and hierarchy context, Review Mix, Storage Scan Safety Summary, Safety Summary review shortcuts, Access issues filtering, Bloat Category Filter, No category filtering, Review Shortlist, Shortlist shown, Remove shown, Quarantine Preview, Quarantine Preview CSV export, Restore Manifest Draft, Quarantine Confirmation Draft, Quarantine Readiness UI, conservative app data classification, read-only safety regression checks, the MVP runbook, the MVP readiness audit, fixture-driven WPF launch support, WPF shell smoke testing, WPF fixture scan smoke testing, WPF display-limit smoke testing, WPF review interaction smoke testing, WPF review toolbar layout polish, the MVP preflight script, and the MVP fixture review launcher are implemented and verified. Quarantine remains preview-only; no cleanup execution, manifest writing, or Undo Quarantine execution exists.
+Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. Cleanup Scope Safety Note, review filters, Storage Review Search with field prefixes, Storage Review Display Limit wording, Storage Review Size Note, selected-folder child breakdown, selected-path inspection actions, Selected Path Review Guidance, CSV export including active search, searched filenames, and hierarchy context, Review Mix, Storage Scan Safety Summary, Safety Summary review shortcuts, Access issues filtering, Bloat Category Filter, Large old file classification, No category filtering, Review Shortlist, Shortlist shown, Remove shown, Quarantine Preview, Quarantine Preview CSV export, Restore Manifest Draft, Quarantine Confirmation Draft, Quarantine Readiness UI, conservative app data classification, read-only safety regression checks, the MVP runbook, the MVP readiness audit, fixture-driven WPF launch support, WPF shell smoke testing, WPF fixture scan smoke testing, WPF display-limit smoke testing, WPF review interaction smoke testing, WPF review toolbar layout polish, the MVP preflight script, and the MVP fixture review launcher are implemented and verified. Quarantine remains preview-only; no cleanup execution, manifest writing, or Undo Quarantine execution exists.
 
 ## Next recommended work
 
@@ -1979,3 +1979,51 @@ Rejected ideas buffer:
 
 - Do not make prefixed search rescan the filesystem or persist search history.
 - Do not use prefixed search matches as cleanup approval.
+
+### 2026-05-28: Add Large old file classification
+
+Status: completed
+
+Evidence:
+
+- The real scan screenshot included large files with little category context.
+- `No category` remains useful, but old multi-gigabyte files deserve a conservative triage label when last-modified evidence is stale.
+
+Implementation:
+
+- Added `BloatCategory.LargeOldFile`.
+- Passed file size into `CleanupCandidateClassifier`.
+- Labeled files at least 1 GB and older than 90 days as `Large old file`.
+- Kept unknown large old files as `Caution` / `Inspect`; size and age alone do not approve cleanup.
+- Kept large old files with stronger cleanup evidence, such as old Downloads or installer evidence, on the existing likely-safe/quarantine-candidate path.
+- Added display/export labels and classifier coverage.
+- No cleanup execution, Quarantine execution, Undo Quarantine, manifest writing, or real-profile automation was added.
+
+Verification:
+
+- `dotnet build WindowsFileCleaner.sln --no-restore` passed with 0 warnings and 0 errors.
+- `dotnet run --project tests\WindowsFileCleaner.Tests\WindowsFileCleaner.Tests.csproj --no-build` passed.
+- `dotnet run --project tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj --no-build` passed.
+- `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\Invoke-MvpPreflight.ps1` passed.
+
+Docs updated:
+
+- `README.md`
+- `docs/domain/context.md`
+- `docs/domain/glossary.md`
+- `docs/features/2026-05-28-read-only-user-profile-scan.md`
+- `docs/features/2026-05-28-large-old-file-classification.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No new ADR. This is reversible classifier triage behavior and does not change architecture, persistence, security, deployment, or cleanup execution.
+
+Open questions:
+
+- Does the real scan now surface helpful `Large old file` rows?
+
+Rejected ideas buffer:
+
+- Do not classify directories as Large old file from recursive size because parent and child rows overlap.
+- Do not treat large old files as cleanup approval without stronger category evidence.

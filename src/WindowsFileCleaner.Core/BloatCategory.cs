@@ -12,6 +12,7 @@ public enum BloatCategory
     AppCache,
     GpuShaderCache,
     DuplicateFileCandidate,
+    LargeOldFile,
     OldGameFile,
     NodePackageCache,
     PythonPackageCache,

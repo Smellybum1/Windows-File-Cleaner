@@ -120,6 +120,7 @@ public static class StorageScanCsvExporter
             BloatCategory.AppCache => "App cache",
             BloatCategory.GpuShaderCache => "GPU shader cache",
             BloatCategory.DuplicateFileCandidate => "Duplicate file candidate",
+            BloatCategory.LargeOldFile => "Large old file",
             BloatCategory.OldGameFile => "Old game file",
             BloatCategory.NodePackageCache => "Node package cache",
             BloatCategory.PythonPackageCache => "Python package cache",

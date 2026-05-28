@@ -2,6 +2,9 @@ namespace WindowsFileCleaner.Core;
 
 public sealed class CleanupCandidateClassifier
 {
+    private const long LargeFileThresholdBytes = 1024L * 1024 * 1024;
+    private static readonly TimeSpan LargeOldFileAge = TimeSpan.FromDays(90);
+
     private static readonly string[] ProtectedFolderNames =
     [
         "Desktop",
@@ -77,7 +80,7 @@ public sealed class CleanupCandidateClassifier
         "IronyModManager"
     ];
 
-    public ClassifiedPath Classify(PathSnapshot path)
+    public ClassifiedPath Classify(PathSnapshot path, long sizeBytes = 0)
     {
         var categories = new HashSet<BloatCategory>();
         var evidence = new List<string>();
@@ -96,7 +99,7 @@ public sealed class CleanupCandidateClassifier
             return Build(categories, ImportanceRating.Caution, DeletionRecommendation.Inspect, evidence);
         }
 
-        AddCategoryHints(path, categories, evidence);
+        AddCategoryHints(path, sizeBytes, categories, evidence);
 
         if (IsProtected(path, categories))
         {
@@ -127,7 +130,7 @@ public sealed class CleanupCandidateClassifier
         return Build(categories, ImportanceRating.LikelySafe, DeletionRecommendation.QuarantineCandidate, evidence);
     }
 
-    private static void AddCategoryHints(PathSnapshot path, HashSet<BloatCategory> categories, List<string> evidence)
+    private static void AddCategoryHints(PathSnapshot path, long sizeBytes, HashSet<BloatCategory> categories, List<string> evidence)
     {
         var name = path.Name;
         var fullPath = path.FullPath;
@@ -166,6 +169,12 @@ public sealed class CleanupCandidateClassifier
         {
             categories.Add(BloatCategory.InstallerCache);
             evidence.Add("The file or folder looks like an installer or installer cache.");
+        }
+
+        if (LooksLikeLargeOldFile(path, sizeBytes))
+        {
+            categories.Add(BloatCategory.LargeOldFile);
+            evidence.Add("This is a large file that has not changed recently. Inspect it manually before considering cleanup.");
         }
 
         if (LooksLikeAppCache(fullPath, name))
@@ -242,6 +251,12 @@ public sealed class CleanupCandidateClassifier
 
     private static bool IsCautionCategory(HashSet<BloatCategory> categories, PathSnapshot path)
     {
+        if (categories.Contains(BloatCategory.LargeOldFile)
+            && !HasLikelySafeCleanupCategory(categories))
+        {
+            return true;
+        }
+
         if (categories.Contains(BloatCategory.NodePackageCache)
             || categories.Contains(BloatCategory.PythonPackageCache)
             || categories.Contains(BloatCategory.OldGameFile)
@@ -302,6 +317,21 @@ public sealed class CleanupCandidateClassifier
             || path.Name.EndsWith(".msu", StringComparison.OrdinalIgnoreCase)
             || path.Name.Contains("installer", StringComparison.OrdinalIgnoreCase)
             || path.Name.Contains("setup", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static bool LooksLikeLargeOldFile(PathSnapshot path, long sizeBytes)
+    {
+        return !path.IsDirectory
+            && sizeBytes >= LargeFileThresholdBytes
+            && IsOld(path.LastModifiedUtc, LargeOldFileAge);
+    }
+
+    private static bool HasLikelySafeCleanupCategory(HashSet<BloatCategory> categories)
+    {
+        return categories.Contains(BloatCategory.OldDownload)
+            || categories.Contains(BloatCategory.TemporaryFolder)
+            || categories.Contains(BloatCategory.InstallerCache)
+            || categories.Contains(BloatCategory.AppCache);
     }
 
     private static bool LooksLikeAppCache(string fullPath, string name)

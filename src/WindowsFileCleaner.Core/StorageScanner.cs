@@ -114,7 +114,7 @@ public sealed class StorageScanner
         IReadOnlyList<StorageEntry> children,
         string? errorMessage)
     {
-        var classification = _classifier.Classify(snapshot);
+        var classification = _classifier.Classify(snapshot, sizeBytes);
 
         return new StorageEntry(
             snapshot.FullPath,
@@ -167,4 +167,3 @@ public sealed class StorageScanner
             or System.Security.SecurityException;
     }
 }
-

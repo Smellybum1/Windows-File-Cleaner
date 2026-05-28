@@ -75,7 +75,7 @@ Questions that can be deferred:
 
 - The user wants a read-only storage scan first.
 - The user wants protected and sensitive areas to be visible for inspection, with an app-provided estimate of importance and cleanup suitability.
-- The user considers old downloads, temp folders, installer caches, app caches, duplicate files, old game files, Node/Python package caches, and Windows app leftovers to be likely bloat if removing them does not break current apps.
+- The user considers old downloads, temp folders, installer caches, app caches, duplicate files, large old files, old game files, Node/Python package caches, and Windows app leftovers to be likely bloat if removing them does not break current apps.
 - The user prefers a Quarantine folder on `D:` with easy undo for eventual cleanup.
 - The user prefers a desktop app.
 - The user chose `C:\Users\moxhe` as the initial Cleanup Scope.
