@@ -6,6 +6,7 @@ tests.ScannerRefusesToLeaveCleanupScope();
 tests.ClassifierLabelsRealScanContainerPatterns();
 tests.ReviewBuilderSummarizesAndFiltersResults();
 tests.ReviewBuilderFiltersAccessIssues();
+tests.ReviewShortlistTracksSelectedRowsWithoutModifyingReview();
 tests.ChildSummaryShowsLargestImmediateChildren();
 tests.PathInspectionPlanBuildsExplorerArguments();
 tests.CsvExporterWritesEscapedReviewRows();
@@ -186,6 +187,39 @@ internal sealed class StorageScanTests
         Assert(review.Summary.AccessIssueLargestEntryBytes == 0, "Access issue largest row should reflect the unreadable row size.");
         Assert(accessRows.Count == 1, "Access issue filter should only return inaccessible rows.");
         Assert(accessRows[0].Entry.FullPath.EndsWith(@"\Locked", StringComparison.OrdinalIgnoreCase), "Access issue filter should return the inaccessible path.");
+    }
+
+    public void ReviewShortlistTracksSelectedRowsWithoutModifyingReview()
+    {
+        using var fixture = TestFixture.Create();
+
+        fixture.WriteFile(@"Downloads\old-installer.msi", 1024 * 1024, DateTimeOffset.UtcNow.AddDays(-120));
+        fixture.WriteFile(@"Unknown\notes.txt", 1024, DateTimeOffset.UtcNow);
+
+        var scanner = new StorageScanner();
+        var result = scanner.Scan(new StorageScanOptions(fixture.RootPath));
+        var review = StorageScanReviewBuilder.Build(result);
+        var installer = review.Entries.Single(row => row.Entry.Name.Equals("old-installer.msi", StringComparison.OrdinalIgnoreCase));
+        var notes = review.Entries.Single(row => row.Entry.Name.Equals("notes.txt", StringComparison.OrdinalIgnoreCase));
+        var originalEntryCount = review.Entries.Count;
+        var shortlist = new StorageReviewShortlist();
+
+        Assert(shortlist.Add(installer.Entry), "Adding a row to the shortlist should report a new selection.");
+        Assert(!shortlist.Add(installer.Entry), "Adding the same row twice should not duplicate it.");
+        Assert(shortlist.Add(notes.Entry), "Adding a second row should report a new selection.");
+        Assert(shortlist.Count == 2, "Shortlist should count unique selected paths.");
+        Assert(shortlist.Contains(installer.Entry), "Shortlist should contain selected entries.");
+
+        var selectedRows = shortlist.ApplyTo(review.Entries);
+        Assert(selectedRows.Count == 2, "Shortlist should project selected rows from review entries.");
+        Assert(selectedRows[0].Entry.FullPath == installer.Entry.FullPath, "Shortlist projection should preserve review ordering.");
+        Assert(review.Entries.Count == originalEntryCount, "Shortlist should not modify review entries.");
+
+        Assert(shortlist.Remove(installer.Entry), "Removing a selected row should succeed.");
+        Assert(!shortlist.Contains(installer.Entry), "Removed row should no longer be selected.");
+
+        shortlist.Clear();
+        Assert(shortlist.Count == 0, "Clear should remove every shortlisted path.");
     }
 
     public void ChildSummaryShowsLargestImmediateChildren()

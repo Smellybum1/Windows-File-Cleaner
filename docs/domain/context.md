@@ -489,6 +489,49 @@ Initial actions are copying the selected path and opening the selected path in F
 - Keep inspection actions separate from Cleanup Actions.
 - Status messages should state that no files were modified.
 
+### Review Shortlist
+
+Status: draft
+Last reviewed: 2026-05-28
+
+#### Definition
+
+A Review Shortlist is a temporary in-memory set of Storage Scan rows the user marks for follow-up during manual review.
+
+It is not a cleanup approval and does not modify files.
+
+#### Examples
+
+- Add a large cache folder to the Review Shortlist while inspecting Caution rows.
+- Add multiple likely cleanup opportunities, then export only those rows to CSV.
+- Clear the Review Shortlist before starting a new review pass.
+
+#### Non-examples
+
+- A Cleanup Action.
+- A Quarantine preview.
+- A persisted selection history.
+- Confirmation that a path should be moved or deleted.
+
+#### Lifecycle
+
+- Starts empty after each new Storage Scan.
+- Changes only when the user adds, removes, or clears selected rows.
+- Can be exported as a read-only CSV report.
+- Is discarded when a new Storage Scan completes.
+
+#### Relationships
+
+- Uses Storage Scan results.
+- Supports Selected Path Inspection, Storage Review Filters, Bloat Category Filters, and Scan Report Export.
+- May inform a future Quarantine preview, but only after a separate explicit confirmation step is designed.
+
+#### Code implications
+
+- Use `StorageReviewShortlist` for the in-memory selection model.
+- Keep shortlisted paths separate from Cleanup Actions and Quarantine manifests.
+- Do not persist or execute the Review Shortlist as an action without a future explicit approval workflow.
+
 ### Scan Report Export
 
 Status: draft  

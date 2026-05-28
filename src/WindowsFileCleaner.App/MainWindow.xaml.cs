@@ -10,6 +10,7 @@ namespace WindowsFileCleaner.App;
 public partial class MainWindow : Window
 {
     private const int MaxDisplayedRows = 2000;
+    private readonly StorageReviewShortlist _shortlist = new();
     private CancellationTokenSource? _scanCancellation;
     private StorageScanReview? _currentReview;
     private StorageReviewFilter _currentFilter = StorageReviewFilter.All;
@@ -47,6 +48,7 @@ public partial class MainWindow : Window
             _currentReview = StorageScanReviewBuilder.Build(result);
             _currentFilter = StorageReviewFilter.All;
             _currentCategoryFilter = StorageCategoryFilter.All;
+            _shortlist.Clear();
             UpdateCategoryFilterOptions();
             var rows = ApplyCurrentFilter();
 
@@ -59,6 +61,7 @@ public partial class MainWindow : Window
             UpdateFilterButtons();
             UpdateFilterSummary();
             UpdateReviewMix();
+            UpdateShortlistControls();
 
             if (rows.Length > 0)
             {
@@ -117,6 +120,39 @@ public partial class MainWindow : Window
         SetFilter(StorageReviewFilter.AccessIssues);
     }
 
+    private void AddToShortlistButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (_selectedRow is null)
+        {
+            return;
+        }
+
+        _shortlist.Add(_selectedRow.Entry);
+        var selectedPath = _selectedRow.FullPath;
+        RefreshResults(selectedPath);
+        StatusText.Text = $"Added selected path to review shortlist ({_shortlist.Count:N0}). No files were modified.";
+    }
+
+    private void RemoveFromShortlistButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (_selectedRow is null)
+        {
+            return;
+        }
+
+        _shortlist.Remove(_selectedRow.Entry);
+        var selectedPath = _selectedRow.FullPath;
+        RefreshResults(selectedPath);
+        StatusText.Text = $"Removed selected path from review shortlist ({_shortlist.Count:N0}). No files were modified.";
+    }
+
+    private void ClearShortlistButton_Click(object sender, RoutedEventArgs e)
+    {
+        _shortlist.Clear();
+        RefreshResults();
+        StatusText.Text = "Review shortlist cleared. No files were modified.";
+    }
+
     private void CategoryFilterBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         if (_isUpdatingCategoryFilterOptions || CategoryFilterBox.SelectedItem is not CategoryFilterOption option)
@@ -162,6 +198,40 @@ public partial class MainWindow : Window
         }
     }
 
+    private void ExportShortlistCsvButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (_currentReview is null || _shortlist.Count == 0)
+        {
+            return;
+        }
+
+        var exportRows = _shortlist.ApplyTo(_currentReview.Entries);
+        var dialog = new SaveFileDialog
+        {
+            Title = "Export Review Shortlist CSV",
+            Filter = "CSV files (*.csv)|*.csv|All files (*.*)|*.*",
+            FileName = $"storage-scan-{DateTime.Now:yyyyMMdd-HHmmss}-review-shortlist.csv",
+            AddExtension = true,
+            DefaultExt = ".csv"
+        };
+
+        if (dialog.ShowDialog(this) != true)
+        {
+            return;
+        }
+
+        try
+        {
+            File.WriteAllText(dialog.FileName, StorageScanCsvExporter.Export(exportRows));
+            StatusText.Text = $"Exported {exportRows.Count:N0} shortlisted rows to CSV. No scanned files were modified.";
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(this, ex.Message, "Export shortlist failed", MessageBoxButton.OK, MessageBoxImage.Error);
+            StatusText.Text = "Review shortlist export failed. No scanned files were modified.";
+        }
+    }
+
     private void ResultsGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         if (ResultsGrid.SelectedItem is not StorageEntryRow row)
@@ -174,6 +244,7 @@ public partial class MainWindow : Window
             DetailChildrenText.Text = "";
             CopyPathButton.IsEnabled = false;
             OpenInExplorerButton.IsEnabled = false;
+            UpdateShortlistControls();
             return;
         }
 
@@ -187,6 +258,7 @@ public partial class MainWindow : Window
         DetailChildrenText.Text = FormatChildSummary(row.Entry);
         CopyPathButton.IsEnabled = true;
         OpenInExplorerButton.IsEnabled = true;
+        UpdateShortlistControls();
     }
 
     private void CopyPathButton_Click(object sender, RoutedEventArgs e)
@@ -232,7 +304,10 @@ public partial class MainWindow : Window
         CancelButton.IsEnabled = isScanning;
         ScopePathBox.IsEnabled = !isScanning;
         ExportCsvButton.IsEnabled = !isScanning && _currentReview is not null;
+        ExportShortlistCsvButton.IsEnabled = !isScanning && _currentReview is not null && _shortlist.Count > 0;
+        ClearShortlistButton.IsEnabled = !isScanning && _shortlist.Count > 0;
         CategoryFilterBox.IsEnabled = !isScanning && _currentReview is not null && CategoryFilterBox.Items.Count > 1;
+        UpdateShortlistControls();
     }
 
     private void SetFilter(StorageReviewFilter filter)
@@ -246,7 +321,7 @@ public partial class MainWindow : Window
         RefreshResults();
     }
 
-    private void RefreshResults()
+    private void RefreshResults(string? selectedPath = null)
     {
         if (_currentReview is null)
         {
@@ -257,10 +332,14 @@ public partial class MainWindow : Window
         ResultsGrid.ItemsSource = rows;
         UpdateFilterButtons();
         UpdateFilterSummary();
+        UpdateShortlistControls();
 
         if (rows.Length > 0)
         {
-            ResultsGrid.SelectedIndex = 0;
+            var selectedIndex = selectedPath is null
+                ? 0
+                : Array.FindIndex(rows, row => row.FullPath.Equals(selectedPath, StringComparison.OrdinalIgnoreCase));
+            ResultsGrid.SelectedIndex = selectedIndex >= 0 ? selectedIndex : 0;
         }
         else
         {
@@ -289,6 +368,8 @@ public partial class MainWindow : Window
         QuarantineCandidateFilterButton.Content = $"Quarantine candidates ({summary.QuarantineCandidateCount:N0})";
         AccessIssuesFilterButton.Content = $"Access issues ({summary.AccessIssueCount:N0})";
         ExportCsvButton.IsEnabled = true;
+        ExportShortlistCsvButton.IsEnabled = _shortlist.Count > 0;
+        ClearShortlistButton.IsEnabled = _shortlist.Count > 0;
     }
 
     private StorageEntryRow[] ApplyCurrentFilter()
@@ -301,7 +382,7 @@ public partial class MainWindow : Window
         return _currentReview
             .ApplyFilter(_currentFilter, _currentCategoryFilter)
             .Take(MaxDisplayedRows)
-            .Select(entry => new StorageEntryRow(entry))
+            .Select(entry => new StorageEntryRow(entry, _shortlist.Contains(entry.Entry)))
             .ToArray();
     }
 
@@ -363,7 +444,19 @@ public partial class MainWindow : Window
         var rows = ApplyCurrentFilter();
         var largestShownBytes = rows.Select(row => row.SizeBytes).DefaultIfEmpty(0).Max();
         var categoryLabel = _currentCategoryFilter.Kind == StorageCategoryFilterKind.All ? "" : $" + {FormatCategoryFilter(_currentCategoryFilter)}";
-        FilterSummaryText.Text = $"{FormatFilter(_currentFilter)}{categoryLabel}: {rows.Length:N0} shown, largest row {ByteSizeFormatter.Format(largestShownBytes)}";
+        FilterSummaryText.Text = $"{FormatFilter(_currentFilter)}{categoryLabel}: {rows.Length:N0} shown, largest row {ByteSizeFormatter.Format(largestShownBytes)}, shortlist {_shortlist.Count:N0}";
+    }
+
+    private void UpdateShortlistControls()
+    {
+        var hasSelectedRow = _selectedRow is not null;
+        var isShortlisted = hasSelectedRow && _shortlist.Contains(_selectedRow!.Entry);
+        AddToShortlistButton.IsEnabled = hasSelectedRow && !isShortlisted && ScanButton.IsEnabled;
+        RemoveFromShortlistButton.IsEnabled = hasSelectedRow && isShortlisted && ScanButton.IsEnabled;
+
+        var hasShortlist = _shortlist.Count > 0;
+        ExportShortlistCsvButton.IsEnabled = _currentReview is not null && hasShortlist && ScanButton.IsEnabled;
+        ClearShortlistButton.IsEnabled = hasShortlist && ScanButton.IsEnabled;
     }
 
     private void UpdateReviewMix()

@@ -4,19 +4,22 @@ namespace WindowsFileCleaner.App;
 
 public sealed class StorageEntryRow
 {
-    public StorageEntryRow(StorageEntry entry, int depth)
+    public StorageEntryRow(StorageEntry entry, int depth, bool isShortlisted = false)
     {
         Entry = entry;
         Depth = depth;
+        IsShortlisted = isShortlisted;
     }
 
-    public StorageEntryRow(StorageReviewEntry reviewEntry)
-        : this(reviewEntry.Entry, reviewEntry.Depth)
+    public StorageEntryRow(StorageReviewEntry reviewEntry, bool isShortlisted = false)
+        : this(reviewEntry.Entry, reviewEntry.Depth, isShortlisted)
     {
     }
 
     public StorageEntry Entry { get; }
     public int Depth { get; }
+    public bool IsShortlisted { get; }
+    public string Shortlist => IsShortlisted ? "Yes" : "";
     public string Name => $"{new string(' ', Depth * 2)}{Entry.Name}";
     public string FullPath => Entry.FullPath;
     public string Type => Entry.IsDirectory ? "Folder" : "File";
