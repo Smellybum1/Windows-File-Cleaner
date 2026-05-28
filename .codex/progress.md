@@ -3760,3 +3760,63 @@ Rejected ideas buffer:
 - Do not wire WPF execution in the same packet as the first executor.
 - Do not implement rollback inside Quarantine Executor; Undo Quarantine needs a separate design.
 - Do not overwrite existing quarantine destinations.
+
+### 2026-05-29: Add Fixture-First Undo Quarantine
+
+Status: completed
+
+Evidence:
+
+- User requested quarantine on `D:` with an easy undo path.
+- Core fixture-first Quarantine Executor can already produce Moved Restore Manifest entries.
+- ADR 0008 selects a separate fixture-first Undo Quarantine Executor before WPF execution or WPF undo is wired.
+
+Implementation:
+
+- Added `UndoQuarantineExecutor`, `UndoQuarantineResult`, and `UndoQuarantineEntryResult`.
+- Extended Restore Manifest action statuses with Restoring, Restored, RestorePartialFailure, and RestoreFailed.
+- Extended Restore Manifest entry statuses with Restoring, Restored, and RestoreFailed.
+- Added restore start/completion timestamps to Restore Manifest entries.
+- Undo restores only Moved entries, writes Restoring before each restore attempt, refuses original-path collisions, keeps move failures for recovery review, checks missing quarantine paths and reparse points, then writes Restored or RestoreFailed.
+- Undo continues after per-entry restore failures and stops before later restore attempts when manifest writing fails.
+- Extended the source-level filesystem-call regression to allow `Directory.CreateDirectory`, `Directory.Move`, and `File.Move` only in `UndoQuarantineExecutor` for restore movement.
+- Kept WPF Quarantine execution and WPF Undo Quarantine unavailable.
+
+Verification:
+
+- `dotnet build WindowsFileCleaner.sln --no-restore` passed with 0 warnings and 0 errors.
+- `dotnet run --project tests\WindowsFileCleaner.Tests\WindowsFileCleaner.Tests.csproj --no-build` passed.
+- `dotnet run --project tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj --no-build` passed.
+- `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\Invoke-MvpPreflight.ps1` passed.
+
+Docs updated:
+
+- `README.md`
+- `docs/domain/context.md`
+- `docs/domain/glossary.md`
+- `docs/decisions/0005-use-write-ahead-restore-manifest.md`
+- `docs/decisions/0006-use-temp-replace-restore-manifest-writes.md`
+- `docs/decisions/0007-use-fixture-first-quarantine-executor.md`
+- `docs/decisions/0008-use-fixture-first-undo-quarantine.md`
+- `docs/features/2026-05-28-mvp-readiness-audit.md`
+- `docs/features/2026-05-29-quarantine-executor-fixture-first.md`
+- `docs/features/2026-05-29-restore-manifest-file-store.md`
+- `docs/features/2026-05-29-undo-quarantine-fixture-first.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- Added `docs/decisions/0008-use-fixture-first-undo-quarantine.md`.
+
+Open questions:
+
+- What UI should discover and select existing Restore Manifests?
+- Should successful WPF Undo Quarantine offer to clean up empty action folders?
+- How should the app surface leftover temp manifest files after a hard crash?
+
+Rejected ideas buffer:
+
+- Do not overwrite original paths during undo.
+- Do not automatically delete quarantine action folders after restore.
+- Do not implement same-execution rollback inside Quarantine Executor.
+- Do not wire WPF Undo Quarantine in the same packet as core fixture undo.

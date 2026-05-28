@@ -6,5 +6,9 @@ public enum RestoreManifestActionStatus
     Moving,
     Completed,
     PartialFailure,
-    Failed
+    Failed,
+    Restoring,
+    Restored,
+    RestorePartialFailure,
+    RestoreFailed
 }

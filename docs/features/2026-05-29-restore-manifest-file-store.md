@@ -198,7 +198,7 @@ Follow-up work:
 
 - Core fixture-first file/folder moving is covered by `docs/features/2026-05-29-quarantine-executor-fixture-first.md` and ADR 0007.
 - Add failure-injection coverage for manifest write failures.
-- Add Undo Quarantine after moved-entry manifests are produced by execution.
+- Core fixture-first Undo Quarantine is covered by `docs/features/2026-05-29-undo-quarantine-fixture-first.md` and ADR 0008; WPF Undo Quarantine remains a follow-up.
 
 Open questions:
 

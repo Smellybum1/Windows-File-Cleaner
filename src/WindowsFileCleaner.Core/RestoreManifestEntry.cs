@@ -14,4 +14,6 @@ public sealed record RestoreManifestEntry(
     RestoreManifestEntryStatus Status,
     DateTimeOffset? MoveStartedAtUtc,
     DateTimeOffset? MoveCompletedAtUtc,
+    DateTimeOffset? RestoreStartedAtUtc,
+    DateTimeOffset? RestoreCompletedAtUtc,
     string? ErrorMessage);

@@ -1735,6 +1735,10 @@ public partial class MainWindow : Window
             RestoreManifestActionStatus.Completed => "Completed",
             RestoreManifestActionStatus.PartialFailure => "Partial failure",
             RestoreManifestActionStatus.Failed => "Failed",
+            RestoreManifestActionStatus.Restoring => "Restoring",
+            RestoreManifestActionStatus.Restored => "Restored",
+            RestoreManifestActionStatus.RestorePartialFailure => "Restore partial failure",
+            RestoreManifestActionStatus.RestoreFailed => "Restore failed",
             _ => status.ToString()
         };
     }

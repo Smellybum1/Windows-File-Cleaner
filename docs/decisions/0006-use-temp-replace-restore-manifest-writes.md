@@ -104,7 +104,7 @@ Low before actual Quarantine execution is wired. Moderate after executed manifes
 
 - Add fixture-backed tests for manifest write failure and temp-file cleanup.
 - Core fixture-first file/folder moving is covered by ADR 0007.
-- Add Undo Quarantine after moved-entry manifests are produced by execution.
+- Core fixture-first Undo Quarantine is covered by ADR 0008; WPF Undo Quarantine remains a follow-up.
 
 ## Supersedes
 

@@ -103,7 +103,7 @@ Negative consequences:
 
 - The executor can move files when called directly by tests or future code.
 - The UI still needs a separate stale-state and confirmation integration packet.
-- Undo Quarantine is still needed before real cleanup should feel complete.
+- WPF Undo Quarantine is still needed before real cleanup should feel complete.
 
 ## Reversal cost
 
@@ -112,7 +112,7 @@ Moderate after WPF execution is wired. Low while the executor is only tested aga
 ## Follow-up work
 
 - Wire WPF execution only after the executor passes fixture preflight and stale-state checks are explicit.
-- Add Undo Quarantine for Moved entries before permanent deletion exists.
+- Core Undo Quarantine for Moved entries is covered by ADR 0008; add WPF Undo Quarantine before permanent deletion exists.
 - Add recovery UI for Moving, Failed, and leftover temp manifest states.
 
 ## Supersedes

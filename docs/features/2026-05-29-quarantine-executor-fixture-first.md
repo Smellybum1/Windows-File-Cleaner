@@ -214,7 +214,7 @@ ADRs added or skipped:
 Follow-up work:
 
 - Wire WPF execution only after stale-state and confirmation checks are explicit.
-- Add Undo Quarantine for Moved entries.
+- Core Undo Quarantine for Moved entries is covered by `docs/features/2026-05-29-undo-quarantine-fixture-first.md`; WPF execution and WPF undo remain separate follow-ups.
 - Add recovery UI for Moving, Failed, and leftover temp manifest states.
 
 Open questions:

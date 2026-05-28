@@ -1875,9 +1875,9 @@ The selected write order is write-ahead: after explicit confirmation opens a fut
 - Action-scoped quarantine path for each selected entry.
 - Size, last modified time, Importance Rating, Deletion Recommendation, Bloat Categories, and evidence captured at action time.
 - Cleanup Scope, Quarantine root, action root, items root, and manifest path used for the action.
-- Action status such as Planned, Moving, Completed, Partial failure, or Failed.
-- Entry status such as Planned, Moving, Moved, or Failed.
-- Failure message for an entry that could not be moved.
+- Action status such as Planned, Moving, Completed, Partial failure, Failed, Restoring, Restored, Restore partial failure, or Restore failed.
+- Entry status such as Planned, Moving, Moved, Failed, Restoring, Restored, or Restore failed.
+- Failure message for an entry that could not be moved or restored.
 
 #### Non-examples
 
@@ -1890,13 +1890,15 @@ The selected write order is write-ahead: after explicit confirmation opens a fut
 #### Lifecycle
 
 - A Restore Manifest Draft may be generated in memory from included Quarantine Preview rows.
-- A planned Restore Manifest may be generated in memory from a Quarantine Action Draft before file-moving code exists.
-- A future executed Restore Manifest should be written only after explicit user confirmation starts Quarantine execution.
-- The first future write should happen before the first move, with every entry in Planned status.
-- Before moving an entry, future execution should update that entry to Moving and write the manifest again.
-- After each move attempt, future execution should update that entry to Moved or Failed and write the manifest again.
+- A planned Restore Manifest may be generated in memory from a Quarantine Action Draft before WPF file-moving code is wired.
+- An executed Restore Manifest should be written only after explicit user confirmation starts Quarantine execution.
+- The first execution write should happen before the first move, with every entry in Planned status.
+- Before moving an entry, Quarantine execution should update that entry to Moving and write the manifest again.
+- After each move attempt, Quarantine execution should update that entry to Moved or Failed and write the manifest again.
 - Undo Quarantine uses Moved entries from the executed manifest to restore files when feasible.
-- Moving or Failed entries require recovery review because the app may need to inspect source and destination paths before undo.
+- Before restoring an entry, Undo Quarantine should update that entry to Restoring and write the manifest again.
+- After each restore attempt, Undo Quarantine should update that entry to Restored or Restore failed and write the manifest again.
+- Planned, Moving, Failed, Restoring, and Restore failed entries require recovery review because the app may need to inspect source and destination paths before undo.
 - Schema changes require versioning and migration consideration.
 
 #### Relationships
@@ -1911,7 +1913,7 @@ The selected write order is write-ahead: after explicit confirmation opens a fut
 
 - Use `RestoreManifestDraft`, `RestoreManifestEntryDraft`, `RestoreManifestDraftBuilder`, and `RestoreManifestDraftJsonSerializer` for draft-only proof.
 - Use `RestoreManifest`, `RestoreManifestEntry`, `RestoreManifestBuilder`, and `RestoreManifestJsonSerializer` for the planned/executed action record shape.
-- Use `RestoreManifestActionStatus` and `RestoreManifestEntryStatus` for future partial-failure and recovery state.
+- Use `RestoreManifestActionStatus` and `RestoreManifestEntryStatus` for move, restore, partial-failure, and recovery state.
 - Use `RestoreManifestFileStore` only for writing the action-scoped Restore Manifest JSON file after future explicit execution starts.
 - Do not write Restore Manifest files in preview or draft code.
 - Do not write Restore Manifest files from `RestoreManifestBuilder`; it models the JSON action record only.
@@ -1925,9 +1927,9 @@ Last reviewed: 2026-05-29
 
 #### Definition
 
-Restore Manifest Action Status is the overall state of a Quarantine action recorded in the Restore Manifest.
+Restore Manifest Action Status is the overall state of a Quarantine action or Undo Quarantine action recorded in the Restore Manifest.
 
-Initial values are Planned, Moving, Completed, Partial failure, and Failed.
+Current values are Planned, Moving, Completed, Partial failure, Failed, Restoring, Restored, Restore partial failure, and Restore failed.
 
 #### Examples
 
@@ -1936,6 +1938,10 @@ Initial values are Planned, Moving, Completed, Partial failure, and Failed.
 - Completed: all entries are recorded as moved.
 - Partial failure: at least one entry moved and at least one entry failed.
 - Failed: every attempted entry failed or no recoverable move completed.
+- Restoring: at least one entry is being restored or has restored, and the full manifest has not reached a final restored state.
+- Restored: all entries are recorded as restored.
+- Restore partial failure: at least one entry restored and at least one restore attempt failed.
+- Restore failed: every restore attempt failed or no recoverable restore completed.
 
 #### Non-examples
 
@@ -1946,7 +1952,7 @@ Initial values are Planned, Moving, Completed, Partial failure, and Failed.
 #### Code implications
 
 - Use `RestoreManifestActionStatus`.
-- Treat Partial failure and Failed as recovery-review states.
+- Treat Partial failure, Failed, Restoring, Restore partial failure, and Restore failed as recovery-review states unless the caller has separate evidence that no review is needed.
 
 ### Restore Manifest Entry Status
 
@@ -1955,9 +1961,9 @@ Last reviewed: 2026-05-29
 
 #### Definition
 
-Restore Manifest Entry Status is the per-entry move state recorded in the Restore Manifest.
+Restore Manifest Entry Status is the per-entry move or restore state recorded in the Restore Manifest.
 
-Initial values are Planned, Moving, Moved, and Failed.
+Current values are Planned, Moving, Moved, Failed, Restoring, Restored, and Restore failed.
 
 #### Examples
 
@@ -1965,6 +1971,9 @@ Initial values are Planned, Moving, Moved, and Failed.
 - Moving after the manifest is updated immediately before a move attempt.
 - Moved after the move succeeds and the manifest is updated.
 - Failed after a move attempt fails and the manifest records the error.
+- Restoring after the manifest is updated immediately before a restore attempt.
+- Restored after Undo Quarantine successfully moves the entry back to its original path.
+- Restore failed after a restore attempt fails and the manifest records the error.
 
 #### Non-examples
 
@@ -1975,7 +1984,7 @@ Initial values are Planned, Moving, Moved, and Failed.
 #### Code implications
 
 - Use `RestoreManifestEntryStatus`.
-- Future Undo Quarantine should restore Moved entries and require recovery review for Moving or Failed entries.
+- Undo Quarantine should restore Moved entries and require recovery review for Planned, Moving, Failed, Restoring, and Restore failed entries.
 
 ### Restore Manifest File Store
 
@@ -2004,9 +2013,9 @@ It writes `restore-manifest.json` under the Quarantine Action root by first writ
 #### Lifecycle
 
 - Not called by the current WPF app.
-- Used by fixture tests to prove manifest persistence before file-moving code exists.
-- Future Quarantine execution should call it after explicit confirmation starts the action.
-- Future execution should treat manifest write failure as a blocker before moving files.
+- Used by fixture tests, Quarantine Executor, and Undo Quarantine Executor to prove manifest persistence against synthetic files.
+- Future WPF Quarantine execution should call it only after explicit confirmation starts the action.
+- Quarantine and Undo execution should treat manifest write failure as a blocker before moving or restoring files and as recovery-review evidence after a file has already moved.
 
 #### Relationships
 
@@ -2064,7 +2073,8 @@ It is fixture-tested but not wired to the WPF app yet.
 - Depends on Restore Manifest and Restore Manifest File Store.
 - Uses the action-scoped layout from Quarantine Action Draft.
 - Implements the fixture-first boundary accepted in ADR 0007.
-- Precedes WPF execution wiring and Undo Quarantine.
+- Pairs with fixture-first Undo Quarantine Executor.
+- Precedes WPF execution wiring.
 
 #### Code implications
 
@@ -2074,6 +2084,58 @@ It is fixture-tested but not wired to the WPF app yet.
 - Do not overwrite existing destination paths.
 - Do not implement rollback or Undo Quarantine inside the executor.
 
+### Undo Quarantine Executor
+
+Status: draft
+Last reviewed: 2026-05-29
+
+#### Definition
+
+Undo Quarantine Executor is the narrow core component that restores Restore Manifest entries recorded as Moved from their action-scoped quarantine paths back to their original paths.
+
+It is fixture-tested but not wired to the WPF app yet.
+
+#### Examples
+
+- Move a fixture file from `...\actions\quarantine-action-...\items\Downloads\old-installer.msi` back to `...\Downloads\old-installer.msi`.
+- Refuse to restore when the original path already exists, preserving the quarantined file and the new original file.
+- Restore one entry while recording Restore failed for another entry that could not be restored.
+- Stop before later restore attempts when the Restore Manifest cannot be written.
+
+#### Non-examples
+
+- WPF Undo Quarantine UI.
+- Quarantine Executor rollback.
+- Permanent deletion.
+- Cleaning up empty quarantine action folders.
+- Reconstructing files that no longer exist in quarantine.
+
+#### Lifecycle
+
+- Receives an executed Restore Manifest with at least one Moved entry.
+- Restores only entries recorded as Moved.
+- Writes each entry as Restoring before a restore attempt.
+- Revalidates quarantine path existence, original path availability, and reparse-point status before restoring.
+- Creates only the original parent folder when needed.
+- Moves the file or folder back to its original path when checks pass.
+- Writes each entry as Restored or Restore failed after the restore attempt.
+- Returns an Undo Quarantine Result summarizing restored entries, failed restore entries, blockers, and recovery-review need.
+
+#### Relationships
+
+- Depends on Restore Manifest and Restore Manifest File Store.
+- Reverses entries moved by Quarantine Executor.
+- Implements the fixture-first boundary accepted in ADR 0008.
+- Precedes WPF Undo Quarantine wiring.
+
+#### Code implications
+
+- Use `UndoQuarantineExecutor`, `UndoQuarantineResult`, and `UndoQuarantineEntryResult`.
+- Keep filesystem move-back APIs allowlisted only in this component.
+- Keep WPF Undo Quarantine unavailable until a separate UI wiring packet.
+- Do not overwrite existing original paths.
+- Do not permanently delete quarantined items or cleanup action folders from this component.
+
 ### Quarantine Confirmation Draft
 
 Status: draft
@@ -2081,9 +2143,9 @@ Last reviewed: 2026-05-29
 
 #### Definition
 
-A Quarantine Confirmation Draft is an in-memory readiness check that compares a Quarantine Preview with a Restore Manifest Draft before any future Quarantine execution.
+A Quarantine Confirmation Draft is an in-memory readiness check that compares a Quarantine Preview with a Restore Manifest Draft before WPF Quarantine execution.
 
-It lists data blockers, records the exact preview counts and bytes to review, exposes the future confirmation phrase, and states that execution is not implemented in the current build.
+It lists data blockers, records the exact preview counts and bytes to review, exposes the future confirmation phrase, and states that WPF execution is not wired in the current build.
 
 #### Examples
 
@@ -2102,7 +2164,7 @@ It lists data blockers, records the exact preview counts and bytes to review, ex
 #### Lifecycle
 
 - Generated in memory after a Quarantine Preview and Restore Manifest Draft exist.
-- Used to identify unresolved data blockers before future execution work.
+- Used to identify unresolved data blockers before WPF execution work.
 - Discarded when the scan, Review Shortlist, Quarantine Preview, or Restore Manifest Draft changes.
 - Must remain read-only until an explicit Quarantine execution workflow exists.
 
@@ -2117,7 +2179,7 @@ It lists data blockers, records the exact preview counts and bytes to review, ex
 
 - Use `QuarantineConfirmationDraft` and `QuarantineConfirmationDraftBuilder`.
 - Use `HasDataBlockers` only as readiness evidence, not as permission to execute.
-- Keep `IsExecutionImplemented` false until a separate execution packet is designed and approved.
+- Keep `IsExecutionImplemented` false until a separate WPF execution packet is designed and approved.
 - Do not create folders, move files, delete files, write manifests, or persist cleanup jobs from confirmation draft code.
 
 ### Quarantine Execution Gate
@@ -2127,15 +2189,15 @@ Last reviewed: 2026-05-29
 
 #### Definition
 
-Quarantine Execution Gate is the read-only decision that combines Quarantine Confirmation Draft blockers, exact confirmation text, and implementation availability before any future Quarantine execution can run.
+Quarantine Execution Gate is the read-only decision that combines Quarantine Confirmation Draft blockers, exact confirmation text, and implementation availability before WPF Quarantine execution can run.
 
-In the current build the gate can show whether the confirmation text matches, but it must remain closed because Quarantine execution is not implemented.
+In the current build the gate can show whether the confirmation text matches, but it must remain closed because WPF Quarantine execution is not wired.
 
 #### Examples
 
 - Before Quarantine Preview exists, show that preview must be created first.
 - After a clean Quarantine Confirmation Draft exists, require the exact text `QUARANTINE`.
-- After `QUARANTINE` is typed, keep the gate closed while execution is not implemented.
+- After `QUARANTINE` is typed, keep the gate closed while WPF execution is not wired.
 - Carry forward blocked preview row or manifest mismatch blockers from Quarantine Confirmation Draft.
 
 #### Non-examples
@@ -2162,7 +2224,7 @@ In the current build the gate can show whether the confirmation text matches, bu
 
 - Use `QuarantineExecutionGate` and `QuarantineExecutionGateBuilder`.
 - `CanExecute` must require no blockers, exact confirmation text, and implemented execution support.
-- Keep `CanExecute` false while actual Quarantine execution is not implemented.
+- Keep `CanExecute` false while WPF Quarantine execution is not wired.
 - Do not create folders, move files, delete files, write manifests, or persist cleanup jobs from gate code.
 
 ### Quarantine Action Draft
@@ -2214,11 +2276,13 @@ It maps included preview rows to action-scoped quarantine item paths and a futur
 ### Undo Quarantine
 
 Status: draft  
-Last reviewed: 2026-05-28
+Last reviewed: 2026-05-29
 
 #### Definition
 
 Undo Quarantine restores quarantined files or folders to their original locations when feasible.
+
+The current core implementation is fixture-tested through Undo Quarantine Executor, but the WPF app does not expose Undo Quarantine yet.
 
 #### Examples
 
@@ -2232,19 +2296,24 @@ Undo Quarantine restores quarantined files or folders to their original location
 
 #### Lifecycle
 
-- Available after a successful Quarantine action.
-- Uses the restore manifest to return files to original paths.
-- Must warn if the original path now exists or cannot be restored safely.
+- Available after a Quarantine action records Moved entries in a Restore Manifest.
+- Uses the Restore Manifest to return files to original paths.
+- Must refuse to overwrite an original path that now exists.
+- Must preserve recovery evidence when restore or manifest writes fail.
+- WPF Undo Quarantine remains a future workflow.
 
 #### Relationships
 
 - Depends on Quarantine.
+- Depends on Restore Manifest.
+- Depends on Undo Quarantine Executor for the fixture-tested core restore behavior.
 - Reverses a quarantine Cleanup Action.
 
 #### Code implications
 
 - Use `UndoQuarantine` for the workflow concept.
 - Use a manifest format that records original path, quarantine path, size, timestamps, and action time.
+- Use `UndoQuarantineExecutor` only for the core restore component.
 
 ## Business rules
 

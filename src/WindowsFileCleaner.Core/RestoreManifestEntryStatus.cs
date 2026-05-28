@@ -5,5 +5,8 @@ public enum RestoreManifestEntryStatus
     Planned,
     Moving,
     Moved,
-    Failed
+    Failed,
+    Restoring,
+    Restored,
+    RestoreFailed
 }

@@ -69,8 +69,14 @@ public static class RestoreManifestBuilder
                     MoveCompletedAtUtc = status is RestoreManifestEntryStatus.Moved or RestoreManifestEntryStatus.Failed
                         ? updatedAt
                         : entry.MoveCompletedAtUtc,
-                    ErrorMessage = status == RestoreManifestEntryStatus.Failed
-                        ? string.IsNullOrWhiteSpace(errorMessage) ? "Move failed." : errorMessage.Trim()
+                    RestoreStartedAtUtc = status == RestoreManifestEntryStatus.Restoring && entry.RestoreStartedAtUtc is null
+                        ? updatedAt
+                        : entry.RestoreStartedAtUtc,
+                    RestoreCompletedAtUtc = status is RestoreManifestEntryStatus.Restored or RestoreManifestEntryStatus.RestoreFailed
+                        ? updatedAt
+                        : entry.RestoreCompletedAtUtc,
+                    ErrorMessage = status is RestoreManifestEntryStatus.Failed or RestoreManifestEntryStatus.RestoreFailed
+                        ? NormalizeErrorMessage(status, errorMessage)
                         : null
                 };
             })
@@ -99,6 +105,34 @@ public static class RestoreManifestBuilder
         var movedCount = entries.Count(entry => entry.Status == RestoreManifestEntryStatus.Moved);
         var movingCount = entries.Count(entry => entry.Status == RestoreManifestEntryStatus.Moving);
         var failedCount = entries.Count(entry => entry.Status == RestoreManifestEntryStatus.Failed);
+        var restoringCount = entries.Count(entry => entry.Status == RestoreManifestEntryStatus.Restoring);
+        var restoredCount = entries.Count(entry => entry.Status == RestoreManifestEntryStatus.Restored);
+        var restoreFailedCount = entries.Count(entry => entry.Status == RestoreManifestEntryStatus.RestoreFailed);
+
+        if (restoredCount == entries.Count)
+        {
+            return RestoreManifestActionStatus.Restored;
+        }
+
+        if (restoreFailedCount == entries.Count)
+        {
+            return RestoreManifestActionStatus.RestoreFailed;
+        }
+
+        if (restoreFailedCount > 0 && restoredCount == 0 && restoringCount == 0)
+        {
+            return RestoreManifestActionStatus.RestoreFailed;
+        }
+
+        if (restoreFailedCount > 0)
+        {
+            return RestoreManifestActionStatus.RestorePartialFailure;
+        }
+
+        if (restoringCount > 0 || restoredCount > 0)
+        {
+            return RestoreManifestActionStatus.Restoring;
+        }
 
         if (movedCount == entries.Count)
         {
@@ -163,6 +197,8 @@ public static class RestoreManifestBuilder
             RestoreManifestEntryStatus.Planned,
             MoveStartedAtUtc: null,
             MoveCompletedAtUtc: null,
+            RestoreStartedAtUtc: null,
+            RestoreCompletedAtUtc: null,
             ErrorMessage: null);
     }
 
@@ -225,6 +261,18 @@ public static class RestoreManifestBuilder
         }
 
         return normalized;
+    }
+
+    private static string NormalizeErrorMessage(RestoreManifestEntryStatus status, string? errorMessage)
+    {
+        if (!string.IsNullOrWhiteSpace(errorMessage))
+        {
+            return errorMessage.Trim();
+        }
+
+        return status == RestoreManifestEntryStatus.RestoreFailed
+            ? "Restore failed."
+            : "Move failed.";
     }
 
     private static bool SamePath(string left, string right)

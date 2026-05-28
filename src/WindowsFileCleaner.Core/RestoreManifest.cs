@@ -25,6 +25,17 @@ public sealed record RestoreManifest(
     public int MovingCount => Entries.Count(entry => entry.Status == RestoreManifestEntryStatus.Moving);
     public int MovedCount => Entries.Count(entry => entry.Status == RestoreManifestEntryStatus.Moved);
     public int FailedCount => Entries.Count(entry => entry.Status == RestoreManifestEntryStatus.Failed);
+    public int RestoringCount => Entries.Count(entry => entry.Status == RestoreManifestEntryStatus.Restoring);
+    public int RestoredCount => Entries.Count(entry => entry.Status == RestoreManifestEntryStatus.Restored);
+    public int RestoreFailedCount => Entries.Count(entry => entry.Status == RestoreManifestEntryStatus.RestoreFailed);
     public bool IsExecutedManifest => true;
-    public bool RequiresRecoveryReview => MovingCount > 0 || FailedCount > 0 || ActionStatus is RestoreManifestActionStatus.PartialFailure or RestoreManifestActionStatus.Failed;
+    public bool RequiresRecoveryReview =>
+        MovingCount > 0
+        || FailedCount > 0
+        || RestoringCount > 0
+        || RestoreFailedCount > 0
+        || ActionStatus is RestoreManifestActionStatus.PartialFailure
+            or RestoreManifestActionStatus.Failed
+            or RestoreManifestActionStatus.RestorePartialFailure
+            or RestoreManifestActionStatus.RestoreFailed;
 }

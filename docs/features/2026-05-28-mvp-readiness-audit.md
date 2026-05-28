@@ -93,12 +93,12 @@ Rejected ideas buffer:
 | Deletion recommendations | `DeletionRecommendation`, classifier rules, WPF grid labels, glossary | Verified in current repo | Recommendations remain conservative: `Keep`, `Inspect`, or `Quarantine candidate`. |
 | Fixture-based verification before real scan | `tools/Invoke-MvpPreflight.ps1`, `tools/Start-MvpFixtureReview.ps1`, `CleanupScopeScanGate`, `tests/WindowsFileCleaner.Tests/Program.cs`, `tests/WindowsFileCleaner.App.Tests/Program.cs`, WPF fixture smoke launch docs, progress log | Verified in current repo | The preflight script runs restore, build, core tests, WPF app tests, fixture `-WhatIf`, and `git diff --check`. Test harnesses cover scanner, classifier, summaries, preview, drafts, CSV, safety guard behavior, WPF shell startup state, WPF fixture scan state, real-profile scan acknowledgement, display-limit wording, and WPF review interaction state. The fixture review launcher runs preflight, creates the synthetic Cleanup Scope, and launches WPF with that scope without auto-scanning. Real-profile `Scan` remains disabled until the preflight and fixture-review acknowledgement is checked. |
 | No WPF cleanup execution in MVP | `QuarantineExecutionGate`, `MainWindow.xaml.cs`, README Safety Status, WPF tests | Verified in current repo | The visible app still keeps `Execute quarantine` disabled/status-only. Core fixture-only execution exists behind tests, but it is not wired to the WPF app. |
-| Quarantine on `D:` with undo path explored safely | Quarantine Preview, Restore Manifest Draft, Quarantine Confirmation Draft, Quarantine Action Draft, Restore Manifest File Store, Quarantine Executor, ADR 0003-0007 | Fixture-core verified | The app proves destination/readiness shape in WPF and core tests now prove manifest writes plus fixture file moves without enabling WPF execution. |
+| Quarantine on `D:` with undo path explored safely | Quarantine Preview, Restore Manifest Draft, Quarantine Confirmation Draft, Quarantine Action Draft, Restore Manifest File Store, Quarantine Executor, Undo Quarantine Executor, ADR 0003-0008 | Fixture-core verified | The app proves destination/readiness shape in WPF and core tests now prove manifest writes, fixture file moves, and fixture undo without enabling WPF execution. |
 | Docs kept current | README, domain docs, ADRs, feature briefs, `.codex/progress.md` | Verified in current repo | Docs use the Grill with Docs control layer requested for the project. |
 | Commits and remote push | Git history and remote `origin/main` | Verified at packet start | Branch was clean and tracking `origin/main` before this audit packet. |
 | Latest WPF UI retest | User screenshot, WPF shell, fixture scan, review interaction, and toolbar layout smoke tests, README manual checklist | Partially automated, pending manual verification | Shell startup, launch-scope wiring, wrapping review toolbar structure, fixture scan state, filters, safety shortcuts, shortlist, and Quarantine Preview state are automated. The first scan was manually verified, but visible layout quality, wording, export dialogs, and real-profile behavior still need a fresh visible app run. Use the fixture smoke path first, then retest `C:\Users\moxhe`. |
 | WPF Quarantine execution | README Not Implemented Yet, domain rules, ADR 0007 | Out of current WPF MVP | Core fixture execution exists, but visible app execution still requires stale-state checks, confirmation wiring, restore rules, tests, and ADR review. |
-| Undo Quarantine execution | README Not Implemented Yet, Restore Manifest docs | Out of MVP | Requires executed manifests and file-moving workflow first. |
+| Undo Quarantine execution | ADR 0008, Restore Manifest docs, core fixture tests | Fixture-core verified, out of current WPF MVP | Core Undo Quarantine can restore fixture Moved entries, but visible WPF undo still needs manifest discovery, stale-state checks, confirmation wording, and recovery UI. |
 
 ## Automated evidence commands
 
@@ -226,11 +226,11 @@ ADRs added or skipped:
 Follow-up work:
 
 - Use `README.md` and this audit to run a fresh WPF manual retest against `C:\Users\moxhe`.
-- Only after that retest, decide whether to design actual Quarantine execution and Undo Quarantine.
+- Only after that retest, decide whether to wire WPF Quarantine execution and WPF Undo Quarantine around the fixture-tested core components.
 
 Open questions:
 
-- Should the next packet focus on WPF manual retest feedback, or start designing actual Quarantine execution after retest?
+- Should the next packet focus on WPF manual retest feedback, or start designing WPF execution wiring after retest?
 
 Risky assumptions:
 

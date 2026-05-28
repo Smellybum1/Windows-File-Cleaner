@@ -36,6 +36,14 @@ tests.QuarantineExecutorRecordsPartialFailureWithoutOverwritingDestination();
 tests.QuarantineExecutorFailsMissingSourceWithoutCreatingDestination();
 tests.QuarantineExecutorStopsBeforeMovesWhenInitialManifestWriteFails();
 tests.QuarantineExecutorStopsAfterPostMoveManifestWriteFails();
+tests.UndoQuarantineRestoresMovedFixtureFilesWithManifest();
+tests.UndoQuarantineRefusesOriginalPathCollisionWithoutOverwrite();
+tests.UndoQuarantineRecordsPartialRestoreForMixedOutcomes();
+tests.UndoQuarantineRestoresMovedEntriesOnlyAndKeepsMoveFailuresForReview();
+tests.UndoQuarantineFailsMissingQuarantinePathWithoutCreatingOriginal();
+tests.UndoQuarantineStopsBeforeRestoreWhenManifestWriteFails();
+tests.UndoQuarantineRequiresRecoveryReviewWhenPostRestoreManifestWriteFails();
+tests.UndoQuarantineRestoresFixtureDirectories();
 tests.ChildSummaryShowsLargestImmediateChildren();
 tests.SelectedPathReviewGuidanceExplainsReviewNextSteps();
 tests.PathInspectionPlanBuildsExplorerArguments();
@@ -1663,6 +1671,242 @@ internal sealed class StorageScanTests
         Assert(result.RequiresRecoveryReview, "Post-move manifest write failure should require recovery review.");
     }
 
+    public void UndoQuarantineRestoresMovedFixtureFilesWithManifest()
+    {
+        using var fixture = TestFixture.Create();
+
+        fixture.WriteFile(@"Downloads\old-one.msi", 1024 * 1024, DateTimeOffset.UtcNow.AddDays(-120));
+        fixture.WriteFile(@"Downloads\old-two.msi", 1024 * 1024 * 2, DateTimeOffset.UtcNow.AddDays(-130));
+        var plan = BuildPlannedRestoreManifest(
+            fixture,
+            [@"Downloads\old-one.msi", @"Downloads\old-two.msi"],
+            "undo-success");
+        var forward = QuarantineExecutor.Execute(plan.Manifest);
+        var firstEntry = forward.RestoreManifest.Entries.Single(entry => entry.RelativePath == @"Downloads\old-one.msi");
+        var secondEntry = forward.RestoreManifest.Entries.Single(entry => entry.RelativePath == @"Downloads\old-two.msi");
+        var writes = new List<RestoreManifest>();
+
+        var undo = UndoQuarantineExecutor.Undo(forward.RestoreManifest, manifest =>
+        {
+            writes.Add(manifest);
+            return RestoreManifestFileStore.Write(manifest);
+        });
+        var manifestJson = File.ReadAllText(plan.Manifest.ManifestPath);
+
+        Assert(forward.Succeeded, "Fixture setup should quarantine both files before undo.");
+        Assert(undo.Succeeded, "Undo Quarantine should restore all moved fixture files.");
+        Assert(undo.RestoreManifest.ActionStatus == RestoreManifestActionStatus.Restored, "Successful undo should mark the action restored.");
+        Assert(undo.RestoredCount == 2, "Successful undo should report restored entries.");
+        Assert(undo.FailedCount == 0, "Successful undo should not report failed restore entries.");
+        Assert(
+            writes.Any(write => write.Entries.Any(entry => entry.Status == RestoreManifestEntryStatus.Restoring)),
+            "Undo Quarantine should write Restoring status before restore attempts.");
+        Assert(writes.Last().ActionStatus == RestoreManifestActionStatus.Restored, "Final undo manifest write should be restored.");
+        Assert(File.Exists(firstEntry.OriginalPath), "First file should return to its original path.");
+        Assert(File.Exists(secondEntry.OriginalPath), "Second file should return to its original path.");
+        Assert(!File.Exists(firstEntry.QuarantinePath), "First file should leave quarantine after undo.");
+        Assert(!File.Exists(secondEntry.QuarantinePath), "Second file should leave quarantine after undo.");
+        Assert(manifestJson.Contains("\"actionStatus\": \"Restored\"", StringComparison.Ordinal), "Persisted manifest should record restored action status.");
+        Assert(manifestJson.Contains("\"status\": \"Restored\"", StringComparison.Ordinal), "Persisted manifest should record restored entry status.");
+    }
+
+    public void UndoQuarantineRefusesOriginalPathCollisionWithoutOverwrite()
+    {
+        using var fixture = TestFixture.Create();
+
+        fixture.WriteFile(@"Downloads\old-installer.msi", 1024 * 1024, DateTimeOffset.UtcNow.AddDays(-120));
+        var plan = BuildPlannedRestoreManifest(fixture, [@"Downloads\old-installer.msi"], "undo-original-collision");
+        var forward = QuarantineExecutor.Execute(plan.Manifest);
+        var entry = forward.RestoreManifest.Entries.Single();
+        File.WriteAllText(entry.OriginalPath, "new local file");
+
+        var undo = UndoQuarantineExecutor.Undo(forward.RestoreManifest);
+        var manifestJson = File.ReadAllText(plan.Manifest.ManifestPath);
+
+        Assert(forward.Succeeded, "Fixture setup should quarantine the file before undo collision testing.");
+        Assert(!undo.Succeeded, "Original path collision should prevent undo success.");
+        Assert(undo.RestoreManifest.ActionStatus == RestoreManifestActionStatus.RestoreFailed, "A single restore collision should fail the restore action.");
+        Assert(undo.FailedCount == 1, "Original path collision should report one failed restore entry.");
+        Assert(undo.RequiresRecoveryReview, "Original path collision should require recovery review.");
+        Assert(File.ReadAllText(entry.OriginalPath) == "new local file", "Undo Quarantine must not overwrite a file recreated at the original path.");
+        Assert(File.Exists(entry.QuarantinePath), "Quarantined file should remain in quarantine when original path collision blocks restore.");
+        Assert(
+            undo.Entries.Single().ErrorMessage?.Contains("Original path already exists", StringComparison.OrdinalIgnoreCase) == true,
+            "Original path collision should be recorded as entry error evidence.");
+        Assert(manifestJson.Contains("\"actionStatus\": \"RestoreFailed\"", StringComparison.Ordinal), "Persisted manifest should record restore failure status.");
+        Assert(manifestJson.Contains("Original path already exists", StringComparison.Ordinal), "Persisted manifest should record original collision evidence.");
+    }
+
+    public void UndoQuarantineRecordsPartialRestoreForMixedOutcomes()
+    {
+        using var fixture = TestFixture.Create();
+
+        fixture.WriteFile(@"Downloads\old-one.msi", 1024 * 1024, DateTimeOffset.UtcNow.AddDays(-120));
+        fixture.WriteFile(@"Downloads\old-two.msi", 1024 * 1024 * 2, DateTimeOffset.UtcNow.AddDays(-130));
+        var plan = BuildPlannedRestoreManifest(
+            fixture,
+            [@"Downloads\old-one.msi", @"Downloads\old-two.msi"],
+            "undo-partial");
+        var forward = QuarantineExecutor.Execute(plan.Manifest);
+        var firstEntry = forward.RestoreManifest.Entries.Single(entry => entry.RelativePath == @"Downloads\old-one.msi");
+        var secondEntry = forward.RestoreManifest.Entries.Single(entry => entry.RelativePath == @"Downloads\old-two.msi");
+        File.WriteAllText(secondEntry.OriginalPath, "new local file");
+
+        var undo = UndoQuarantineExecutor.Undo(forward.RestoreManifest);
+        var manifestJson = File.ReadAllText(plan.Manifest.ManifestPath);
+
+        Assert(forward.Succeeded, "Fixture setup should quarantine both files before partial undo testing.");
+        Assert(!undo.Succeeded, "Mixed restore outcomes should not be full undo success.");
+        Assert(undo.RestoreManifest.ActionStatus == RestoreManifestActionStatus.RestorePartialFailure, "One restored and one failed restore should be restore partial failure.");
+        Assert(undo.RestoredCount == 1, "Partial undo should report one restored entry.");
+        Assert(undo.FailedCount == 1, "Partial undo should report one failed restore entry.");
+        Assert(undo.RequiresRecoveryReview, "Partial undo should require recovery review.");
+        Assert(File.Exists(firstEntry.OriginalPath), "Successful restore entry should return to its original path.");
+        Assert(!File.Exists(firstEntry.QuarantinePath), "Successful restore entry should leave quarantine.");
+        Assert(File.ReadAllText(secondEntry.OriginalPath) == "new local file", "Failed restore entry must preserve recreated original content.");
+        Assert(File.Exists(secondEntry.QuarantinePath), "Failed restore entry should remain in quarantine.");
+        Assert(manifestJson.Contains("\"actionStatus\": \"RestorePartialFailure\"", StringComparison.Ordinal), "Persisted manifest should record restore partial failure.");
+        Assert(manifestJson.Contains("Original path already exists", StringComparison.Ordinal), "Persisted manifest should record the restore failure reason.");
+    }
+
+    public void UndoQuarantineRestoresMovedEntriesOnlyAndKeepsMoveFailuresForReview()
+    {
+        using var fixture = TestFixture.Create();
+
+        fixture.WriteFile(@"Downloads\old-one.msi", 1024 * 1024, DateTimeOffset.UtcNow.AddDays(-120));
+        fixture.WriteFile(@"Downloads\old-two.msi", 1024 * 1024 * 2, DateTimeOffset.UtcNow.AddDays(-130));
+        var plan = BuildPlannedRestoreManifest(
+            fixture,
+            [@"Downloads\old-one.msi", @"Downloads\old-two.msi"],
+            "undo-moved-only");
+        var secondPlannedEntry = plan.Manifest.Entries.Single(entry => entry.RelativePath == @"Downloads\old-two.msi");
+        Directory.CreateDirectory(Path.GetDirectoryName(secondPlannedEntry.QuarantinePath)!);
+        File.WriteAllText(secondPlannedEntry.QuarantinePath, "existing destination");
+        var forward = QuarantineExecutor.Execute(plan.Manifest);
+        var firstEntry = forward.RestoreManifest.Entries.Single(entry => entry.RelativePath == @"Downloads\old-one.msi");
+        var secondEntry = forward.RestoreManifest.Entries.Single(entry => entry.RelativePath == @"Downloads\old-two.msi");
+
+        var undo = UndoQuarantineExecutor.Undo(forward.RestoreManifest);
+
+        Assert(!forward.Succeeded, "Fixture setup should create a partial quarantine action.");
+        Assert(forward.RestoreManifest.ActionStatus == RestoreManifestActionStatus.PartialFailure, "Fixture setup should leave one move failure.");
+        Assert(!undo.Succeeded, "Undo of a manifest with move failures should require recovery review.");
+        Assert(undo.RestoredCount == 1, "Undo should restore the one entry recorded as moved.");
+        Assert(undo.FailedCount == 0, "Undo should not create a restore failure for entries that were never moved.");
+        Assert(undo.Entries.Count == 1, "Undo should attempt only Moved entries.");
+        Assert(undo.RequiresRecoveryReview, "Existing move failures should remain recovery-review evidence after undo.");
+        Assert(File.Exists(firstEntry.OriginalPath), "Moved entry should return to its original path.");
+        Assert(!File.Exists(firstEntry.QuarantinePath), "Moved entry should leave quarantine after undo.");
+        Assert(File.Exists(secondEntry.OriginalPath), "Move-failed entry should remain at its original path.");
+        Assert(File.ReadAllText(secondEntry.QuarantinePath) == "existing destination", "Move-failed entry should not overwrite the existing quarantine collision file.");
+    }
+
+    public void UndoQuarantineFailsMissingQuarantinePathWithoutCreatingOriginal()
+    {
+        using var fixture = TestFixture.Create();
+
+        fixture.WriteFile(@"Downloads\old-installer.msi", 1024 * 1024, DateTimeOffset.UtcNow.AddDays(-120));
+        var plan = BuildPlannedRestoreManifest(fixture, [@"Downloads\old-installer.msi"], "undo-missing-quarantine-path");
+        var forward = QuarantineExecutor.Execute(plan.Manifest);
+        var entry = forward.RestoreManifest.Entries.Single();
+        File.Delete(entry.QuarantinePath);
+
+        var undo = UndoQuarantineExecutor.Undo(forward.RestoreManifest);
+        var manifestJson = File.ReadAllText(plan.Manifest.ManifestPath);
+
+        Assert(forward.Succeeded, "Fixture setup should quarantine the file before missing-path testing.");
+        Assert(!undo.Succeeded, "Missing quarantine path should prevent undo success.");
+        Assert(undo.RestoreManifest.ActionStatus == RestoreManifestActionStatus.RestoreFailed, "Missing quarantine path should fail the restore action.");
+        Assert(undo.FailedCount == 1, "Missing quarantine path should report one failed restore entry.");
+        Assert(!File.Exists(entry.OriginalPath), "Missing quarantine path should not create an original file.");
+        Assert(
+            undo.Entries.Single().ErrorMessage?.Contains("Quarantine path no longer exists", StringComparison.OrdinalIgnoreCase) == true,
+            "Missing quarantine path should be recorded as entry error evidence.");
+        Assert(manifestJson.Contains("Quarantine path no longer exists", StringComparison.Ordinal), "Persisted manifest should record missing quarantine path evidence.");
+    }
+
+    public void UndoQuarantineStopsBeforeRestoreWhenManifestWriteFails()
+    {
+        using var fixture = TestFixture.Create();
+
+        fixture.WriteFile(@"Downloads\old-installer.msi", 1024 * 1024, DateTimeOffset.UtcNow.AddDays(-120));
+        var plan = BuildPlannedRestoreManifest(fixture, [@"Downloads\old-installer.msi"], "undo-initial-write-failure");
+        var forward = QuarantineExecutor.Execute(plan.Manifest);
+        var entry = forward.RestoreManifest.Entries.Single();
+
+        var undo = UndoQuarantineExecutor.Undo(
+            forward.RestoreManifest,
+            _ => throw new IOException("simulated manifest write failure"));
+        var persistedManifestJson = File.ReadAllText(plan.Manifest.ManifestPath);
+
+        Assert(forward.Succeeded, "Fixture setup should quarantine the file before undo write-failure testing.");
+        Assert(!undo.Succeeded, "Initial undo manifest write failure should prevent undo success.");
+        Assert(undo.HasBlockers, "Initial undo manifest write failure should be returned as a blocker.");
+        Assert(undo.RestoredCount == 0, "Initial undo manifest write failure must not restore entries.");
+        Assert(!File.Exists(entry.OriginalPath), "Source should remain absent when Restoring status cannot be written.");
+        Assert(File.Exists(entry.QuarantinePath), "Quarantined file should remain in quarantine when Restoring status cannot be written.");
+        Assert(
+            persistedManifestJson.Contains("\"actionStatus\": \"Completed\"", StringComparison.Ordinal),
+            "Persisted manifest should retain completed quarantine evidence when initial undo write fails.");
+    }
+
+    public void UndoQuarantineRequiresRecoveryReviewWhenPostRestoreManifestWriteFails()
+    {
+        using var fixture = TestFixture.Create();
+
+        fixture.WriteFile(@"Downloads\old-installer.msi", 1024 * 1024, DateTimeOffset.UtcNow.AddDays(-120));
+        var plan = BuildPlannedRestoreManifest(fixture, [@"Downloads\old-installer.msi"], "undo-post-restore-write-failure");
+        var forward = QuarantineExecutor.Execute(plan.Manifest);
+        var entry = forward.RestoreManifest.Entries.Single();
+        var writeCount = 0;
+
+        var undo = UndoQuarantineExecutor.Undo(
+            forward.RestoreManifest,
+            manifest =>
+            {
+                writeCount++;
+                if (writeCount == 2)
+                {
+                    throw new IOException("simulated post-restore manifest write failure");
+                }
+
+                return RestoreManifestFileStore.Write(manifest);
+            });
+        var persistedManifestJson = File.ReadAllText(plan.Manifest.ManifestPath);
+
+        Assert(forward.Succeeded, "Fixture setup should quarantine the file before undo post-restore write-failure testing.");
+        Assert(!undo.Succeeded, "Post-restore manifest write failure should prevent clean undo success.");
+        Assert(undo.HasBlockers, "Post-restore manifest write failure should be returned as a blocker.");
+        Assert(undo.RestoredCount == 1, "The file can be restored before the post-restore write failure is observed.");
+        Assert(File.Exists(entry.OriginalPath), "Restored file should return to its original path.");
+        Assert(!File.Exists(entry.QuarantinePath), "Restored file should leave quarantine even when final manifest write fails.");
+        Assert(
+            persistedManifestJson.Contains("\"status\": \"Restoring\"", StringComparison.Ordinal),
+            "Persisted manifest should retain the last durable restore evidence when post-restore update fails.");
+        Assert(undo.RequiresRecoveryReview, "Post-restore manifest write failure should require recovery review.");
+    }
+
+    public void UndoQuarantineRestoresFixtureDirectories()
+    {
+        using var fixture = TestFixture.Create();
+
+        fixture.WriteFile(@"Downloads\OldInstallers\setup.msi", 1024 * 1024, DateTimeOffset.UtcNow.AddDays(-120));
+        var plan = BuildPlannedRestoreManifest(fixture, [@"Downloads\OldInstallers"], "undo-directory");
+        var forward = QuarantineExecutor.Execute(plan.Manifest);
+        var entry = forward.RestoreManifest.Entries.Single();
+        var restoredChildPath = Path.Combine(entry.OriginalPath, "setup.msi");
+        var quarantinedChildPath = Path.Combine(entry.QuarantinePath, "setup.msi");
+
+        var undo = UndoQuarantineExecutor.Undo(forward.RestoreManifest);
+
+        Assert(forward.Succeeded, "Fixture setup should quarantine the directory before undo.");
+        Assert(undo.Succeeded, "Undo Quarantine should restore moved fixture directories.");
+        Assert(Directory.Exists(entry.OriginalPath), "Directory should return to its original path.");
+        Assert(File.Exists(restoredChildPath), "Directory restore should include child files.");
+        Assert(!Directory.Exists(entry.QuarantinePath), "Directory should leave quarantine after undo.");
+        Assert(!File.Exists(quarantinedChildPath), "Directory restore should move child files out of quarantine.");
+    }
+
     public void ChildSummaryShowsLargestImmediateChildren()
     {
         using var fixture = TestFixture.Create();
@@ -2018,6 +2262,13 @@ internal sealed class StorageScanTests
                     .Any(token => sourceLine.Text.Contains(token, StringComparison.Ordinal)
                         && IsAllowedQuarantineExecutorWrite(sourceLine, token))))
             .ToArray();
+        var undoExecutorWriteMatches = sourceFiles
+            .SelectMany(file => File.ReadLines(file)
+                .Select((line, index) => new SourceLine(file, index + 1, line))
+                .Where(sourceLine => new[] { "Directory.CreateDirectory(", "Directory.Move(", "File.Move(" }
+                    .Any(token => sourceLine.Text.Contains(token, StringComparison.Ordinal)
+                        && IsAllowedUndoQuarantineExecutorWrite(sourceLine, token))))
+            .ToArray();
 
         Assert(reportWriteMatches.Length == 3, "Only the three user-selected CSV report writes should use File.WriteAllText.");
         Assert(
@@ -2025,6 +2276,7 @@ internal sealed class StorageScanTests
             "File.WriteAllText should only write user-selected report exports.");
         Assert(manifestWriteMatches.Length == 1, "Only RestoreManifestFileStore should write Restore Manifest JSON.");
         Assert(executorWriteMatches.Length == 3, "Only QuarantineExecutor should create destination parents and move files or folders.");
+        Assert(undoExecutorWriteMatches.Length == 3, "Only UndoQuarantineExecutor should create original parents and move files or folders back.");
         Assert(writeTextMatches.Length == reportWriteMatches.Length + manifestWriteMatches.Length, "Every File.WriteAllText production use should be explicitly allowlisted.");
     }
 
@@ -2032,7 +2284,8 @@ internal sealed class StorageScanTests
     {
         return IsAllowedReportExportWrite(sourceLine, token)
             || IsAllowedRestoreManifestFileStoreWrite(sourceLine, token)
-            || IsAllowedQuarantineExecutorWrite(sourceLine, token);
+            || IsAllowedQuarantineExecutorWrite(sourceLine, token)
+            || IsAllowedUndoQuarantineExecutorWrite(sourceLine, token);
     }
 
     private static bool IsAllowedReportExportWrite(SourceLine sourceLine, string token)
@@ -2067,6 +2320,19 @@ internal sealed class StorageScanTests
         };
 
         return sourceLine.FilePath.EndsWith(@"src\WindowsFileCleaner.Core\QuarantineExecutor.cs", StringComparison.OrdinalIgnoreCase)
+            && allowedTokens.Contains(token);
+    }
+
+    private static bool IsAllowedUndoQuarantineExecutorWrite(SourceLine sourceLine, string token)
+    {
+        var allowedTokens = new[]
+        {
+            "Directory.CreateDirectory(",
+            "Directory.Move(",
+            "File.Move("
+        };
+
+        return sourceLine.FilePath.EndsWith(@"src\WindowsFileCleaner.Core\UndoQuarantineExecutor.cs", StringComparison.OrdinalIgnoreCase)
             && allowedTokens.Contains(token);
     }
 

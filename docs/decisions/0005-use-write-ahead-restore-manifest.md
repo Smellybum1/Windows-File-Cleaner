@@ -133,8 +133,9 @@ Moderate after the first executed manifest is written. Reversing later would req
 
 - Manifest file writing is covered by ADR 0006.
 - Core fixture-first file-moving is covered by ADR 0007.
+- Core fixture-first Undo Quarantine is covered by ADR 0008.
 - Wire WPF execution only after stale-state and confirmation checks are explicit.
-- Implement Undo Quarantine for Moved entries, with recovery review for Moving and Failed entries.
+- Wire WPF Undo Quarantine only after manifest discovery, stale-state, confirmation, and recovery-review checks are explicit.
 
 ## Supersedes
 
