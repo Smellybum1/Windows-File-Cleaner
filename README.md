@@ -4,6 +4,8 @@ Windows File Cleaner is a local Windows-only WPF desktop app for reviewing stora
 
 The current MVP is a read-only Storage Scan. It recursively scans the selected Cleanup Scope, classifies cleanup candidates, shows importance ratings, and helps inspect large folders before any cleanup action exists.
 
+Current readiness evidence is tracked in `docs/features/2026-05-28-mvp-readiness-audit.md`.
+
 ## Safety Status
 
 - Storage Scan does not modify scanned files.

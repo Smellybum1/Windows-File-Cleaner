@@ -6,13 +6,13 @@ Use it to preserve what was completed, what was verified, what was rejected, and
 
 ## Current status
 
-Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. Review filters, selected-folder child breakdown, selected-path inspection actions, CSV export, Review Mix, Storage Scan Safety Summary, Safety Summary review shortcuts, Access issues filtering, Bloat Category Filter, No category filtering, Review Shortlist, Quarantine Preview, Quarantine Preview CSV export, Restore Manifest Draft, Quarantine Confirmation Draft, Quarantine Readiness UI, conservative app data classification, read-only safety regression checks, and the MVP runbook are implemented and verified. Quarantine remains preview-only; no cleanup execution, manifest writing, or Undo Quarantine execution exists.
+Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. Review filters, selected-folder child breakdown, selected-path inspection actions, CSV export, Review Mix, Storage Scan Safety Summary, Safety Summary review shortcuts, Access issues filtering, Bloat Category Filter, No category filtering, Review Shortlist, Quarantine Preview, Quarantine Preview CSV export, Restore Manifest Draft, Quarantine Confirmation Draft, Quarantine Readiness UI, conservative app data classification, read-only safety regression checks, the MVP runbook, and the MVP readiness audit are implemented and verified. Quarantine remains preview-only; no cleanup execution, manifest writing, or Undo Quarantine execution exists.
 
 ## Next recommended work
 
-1. Use `README.md` to rerun the WPF app and confirm Safety Summary shortcuts, Review Shortlist, Quarantine Preview, Export preview, Review Mix, Access issues filter, category filter, No category filter, and filter wording are useful.
+1. Use `README.md` and `docs/features/2026-05-28-mvp-readiness-audit.md` to rerun the WPF app and confirm Safety Summary shortcuts, Review Shortlist, Quarantine Preview, Export preview, Review Mix, Access issues filter, category filter, No category filter, and filter wording are useful.
 2. Rerun the real scan and check whether Windows app data, installed applications, and game data labels make the large app/game rows easier to triage.
-3. Retest the new Quarantine Readiness UI with a real scan and confirm the draft/readiness wording is understandable.
+3. Retest the Quarantine Readiness UI with a real scan and confirm the draft/readiness wording is understandable.
 4. Defer actual Quarantine and Undo Quarantine execution until scan review, preview semantics, confirmation semantics, and restore rules are trustworthy.
 5. Revisit .NET 10 before packaging or long-term distribution.
 
@@ -1089,3 +1089,45 @@ Rejected ideas buffer:
 - Do not document cleanup execution commands before they exist.
 - Do not replace the Grill with Docs scaffold docs.
 - Do not claim the app is safe to delete files.
+
+### 2026-05-28: Add MVP readiness audit
+
+Status: completed
+
+Evidence:
+
+- The user provided a screenshot showing Storage Scan completed against `C:\Users\moxhe` with 58.02 GB, 37,740 folders, 188,580 files, 3 access issues, and no file modifications.
+- The repo already contained WPF, .NET 8, read-only Storage Scan, fixture tests, conservative classification, preview-only Quarantine artifacts, and safety regression evidence.
+
+Implementation:
+
+- Added `docs/features/2026-05-28-mvp-readiness-audit.md`.
+- Mapped the original MVP requirements to repo evidence and status.
+- Marked latest WPF UI retest as pending manual verification.
+- Marked actual Quarantine execution and Undo Quarantine execution as out of MVP.
+- Linked the audit from `README.md`.
+
+Verification:
+
+- `dotnet build WindowsFileCleaner.sln --no-restore` passed.
+- `dotnet run --project tests\WindowsFileCleaner.Tests\WindowsFileCleaner.Tests.csproj --no-build` passed.
+- `git -c safe.directory='D:/Codex/Windows File Cleaner' diff --check` passed with line-ending normalization warnings only.
+
+Docs updated:
+
+- `README.md`
+- `docs/features/2026-05-28-mvp-readiness-audit.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No new ADR. This is an evidence audit, not a new durable architecture or persistence decision.
+
+Open questions:
+
+- Should the next packet focus on manual WPF retest feedback, or start designing actual Quarantine execution only after that retest?
+
+Rejected ideas buffer:
+
+- Do not mark the MVP fully complete until the latest WPF review flow is manually retested.
+- Do not treat Quarantine Preview, Restore Manifest Draft, or Quarantine Confirmation Draft as cleanup approval.
