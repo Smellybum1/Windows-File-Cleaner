@@ -67,6 +67,8 @@ internal sealed class MainWindowSmokeTests
             Assert(!window.CanStartStorageScan, "MainWindow should require preflight acknowledgement before scanning the real profile.");
             Assert(window.CanBrowseCleanupScope, "MainWindow should allow choosing a Cleanup Scope without starting a scan.");
             Assert(window.CanEditQuarantineRoot, "MainWindow should allow editing the read-only Quarantine Preview root before scanning.");
+            Assert(window.CanBrowseQuarantineRoot, "MainWindow should allow browsing for the read-only Quarantine Preview root before scanning.");
+            Assert(window.BrowseQuarantineRootButtonText.Contains("Browse", StringComparison.OrdinalIgnoreCase), "Quarantine root browse action should be visible in the review toolbar.");
             Assert(
                 window.CurrentQuarantineRootPath == QuarantinePreviewBuilder.DefaultQuarantineRootPath,
                 "MainWindow should default Quarantine Preview to the D: root requested by the user.");

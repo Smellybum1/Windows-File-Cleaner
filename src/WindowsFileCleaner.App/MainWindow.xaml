@@ -332,6 +332,10 @@
                                  Text="D:\WindowsFileCleanerQuarantine"
                                  ToolTip="Read-only preview destination root. Preview does not create this folder or move files."
                                  TextChanged="QuarantineRootBox_TextChanged" />
+                        <Button x:Name="BrowseQuarantineRootButton"
+                                Content="Browse..."
+                                MinWidth="100"
+                                Click="BrowseQuarantineRootButton_Click" />
                     </StackPanel>
                     <Button x:Name="ExportQuarantinePreviewButton"
                             Content="Export preview"

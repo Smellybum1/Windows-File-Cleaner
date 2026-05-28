@@ -174,6 +174,10 @@ public partial class MainWindow : Window
 
     public bool CanEditQuarantineRoot => QuarantineRootBox.IsEnabled;
 
+    public bool CanBrowseQuarantineRoot => BrowseQuarantineRootButton.IsEnabled;
+
+    public string BrowseQuarantineRootButtonText => BrowseQuarantineRootButton.Content?.ToString() ?? "";
+
     public bool ReviewToolbarsUseWrappingLayout =>
         ReviewFilterToolbar is WrapPanel && ReviewActionToolbar is WrapPanel;
 
@@ -231,6 +235,26 @@ public partial class MainWindow : Window
 
         ScopePathBox.Text = dialog.FolderName;
         StatusText.Text = "Cleanup Scope selected. Click Scan to start a read-only Storage Scan.";
+    }
+
+    private void BrowseQuarantineRootButton_Click(object sender, RoutedEventArgs e)
+    {
+        var dialog = new OpenFolderDialog
+        {
+            Title = "Choose Quarantine Root",
+            InitialDirectory = GetInitialQuarantineRootBrowseDirectory()
+        };
+
+        if (dialog.ShowDialog(this) != true)
+        {
+            return;
+        }
+
+        var hadPreview = _currentQuarantinePreview is not null;
+        QuarantineRootBox.Text = dialog.FolderName;
+        StatusText.Text = hadPreview
+            ? "Quarantine root selected for preview. Recreate Quarantine Preview to review destinations. No folders were created and no files were modified."
+            : "Quarantine root selected for preview. No folders were created and no files were modified.";
     }
 
     public async Task RunStorageScanForCurrentScopeAsync(CancellationToken cancellationToken = default)
@@ -861,6 +885,7 @@ public partial class MainWindow : Window
         ScopePathBox.IsEnabled = !isScanning;
         BrowseScopeButton.IsEnabled = !isScanning;
         QuarantineRootBox.IsEnabled = !isScanning;
+        BrowseQuarantineRootButton.IsEnabled = !isScanning;
         UpdateCleanupScopeSafetyNote();
         ExportCsvButton.IsEnabled = !isScanning && _currentReview is not null;
         ExportShortlistCsvButton.IsEnabled = !isScanning && _currentReview is not null && _shortlist.Count > 0;
@@ -887,6 +912,31 @@ public partial class MainWindow : Window
             var currentPath = ScopePathBox.Text.Trim();
             return Directory.Exists(currentPath)
                 ? Path.GetFullPath(currentPath)
+                : Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+        }
+        catch (ArgumentException)
+        {
+            return Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+        }
+        catch (NotSupportedException)
+        {
+            return Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+        }
+    }
+
+    private string? GetInitialQuarantineRootBrowseDirectory()
+    {
+        try
+        {
+            var currentPath = QuarantineRootBox.Text.Trim();
+            if (Directory.Exists(currentPath))
+            {
+                return Path.GetFullPath(currentPath);
+            }
+
+            var root = Path.GetPathRoot(PathSafety.GetFullPath(GetQuarantineRootPathForPreview()));
+            return !string.IsNullOrWhiteSpace(root) && Directory.Exists(root)
+                ? root
                 : Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
         }
         catch (ArgumentException)

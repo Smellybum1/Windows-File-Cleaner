@@ -1463,7 +1463,7 @@ Last reviewed: 2026-05-29
 
 #### Definition
 
-Quarantine Root Selection is the read-only preview setting that chooses the destination root used when building Quarantine Preview destination paths.
+Quarantine Root Selection is the read-only preview setting that chooses the destination root used when building Quarantine Preview destination paths. The root can be typed or chosen with the Quarantine root browse action.
 
 It does not create folders, move files, write manifests, or approve future Quarantine execution.
 
@@ -1471,6 +1471,7 @@ It does not create folders, move files, write manifests, or approve future Quara
 
 - Use the default `D:\WindowsFileCleanerQuarantine`.
 - Type another absolute `D:` folder before creating a Quarantine Preview.
+- Browse to a `D:` folder before creating a Quarantine Preview.
 
 #### Non-examples
 
@@ -1484,6 +1485,7 @@ It does not create folders, move files, write manifests, or approve future Quara
 - Visible before and after Storage Scan.
 - Used when the user creates a Quarantine Preview.
 - Changing it clears stale Quarantine Preview, Restore Manifest Draft, and Quarantine Confirmation Draft output.
+- Browsing for a root updates the preview setting only.
 
 #### Relationships
 
@@ -1494,6 +1496,7 @@ It does not create folders, move files, write manifests, or approve future Quara
 #### Code implications
 
 - Use `QuarantineRootBox` for the WPF input.
+- Use `BrowseQuarantineRootButton` for the WPF browse action.
 - Use the typed value when calling `QuarantinePreviewBuilder`.
 - Keep the default as `D:\WindowsFileCleanerQuarantine`.
 - Do not create or validate the folder by touching the filesystem during preview.
