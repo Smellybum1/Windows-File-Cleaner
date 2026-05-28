@@ -192,6 +192,10 @@ internal sealed class MainWindowSmokeTests
             var downloads = rows.Single(row =>
                 row.FullPath.EndsWith("Downloads", StringComparison.OrdinalIgnoreCase));
             Assert(downloads.AccessStatus == "Readable", "Fixture Downloads folder should show readable access status.");
+            Assert(
+                downloads.Contents.Contains("1 file", StringComparison.OrdinalIgnoreCase)
+                && downloads.Contents.Contains("0 folders", StringComparison.OrdinalIgnoreCase),
+                "Fixture Downloads folder should expose contents counts in the grid row.");
             Assert(window.SelectDisplayedPath(downloads.FullPath), "Fixture Downloads folder should be selectable for contents context.");
             Assert(downloads.Contents.Contains("1 file", StringComparison.OrdinalIgnoreCase), "Folder row should expose contained file count.");
             Assert(

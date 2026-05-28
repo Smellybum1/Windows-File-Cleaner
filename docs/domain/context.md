@@ -1049,6 +1049,7 @@ For folder rows, it shows contained files and descendant folders. For file rows,
 
 - Show that `AppData` contains many files and descendant folders.
 - Show that `Downloads` contains one fixture installer in a smoke test.
+- Show contents counts in the WPF grid before a row is selected.
 - Include contained file/folder counts in Scan Report CSV exports.
 
 #### Non-examples
@@ -1061,6 +1062,7 @@ For folder rows, it shows contained files and descendant folders. For file rows,
 #### Lifecycle
 
 - Available after a Storage Scan completes.
+- Shown in the WPF grid for visible review rows.
 - Updates when selected row changes.
 - Included in CSV report exports.
 - Remains read-only and in-memory except for user-selected CSV reports.
@@ -1074,6 +1076,7 @@ For folder rows, it shows contained files and descendant folders. For file rows,
 #### Code implications
 
 - Use `StorageEntryRow.Contents`, `ContainedFileCount`, and `ContainedFolderCount` for WPF display.
+- Keep the grid Contents column compact so it helps triage without replacing selected-row detail.
 - In CSV exports, use numeric contained counts for offline comparison.
 - For folders, descendant folder count should exclude the selected folder itself.
 - Do not present counts as confirmed recoverable storage.
