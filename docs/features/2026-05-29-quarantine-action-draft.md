@@ -204,7 +204,7 @@ Follow-up work:
 Open questions:
 
 - What exact recovery UI should handle Moving entries after interruption?
-- Which local file replacement pattern should the manifest writer use?
+- How should the future app surface leftover temp files after a hard crash?
 
 Risky assumptions:
 

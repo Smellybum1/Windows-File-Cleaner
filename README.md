@@ -17,6 +17,7 @@ Current readiness evidence is tracked in `docs/features/2026-05-28-mvp-readiness
 - Quarantine Execution Gate is read-only; the current build still cannot execute quarantine.
 - Quarantine Action Draft shows future action-scoped item and manifest paths without creating them.
 - Write-ahead Restore Manifest modeling shows future manifest status/write order without writing a file.
+- Restore Manifest File Store is fixture-tested but is not wired to the WPF app; it writes only action-scoped manifest JSON when called directly by tests.
 - Fixture tests include a source-level guard against accidental cleanup-execution filesystem calls.
 - Real-profile scans require an explicit acknowledgement that MVP preflight and fixture review were run.
 
@@ -145,6 +146,6 @@ The intended review flow is:
 - Undo Quarantine.
 - Permanent deletion.
 - Persisted cleanup history.
-- Writing executed Restore Manifest files.
+- Writing executed Restore Manifest files from the WPF app.
 
 Those workflows require separate design, explicit confirmation semantics, restore rules, tests, and ADR review before any file-moving code is added.

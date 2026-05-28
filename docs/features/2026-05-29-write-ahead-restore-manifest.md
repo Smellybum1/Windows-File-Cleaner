@@ -223,14 +223,14 @@ ADRs added or skipped:
 
 Follow-up work:
 
-- Add a narrow manifest file writer with fixture-backed failure tests.
+- Narrow manifest file writing is now covered by `docs/features/2026-05-29-restore-manifest-file-store.md` and ADR 0006.
 - Update the filesystem-call regression guard from blanket denial to strict execution-component allowlist when real writes are introduced.
 - Implement actual Quarantine moves only after manifest write behavior is proven.
 
 Open questions:
 
 - What exact recovery UI should handle Moving entries after interruption?
-- Which local file replacement pattern should the manifest writer use?
+- How should the future app surface leftover temp files after a hard crash?
 
 Risky assumptions:
 

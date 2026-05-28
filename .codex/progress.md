@@ -3646,10 +3646,62 @@ ADRs:
 Open questions:
 
 - What exact recovery UI should handle Moving entries after interruption?
-- Which local file replacement pattern should the manifest writer use?
+- How should the future app surface leftover temp files after a hard crash?
 
 Rejected ideas buffer:
 
 - Do not write a final-only manifest after all moves succeed.
 - Do not keep the old write-after-attempt wording; it creates a recovery gap.
 - Do not add file-moving API allowlists until a narrow execution component exists.
+
+### 2026-05-29: Add Restore Manifest File Store
+
+Status: completed
+
+Evidence:
+
+- ADR 0005 requires a planned Restore Manifest to be written before any future move.
+- Sidecar safety review recommended introducing write APIs only in a narrow execution component with a strict source allowlist.
+- Manifest writing can be proven against fixtures before adding file-moving code.
+
+Implementation:
+
+- Added ADR 0006 for temp-file replacement Restore Manifest writes.
+- Added `RestoreManifestFileStore` and `RestoreManifestFileWriteResult`.
+- The file store validates that `ManifestPath` stays inside `ActionRootPath` and that the filename is `restore-manifest.json`.
+- The file store writes JSON to a temporary file in the same action folder, then replaces or moves it into place.
+- Added fixture-backed tests for first write, replacement write, invalid outside paths, invalid filenames, temp cleanup, source preservation, and not creating the action items folder.
+- Updated the source-level filesystem-call regression to allow write APIs only for user-selected CSV exports and `RestoreManifestFileStore`.
+- Kept WPF execution unavailable; no scanned files are moved, deleted, quarantined, or restored by the app.
+
+Verification:
+
+- `dotnet build WindowsFileCleaner.sln --no-restore` passed with 0 warnings and 0 errors.
+- `dotnet run --project tests\WindowsFileCleaner.Tests\WindowsFileCleaner.Tests.csproj --no-build` passed.
+- `dotnet run --project tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj --no-build` passed.
+- `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\Invoke-MvpPreflight.ps1` passed.
+
+Docs updated:
+
+- `README.md`
+- `docs/domain/context.md`
+- `docs/domain/glossary.md`
+- `docs/decisions/0006-use-temp-replace-restore-manifest-writes.md`
+- `docs/features/2026-05-29-restore-manifest-file-store.md`
+- `docs/features/2026-05-29-write-ahead-restore-manifest.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- Added `docs/decisions/0006-use-temp-replace-restore-manifest-writes.md`.
+
+Open questions:
+
+- How should the future app surface leftover temp files after a hard crash?
+- Should future Undo Quarantine expose a manifest integrity check before restore?
+
+Rejected ideas buffer:
+
+- Do not write manifests directly to the final path.
+- Do not loosen the filesystem-call guard globally.
+- Do not wire WPF execution in the same packet as the first manifest writer.

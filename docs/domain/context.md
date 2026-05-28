@@ -1912,6 +1912,7 @@ The selected write order is write-ahead: after explicit confirmation opens a fut
 - Use `RestoreManifestDraft`, `RestoreManifestEntryDraft`, `RestoreManifestDraftBuilder`, and `RestoreManifestDraftJsonSerializer` for draft-only proof.
 - Use `RestoreManifest`, `RestoreManifestEntry`, `RestoreManifestBuilder`, and `RestoreManifestJsonSerializer` for the planned/executed action record shape.
 - Use `RestoreManifestActionStatus` and `RestoreManifestEntryStatus` for future partial-failure and recovery state.
+- Use `RestoreManifestFileStore` only for writing the action-scoped Restore Manifest JSON file after future explicit execution starts.
 - Do not write Restore Manifest files in preview or draft code.
 - Do not write Restore Manifest files from `RestoreManifestBuilder`; it models the JSON action record only.
 - Use a versioned JSON schema for future executed manifests.
@@ -1975,6 +1976,52 @@ Initial values are Planned, Moving, Moved, and Failed.
 
 - Use `RestoreManifestEntryStatus`.
 - Future Undo Quarantine should restore Moved entries and require recovery review for Moving or Failed entries.
+
+### Restore Manifest File Store
+
+Status: draft
+Last reviewed: 2026-05-29
+
+#### Definition
+
+Restore Manifest File Store is the narrow production component allowed to write action-scoped Restore Manifest JSON files.
+
+It writes `restore-manifest.json` under the Quarantine Action root by first writing a temporary file in the same folder, then replacing or moving that temporary file into place.
+
+#### Examples
+
+- Write `D:\WindowsFileCleanerQuarantine\actions\quarantine-action-...\restore-manifest.json`.
+- Replace an existing Restore Manifest after an entry status changes from Moving to Moved.
+
+#### Non-examples
+
+- A file-moving executor.
+- A Quarantine Preview exporter.
+- A UI event handler.
+- A general-purpose file writer.
+- Approval to create item folders or move scanned files.
+
+#### Lifecycle
+
+- Not called by the current WPF app.
+- Used by fixture tests to prove manifest persistence before file-moving code exists.
+- Future Quarantine execution should call it after explicit confirmation starts the action.
+- Future execution should treat manifest write failure as a blocker before moving files.
+
+#### Relationships
+
+- Persists Restore Manifest.
+- Depends on ADR 0004 action-scoped layout.
+- Depends on ADR 0005 write-ahead Restore Manifest.
+- Uses the temp-replace write pattern accepted in ADR 0006.
+
+#### Code implications
+
+- Use `RestoreManifestFileStore` and `RestoreManifestFileWriteResult`.
+- Keep filesystem write API use allowlisted to this component and existing user-selected CSV exports.
+- Validate that `ManifestPath` stays inside `ActionRootPath`.
+- Validate that the filename is `restore-manifest.json`.
+- Do not create action item folders or move scanned files from this component.
 
 ### Quarantine Confirmation Draft
 

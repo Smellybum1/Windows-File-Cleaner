@@ -29,6 +29,8 @@ tests.QuarantineExecutionGateRequiresExactConfirmationAndImplementedExecution();
 tests.QuarantineActionDraftBuildsActionScopedLayoutWithoutWritingFiles();
 tests.RestoreManifestBuildsWriteAheadActionRecordFromActionDraft();
 tests.RestoreManifestTracksPartialFailureStatusForFutureExecution();
+tests.RestoreManifestFileStoreWritesAndReplacesManifestWithoutMovingSources();
+tests.RestoreManifestFileStoreRejectsPathsOutsideActionRoot();
 tests.ChildSummaryShowsLargestImmediateChildren();
 tests.SelectedPathReviewGuidanceExplainsReviewNextSteps();
 tests.PathInspectionPlanBuildsExplorerArguments();
@@ -1380,6 +1382,129 @@ internal sealed class StorageScanTests
         Assert(!Directory.Exists(quarantineRoot), "Updating in-memory Restore Manifest statuses should not create the quarantine root folder.");
     }
 
+    public void RestoreManifestFileStoreWritesAndReplacesManifestWithoutMovingSources()
+    {
+        using var fixture = TestFixture.Create();
+
+        fixture.WriteFile(@"Downloads\old-installer.msi", 1024 * 1024, DateTimeOffset.UtcNow.AddDays(-120));
+        var scanner = new StorageScanner();
+        var result = scanner.Scan(new StorageScanOptions(fixture.RootPath));
+        var review = StorageScanReviewBuilder.Build(result);
+        var installer = SingleReviewEntry(review.Entries, @"Downloads\old-installer.msi");
+        var quarantineRoot = Path.Combine(fixture.RootPath, "quarantine-root");
+        var preview = QuarantinePreviewBuilder.Build([installer], fixture.RootPath, quarantineRoot);
+        var manifestDraft = RestoreManifestDraftBuilder.Build(
+            preview,
+            new DateTimeOffset(2026, 5, 29, 1, 2, 3, TimeSpan.Zero),
+            "manifest-draft-file-store");
+        var confirmation = QuarantineConfirmationDraftBuilder.Build(
+            preview,
+            manifestDraft,
+            new DateTimeOffset(2026, 5, 29, 2, 3, 4, TimeSpan.Zero),
+            "confirmation-draft-file-store");
+        var actionDraft = QuarantineActionDraftBuilder.Build(
+            preview,
+            manifestDraft,
+            confirmation,
+            new DateTimeOffset(2026, 5, 29, 3, 4, 5, TimeSpan.Zero),
+            "quarantine-action-file-store");
+        var manifest = RestoreManifestBuilder.BuildPlanned(
+            actionDraft,
+            manifestDraft,
+            new DateTimeOffset(2026, 5, 29, 4, 5, 6, TimeSpan.Zero),
+            "restore-manifest-file-store");
+
+        var firstWrite = RestoreManifestFileStore.Write(manifest);
+        var firstJson = File.ReadAllText(manifest.ManifestPath);
+        var movedManifest = RestoreManifestBuilder.WithEntryStatus(
+            manifest,
+            installer.Entry.FullPath,
+            RestoreManifestEntryStatus.Moved,
+            new DateTimeOffset(2026, 5, 29, 4, 6, 0, TimeSpan.Zero));
+        var secondWrite = RestoreManifestFileStore.Write(movedManifest);
+        var secondJson = File.ReadAllText(manifest.ManifestPath);
+        var tempFiles = Directory.EnumerateFiles(Path.GetDirectoryName(manifest.ManifestPath)!, "*.tmp").ToArray();
+
+        Assert(firstWrite.ManifestPath == manifest.ManifestPath, "File store should report the action-scoped manifest path.");
+        Assert(firstWrite.BytesWritten > 0, "File store should report written JSON bytes.");
+        Assert(secondWrite.ManifestPath == manifest.ManifestPath, "Replacement write should keep the same manifest path.");
+        Assert(File.Exists(manifest.ManifestPath), "File store should write restore-manifest.json.");
+        Assert(firstJson.Contains("\"actionStatus\": \"Planned\"", StringComparison.Ordinal), "First write should contain planned action status.");
+        Assert(secondJson.Contains("\"actionStatus\": \"Completed\"", StringComparison.Ordinal), "Replacement write should contain updated action status.");
+        Assert(secondJson.Contains("\"status\": \"Moved\"", StringComparison.Ordinal), "Replacement write should contain updated entry status.");
+        Assert(tempFiles.Length == 0, "Successful manifest writes should not leave temporary files.");
+        Assert(File.Exists(installer.Entry.FullPath), "Manifest file writes should not move or delete source files.");
+        Assert(!Directory.Exists(actionDraft.ItemsRootPath), "Manifest file writes should not create the action items folder.");
+    }
+
+    public void RestoreManifestFileStoreRejectsPathsOutsideActionRoot()
+    {
+        using var fixture = TestFixture.Create();
+
+        fixture.WriteFile(@"Downloads\old-installer.msi", 1024 * 1024, DateTimeOffset.UtcNow.AddDays(-120));
+        var scanner = new StorageScanner();
+        var result = scanner.Scan(new StorageScanOptions(fixture.RootPath));
+        var review = StorageScanReviewBuilder.Build(result);
+        var installer = SingleReviewEntry(review.Entries, @"Downloads\old-installer.msi");
+        var quarantineRoot = Path.Combine(fixture.RootPath, "quarantine-root");
+        var preview = QuarantinePreviewBuilder.Build([installer], fixture.RootPath, quarantineRoot);
+        var manifestDraft = RestoreManifestDraftBuilder.Build(
+            preview,
+            new DateTimeOffset(2026, 5, 29, 1, 2, 3, TimeSpan.Zero),
+            "manifest-draft-invalid-file-store");
+        var confirmation = QuarantineConfirmationDraftBuilder.Build(
+            preview,
+            manifestDraft,
+            new DateTimeOffset(2026, 5, 29, 2, 3, 4, TimeSpan.Zero),
+            "confirmation-draft-invalid-file-store");
+        var actionDraft = QuarantineActionDraftBuilder.Build(
+            preview,
+            manifestDraft,
+            confirmation,
+            new DateTimeOffset(2026, 5, 29, 3, 4, 5, TimeSpan.Zero),
+            "quarantine-action-invalid-file-store");
+        var manifest = RestoreManifestBuilder.BuildPlanned(
+            actionDraft,
+            manifestDraft,
+            new DateTimeOffset(2026, 5, 29, 4, 5, 6, TimeSpan.Zero),
+            "restore-manifest-invalid-file-store");
+
+        var outsidePath = Path.Combine(fixture.RootPath, "outside-restore-manifest.json");
+        var outsideFailed = false;
+        try
+        {
+            RestoreManifestFileStore.Write(manifest with
+            {
+                ManifestPath = outsidePath
+            });
+        }
+        catch (ArgumentException)
+        {
+            outsideFailed = true;
+        }
+
+        var wrongFileName = Path.Combine(actionDraft.ActionRootPath, "not-the-manifest.json");
+        var wrongFileNameFailed = false;
+        try
+        {
+            RestoreManifestFileStore.Write(manifest with
+            {
+                ManifestPath = wrongFileName
+            });
+        }
+        catch (ArgumentException)
+        {
+            wrongFileNameFailed = true;
+        }
+
+        Assert(outsideFailed, "File store should reject manifest paths outside the action root.");
+        Assert(wrongFileNameFailed, "File store should reject unexpected manifest filenames.");
+        Assert(!File.Exists(outsidePath), "Rejected outside manifest path should not be written.");
+        Assert(!File.Exists(wrongFileName), "Rejected manifest filename should not be written.");
+        Assert(!Directory.Exists(quarantineRoot), "Rejected manifest writes should not create quarantine folders.");
+        Assert(File.Exists(installer.Entry.FullPath), "Rejected manifest writes should not move or delete source files.");
+    }
+
     public void ChildSummaryShowsLargestImmediateChildren()
     {
         using var fixture = TestFixture.Create();
@@ -1707,29 +1832,62 @@ internal sealed class StorageScanTests
             "File.Move(",
             "File.Replace(",
             "File.SetAttributes(",
-            "File.WriteAllBytes("
+            "File.WriteAllBytes(",
+            "File.WriteAllText("
         };
 
         var blockedMatches = sourceFiles
             .SelectMany(file => File.ReadLines(file)
                 .Select((line, index) => new SourceLine(file, index + 1, line))
-                .Where(sourceLine => blockedTokens.Any(token => sourceLine.Text.Contains(token, StringComparison.Ordinal))))
+                .Where(sourceLine => blockedTokens.Any(token =>
+                    sourceLine.Text.Contains(token, StringComparison.Ordinal)
+                    && !IsAllowedProductionFilesystemWrite(sourceLine, token))))
             .ToArray();
 
-        Assert(blockedMatches.Length == 0, "Production code should not contain cleanup execution filesystem calls: " + FormatSourceLines(blockedMatches));
+        Assert(blockedMatches.Length == 0, "Production code should not contain cleanup execution filesystem calls outside the allowlist: " + FormatSourceLines(blockedMatches));
 
-        var reportWriteMatches = sourceFiles
+        var writeTextMatches = sourceFiles
             .SelectMany(file => File.ReadLines(file)
                 .Select((line, index) => new SourceLine(file, index + 1, line))
                 .Where(sourceLine => sourceLine.Text.Contains("File.WriteAllText(", StringComparison.Ordinal)))
             .ToArray();
+        var reportWriteMatches = writeTextMatches.Where(match => IsAllowedReportExportWrite(match, "File.WriteAllText(")).ToArray();
+        var manifestWriteMatches = writeTextMatches.Where(match => IsAllowedRestoreManifestFileStoreWrite(match, "File.WriteAllText(")).ToArray();
 
         Assert(reportWriteMatches.Length == 3, "Only the three user-selected CSV report writes should use File.WriteAllText.");
         Assert(
-            reportWriteMatches.All(match =>
-                match.FilePath.EndsWith(@"src\WindowsFileCleaner.App\MainWindow.xaml.cs", StringComparison.OrdinalIgnoreCase)
-                && match.Text.Contains("dialog.FileName", StringComparison.Ordinal)),
+            reportWriteMatches.All(match => match.Text.Contains("dialog.FileName", StringComparison.Ordinal)),
             "File.WriteAllText should only write user-selected report exports.");
+        Assert(manifestWriteMatches.Length == 1, "Only RestoreManifestFileStore should write Restore Manifest JSON.");
+        Assert(writeTextMatches.Length == reportWriteMatches.Length + manifestWriteMatches.Length, "Every File.WriteAllText production use should be explicitly allowlisted.");
+    }
+
+    private static bool IsAllowedProductionFilesystemWrite(SourceLine sourceLine, string token)
+    {
+        return IsAllowedReportExportWrite(sourceLine, token)
+            || IsAllowedRestoreManifestFileStoreWrite(sourceLine, token);
+    }
+
+    private static bool IsAllowedReportExportWrite(SourceLine sourceLine, string token)
+    {
+        return token == "File.WriteAllText("
+            && sourceLine.FilePath.EndsWith(@"src\WindowsFileCleaner.App\MainWindow.xaml.cs", StringComparison.OrdinalIgnoreCase)
+            && sourceLine.Text.Contains("dialog.FileName", StringComparison.Ordinal);
+    }
+
+    private static bool IsAllowedRestoreManifestFileStoreWrite(SourceLine sourceLine, string token)
+    {
+        var allowedTokens = new[]
+        {
+            "Directory.CreateDirectory(",
+            "File.Delete(",
+            "File.Move(",
+            "File.Replace(",
+            "File.WriteAllText("
+        };
+
+        return sourceLine.FilePath.EndsWith(@"src\WindowsFileCleaner.Core\RestoreManifestFileStore.cs", StringComparison.OrdinalIgnoreCase)
+            && allowedTokens.Contains(token);
     }
 
     private static StorageEntry Single(IEnumerable<StorageEntry> entries, string name)
