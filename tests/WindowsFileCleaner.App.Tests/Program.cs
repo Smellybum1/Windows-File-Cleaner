@@ -160,6 +160,14 @@ internal sealed class MainWindowSmokeTests
             Assert(window.ReviewSizeNoteTextValue.Contains("not storage savings", StringComparison.OrdinalIgnoreCase), "Review size note should avoid treating row sizes as savings.");
 
             var rows = window.DisplayedRows;
+            var rootRow = rows.Single(row =>
+                row.FullPath.Equals(Path.GetFullPath(fixture.RootPath), StringComparison.OrdinalIgnoreCase));
+            Assert(
+                rootRow.Importance == "High risk"
+                && rootRow.Recommendation == "Keep"
+                && rootRow.Categories.Contains("Cleanup scope root", StringComparison.OrdinalIgnoreCase)
+                && rootRow.Categories.Contains("Protected location", StringComparison.OrdinalIgnoreCase),
+                "Fixture Cleanup Scope root should be shown as a protected keep row.");
             Assert(
                 rows.Any(row =>
                     row.FullPath.EndsWith(@"Downloads\old-installer.msi", StringComparison.OrdinalIgnoreCase)

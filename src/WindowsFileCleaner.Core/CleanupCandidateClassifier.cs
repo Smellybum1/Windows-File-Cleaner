@@ -80,26 +80,46 @@ public sealed class CleanupCandidateClassifier
         "IronyModManager"
     ];
 
-    public ClassifiedPath Classify(PathSnapshot path, long sizeBytes = 0)
+    public ClassifiedPath Classify(PathSnapshot path, long sizeBytes = 0, bool isCleanupScopeRoot = false)
     {
         var categories = new HashSet<BloatCategory>();
         var evidence = new List<string>();
+
+        if (isCleanupScopeRoot)
+        {
+            categories.Add(BloatCategory.CleanupScopeRoot);
+            categories.Add(BloatCategory.ProtectedLocation);
+            evidence.Add("This is the Cleanup Scope root. Review child rows instead of cleaning the root itself.");
+        }
 
         if (!path.IsAccessible)
         {
             categories.Add(BloatCategory.AccessIssue);
             evidence.Add("The path could not be fully read.");
-            return Build(categories, ImportanceRating.Caution, DeletionRecommendation.Inspect, evidence);
+            return Build(
+                categories,
+                isCleanupScopeRoot ? ImportanceRating.HighRisk : ImportanceRating.Caution,
+                isCleanupScopeRoot ? DeletionRecommendation.Keep : DeletionRecommendation.Inspect,
+                evidence);
         }
 
         if (path.IsReparsePoint)
         {
             categories.Add(BloatCategory.ReparsePoint);
             evidence.Add("The path is a reparse point, so the scanner did not follow it.");
-            return Build(categories, ImportanceRating.Caution, DeletionRecommendation.Inspect, evidence);
+            return Build(
+                categories,
+                isCleanupScopeRoot ? ImportanceRating.HighRisk : ImportanceRating.Caution,
+                isCleanupScopeRoot ? DeletionRecommendation.Keep : DeletionRecommendation.Inspect,
+                evidence);
         }
 
         AddCategoryHints(path, sizeBytes, categories, evidence);
+
+        if (isCleanupScopeRoot)
+        {
+            return Build(categories, ImportanceRating.HighRisk, DeletionRecommendation.Keep, evidence);
+        }
 
         if (IsProtected(path, categories))
         {

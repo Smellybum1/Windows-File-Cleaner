@@ -3,6 +3,7 @@ namespace WindowsFileCleaner.Core;
 public enum BloatCategory
 {
     Unknown,
+    CleanupScopeRoot,
     ProfileContainer,
     ApplicationDataArea,
     BrowserData,

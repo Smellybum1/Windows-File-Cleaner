@@ -24,6 +24,16 @@ public static class SelectedPathReviewGuidanceBuilder
                 ]);
         }
 
+        if (entry.BloatCategories.Contains(BloatCategory.CleanupScopeRoot))
+        {
+            return new SelectedPathReviewGuidance(
+                "Inspect children, not the scope root",
+                [
+                    "This is the Cleanup Scope root. Review largest immediate children instead of shortlisting the whole scanned folder.",
+                    "Cleaning the scope root itself would be unsafe and is not approved by the current app."
+                ]);
+        }
+
         if (entry.BloatCategories.Contains(BloatCategory.ProfileContainer))
         {
             return new SelectedPathReviewGuidance(

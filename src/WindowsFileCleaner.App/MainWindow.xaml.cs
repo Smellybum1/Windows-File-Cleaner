@@ -1449,6 +1449,7 @@ public partial class MainWindow : Window
         return category switch
         {
             BloatCategory.Unknown => "Unknown",
+            BloatCategory.CleanupScopeRoot => "Cleanup scope root",
             BloatCategory.ProfileContainer => "Profile container",
             BloatCategory.ApplicationDataArea => "AppData area",
             BloatCategory.BrowserData => "Browser data",

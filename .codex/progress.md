@@ -6,14 +6,14 @@ Use it to preserve what was completed, what was verified, what was rejected, and
 
 ## Current status
 
-Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. Cleanup Scope Safety Note, Cleanup Scope Scan Gate, review filters, Review View Reset, Storage Review Search with field prefixes, Storage Entry Type Filter, Storage Review Display Limit wording, Storage Review Size Note, selected-folder child breakdown, selected-path inspection actions, Selected Path Hierarchy Context, Selected Row Contents Context, Selected File Content Preview, Selected Path Review Guidance including cache-specific guidance, CSV export including active search, searched filenames, and hierarchy/contents context, Review Mix, Storage Scan Safety Summary, Safety Summary review shortcuts, Access issues filtering, Bloat Category Filter, Large old file classification, No category filtering, Review Shortlist, Shortlist shown, Remove shown, Quarantine Preview, Quarantine Preview CSV export, Restore Manifest Draft, Quarantine Confirmation Draft, Quarantine Readiness UI, conservative app data classification, read-only safety regression checks, the MVP runbook, the MVP readiness audit, fixture-driven WPF launch support, WPF shell smoke testing, WPF fixture scan smoke testing, WPF display-limit smoke testing, WPF review interaction smoke testing, WPF review toolbar layout polish, the MVP preflight script, and the MVP fixture review launcher are implemented and verified. Quarantine remains preview-only; no cleanup execution, manifest writing, or Undo Quarantine execution exists.
+Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. Cleanup Scope Safety Note, Cleanup Scope Scan Gate, Cleanup Scope Root classification, review filters, Review View Reset, Storage Review Search with field prefixes, Storage Entry Type Filter, Storage Review Display Limit wording, Storage Review Size Note, selected-folder child breakdown, selected-path inspection actions, Selected Path Hierarchy Context, Selected Row Contents Context, Selected File Content Preview, Selected Path Review Guidance including cache-specific guidance and scope-root guidance, CSV export including active search, searched filenames, and hierarchy/contents context, Review Mix, Storage Scan Safety Summary, Safety Summary review shortcuts, Access issues filtering, Bloat Category Filter, Large old file classification, No category filtering, Review Shortlist, Shortlist shown, Remove shown, Quarantine Preview, Quarantine Preview CSV export, Restore Manifest Draft, Quarantine Confirmation Draft, Quarantine Readiness UI, conservative app data classification, read-only safety regression checks, the MVP runbook, the MVP readiness audit, fixture-driven WPF launch support, WPF shell smoke testing, WPF fixture scan smoke testing, WPF display-limit smoke testing, WPF review interaction smoke testing, WPF review toolbar layout polish, the MVP preflight script, and the MVP fixture review launcher are implemented and verified. Quarantine remains preview-only; no cleanup execution, manifest writing, or Undo Quarantine execution exists.
 
 ## Next recommended work
 
 1. Run `.\tools\Start-MvpFixtureReview.ps1`, confirm the launched app shows Fixture Cleanup Scope, click `Scan`, and manually inspect layout, visible wording, Storage Review Search, Storage Review Display Limit wording, the `Parent` column, Selected Path Hierarchy Context, Selected File Content Preview, Selected Path Review Guidance, export dialogs, Safety Summary shortcuts, Review Shortlist, Shortlist shown, Remove shown, Quarantine Preview, Review Mix, Access issues filter, category filter, No category filter, and filter wording.
 2. Use `README.md` and `docs/features/2026-05-28-mvp-readiness-audit.md` to rerun the WPF app against `C:\Users\moxhe`; confirm `Scan` is disabled until the real-profile preflight acknowledgement is checked.
 3. Run `.\tools\Invoke-MvpPreflight.ps1` before any later real-profile scan if the worktree changes.
-4. Rerun the real scan and check whether the `Parent` column, selected-row parent/depth context, contents counts, cache-specific Review guidance, and `Preview file` action make unfamiliar rows easier to triage.
+4. Rerun the real scan and check whether the cleanup scope root row, `Parent` column, selected-row parent/depth context, contents counts, cache-specific Review guidance, and `Preview file` action make unfamiliar rows easier to triage.
 5. Retest the Quarantine Readiness UI with a real scan and confirm the draft/readiness wording is understandable.
 6. Defer actual Quarantine and Undo Quarantine execution until scan review, preview semantics, confirmation semantics, and restore rules are trustworthy.
 7. Revisit .NET 10 before packaging or long-term distribution.
@@ -2350,3 +2350,51 @@ Open questions:
 Rejected ideas buffer:
 
 - Do not treat contained file/folder counts as recoverable storage savings.
+
+### 2026-05-28: Add Cleanup Scope Root Classification
+
+Status: completed
+
+Evidence:
+
+- The first real scan screenshot showed the top `C:\Users\moxhe` row as an ordinary caution/inspect row with no category.
+- The scan root should be reviewed through child rows and should never look like a cleanup target.
+- Path-shape inference is not enough because fixture and custom Cleanup Scope roots also need root-specific treatment.
+
+Implementation:
+
+- Added `BloatCategory.CleanupScopeRoot`.
+- Passed explicit scan-root context from `StorageScanner` into `CleanupCandidateClassifier`.
+- Classified the Cleanup Scope Root as `High risk` / `Keep` with `Cleanup scope root` and `Protected location` categories.
+- Added Selected Path Review Guidance for scope-root rows.
+- Added WPF, Scan Report CSV, and Quarantine Preview CSV labels for `Cleanup scope root`.
+- Added core scanner coverage and WPF fixture coverage.
+- No child classification, scanner traversal, cleanup execution, Quarantine execution, Undo Quarantine, manifest writing, or real-profile automation was changed.
+
+Verification:
+
+- `dotnet build WindowsFileCleaner.sln --no-restore` passed with 0 warnings and 0 errors.
+- `dotnet run --project tests\WindowsFileCleaner.Tests\WindowsFileCleaner.Tests.csproj --no-build` passed after rebuilding.
+- `dotnet run --project tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj --no-build` passed after rebuilding.
+- `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\Invoke-MvpPreflight.ps1` passed.
+
+Docs updated:
+
+- `README.md`
+- `docs/domain/context.md`
+- `docs/domain/glossary.md`
+- `docs/features/2026-05-28-cleanup-scope-root-classification.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No new ADR. This is a conservative scan classification and review-guidance change, not a persistence, cleanup execution, security, deployment, or public API decision.
+
+Open questions:
+
+- Does the next real scan make the first row clearly read as the reviewed scope rather than bloat?
+
+Rejected ideas buffer:
+
+- Do not infer Cleanup Scope Root solely from `C:\Users` path shape.
+- Do not allow the scope root into cleanup execution or quarantine.

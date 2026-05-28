@@ -41,7 +41,7 @@ public sealed class StorageScanner
 
         if (snapshot.IsReparsePoint)
         {
-            return BuildEntry(snapshot, 0, [], null);
+            return BuildEntry(snapshot, 0, [], null, IsCleanupScopeRoot(scope, directoryPath));
         }
 
         var children = new List<StorageEntry>();
@@ -74,7 +74,12 @@ public sealed class StorageScanner
             .ThenBy(child => child.Name, StringComparer.OrdinalIgnoreCase)
             .ToArray();
 
-        return BuildEntry(snapshot, orderedChildren.Sum(child => child.SizeBytes), orderedChildren, errorMessage);
+        return BuildEntry(
+            snapshot,
+            orderedChildren.Sum(child => child.SizeBytes),
+            orderedChildren,
+            errorMessage,
+            IsCleanupScopeRoot(scope, directoryPath));
     }
 
     private StorageEntry ScanFile(string scope, FileInfo info)
@@ -88,7 +93,7 @@ public sealed class StorageScanner
 
         if (!snapshot.IsAccessible)
         {
-            return BuildEntry(snapshot, 0, [], "File metadata could not be read.");
+            return BuildEntry(snapshot, 0, [], "File metadata could not be read.", isCleanupScopeRoot: false);
         }
 
         long size;
@@ -105,16 +110,17 @@ public sealed class StorageScanner
             snapshot = snapshot with { IsAccessible = false };
         }
 
-        return BuildEntry(snapshot, size, [], errorMessage);
+        return BuildEntry(snapshot, size, [], errorMessage, isCleanupScopeRoot: false);
     }
 
     private StorageEntry BuildEntry(
         PathSnapshot snapshot,
         long sizeBytes,
         IReadOnlyList<StorageEntry> children,
-        string? errorMessage)
+        string? errorMessage,
+        bool isCleanupScopeRoot)
     {
-        var classification = _classifier.Classify(snapshot, sizeBytes);
+        var classification = _classifier.Classify(snapshot, sizeBytes, isCleanupScopeRoot);
 
         return new StorageEntry(
             snapshot.FullPath,
@@ -130,6 +136,15 @@ public sealed class StorageScanner
             classification.DeletionRecommendation,
             classification.Evidence,
             children);
+    }
+
+    private static bool IsCleanupScopeRoot(string scope, string candidatePath)
+    {
+        var normalizedScope = scope.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+        var normalizedCandidate = PathSafety.GetFullPath(candidatePath)
+            .TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+
+        return normalizedCandidate.Equals(normalizedScope, StringComparison.OrdinalIgnoreCase);
     }
 
     private static PathSnapshot Snapshot(FileSystemInfo info)

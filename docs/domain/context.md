@@ -139,6 +139,48 @@ The initial Cleanup Scope is `C:\Users\moxhe`.
 - Use `cleanupScopePath` or `cleanupScopePaths` for paths.
 - Keep scan and cleanup logic constrained to the active Cleanup Scope.
 
+### Cleanup Scope Root
+
+Status: draft
+Last reviewed: 2026-05-28
+
+#### Definition
+
+The Cleanup Scope Root is the top-level path selected for a Storage Scan run.
+
+For the initial real scan, the Cleanup Scope Root is `C:\Users\moxhe`.
+
+#### Examples
+
+- `C:\Users\moxhe` when scanning the real profile.
+- `D:\Codex\Windows File Cleaner\.local\storage-scan-smoke-fixture` when running the fixture launcher.
+
+#### Non-examples
+
+- Child folders under the selected scope, such as `AppData`, `Downloads`, or `DXCache`.
+- A Cleanup Candidate approved for quarantine.
+- A storage savings estimate.
+
+#### Lifecycle
+
+- Chosen before a Storage Scan starts.
+- Appears as the root Storage Scan row.
+- Is shown as High risk / Keep with Cleanup scope root and Protected location categories.
+- Remains read-only and should be reviewed through child rows.
+
+#### Relationships
+
+- Belongs to Cleanup Scope.
+- Supports Protected Location and the rule that whole profile/scope containers are not cleanup targets.
+- Complements Child Breakdown, Selected Path Hierarchy Context, and Selected Path Review Guidance.
+
+#### Code implications
+
+- Use `BloatCategory.CleanupScopeRoot` for the scan root row.
+- The scanner should pass root context explicitly rather than trying to infer the root from path shape alone.
+- Keep the Cleanup Scope Root as `High risk` / `Keep`.
+- Do not shortlist, quarantine, or delete the Cleanup Scope Root as a whole.
+
 ### Cleanup Scope Safety Note
 
 Status: draft
@@ -276,11 +318,12 @@ Last reviewed: 2026-05-28
 
 A Bloat Category is a human-readable reason a Cleanup Candidate may be unwanted or removable.
 
-Initial candidate categories include profile containers, AppData areas, browser data, old downloads, temporary folders, installer caches, app caches, GPU shader caches, duplicate files, large old files, old game files, game data, Node or Python package caches, Windows app data, Windows app leftovers, and installed applications.
+Initial candidate categories include cleanup scope roots, profile containers, AppData areas, browser data, old downloads, temporary folders, installer caches, app caches, GPU shader caches, duplicate files, large old files, old game files, game data, Node or Python package caches, Windows app data, Windows app leftovers, and installed applications.
 
 #### Examples
 
 - Old downloads.
+- Cleanup scope roots.
 - Profile containers.
 - AppData areas.
 - Browser data.
@@ -1311,6 +1354,7 @@ Protected Locations may still be scanned for size and shown for inspection, but 
 #### Examples
 
 - Windows profile essentials.
+- Cleanup Scope Roots.
 - Documents, Desktop, Pictures, Videos, Music.
 - Browser profiles and credentials.
 - Application settings under `AppData`.

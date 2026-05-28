@@ -103,12 +103,12 @@ After the app opens:
 6. Review the summary cards for total size, folders, files, and access issues.
 7. If the status or filter summary says `2,000 shown of ... matched`, treat the grid as the first review window and narrow with search or filters.
 8. Treat row sizes as triage clues, not storage savings; folder rows include children and can overlap with child rows.
-9. Use Review Mix and Safety Summary to inspect high-risk, protected, access issue, reparse point, quarantine candidate, and no-category rows.
+9. Use Review Mix and Safety Summary to inspect the cleanup scope root, high-risk, protected, access issue, reparse point, quarantine candidate, and no-category rows.
 10. Use Storage Review Search for specific names such as `pip`, `NVIDIA`, `Codex`, app names, or game folders; use prefixes such as `path:pip`, `category:Python package cache`, `rating:High risk`, or `recommendation:Quarantine candidate` when you want one field.
 11. Use the `Parent` column for short or hashed row names, then select large folders and inspect parent/depth context, contained file/folder counts, Evidence, cache-specific Review guidance, and Largest immediate children.
 12. Use the Type filter to switch between all rows, files only, and folders only.
 13. Select small text files and use `Preview file` only when you intentionally want a bounded read-only text snippet; binary and unsupported files should not render as text.
-14. Try category filters such as App cache, Python package cache, GPU shader cache, Large old file, Windows app data, Installed application, Game data, Protected location, and No category.
+14. Try category filters such as Cleanup scope root, App cache, Python package cache, GPU shader cache, Large old file, Windows app data, Installed application, Game data, Protected location, and No category.
 15. Use `Reset view` after stacking filters/search; it clears the review lens but keeps Review Shortlist.
 16. Add a likely-safe cleanup candidate to the Review Shortlist, or use `Shortlist shown` / `Remove shown` only after narrowing the grid to rows you intentionally want to review.
 17. Click `Preview quarantine` and confirm the preview, Restore Manifest Draft, and Quarantine Confirmation Draft all say no files were modified and execution is not implemented.

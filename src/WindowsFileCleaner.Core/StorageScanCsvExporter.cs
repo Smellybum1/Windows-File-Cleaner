@@ -120,6 +120,7 @@ public static class StorageScanCsvExporter
         return category switch
         {
             BloatCategory.Unknown => "Unknown",
+            BloatCategory.CleanupScopeRoot => "Cleanup scope root",
             BloatCategory.ProfileContainer => "Profile container",
             BloatCategory.ApplicationDataArea => "AppData area",
             BloatCategory.BrowserData => "Browser data",

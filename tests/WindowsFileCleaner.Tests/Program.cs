@@ -2,6 +2,7 @@ using WindowsFileCleaner.Core;
 
 var tests = new StorageScanTests();
 tests.ScannerTotalsFilesAndClassifiesCandidates();
+tests.ScannerMarksCleanupScopeRootAsProtectedKeep();
 tests.ScannerRefusesToLeaveCleanupScope();
 tests.LaunchOptionsDefaultAndScopeArgument();
 tests.CleanupScopeSafetyNoteDistinguishesFixtureAndRealProfile();
@@ -60,6 +61,23 @@ internal sealed class StorageScanTests
 
         var documentsFolder = Single(rows, "Documents");
         Assert(documentsFolder.ImportanceRating == ImportanceRating.HighRisk, "Documents folder should be high risk.");
+    }
+
+    public void ScannerMarksCleanupScopeRootAsProtectedKeep()
+    {
+        using var fixture = TestFixture.Create();
+
+        fixture.WriteFile(@"Unknown\notes.txt", 1024, DateTimeOffset.UtcNow);
+
+        var scanner = new StorageScanner();
+        var result = scanner.Scan(new StorageScanOptions(fixture.RootPath));
+
+        Assert(result.Root.FullPath == Path.GetFullPath(fixture.RootPath), "Storage Scan root should match the Cleanup Scope.");
+        Assert(result.Root.BloatCategories.Contains(BloatCategory.CleanupScopeRoot), "Cleanup Scope root should have an explicit category.");
+        Assert(result.Root.BloatCategories.Contains(BloatCategory.ProtectedLocation), "Cleanup Scope root should be protected.");
+        Assert(result.Root.ImportanceRating == ImportanceRating.HighRisk, "Cleanup Scope root should be high risk.");
+        Assert(result.Root.DeletionRecommendation == DeletionRecommendation.Keep, "Cleanup Scope root should be kept.");
+        Assert(result.Root.Evidence.Contains("Cleanup Scope root", StringComparison.OrdinalIgnoreCase), "Cleanup Scope root should explain why it is not a cleanup target.");
     }
 
     public void ScannerRefusesToLeaveCleanupScope()
@@ -856,6 +874,20 @@ internal sealed class StorageScanTests
     public void SelectedPathReviewGuidanceExplainsReviewNextSteps()
     {
         var now = DateTimeOffset.UtcNow;
+        var scopeRoot = new StorageEntry(
+            @"C:\Users\moxhe",
+            "moxhe",
+            IsDirectory: true,
+            SizeBytes: 1024,
+            LastModifiedUtc: now,
+            IsAccessible: true,
+            IsReparsePoint: false,
+            ErrorMessage: null,
+            BloatCategories: [BloatCategory.CleanupScopeRoot, BloatCategory.ProtectedLocation],
+            ImportanceRating: ImportanceRating.HighRisk,
+            DeletionRecommendation: DeletionRecommendation.Keep,
+            Evidence: "Cleanup Scope root.",
+            Children: []);
         var profile = new StorageEntry(
             @"C:\Users\moxhe",
             "moxhe",
@@ -954,6 +986,12 @@ internal sealed class StorageScanTests
             DeletionRecommendation: DeletionRecommendation.Inspect,
             Evidence: "AppData area.",
             Children: []);
+
+        var scopeRootGuidance = SelectedPathReviewGuidanceBuilder.Build(scopeRoot);
+        Assert(scopeRootGuidance.ActionLabel == "Inspect children, not the scope root", "Cleanup Scope roots should direct review to child rows.");
+        Assert(
+            scopeRootGuidance.Notes.Any(note => note.Contains("whole scanned folder", StringComparison.OrdinalIgnoreCase)),
+            "Cleanup Scope root guidance should warn against whole-scope cleanup.");
 
         var profileGuidance = SelectedPathReviewGuidanceBuilder.Build(profile);
         Assert(profileGuidance.ActionLabel == "Inspect children, not the container", "Profile containers should direct review to child rows.");
