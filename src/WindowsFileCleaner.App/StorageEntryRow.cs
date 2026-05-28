@@ -1,3 +1,4 @@
+using System.IO;
 using WindowsFileCleaner.Core;
 
 namespace WindowsFileCleaner.App;
@@ -21,6 +22,7 @@ public sealed class StorageEntryRow
     public bool IsShortlisted { get; }
     public string Shortlist => IsShortlisted ? "Yes" : "";
     public string Name => $"{new string(' ', Depth * 2)}{Entry.Name}";
+    public string ParentLocation => FormatParentLocation(Entry.FullPath);
     public string FullPath => Entry.FullPath;
     public string Type => Entry.IsDirectory ? "Folder" : "File";
     public string Size => Entry.SizeDisplay;
@@ -33,6 +35,19 @@ public sealed class StorageEntryRow
     public string LastModified => Entry.LastModifiedUtc?.ToLocalTime().ToString("yyyy-MM-dd HH:mm") ?? "Unknown";
     public string Evidence => Entry.Evidence;
     public string Error => Entry.ErrorMessage ?? "";
+
+    private static string FormatParentLocation(string fullPath)
+    {
+        try
+        {
+            var parent = Path.GetDirectoryName(fullPath);
+            return string.IsNullOrWhiteSpace(parent) ? "(none)" : parent;
+        }
+        catch (ArgumentException)
+        {
+            return "(unknown)";
+        }
+    }
 
     private static string FormatImportance(ImportanceRating rating)
     {

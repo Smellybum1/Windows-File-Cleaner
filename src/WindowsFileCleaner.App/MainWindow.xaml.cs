@@ -98,6 +98,8 @@ public partial class MainWindow : Window
 
     public string DetailGuidanceTextValue => DetailGuidanceText.Text;
 
+    public string DetailPathContextTextValue => DetailPathContextText.Text;
+
     public string QuarantinePreviewTextValue => QuarantinePreviewText.Text;
 
     public string? SelectedRowFullPath => _selectedRow?.FullPath;
@@ -612,6 +614,7 @@ public partial class MainWindow : Window
             _selectedRow = null;
             DetailTitleText.Text = "Select a result";
             DetailPathText.Text = "";
+            DetailPathContextText.Text = "";
             DetailMetaText.Text = "";
             DetailEvidenceText.Text = "";
             DetailGuidanceText.Text = "";
@@ -625,6 +628,7 @@ public partial class MainWindow : Window
         _selectedRow = row;
         DetailTitleText.Text = row.Entry.Name;
         DetailPathText.Text = row.FullPath;
+        DetailPathContextText.Text = $"Parent: {row.ParentLocation}\nDepth: {row.Depth:N0} | Modified: {row.LastModified}";
         DetailMetaText.Text = $"{row.Size} | {row.Type} | {row.Importance} | {row.Recommendation}";
         DetailEvidenceText.Text = string.IsNullOrWhiteSpace(row.Error)
             ? row.Evidence

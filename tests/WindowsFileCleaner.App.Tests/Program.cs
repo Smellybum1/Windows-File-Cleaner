@@ -298,6 +298,14 @@ internal sealed class MainWindowSmokeTests
             Assert(window.SelectDisplayedPath(installer.FullPath), "Fixture installer should be selectable in WPF results.");
             Assert(window.SelectedRowFullPath == installer.FullPath, "Selecting a displayed row should update selected path state.");
             Assert(
+                installer.ParentLocation.EndsWith(@"\Downloads", StringComparison.OrdinalIgnoreCase),
+                "Displayed rows should expose parent path context for deep review rows.");
+            Assert(
+                window.DetailPathContextTextValue.Contains("Parent:", StringComparison.OrdinalIgnoreCase)
+                && window.DetailPathContextTextValue.Contains("Downloads", StringComparison.OrdinalIgnoreCase)
+                && window.DetailPathContextTextValue.Contains("Depth:", StringComparison.OrdinalIgnoreCase),
+                "Selected-row detail pane should show parent path and hierarchy depth context.");
+            Assert(
                 window.DetailGuidanceTextValue.Contains("Shortlist after review", StringComparison.OrdinalIgnoreCase),
                 "Selecting a quarantine candidate should show review guidance before shortlisting.");
             Assert(

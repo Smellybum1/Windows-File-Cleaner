@@ -368,7 +368,7 @@ Recognized field prefixes restrict search to one field:
 
 - Uses Storage Scan results.
 - Combines with Storage Review Filters and Bloat Category Filters.
-- Supports Selected Path Review Guidance, Child Breakdown, Selected Path Inspection, and Review Shortlist.
+- Supports Selected Path Hierarchy Context, Selected Path Review Guidance, Child Breakdown, Selected Path Inspection, and Review Shortlist.
 
 #### Code implications
 
@@ -811,6 +811,48 @@ Initial actions are copying the selected path and opening the selected path in F
 - Use `PathInspectionPlanBuilder` for Explorer launch details.
 - Keep inspection actions separate from Cleanup Actions.
 - Status messages should state that no files were modified.
+
+### Selected Path Hierarchy Context
+
+Status: draft
+Last reviewed: 2026-05-28
+
+#### Definition
+
+Selected Path Hierarchy Context is read-only parent-path and depth information shown for Storage Scan review rows.
+
+It helps explain short or hashed names in deep cache folders without changing the row's Importance Rating, Deletion Recommendation, or cleanup eligibility.
+
+#### Examples
+
+- Show the parent path for a row named `e` inside a package cache.
+- Show hierarchy depth for a selected recursive scan row.
+- Use parent/depth context alongside Evidence, Review Guidance, and Child Breakdown.
+
+#### Non-examples
+
+- A Cleanup Action.
+- Cleanup approval.
+- A classifier rule.
+- A storage savings estimate.
+
+#### Lifecycle
+
+- Available after a Storage Scan completes.
+- Updates when the grid row or selected row changes.
+- Remains read-only and in-memory.
+
+#### Relationships
+
+- Supports manual review of deeply nested Storage Scan rows.
+- Complements Storage Review Search, Storage Entry Type Filter, Child Breakdown, and Selected Path Inspection.
+- Scan Report Export also includes parent/depth context for offline review.
+
+#### Code implications
+
+- Use `StorageEntryRow.ParentLocation` for the WPF review grid.
+- Keep parent/depth display derived from scan results.
+- Do not use parent/depth context as cleanup approval.
 
 ### Selected Path Review Guidance
 
@@ -1399,6 +1441,7 @@ The app should help the user understand what is inside a folder before rating it
 Implementation implications:
 
 - The scan should show folder contents, size contributors, modified dates, and category evidence where feasible.
+- Deep rows should show parent/depth hierarchy context so short cache names are not reviewed in isolation.
 - The selected row should explain the safest next review step through Selected Path Review Guidance.
 - The review should support Storage Review Search so large scans can find specific apps, caches, tools, and categories without scrolling.
 - The review should distinguish displayed rows from matched rows when the Storage Review Display Limit is reached.
