@@ -1,0 +1,35 @@
+name: MVP Preflight
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  preflight:
+    name: Windows read-only preflight
+    runs-on: windows-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.421'
+
+      - name: Show .NET info
+        shell: pwsh
+        run: dotnet --info
+
+      - name: Run MVP preflight
+        shell: pwsh
+        run: .\tools\Invoke-MvpPreflight.ps1

@@ -51,6 +51,10 @@ All WindowsFileCleaner.Tests checks passed.
 All WindowsFileCleaner.App.Tests checks passed.
 ```
 
+## CI Preflight
+
+Pushes and pull requests to `main` run the same MVP preflight on GitHub Actions with a Windows runner and .NET 8. The CI job restores, builds, runs both test harnesses, runs the fixture generator in `-WhatIf` mode, and runs `git diff --check`. It does not scan `C:\Users\moxhe`.
+
 ## WPF Fixture Smoke
 
 Use the fixture review launcher for the manual fixture UI pass:
