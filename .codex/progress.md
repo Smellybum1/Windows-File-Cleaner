@@ -6,13 +6,13 @@ Use it to preserve what was completed, what was verified, what was rejected, and
 
 ## Current status
 
-Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. Review filters, selected-folder child breakdown, selected-path inspection actions, CSV export, Review Mix, Storage Scan Safety Summary, Safety Summary review shortcuts, Access issues filtering, Bloat Category Filter, No category filtering, Review Shortlist, Quarantine Preview, Quarantine Preview CSV export, Restore Manifest Draft, and Quarantine Confirmation Draft are implemented and verified. Restore Manifest Draft and Quarantine Confirmation Draft are core-only and await future WPF wiring and execution-flow review.
+Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. Review filters, selected-folder child breakdown, selected-path inspection actions, CSV export, Review Mix, Storage Scan Safety Summary, Safety Summary review shortcuts, Access issues filtering, Bloat Category Filter, No category filtering, Review Shortlist, Quarantine Preview, Quarantine Preview CSV export, Restore Manifest Draft, Quarantine Confirmation Draft, and Quarantine Readiness UI are implemented and verified. Quarantine remains preview-only; no cleanup execution, manifest writing, or Undo Quarantine execution exists.
 
 ## Next recommended work
 
 1. Ask the user to rerun the WPF app and confirm Safety Summary shortcuts, Review Shortlist, Quarantine Preview, Export preview, Review Mix, Access issues filter, category filter, No category filter, and filter wording are useful.
 2. Use review feedback to refine Protected Locations and category grouping.
-3. Add WPF display for Restore Manifest Draft and Quarantine Confirmation Draft without writing files or executing quarantine.
+3. Retest the new Quarantine Readiness UI with a real scan and confirm the draft/readiness wording is understandable.
 4. Defer actual Quarantine and Undo Quarantine execution until scan review, preview semantics, confirmation semantics, and restore rules are trustworthy.
 5. Revisit .NET 10 before packaging or long-term distribution.
 
@@ -919,3 +919,47 @@ Rejected ideas buffer:
 - Do not call this a cleanup plan.
 - Do not make execution availability depend only on a boolean.
 - Do not treat the confirmation phrase as sufficient without matching preview and manifest data.
+
+### 2026-05-28: Add Quarantine Readiness UI
+
+Status: completed
+
+Evidence:
+
+- Restore Manifest Draft and Quarantine Confirmation Draft were implemented in core but not visible in the WPF app.
+- The progress log identified WPF display as the next safety-review step before any execution flow.
+
+Implementation:
+
+- WPF `Preview quarantine` now builds a Restore Manifest Draft and Quarantine Confirmation Draft in memory after building the Quarantine Preview.
+- The detail pane now shows preview counts, Restore Manifest Draft id and entry summary, Quarantine Confirmation Draft id, required future confirmation text, execution status, readiness blocker count, and blocker details.
+- Clearing scan, shortlist, or preview state clears both drafts.
+- Quarantine Preview CSV export remains unchanged as a report, not a manifest.
+- No folder creation, file move, deletion, manifest file write, quarantine execution, or undo execution was added.
+
+Verification:
+
+- `dotnet build WindowsFileCleaner.sln --no-restore` passed.
+- `dotnet run --project tests\WindowsFileCleaner.Tests\WindowsFileCleaner.Tests.csproj --no-build` passed.
+
+Docs updated:
+
+- `docs/features/2026-05-28-quarantine-readiness-ui.md`
+- `docs/features/2026-05-28-restore-manifest-draft.md`
+- `docs/features/2026-05-28-quarantine-confirmation-draft.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No new ADR. This is display-only UI for existing read-only draft artifacts.
+
+Open questions:
+
+- Should future execution use a modal confirmation dialog or dedicated review screen?
+- Should Restore Manifest Draft JSON be exportable before execution?
+
+Rejected ideas buffer:
+
+- Do not add an execute button beside preview controls.
+- Do not auto-save Restore Manifest Draft JSON from the UI.
+- Do not hide readiness blockers behind a single pass/fail label.

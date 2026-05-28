@@ -15,6 +15,8 @@ public partial class MainWindow : Window
     private StorageScanReview? _currentReview;
     private StorageScanSafetySummary? _currentSafetySummary;
     private QuarantinePreview? _currentQuarantinePreview;
+    private RestoreManifestDraft? _currentRestoreManifestDraft;
+    private QuarantineConfirmationDraft? _currentQuarantineConfirmationDraft;
     private string? _currentCleanupScopePath;
     private StorageReviewFilter _currentFilter = StorageReviewFilter.All;
     private StorageCategoryFilter _currentCategoryFilter = StorageCategoryFilter.All;
@@ -204,13 +206,29 @@ public partial class MainWindow : Window
 
         var shortlistedRows = _shortlist.ApplyTo(_currentReview.Entries);
         _currentQuarantinePreview = QuarantinePreviewBuilder.Build(shortlistedRows, _currentCleanupScopePath);
-        QuarantinePreviewText.Text = FormatQuarantinePreview(_currentQuarantinePreview);
+        _currentRestoreManifestDraft = RestoreManifestDraftBuilder.Build(
+            _currentQuarantinePreview,
+            DateTimeOffset.UtcNow,
+            BuildDraftId("restore-manifest-draft"));
+        _currentQuarantineConfirmationDraft = QuarantineConfirmationDraftBuilder.Build(
+            _currentQuarantinePreview,
+            _currentRestoreManifestDraft,
+            DateTimeOffset.UtcNow,
+            BuildDraftId("quarantine-confirmation-draft"));
+
+        QuarantinePreviewText.Text = FormatQuarantinePreview(
+            _currentQuarantinePreview,
+            _currentRestoreManifestDraft,
+            _currentQuarantineConfirmationDraft);
         ExportQuarantinePreviewButton.IsEnabled = ScanButton.IsEnabled;
+        var blockerSummary = _currentQuarantineConfirmationDraft.HasDataBlockers
+            ? $"{_currentQuarantineConfirmationDraft.Blockers.Count:N0} readiness blocker(s)"
+            : "no readiness blockers";
         StatusText.Text =
             $"Quarantine Preview created: {_currentQuarantinePreview.IncludedCount:N0} included, " +
             $"{_currentQuarantinePreview.BlockedCount:N0} blocked, " +
             $"{_currentQuarantinePreview.RedundantCount:N0} redundant, " +
-            $"{_currentQuarantinePreview.IncludedSizeDisplay} previewed. No files were modified.";
+            $"{_currentQuarantinePreview.IncludedSizeDisplay} previewed, {blockerSummary}. No files were modified.";
     }
 
     private void ExportQuarantinePreviewButton_Click(object sender, RoutedEventArgs e)
@@ -582,11 +600,16 @@ public partial class MainWindow : Window
     private void ClearQuarantinePreview()
     {
         _currentQuarantinePreview = null;
-        QuarantinePreviewText.Text = "Preview appears after using Preview quarantine.";
+        _currentRestoreManifestDraft = null;
+        _currentQuarantineConfirmationDraft = null;
+        QuarantinePreviewText.Text = "Preview and draft readiness appear after using Preview quarantine.";
         ExportQuarantinePreviewButton.IsEnabled = false;
     }
 
-    private static string FormatQuarantinePreview(QuarantinePreview preview)
+    private static string FormatQuarantinePreview(
+        QuarantinePreview preview,
+        RestoreManifestDraft restoreManifestDraft,
+        QuarantineConfirmationDraft confirmationDraft)
     {
         const int maxRows = 12;
         var lines = new List<string>
@@ -594,8 +617,23 @@ public partial class MainWindow : Window
             $"Default root: {preview.QuarantineRootPath}",
             $"Included: {preview.IncludedCount:N0} | Blocked: {preview.BlockedCount:N0} | Redundant: {preview.RedundantCount:N0}",
             $"Previewed size: {preview.IncludedSizeDisplay}",
+            $"Restore Manifest Draft: {restoreManifestDraft.DraftId} | Entries: {restoreManifestDraft.EntryCount:N0} | Bytes: {restoreManifestDraft.TotalSizeDisplay} | Executed manifest: {FormatYesNo(restoreManifestDraft.IsExecutedManifest)}",
+            $"Quarantine Confirmation Draft: {confirmationDraft.ConfirmationId} | Required future text: {confirmationDraft.RequiredConfirmationText} | Execution implemented: {FormatYesNo(confirmationDraft.IsExecutionImplemented)}",
+            confirmationDraft.HasDataBlockers
+                ? $"Readiness blockers: {confirmationDraft.Blockers.Count:N0}"
+                : "Readiness blockers: 0",
             "No files were modified."
         };
+
+        foreach (var blocker in confirmationDraft.Blockers.Take(6))
+        {
+            lines.Add($"Blocker | {blocker}");
+        }
+
+        if (confirmationDraft.Blockers.Count > 6)
+        {
+            lines.Add($"... {confirmationDraft.Blockers.Count - 6:N0} more readiness blocker(s) not shown in this pane.");
+        }
 
         foreach (var entry in preview.Entries.Take(maxRows))
         {
@@ -611,6 +649,17 @@ public partial class MainWindow : Window
         }
 
         return string.Join(Environment.NewLine, lines);
+    }
+
+    private static string BuildDraftId(string prefix)
+    {
+        var suffix = Guid.NewGuid().ToString("N")[..8];
+        return $"{prefix}-{DateTimeOffset.UtcNow:yyyyMMddHHmmss}-{suffix}";
+    }
+
+    private static string FormatYesNo(bool value)
+    {
+        return value ? "yes" : "no";
     }
 
     private static string FormatPreviewDisposition(QuarantinePreviewDisposition disposition)

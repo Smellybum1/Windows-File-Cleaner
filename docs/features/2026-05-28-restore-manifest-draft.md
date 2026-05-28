@@ -193,7 +193,7 @@ ADRs added or skipped:
 
 Follow-up work:
 
-- Design explicit Quarantine confirmation flow before file-moving code.
+- Quarantine Confirmation Draft and its WPF display now exist; design actual Quarantine execution before file-moving code.
 - Decide exact executed manifest file path.
 - Decide whether executed manifests should include file hashes.
 

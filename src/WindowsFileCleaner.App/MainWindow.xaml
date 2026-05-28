@@ -359,11 +359,11 @@
                                        FontFamily="Consolas"
                                        FontSize="12"
                                        TextWrapping="Wrap" />
-                            <TextBlock Text="Quarantine preview"
+                            <TextBlock Text="Quarantine preview and readiness drafts"
                                        FontWeight="SemiBold"
                                        Margin="0,18,0,4" />
                             <TextBlock x:Name="QuarantinePreviewText"
-                                       Text="Preview appears after using Preview quarantine."
+                                       Text="Preview and draft readiness appear after using Preview quarantine."
                                        FontFamily="Consolas"
                                        FontSize="12"
                                        TextWrapping="Wrap" />

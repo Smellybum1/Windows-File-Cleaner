@@ -187,7 +187,7 @@ ADRs added or skipped:
 
 Follow-up work:
 
-- Add UI display for Quarantine Confirmation Draft after preview/manifest draft wiring is exposed in WPF.
+- WPF display for Quarantine Confirmation Draft has been added in the Quarantine Readiness UI packet.
 - Design actual Quarantine execution and Undo Quarantine only after confirmation UI semantics are reviewed.
 
 Open questions:
