@@ -83,6 +83,8 @@ public partial class MainWindow : Window
 
     public string CurrentSearchText => SearchBox.Text;
 
+    public string SearchHelpToolTipValue => SearchBox.ToolTip?.ToString() ?? "";
+
     public string DetailGuidanceTextValue => DetailGuidanceText.Text;
 
     public string QuarantinePreviewTextValue => QuarantinePreviewText.Text;

@@ -65,6 +65,8 @@ internal sealed class MainWindowSmokeTests
             Assert(window.CurrentStatusText == "Ready", "MainWindow should not start scanning when constructed.");
             Assert(window.CanStartStorageScan, "MainWindow should allow a user-triggered Storage Scan.");
             Assert(!window.CanExportScanCsv, "MainWindow should not allow CSV export before a scan.");
+            Assert(window.SearchHelpToolTipValue.Contains("path:", StringComparison.OrdinalIgnoreCase), "Search tooltip should show field-prefix examples.");
+            Assert(window.SearchHelpToolTipValue.Contains("category:", StringComparison.OrdinalIgnoreCase), "Search tooltip should include category-prefix guidance.");
         }
         finally
         {
@@ -178,6 +180,15 @@ internal sealed class MainWindowSmokeTests
             Assert(
                 window.CurrentScanReportExportFileName.Contains("-search-pip.csv", StringComparison.OrdinalIgnoreCase),
                 "Scan Report Export filename should include a sanitized active search segment.");
+
+            window.ApplyStorageReviewSearch("category:Python package cache");
+            Assert(window.FilterSummaryTextValue.Contains("Search \"category:Python package cache\"", StringComparison.OrdinalIgnoreCase), "Prefixed search should keep the search text visible.");
+            Assert(
+                window.DisplayedRows.All(row => row.Categories.Contains("Python package cache", StringComparison.OrdinalIgnoreCase)),
+                "Category-prefixed search should only show matching category rows.");
+            Assert(
+                window.CurrentScanReportExportFileName.Contains("-search-category-python-package-cache.csv", StringComparison.OrdinalIgnoreCase),
+                "Scan Report Export filename should include a sanitized prefixed search segment.");
 
             window.ApplyStorageReviewSearch("");
             Assert(window.CurrentSearchText == "", "Clearing Storage Review Search should clear WPF search text.");

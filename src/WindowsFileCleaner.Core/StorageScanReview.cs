@@ -31,7 +31,7 @@ public sealed record StorageScanReview(
         };
 
         return search.IsActive
-            ? filtered.Where(row => MatchesSearch(row.Entry, search.Query)).ToArray()
+            ? filtered.Where(row => MatchesSearch(row.Entry, search)).ToArray()
             : filtered;
     }
 
@@ -53,16 +53,39 @@ public sealed record StorageScanReview(
         return !entry.IsAccessible || entry.BloatCategories.Contains(BloatCategory.AccessIssue);
     }
 
-    private static bool MatchesSearch(StorageEntry entry, string query)
+    private static bool MatchesSearch(StorageEntry entry, StorageReviewSearch search)
     {
+        var query = search.Term;
         var normalizedQuery = NormalizeForSearch(query);
-        return ContainsSearchText(entry.Name, query, normalizedQuery)
-            || ContainsSearchText(entry.FullPath, query, normalizedQuery)
-            || ContainsSearchText(entry.Evidence, query, normalizedQuery)
-            || ContainsSearchText(entry.ErrorMessage, query, normalizedQuery)
-            || ContainsSearchText(entry.ImportanceRating.ToString(), query, normalizedQuery)
-            || ContainsSearchText(entry.DeletionRecommendation.ToString(), query, normalizedQuery)
-            || entry.BloatCategories.Any(category => ContainsSearchText(category.ToString(), query, normalizedQuery));
+        return search.Field switch
+        {
+            StorageReviewSearchField.Path => ContainsSearchText(entry.FullPath, query, normalizedQuery),
+            StorageReviewSearchField.Name => ContainsSearchText(entry.Name, query, normalizedQuery),
+            StorageReviewSearchField.Category => MatchesCategorySearch(entry, query, normalizedQuery),
+            StorageReviewSearchField.Rating => ContainsSearchText(entry.ImportanceRating.ToString(), query, normalizedQuery),
+            StorageReviewSearchField.Recommendation => ContainsSearchText(entry.DeletionRecommendation.ToString(), query, normalizedQuery),
+            StorageReviewSearchField.Evidence => ContainsSearchText(entry.Evidence, query, normalizedQuery),
+            StorageReviewSearchField.AccessIssue => MatchesAccessIssueSearch(entry, query, normalizedQuery),
+            _ =>
+                ContainsSearchText(entry.Name, query, normalizedQuery)
+                || ContainsSearchText(entry.FullPath, query, normalizedQuery)
+                || ContainsSearchText(entry.Evidence, query, normalizedQuery)
+                || MatchesAccessIssueSearch(entry, query, normalizedQuery)
+                || ContainsSearchText(entry.ImportanceRating.ToString(), query, normalizedQuery)
+                || ContainsSearchText(entry.DeletionRecommendation.ToString(), query, normalizedQuery)
+                || MatchesCategorySearch(entry, query, normalizedQuery)
+        };
+    }
+
+    private static bool MatchesCategorySearch(StorageEntry entry, string query, string normalizedQuery)
+    {
+        return entry.BloatCategories.Any(category => ContainsSearchText(category.ToString(), query, normalizedQuery));
+    }
+
+    private static bool MatchesAccessIssueSearch(StorageEntry entry, string query, string normalizedQuery)
+    {
+        return ContainsSearchText(entry.ErrorMessage, query, normalizedQuery)
+            || (IsAccessIssue(entry) && ContainsSearchText("Access issue", query, normalizedQuery));
     }
 
     private static bool ContainsSearchText(string? value, string query, string normalizedQuery)

@@ -100,7 +100,7 @@ After the app opens:
 6. If the status or filter summary says `2,000 shown of ... matched`, treat the grid as the first review window and narrow with search or filters.
 7. Treat row sizes as triage clues, not storage savings; folder rows include children and can overlap with child rows.
 8. Use Review Mix and Safety Summary to inspect high-risk, protected, access issue, reparse point, quarantine candidate, and no-category rows.
-9. Use Storage Review Search for specific names such as `pip`, `NVIDIA`, `Codex`, app names, or game folders.
+9. Use Storage Review Search for specific names such as `pip`, `NVIDIA`, `Codex`, app names, or game folders; use prefixes such as `path:pip`, `category:Python package cache`, `rating:High risk`, or `recommendation:Quarantine candidate` when you want one field.
 10. Select large folders and inspect Evidence, Review guidance, and Largest immediate children.
 11. Try category filters such as App cache, Python package cache, GPU shader cache, Windows app data, Installed application, Game data, Protected location, and No category.
 12. Add a likely-safe cleanup candidate to the Review Shortlist, or use `Shortlist shown` / `Remove shown` only after narrowing the grid to rows you intentionally want to review.

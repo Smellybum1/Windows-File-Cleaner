@@ -31,6 +31,7 @@ The WPF app should provide Storage Review Search that:
 - Is enabled only after a Storage Scan completes.
 - Combines with the active Storage Review Filter and Bloat Category Filter.
 - Matches path, name, category, Importance Rating, Deletion Recommendation, evidence, and access issue text.
+- Supports field prefixes such as `path:`, `category:`, `rating:`, and `recommendation:` for narrower searches.
 - Resets after a new Storage Scan completes.
 - Keeps all behavior read-only.
 
@@ -48,7 +49,7 @@ Questions that must be answered before implementation:
 
 Questions that can be deferred:
 
-- Should search later support explicit field prefixes such as `path:`, `category:`, or `rating:`?
+- None.
 
 ## Grill notes
 
@@ -61,6 +62,7 @@ Questions that can be deferred:
 
 - Search should match spaced terms such as `high risk` and `python package cache` even though enum names do not contain spaces.
 - Search should combine with review and category filters rather than replacing them.
+- Recognized prefixes should restrict matching to the named field; unrecognized prefixes should remain literal broad search text.
 - Search should not trigger file IO.
 
 ### Dependencies between decisions
@@ -170,10 +172,12 @@ What changed:
 - Extended Storage Scan review filtering to combine review filter, category filter, and search query.
 - Added WPF search controls and clear search action.
 - Added tests for spaced category/rating search, combined filters, WPF search summary, and clearing search.
+- Later field-prefix packet added `StorageReviewSearchField`, restricted searches such as `path:` and `category:`, WPF tooltip examples, and fixture coverage for prefixed searches.
 
 Files changed:
 
 - `src/WindowsFileCleaner.Core/StorageReviewSearch.cs`
+- `src/WindowsFileCleaner.Core/StorageReviewSearchField.cs`
 - `src/WindowsFileCleaner.Core/StorageScanReview.cs`
 - `src/WindowsFileCleaner.App/MainWindow.xaml`
 - `src/WindowsFileCleaner.App/MainWindow.xaml.cs`
@@ -191,6 +195,11 @@ Tests run:
 - `dotnet build WindowsFileCleaner.sln --no-restore`
 - `dotnet run --project tests\WindowsFileCleaner.Tests\WindowsFileCleaner.Tests.csproj --no-build`
 - `dotnet run --project tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj --no-build`
+- Later field-prefix packet:
+  - `dotnet build WindowsFileCleaner.sln --no-restore`
+  - `dotnet run --project tests\WindowsFileCleaner.Tests\WindowsFileCleaner.Tests.csproj --no-build`
+  - `dotnet run --project tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj --no-build`
+  - `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\Invoke-MvpPreflight.ps1`
 
 Docs updated:
 
@@ -210,7 +219,7 @@ Follow-up work:
 
 Open questions:
 
-- Should search later support explicit field prefixes such as `path:`, `category:`, or `rating:`?
+- None.
 
 Risky assumptions:
 

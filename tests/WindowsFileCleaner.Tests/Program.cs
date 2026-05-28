@@ -9,6 +9,7 @@ tests.ClassifierLabelsRealScanContainerPatterns();
 tests.ReviewBuilderSummarizesAndFiltersResults();
 tests.ReviewBuilderFiltersAccessIssues();
 tests.ReviewSearchCombinesWithReviewAndCategoryFilters();
+tests.ReviewSearchSupportsFieldPrefixes();
 tests.StorageScanSafetySummaryHighlightsReviewBoundaries();
 tests.StorageScanSafetyShortcutsMapToReadOnlyFilters();
 tests.ReviewShortlistTracksSelectedRowsWithoutModifyingReview();
@@ -315,6 +316,68 @@ internal sealed class StorageScanTests
             StorageReviewSearch.FromText("high risk"));
         Assert(highRiskRows.Count > 0, "Search should match spaced Importance Rating text.");
         Assert(highRiskRows.All(row => row.Entry.ImportanceRating == ImportanceRating.HighRisk), "High risk search should find high-risk rows in this fixture.");
+    }
+
+    public void ReviewSearchSupportsFieldPrefixes()
+    {
+        using var fixture = TestFixture.Create();
+
+        fixture.WriteFile(@"AppData\Local\pip\Cache\http-v2\response.body", 1024, DateTimeOffset.UtcNow.AddDays(-30));
+        fixture.WriteFile(@"Downloads\setup.msi", 1024, DateTimeOffset.UtcNow.AddDays(-120));
+        fixture.WriteFile(@"Documents\budget.xlsx", 1024, DateTimeOffset.UtcNow);
+
+        var scanner = new StorageScanner();
+        var result = scanner.Scan(new StorageScanOptions(fixture.RootPath));
+        var review = StorageScanReviewBuilder.Build(result);
+
+        var parsed = StorageReviewSearch.FromText(" category: Python package cache ");
+        Assert(parsed.IsActive, "Prefixed search with a term should be active.");
+        Assert(parsed.Query == "category: Python package cache", "Prefixed search should preserve display query text.");
+        Assert(parsed.Field == StorageReviewSearchField.Category, "Prefixed search should record the requested field.");
+        Assert(parsed.Term == "Python package cache", "Prefixed search should strip the field prefix for matching.");
+        Assert(!StorageReviewSearch.FromText("category: ").IsActive, "Prefixed search without a term should be inactive.");
+        Assert(StorageReviewSearch.FromText("unknown:setup").Field == StorageReviewSearchField.Any, "Unrecognized prefixes should stay broad search.");
+        Assert(StorageReviewSearch.FromText("unknown:setup").Term == "unknown:setup", "Unrecognized prefixes should remain literal search text.");
+
+        var categoryRows = review.ApplyFilter(
+            StorageReviewFilter.All,
+            StorageCategoryFilter.All,
+            StorageReviewSearch.FromText("category:Python package cache"));
+        Assert(categoryRows.Count > 0, "Category-prefixed search should match category text.");
+        Assert(
+            categoryRows.All(row => row.Entry.BloatCategories.Contains(BloatCategory.PythonPackageCache)),
+            "Category-prefixed search should only match category fields.");
+
+        var pathRows = review.ApplyFilter(
+            StorageReviewFilter.All,
+            StorageCategoryFilter.All,
+            StorageReviewSearch.FromText("path:pip"));
+        Assert(pathRows.Count > 0, "Path-prefixed search should match path text.");
+        Assert(
+            pathRows.All(row => row.Entry.FullPath.Contains("pip", StringComparison.OrdinalIgnoreCase)),
+            "Path-prefixed search should only match full paths.");
+
+        var categoryTextInPathField = review.ApplyFilter(
+            StorageReviewFilter.All,
+            StorageCategoryFilter.All,
+            StorageReviewSearch.FromText("path:Python package cache"));
+        Assert(categoryTextInPathField.Count == 0, "Path-prefixed search should not match category-only text.");
+
+        var ratingRows = review.ApplyFilter(
+            StorageReviewFilter.All,
+            StorageCategoryFilter.All,
+            StorageReviewSearch.FromText("rating:high risk"));
+        Assert(ratingRows.Count > 0, "Rating-prefixed search should match user-facing rating text.");
+        Assert(ratingRows.All(row => row.Entry.ImportanceRating == ImportanceRating.HighRisk), "Rating-prefixed search should only match ratings.");
+
+        var recommendationRows = review.ApplyFilter(
+            StorageReviewFilter.All,
+            StorageCategoryFilter.All,
+            StorageReviewSearch.FromText("recommendation:quarantine candidate"));
+        Assert(recommendationRows.Count > 0, "Recommendation-prefixed search should match user-facing recommendation text.");
+        Assert(
+            recommendationRows.All(row => row.Entry.DeletionRecommendation == DeletionRecommendation.QuarantineCandidate),
+            "Recommendation-prefixed search should only match recommendations.");
     }
 
     public void StorageScanSafetySummaryHighlightsReviewBoundaries()

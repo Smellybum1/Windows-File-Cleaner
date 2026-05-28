@@ -328,13 +328,26 @@ Last reviewed: 2026-05-28
 
 Storage Review Search is a read-only text search applied to the current Storage Scan review results.
 
-It matches path, name, category, Importance Rating, Deletion Recommendation, evidence, and access issue text. It combines with the active Storage Review Filter and Bloat Category Filter.
+By default, it matches path, name, category, Importance Rating, Deletion Recommendation, evidence, and access issue text. It combines with the active Storage Review Filter and Bloat Category Filter.
+
+Recognized field prefixes restrict search to one field:
+
+- `path:`
+- `name:`
+- `category:` or `cat:`
+- `rating:` or `importance:`
+- `recommendation:` or `rec:`
+- `evidence:`
+- `issue:` or `access:`
 
 #### Examples
 
 - Search for `pip` to find Python package cache paths.
 - Search for `NVIDIA` to find GPU shader cache paths.
 - Search for `high risk` to find rows with the High risk Importance Rating.
+- Search for `path:pip` to search only full paths.
+- Search for `category:Python package cache` to search only Bloat Category labels.
+- Search for `recommendation:Quarantine candidate` to search only Deletion Recommendation labels.
 - Search for a game, app, or folder name before deciding whether to inspect it in Explorer.
 
 #### Non-examples
@@ -359,6 +372,7 @@ It matches path, name, category, Importance Rating, Deletion Recommendation, evi
 #### Code implications
 
 - Use `StorageReviewSearch` for the search query.
+- Parse recognized field prefixes into `StorageReviewSearchField`.
 - Keep search in-memory and read-only.
 - Do not use search text to change Bloat Categories, Importance Ratings, Deletion Recommendations, or cleanup eligibility.
 
