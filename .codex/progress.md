@@ -6,12 +6,12 @@ Use it to preserve what was completed, what was verified, what was rejected, and
 
 ## Current status
 
-Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. Review filters, selected-folder child breakdown, selected-path inspection actions, CSV export, Review Mix, Storage Scan Safety Summary, Safety Summary review shortcuts, Access issues filtering, Bloat Category Filter, No category filtering, Review Shortlist, Quarantine Preview, Quarantine Preview CSV export, Restore Manifest Draft, Quarantine Confirmation Draft, Quarantine Readiness UI, conservative app data classification, read-only safety regression checks, the MVP runbook, the MVP readiness audit, fixture-driven WPF launch support, and WPF shell smoke testing are implemented and verified. Quarantine remains preview-only; no cleanup execution, manifest writing, or Undo Quarantine execution exists.
+Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. Review filters, selected-folder child breakdown, selected-path inspection actions, CSV export, Review Mix, Storage Scan Safety Summary, Safety Summary review shortcuts, Access issues filtering, Bloat Category Filter, No category filtering, Review Shortlist, Quarantine Preview, Quarantine Preview CSV export, Restore Manifest Draft, Quarantine Confirmation Draft, Quarantine Readiness UI, conservative app data classification, read-only safety regression checks, the MVP runbook, the MVP readiness audit, fixture-driven WPF launch support, WPF shell smoke testing, and WPF fixture scan smoke testing are implemented and verified. Quarantine remains preview-only; no cleanup execution, manifest writing, or Undo Quarantine execution exists.
 
 ## Next recommended work
 
 1. Run the full README verification path, including `WindowsFileCleaner.App.Tests`.
-2. Run `.\tools\New-StorageScanSmokeFixture.ps1`, launch the WPF app with the printed `--scope` command, and smoke test Safety Summary shortcuts, Review Shortlist, Quarantine Preview, Export preview, Review Mix, Access issues filter, category filter, No category filter, and filter wording.
+2. Run `.\tools\New-StorageScanSmokeFixture.ps1`, launch the WPF app with the printed `--scope` command, and manually inspect Safety Summary shortcuts, Review Shortlist, Quarantine Preview, Export preview, Review Mix, Access issues filter, category filter, No category filter, and filter wording.
 3. Use `README.md` and `docs/features/2026-05-28-mvp-readiness-audit.md` to rerun the WPF app against `C:\Users\moxhe`.
 4. Rerun the real scan and check whether Windows app data, installed applications, and game data labels make the large app/game rows easier to triage.
 5. Retest the Quarantine Readiness UI with a real scan and confirm the draft/readiness wording is understandable.
@@ -1229,3 +1229,49 @@ Rejected ideas buffer:
 
 - Do not treat WPF shell construction as proof of the full interaction flow.
 - Do not add visible GUI automation dependencies before the manual fixture smoke pass identifies a real need.
+
+### 2026-05-28: Add WPF fixture scan smoke test
+
+Status: completed
+
+Evidence:
+
+- Core tests already covered scanner and review logic.
+- WPF shell smoke tests covered construction and launch-scope wiring.
+- The next evidence gap was proving a fixture scan updates WPF state without touching real profile data.
+
+Implementation:
+
+- Refactored the Scan button path to call `RunStorageScanForCurrentScopeAsync`.
+- Added read-only WPF state properties for smoke-test assertions.
+- Added `WindowsFileCleaner.App.Tests` coverage that creates a synthetic fixture, runs Storage Scan through `MainWindow`, and asserts visible status, summary, filter, row, rating, recommendation, and category state.
+- Verified fixture marker files remain after the scan.
+
+Verification:
+
+- `dotnet restore WindowsFileCleaner.sln --configfile NuGet.Config` passed with escalation because sandboxed restore could not read the user's NuGet config.
+- `dotnet build WindowsFileCleaner.sln --no-restore` passed.
+- `dotnet run --project tests\WindowsFileCleaner.Tests\WindowsFileCleaner.Tests.csproj --no-build` passed.
+- `dotnet run --project tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj --no-build` passed.
+- `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\New-StorageScanSmokeFixture.ps1 -WhatIf` passed.
+- `git -c safe.directory='D:/Codex/Windows File Cleaner' diff --check` passed with line-ending normalization warnings only.
+
+Docs updated:
+
+- `README.md`
+- `docs/features/2026-05-28-mvp-readiness-audit.md`
+- `docs/features/2026-05-28-wpf-fixture-scan-smoke-test.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No new ADR. This is a testability improvement and does not change architecture, persistence, security posture, or cleanup behavior.
+
+Open questions:
+
+- Should future WPF automation cover Review Shortlist and Quarantine Preview interactions?
+
+Rejected ideas buffer:
+
+- Do not treat WPF fixture scan state as proof of visible layout quality.
+- Do not automate real-profile scans in the test harness.

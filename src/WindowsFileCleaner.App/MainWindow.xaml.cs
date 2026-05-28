@@ -44,6 +44,28 @@ public partial class MainWindow : Window
 
     public bool CanExportScanCsv => ExportCsvButton.IsEnabled;
 
+    public bool CanUseCategoryFilter => CategoryFilterBox.IsEnabled;
+
+    public int DisplayedRowCount => DisplayedRows.Count;
+
+    public IReadOnlyList<StorageEntryRow> DisplayedRows => ResultsGrid.ItemsSource is IEnumerable<StorageEntryRow> rows
+        ? rows.ToArray()
+        : [];
+
+    public string TotalSizeTextValue => TotalSizeText.Text;
+
+    public string FolderCountTextValue => FolderCountText.Text;
+
+    public string FileCountTextValue => FileCountText.Text;
+
+    public string AccessIssueCountTextValue => AccessIssueCountText.Text;
+
+    public string ReviewMixTextValue => ReviewMixText.Text;
+
+    public string SafetySummaryTextValue => SafetySummaryText.Text;
+
+    public string FilterSummaryTextValue => FilterSummaryText.Text;
+
     private async void ScanButton_Click(object sender, RoutedEventArgs e)
     {
         var scopePath = ScopePathBox.Text.Trim();
@@ -56,6 +78,35 @@ public partial class MainWindow : Window
         SetScanningState(isScanning: true);
         _scanCancellation = new CancellationTokenSource();
         var cancellationToken = _scanCancellation.Token;
+
+        try
+        {
+            await RunStorageScanForCurrentScopeAsync(cancellationToken);
+        }
+        catch (OperationCanceledException)
+        {
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(this, ex.Message, "Storage Scan failed", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+        finally
+        {
+            _scanCancellation?.Dispose();
+            _scanCancellation = null;
+            SetScanningState(isScanning: false);
+        }
+    }
+
+    public async Task RunStorageScanForCurrentScopeAsync(CancellationToken cancellationToken = default)
+    {
+        var scopePath = ScopePathBox.Text.Trim();
+        if (string.IsNullOrWhiteSpace(scopePath))
+        {
+            throw new InvalidOperationException("Choose a Cleanup Scope before scanning.");
+        }
+
+        SetScanningState(isScanning: true);
         _currentSafetySummary = null;
         UpdateSafetySummary();
 
@@ -66,47 +117,51 @@ public partial class MainWindow : Window
             var scanner = new StorageScanner();
 
             var result = await Task.Run(() => scanner.Scan(options, cancellationToken), cancellationToken);
-            _currentReview = StorageScanReviewBuilder.Build(result);
-            _currentSafetySummary = StorageScanSafetySummaryBuilder.Build(result, _currentReview);
-            _currentCleanupScopePath = result.CleanupScopePath;
-            _currentFilter = StorageReviewFilter.All;
-            _currentCategoryFilter = StorageCategoryFilter.All;
-            _shortlist.Clear();
-            ClearQuarantinePreview();
-            UpdateCategoryFilterOptions();
-            var rows = ApplyCurrentFilter();
-
-            ResultsGrid.ItemsSource = rows;
-            TotalSizeText.Text = result.TotalSizeDisplay;
-            FolderCountText.Text = result.FolderCount.ToString("N0");
-            FileCountText.Text = result.FileCount.ToString("N0");
-            AccessIssueCountText.Text = result.InaccessibleCount.ToString("N0");
-            StatusText.Text = $"Storage Scan completed. Showing {rows.Length:N0} paths. No files were modified.";
-            UpdateFilterButtons();
-            UpdateFilterSummary();
-            UpdateReviewMix();
-            UpdateSafetySummary();
-            UpdateShortlistControls();
-
-            if (rows.Length > 0)
-            {
-                ResultsGrid.SelectedIndex = 0;
-            }
+            ApplyStorageScanResult(result);
         }
         catch (OperationCanceledException)
         {
             StatusText.Text = "Storage Scan canceled. No files were modified.";
+            throw;
         }
-        catch (Exception ex)
+        catch
         {
             StatusText.Text = "Storage Scan failed. No files were modified.";
-            MessageBox.Show(this, ex.Message, "Storage Scan failed", MessageBoxButton.OK, MessageBoxImage.Error);
+            throw;
         }
         finally
         {
-            _scanCancellation?.Dispose();
-            _scanCancellation = null;
             SetScanningState(isScanning: false);
+        }
+    }
+
+    private void ApplyStorageScanResult(StorageScanResult result)
+    {
+        _currentReview = StorageScanReviewBuilder.Build(result);
+        _currentSafetySummary = StorageScanSafetySummaryBuilder.Build(result, _currentReview);
+        _currentCleanupScopePath = result.CleanupScopePath;
+        _currentFilter = StorageReviewFilter.All;
+        _currentCategoryFilter = StorageCategoryFilter.All;
+        _shortlist.Clear();
+        ClearQuarantinePreview();
+        UpdateCategoryFilterOptions();
+        var rows = ApplyCurrentFilter();
+
+        ResultsGrid.ItemsSource = rows;
+        TotalSizeText.Text = result.TotalSizeDisplay;
+        FolderCountText.Text = result.FolderCount.ToString("N0");
+        FileCountText.Text = result.FileCount.ToString("N0");
+        AccessIssueCountText.Text = result.InaccessibleCount.ToString("N0");
+        StatusText.Text = $"Storage Scan completed. Showing {rows.Length:N0} paths. No files were modified.";
+        UpdateFilterButtons();
+        UpdateFilterSummary();
+        UpdateReviewMix();
+        UpdateSafetySummary();
+        UpdateShortlistControls();
+
+        if (rows.Length > 0)
+        {
+            ResultsGrid.SelectedIndex = 0;
         }
     }
 
