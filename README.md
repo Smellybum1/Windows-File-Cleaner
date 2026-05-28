@@ -2,23 +2,25 @@
 
 Windows File Cleaner is a local Windows-only WPF desktop app for reviewing storage under `C:\Users\moxhe`.
 
-The current MVP is a read-only Storage Scan. It recursively scans the selected Cleanup Scope, classifies cleanup candidates, shows importance ratings, and helps inspect large folders before any cleanup action exists.
+The current MVP centers on a read-only Storage Scan. It can also execute Quarantine from the visible WPF app against synthetic fixture Cleanup Scopes only, so the UI-to-executor path is proven before real-profile cleanup is enabled.
 
 Current readiness evidence is tracked in `docs/features/2026-05-28-mvp-readiness-audit.md`.
 
 ## Safety Status
 
 - Storage Scan does not modify scanned files.
-- The visible WPF app does not delete, move, quarantine, or restore files.
+- The visible WPF app can move files only when the Cleanup Scope is a recognized synthetic fixture and the exact Quarantine confirmation gate is open.
+- Real-profile WPF Quarantine execution remains unavailable.
+- The visible WPF app does not delete files or restore files.
 - CSV exports write only to a path selected by the user.
 - Review Shortlist is an in-memory review aid, not cleanup approval.
 - Quarantine Preview is a dry run only.
 - Restore Manifest Draft and Quarantine Confirmation Draft are in-memory readiness evidence only.
-- Quarantine Execution Gate is read-only; the current build still cannot execute quarantine.
-- Quarantine Action Draft shows future action-scoped item and manifest paths without creating them.
-- Write-ahead Restore Manifest modeling shows future manifest status/write order without writing a file.
-- Restore Manifest File Store is fixture-tested but is not wired to the WPF app; it writes only action-scoped manifest JSON when called by fixture-tested core code.
-- Quarantine Executor is fixture-tested in the core library but is not wired to the WPF app; the visible `Execute quarantine` button remains disabled.
+- Quarantine Execution Gate enables execution only for fixture Cleanup Scopes after preview readiness and exact `QUARANTINE` confirmation.
+- Quarantine Action Draft shows action-scoped item and manifest paths before execution creates them.
+- Write-ahead Restore Manifest modeling shows planned status/write order before fixture execution writes the manifest.
+- Restore Manifest File Store writes action-scoped manifest JSON during fixture-tested execution paths.
+- Quarantine Executor is fixture-tested in the core library and wired to the WPF app for fixture scopes only.
 - Undo Quarantine Executor is fixture-tested in the core library but is not wired to the WPF app.
 - Fixture tests include a source-level guard against accidental cleanup-execution filesystem calls.
 - Real-profile scans require an explicit acknowledgement that MVP preflight and fixture review were run.
@@ -85,7 +87,7 @@ dotnet run --project src\WindowsFileCleaner.App -- --scope "D:\Codex\Windows Fil
 
 This only fills the Cleanup Scope box. Click `Scan` yourself after the app opens.
 
-The automated `WindowsFileCleaner.App.Tests` project also scans a synthetic fixture through the WPF shell, exercises read-only review interactions, and checks that the review toolbars use wrapping layout, but it does not replace checking the visible layout and controls by eye.
+The automated `WindowsFileCleaner.App.Tests` project also scans a synthetic fixture through the WPF shell, exercises read-only review interactions, proves fixture-only Quarantine execution, verifies custom non-fixture execution remains blocked, and checks that the review toolbars use wrapping layout, but it does not replace checking the visible layout and controls by eye.
 
 ## Run The App
 
@@ -121,8 +123,10 @@ After the app opens:
 14. Try category filters such as Cleanup scope root, App cache, Python package cache, GPU shader cache, Large old file, Cloud sync data, Credential data, Windows app data, Installed application, Game data, Protected location, and No category.
 15. Use `Reset view` after stacking filters/search; it clears the review lens but keeps Review Shortlist.
 16. Add a likely-safe cleanup candidate to the Review Shortlist; specific rebuildable cache rows such as `DXCache` or `pip\Cache` may appear here, while broad parent folders should stay inspection-first. Use `Shortlist shown` / `Remove shown` only after narrowing or paging the grid to rows you intentionally want to review.
-17. Confirm the Quarantine root points to the intended fully qualified read-only preview destination and that the safety note matches it, typing or browsing if needed, then click `Preview quarantine`; broad parent rows should be blocked when protected descendants are present, blocked descendant examples should use relative paths, confirmation readiness blockers should be separate from preview row details, Restore Manifest Draft / Quarantine Confirmation Draft should still say no files were modified and WPF execution is not wired, the Quarantine Action Draft should show action-scoped item and manifest paths, the write-ahead Restore Manifest should show planned write-before-move ordering, and typing `QUARANTINE` in the Quarantine Execution Gate should match the phrase while `Execute quarantine` remains disabled.
-18. Export CSV reports only when you intentionally choose an output file; the main report export follows the active filters/type/size/search, includes relative path, parent/depth, and access-status context for recursive rows, and the suggested filename includes the search term when one is active.
+17. Confirm the Quarantine root points to the intended fully qualified preview/execution destination and that the safety note matches it, typing or browsing if needed, then click `Preview quarantine`; broad parent rows should be blocked when protected descendants are present, blocked descendant examples should use relative paths, confirmation readiness blockers should be separate from preview row details, the Quarantine Action Draft should show action-scoped item and manifest paths, and the write-ahead Restore Manifest should show planned write-before-move ordering.
+18. On a fixture Cleanup Scope only, typing `QUARANTINE` should enable `Execute quarantine`; clicking it moves the selected synthetic file/folder into the action-scoped quarantine path, writes `restore-manifest.json`, clears stale shortlist state, and tells you to rescan.
+19. On `C:\Users\moxhe` or a custom non-fixture Cleanup Scope, typing `QUARANTINE` should still leave `Execute quarantine` disabled with a scope-specific blocker.
+20. Export CSV reports only when you intentionally choose an output file; the main report export follows the active filters/type/size/search, includes relative path, parent/depth, and access-status context for recursive rows, and the suggested filename includes the search term when one is active.
 
 ## Current Workflow
 
@@ -138,16 +142,17 @@ The intended review flow is:
 8. Use `Reset view` when the active review lens becomes too narrow; it does not clear Review Shortlist.
 9. Use Selected Path Hierarchy Context, Selected File Content Preview, Selected Path Review Guidance, Child Breakdown, and Open in Explorer for manual inspection.
 10. Add interesting rows to Review Shortlist; use `Shortlist shown` and `Remove shown` only for the currently displayed review window.
-11. Check or browse the Quarantine root and generate Quarantine Preview for read-only readiness review.
-12. Optionally type `QUARANTINE` into the Quarantine Execution Gate and confirm it still says execution is not wired in WPF.
-13. Stop before cleanup execution.
+11. Check or browse the Quarantine root and generate Quarantine Preview for readiness review.
+12. For fixture scopes, optionally type `QUARANTINE` and run fixture-only Quarantine execution to prove the visible workflow.
+13. For real-profile scopes, confirm `Execute quarantine` stays unavailable.
+14. Stop before real-profile cleanup execution.
 
 ## Not Implemented Yet
 
-- WPF Quarantine execution.
+- Real-profile WPF Quarantine execution.
 - WPF Undo Quarantine.
 - Permanent deletion.
 - Persisted cleanup history.
-- Writing executed Restore Manifest files from the WPF app.
+- Writing executed Restore Manifest files from the WPF app for real-profile Cleanup Scopes.
 
 Those workflows require separate design, explicit confirmation semantics, stale-state checks, restore-manifest discovery, tests, and ADR review before the visible app can move or restore real-profile files.

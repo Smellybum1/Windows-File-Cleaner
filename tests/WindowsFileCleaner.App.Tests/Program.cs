@@ -26,6 +26,8 @@ internal static class Program
                 tests.MainWindowRunsFixtureStorageScanThroughWpfShell();
                 tests.MainWindowShowsDisplayLimitForLargeFixtureScan();
                 tests.MainWindowRunsFixtureReviewInteractionsThroughWpfShell();
+                tests.MainWindowExecutesQuarantineForFixtureScopeOnly();
+                tests.MainWindowKeepsQuarantineExecutionUnavailableForCustomScope();
                 tests.MainWindowBlocksQuarantinePreviewForParentWithProtectedDescendant();
             }
             finally
@@ -545,11 +547,11 @@ internal sealed class MainWindowSmokeTests
             Assert(window.QuarantinePreviewTextValue.Contains("Included: 1", StringComparison.OrdinalIgnoreCase), "Preview pane should show one included fixture row.");
             Assert(window.QuarantinePreviewTextValue.Contains("Restore Manifest Draft", StringComparison.OrdinalIgnoreCase), "Preview pane should show Restore Manifest Draft readiness.");
             Assert(window.QuarantinePreviewTextValue.Contains("Quarantine Confirmation Draft", StringComparison.OrdinalIgnoreCase), "Preview pane should show Quarantine Confirmation Draft readiness.");
-            Assert(window.QuarantinePreviewTextValue.Contains("Execution implemented: no", StringComparison.OrdinalIgnoreCase), "Preview pane should state execution is not implemented.");
+            Assert(window.QuarantinePreviewTextValue.Contains("Execution implemented: yes", StringComparison.OrdinalIgnoreCase), "Fixture preview pane should state fixture execution is available.");
             Assert(window.QuarantinePreviewTextValue.Contains("Preview rows:", StringComparison.OrdinalIgnoreCase), "Preview pane should label row-level preview details.");
             Assert(window.QuarantinePreviewTextValue.Contains("Preview row | Included", StringComparison.OrdinalIgnoreCase), "Preview pane should distinguish included row details from readiness blockers.");
             Assert(window.CanEnterQuarantineConfirmation, "Quarantine confirmation text should be enabled after preview readiness exists.");
-            Assert(!window.CanExecuteQuarantine, "Quarantine execution should remain unavailable while execution is not implemented.");
+            Assert(!window.CanExecuteQuarantine, "Quarantine execution should remain unavailable before exact confirmation text is entered.");
             Assert(
                 window.QuarantineExecutionGateTextValue.Contains("Type QUARANTINE", StringComparison.OrdinalIgnoreCase),
                 "Execution gate should require the confirmation phrase before execution can ever be enabled.");
@@ -571,9 +573,10 @@ internal sealed class MainWindowSmokeTests
             Assert(window.CurrentQuarantineConfirmationText == "QUARANTINE", "Confirmation text should be editable in the WPF gate.");
             Assert(
                 window.QuarantineExecutionGateTextValue.Contains("Entered confirmation matches: yes", StringComparison.OrdinalIgnoreCase)
-                && window.QuarantineExecutionGateTextValue.Contains("Execution implemented: no", StringComparison.OrdinalIgnoreCase)
-                && window.QuarantineExecutionGateTextValue.Contains("Can execute: no", StringComparison.OrdinalIgnoreCase),
-                "Matched confirmation should still keep execution closed until execution is implemented.");
+                && window.QuarantineExecutionGateTextValue.Contains("Execution implemented: yes", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineExecutionGateTextValue.Contains("Can execute: yes", StringComparison.OrdinalIgnoreCase),
+                "Matched confirmation should open fixture-only execution.");
+            Assert(window.CanExecuteQuarantine, "Fixture-only execution should enable after exact confirmation text.");
             Assert(
                 window.QuarantinePreviewTextValue.Contains(Path.Combine(customQuarantineRoot, "preview", "Downloads", "old-installer.msi"), StringComparison.OrdinalIgnoreCase),
                 "Preview pane should map included rows under the typed quarantine root.");
@@ -610,6 +613,99 @@ internal sealed class MainWindowSmokeTests
             Assert(window.ReviewShortlistCount == 1, "Selected-row shortlisting should still update Review Shortlist count.");
             window.ClearReviewShortlist();
             Assert(window.ReviewShortlistCount == 0, "Clearing after selected-row shortlisting should empty Review Shortlist.");
+        }
+        finally
+        {
+            window.Close();
+        }
+    }
+
+    public void MainWindowExecutesQuarantineForFixtureScopeOnly()
+    {
+        using var fixture = SmokeFixture.Create();
+        var window = new MainWindow(fixture.RootPath);
+        try
+        {
+            RunDispatcherTask(() => window.RunStorageScanForCurrentScopeAsync());
+
+            var installer = window.DisplayedRows.Single(row =>
+                row.FullPath.EndsWith(@"Downloads\old-installer.msi", StringComparison.OrdinalIgnoreCase));
+            Assert(window.SelectDisplayedPath(installer.FullPath), "Fixture installer should be selectable for execution smoke test.");
+            window.AddSelectedPathToReviewShortlist();
+
+            var customQuarantineRoot = Path.GetFullPath(Path.Combine(fixture.RootPath, "..", "execution-quarantine-root"));
+            window.SetQuarantineRootForPreview(customQuarantineRoot);
+            window.PreviewQuarantineForReviewShortlist();
+
+            Assert(!window.CanExecuteQuarantine, "Fixture execution should stay closed before exact confirmation.");
+            Assert(
+                window.QuarantineExecutionGateTextValue.Contains("Execution implemented: yes", StringComparison.OrdinalIgnoreCase),
+                "Fixture execution gate should show execution availability.");
+
+            window.SetQuarantineConfirmationText("QUARANTINE");
+            Assert(window.CanExecuteQuarantine, "Fixture execution should open after exact confirmation.");
+            var manifestPath = window.CurrentRestoreManifestPath;
+            var quarantinePath = window.CurrentFirstQuarantinePath;
+            Assert(!string.IsNullOrWhiteSpace(manifestPath), "Fixture execution should expose a planned Restore Manifest path before execution.");
+            Assert(!string.IsNullOrWhiteSpace(quarantinePath), "Fixture execution should expose a planned quarantine path before execution.");
+
+            window.ExecuteQuarantineForCurrentPreview();
+
+            Assert(!window.CanExecuteQuarantine, "Execution gate should close after the fixture execution attempt.");
+            Assert(!window.CanEnterQuarantineConfirmation, "Confirmation text should disable after the fixture execution attempt.");
+            Assert(!window.CanExportQuarantinePreview, "Preview export should disable after execution because preview state is stale.");
+            Assert(window.ReviewShortlistCount == 0, "Fixture execution should clear Review Shortlist to prevent stale re-execution.");
+            Assert(window.CurrentRestoreManifestStatus == RestoreManifestActionStatus.Completed.ToString(), "Successful fixture execution should complete the Restore Manifest.");
+            Assert(File.Exists(manifestPath!), "Fixture execution should persist the action-scoped Restore Manifest.");
+            Assert(!File.Exists(installer.FullPath), "Fixture execution should move the selected source file.");
+            Assert(File.Exists(quarantinePath!), "Fixture execution should place the selected file in quarantine.");
+            Assert(File.Exists(fixture.MarkerPath), "Fixture execution should leave unselected fixture files alone.");
+            Assert(
+                window.CurrentStatusText.Contains("Fixture Quarantine execution completed", StringComparison.OrdinalIgnoreCase)
+                && window.CurrentStatusText.Contains("Rescan", StringComparison.OrdinalIgnoreCase),
+                "Fixture execution status should report completion and stale scan state.");
+            Assert(
+                window.QuarantinePreviewTextValue.Contains("Fixture Quarantine execution result", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantinePreviewTextValue.Contains("Current scan and review rows are stale", StringComparison.OrdinalIgnoreCase),
+                "Preview pane should be replaced with execution result and stale-state wording.");
+            Assert(
+                window.QuarantineExecutionGateTextValue.Contains("Execution result:", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineExecutionGateTextValue.Contains("Current scan results are stale", StringComparison.OrdinalIgnoreCase),
+                "Execution gate should retain execution evidence after the gate closes.");
+        }
+        finally
+        {
+            window.Close();
+        }
+    }
+
+    public void MainWindowKeepsQuarantineExecutionUnavailableForCustomScope()
+    {
+        using var fixture = SmokeFixture.CreateCustomScope();
+        var window = new MainWindow(fixture.RootPath);
+        try
+        {
+            RunDispatcherTask(() => window.RunStorageScanForCurrentScopeAsync());
+
+            var installer = window.DisplayedRows.Single(row =>
+                row.FullPath.EndsWith(@"Downloads\old-installer.msi", StringComparison.OrdinalIgnoreCase));
+            Assert(window.SelectDisplayedPath(installer.FullPath), "Custom-scope installer should be selectable.");
+            window.AddSelectedPathToReviewShortlist();
+
+            var customQuarantineRoot = Path.GetFullPath(Path.Combine(fixture.RootPath, "..", "custom-scope-quarantine-root"));
+            window.SetQuarantineRootForPreview(customQuarantineRoot);
+            window.PreviewQuarantineForReviewShortlist();
+            window.SetQuarantineConfirmationText("QUARANTINE");
+
+            Assert(!window.CanExecuteQuarantine, "Custom non-fixture scope should keep WPF execution unavailable.");
+            Assert(
+                window.QuarantinePreviewTextValue.Contains("Execution implemented: no", StringComparison.OrdinalIgnoreCase),
+                "Custom-scope preview should state execution is unavailable.");
+            Assert(
+                window.QuarantineExecutionGateTextValue.Contains("not available for this Cleanup Scope", StringComparison.OrdinalIgnoreCase),
+                "Custom-scope gate should explain the scope-specific execution blocker.");
+            Assert(File.Exists(installer.FullPath), "Custom-scope execution blocker should leave the source file untouched.");
+            Assert(!Directory.Exists(customQuarantineRoot), "Custom-scope execution blocker should not create quarantine folders.");
         }
         finally
         {
@@ -738,6 +834,24 @@ internal sealed class SmokeFixture : IDisposable
         fixture.WriteFile(@"Documents\important.txt", "Synthetic protected document.", now);
         fixture.WriteFile(@".codex\config.json", "{ \"synthetic\": true }", now);
         fixture.WriteFile(@"Unknown\notes.txt", "Synthetic uncategorized note.", now);
+
+        return fixture;
+    }
+
+    public static SmokeFixture CreateCustomScope()
+    {
+        var root = Path.Combine(
+            Environment.CurrentDirectory,
+            "custom-scopes",
+            "app",
+            Guid.NewGuid().ToString("N"));
+
+        Directory.CreateDirectory(root);
+        var fixture = new SmokeFixture(root, Path.Combine(root, "Unknown", "notes.txt"));
+        var now = DateTimeOffset.UtcNow;
+
+        fixture.WriteFile(@"Downloads\old-installer.msi", new string('I', 1024 * 1024), now.AddDays(-120));
+        fixture.WriteFile(@"Unknown\notes.txt", "Synthetic custom-scope marker.", now);
 
         return fixture;
     }

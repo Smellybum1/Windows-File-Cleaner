@@ -32,7 +32,7 @@ public static class QuarantineExecutionGateBuilder
 
         if (!confirmationDraft.IsExecutionImplemented)
         {
-            blockers.Add("Quarantine execution is not implemented in this build.");
+            blockers.Add("Quarantine execution is not available for this Cleanup Scope in this build.");
         }
 
         return new QuarantineExecutionGate(
@@ -43,7 +43,9 @@ public static class QuarantineExecutionGateBuilder
             blockers,
             [
                 "No files were modified by this execution gate.",
-                "A future execution flow must pass this gate before moving files."
+                confirmationDraft.IsExecutionImplemented
+                    ? "Fixture-only execution must pass this gate before moving files."
+                    : "A future execution flow must pass this gate before moving files."
             ]);
     }
 }

@@ -1051,7 +1051,7 @@ internal sealed class StorageScanTests
         Assert(!confirmation.IsExecutionImplemented, "Confirmation draft must not imply execution exists.");
         Assert(confirmation.RequiredConfirmationText == QuarantineConfirmationDraft.DefaultRequiredConfirmationText, "Confirmation draft should expose the future confirmation phrase.");
         Assert(confirmation.ReviewNotes.Any(note => note.Contains("No files were modified", StringComparison.OrdinalIgnoreCase)), "Confirmation notes should preserve the read-only boundary.");
-        Assert(confirmation.ReviewNotes.Any(note => note.Contains("not implemented", StringComparison.OrdinalIgnoreCase)), "Confirmation notes should state execution is not implemented.");
+        Assert(confirmation.ReviewNotes.Any(note => note.Contains("not available", StringComparison.OrdinalIgnoreCase)), "Confirmation notes should state execution is not available by default.");
         Assert(!Directory.Exists(quarantineRoot), "Building a Quarantine Confirmation Draft should not create the quarantine root folder.");
     }
 
@@ -1113,6 +1113,12 @@ internal sealed class StorageScanTests
             manifestDraft,
             new DateTimeOffset(2026, 5, 29, 2, 3, 4, TimeSpan.Zero),
             "confirmation-draft-gate");
+        var implementedConfirmation = QuarantineConfirmationDraftBuilder.Build(
+            preview,
+            manifestDraft,
+            new DateTimeOffset(2026, 5, 29, 2, 3, 4, TimeSpan.Zero),
+            "confirmation-draft-gate-implemented",
+            isExecutionImplemented: true);
 
         var missingPreviewGate = QuarantineExecutionGateBuilder.Build(null, "QUARANTINE");
         Assert(!missingPreviewGate.CanExecute, "Execution gate should stay closed before a Quarantine Preview exists.");
@@ -1122,17 +1128,23 @@ internal sealed class StorageScanTests
         Assert(!blankGate.CanExecute, "Blank confirmation text should not open execution.");
         Assert(!blankGate.IsConfirmationTextMatched, "Blank confirmation text should not match.");
         Assert(blankGate.Blockers.Any(blocker => blocker.Contains("Type QUARANTINE", StringComparison.OrdinalIgnoreCase)), "Gate should require the exact confirmation phrase.");
-        Assert(blankGate.Blockers.Any(blocker => blocker.Contains("not implemented", StringComparison.OrdinalIgnoreCase)), "Gate should keep execution blocked while no executor exists.");
+        Assert(blankGate.Blockers.Any(blocker => blocker.Contains("not available", StringComparison.OrdinalIgnoreCase)), "Gate should keep execution blocked while execution is not available.");
 
         var matchedGate = QuarantineExecutionGateBuilder.Build(confirmation, " QUARANTINE ");
         Assert(matchedGate.IsConfirmationTextMatched, "Gate should trim and match the exact confirmation phrase.");
         Assert(!matchedGate.CanExecute, "Matched confirmation should still not execute while execution is unimplemented.");
         Assert(!matchedGate.Blockers.Any(blocker => blocker.Contains("Type QUARANTINE", StringComparison.OrdinalIgnoreCase)), "Matched confirmation should clear the phrase blocker.");
-        Assert(matchedGate.Blockers.Any(blocker => blocker.Contains("not implemented", StringComparison.OrdinalIgnoreCase)), "Matched confirmation should keep the implementation blocker.");
+        Assert(matchedGate.Blockers.Any(blocker => blocker.Contains("not available", StringComparison.OrdinalIgnoreCase)), "Matched confirmation should keep the implementation blocker.");
         Assert(matchedGate.ReviewNotes.Any(note => note.Contains("No files were modified", StringComparison.OrdinalIgnoreCase)), "Gate notes should preserve the read-only boundary.");
+
+        var implementedGate = QuarantineExecutionGateBuilder.Build(implementedConfirmation, "QUARANTINE");
+        Assert(implementedConfirmation.IsExecutionImplemented, "Fixture-only execution availability should be explicit on the confirmation draft.");
+        Assert(implementedGate.CanExecute, "Implemented execution with matching confirmation and no data blockers should open the gate.");
+        Assert(!implementedGate.Blockers.Any(), "Implemented execution gate should have no blockers after exact confirmation.");
 
         var blockedConfirmation = confirmation with
         {
+            IsExecutionImplemented = true,
             Blockers = ["1 blocked preview row must be removed before confirmation."]
         };
         var blockedGate = QuarantineExecutionGateBuilder.Build(blockedConfirmation, "QUARANTINE");

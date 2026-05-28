@@ -515,7 +515,7 @@
                                          Height="30"
                                          IsEnabled="False"
                                          VerticalContentAlignment="Center"
-                                         ToolTip="Read-only execution gate proof. No files are moved in this build."
+                                         ToolTip="Fixture-only execution gate. Real-profile execution stays unavailable in this build."
                                          TextChanged="QuarantineConfirmationBox_TextChanged" />
                                 <Button x:Name="ExecuteQuarantineButton"
                                         Content="Execute quarantine"

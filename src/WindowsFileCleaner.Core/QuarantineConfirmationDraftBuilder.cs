@@ -6,7 +6,8 @@ public static class QuarantineConfirmationDraftBuilder
         QuarantinePreview preview,
         RestoreManifestDraft restoreManifestDraft,
         DateTimeOffset draftedAtUtc,
-        string confirmationId)
+        string confirmationId,
+        bool isExecutionImplemented = false)
     {
         if (string.IsNullOrWhiteSpace(confirmationId))
         {
@@ -22,16 +23,13 @@ public static class QuarantineConfirmationDraftBuilder
             preview.QuarantineRootPath,
             restoreManifestDraft.DraftId,
             QuarantineConfirmationDraft.DefaultRequiredConfirmationText,
+            isExecutionImplemented,
             preview.IncludedCount,
             preview.IncludedBytes,
             preview.BlockedCount,
             preview.RedundantCount,
             blockers,
-            [
-                "No files were modified by this confirmation draft.",
-                "Quarantine execution is not implemented in this build.",
-                $"A future execution flow must require the exact confirmation text: {QuarantineConfirmationDraft.DefaultRequiredConfirmationText}."
-            ]);
+            BuildReviewNotes(isExecutionImplemented));
     }
 
     private static IReadOnlyList<string> BuildBlockers(
@@ -83,6 +81,20 @@ public static class QuarantineConfirmationDraftBuilder
         AddEntryBlockers(preview, restoreManifestDraft, blockers);
 
         return blockers;
+    }
+
+    private static IReadOnlyList<string> BuildReviewNotes(bool isExecutionImplemented)
+    {
+        var executionNote = isExecutionImplemented
+            ? "Fixture-only Quarantine execution is available after readiness blockers clear and the exact confirmation text is entered."
+            : "Quarantine execution is not available for this Cleanup Scope in this build.";
+
+        return
+        [
+            "No files were modified by this confirmation draft.",
+            executionNote,
+            $"Execution must require the exact confirmation text: {QuarantineConfirmationDraft.DefaultRequiredConfirmationText}."
+        ];
     }
 
     private static void AddEntryBlockers(

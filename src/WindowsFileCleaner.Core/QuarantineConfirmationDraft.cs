@@ -7,6 +7,7 @@ public sealed record QuarantineConfirmationDraft(
     string QuarantineRootPath,
     string RestoreManifestDraftId,
     string RequiredConfirmationText,
+    bool IsExecutionImplemented,
     int IncludedCount,
     long IncludedBytes,
     int BlockedCount,
@@ -18,5 +19,4 @@ public sealed record QuarantineConfirmationDraft(
 
     public string IncludedSizeDisplay => ByteSizeFormatter.Format(IncludedBytes);
     public bool HasDataBlockers => Blockers.Count > 0;
-    public bool IsExecutionImplemented => false;
 }

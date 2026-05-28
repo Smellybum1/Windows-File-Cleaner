@@ -1543,8 +1543,8 @@ It is a path-shape check for preview only. It does not prove that a folder exist
 #### Relationships
 
 - Supports Quarantine Root Selection and Quarantine Preview.
-- Preserves the preview-only boundary before actual Quarantine execution exists.
-- Complements, but does not replace, future execution-time validation.
+- Preserves fully qualified destination review before fixture-only Quarantine execution can run.
+- Complements, but does not replace, execution-time validation.
 
 #### Code implications
 
@@ -1823,7 +1823,7 @@ Last reviewed: 2026-05-29
 
 Quarantine is a reversible holding area for Cleanup Candidates that the user has approved for removal from the original location but may want to restore.
 
-The preferred quarantine location is on `D:`. The current preview default is `D:\WindowsFileCleanerQuarantine`, and Quarantine Root Selection can change the read-only preview destination root before any cleanup execution exists.
+The preferred quarantine location is on `D:`. The current preview default is `D:\WindowsFileCleanerQuarantine`, and Quarantine Root Selection can change the preview/execution destination root before fixture-only cleanup execution.
 
 #### Examples
 
@@ -1867,7 +1867,7 @@ A Restore Manifest is versioned JSON metadata that records enough information to
 
 The selected durable format is JSON with schema version `restore-manifest.v1`.
 
-The selected write order is write-ahead: after explicit confirmation opens a future execution flow, the app should write a planned Restore Manifest before the first file or folder move, then update that manifest before and after each move attempt.
+The selected write order is write-ahead: after explicit confirmation opens an execution flow, the app should write a planned Restore Manifest before the first file or folder move, then update that manifest before and after each move attempt.
 
 #### Examples
 
@@ -1906,7 +1906,7 @@ The selected write order is write-ahead: after explicit confirmation opens a fut
 - Depends on Quarantine Preview for draft shape.
 - Depends on Quarantine Action Draft for action-scoped paths.
 - Depends on Quarantine execution for actual manifest writing.
-- Is checked by Quarantine Confirmation Draft before any future execution flow.
+- Is checked by Quarantine Confirmation Draft before execution.
 - Required by Undo Quarantine.
 
 #### Code implications
@@ -1914,7 +1914,7 @@ The selected write order is write-ahead: after explicit confirmation opens a fut
 - Use `RestoreManifestDraft`, `RestoreManifestEntryDraft`, `RestoreManifestDraftBuilder`, and `RestoreManifestDraftJsonSerializer` for draft-only proof.
 - Use `RestoreManifest`, `RestoreManifestEntry`, `RestoreManifestBuilder`, and `RestoreManifestJsonSerializer` for the planned/executed action record shape.
 - Use `RestoreManifestActionStatus` and `RestoreManifestEntryStatus` for move, restore, partial-failure, and recovery state.
-- Use `RestoreManifestFileStore` only for writing the action-scoped Restore Manifest JSON file after future explicit execution starts.
+- Use `RestoreManifestFileStore` only for writing the action-scoped Restore Manifest JSON file after explicit execution starts.
 - Do not write Restore Manifest files in preview or draft code.
 - Do not write Restore Manifest files from `RestoreManifestBuilder`; it models the JSON action record only.
 - Use a versioned JSON schema for future executed manifests.
@@ -2012,9 +2012,9 @@ It writes `restore-manifest.json` under the Quarantine Action root by first writ
 
 #### Lifecycle
 
-- Not called by the current WPF app.
+- Called by WPF fixture-only Quarantine execution after the gate opens.
 - Used by fixture tests, Quarantine Executor, and Undo Quarantine Executor to prove manifest persistence against synthetic files.
-- Future WPF Quarantine execution should call it only after explicit confirmation starts the action.
+- Future real-profile WPF Quarantine execution should call it only after a separate decision.
 - Quarantine and Undo execution should treat manifest write failure as a blocker before moving or restoring files and as recovery-review evidence after a file has already moved.
 
 #### Relationships
@@ -2041,7 +2041,7 @@ Last reviewed: 2026-05-29
 
 Quarantine Executor is the narrow core component that moves Restore Manifest entries from their original paths to action-scoped quarantine paths.
 
-It is fixture-tested but not wired to the WPF app yet.
+It is fixture-tested and wired to the WPF app for fixture Cleanup Scopes only.
 
 #### Examples
 
@@ -2074,13 +2074,13 @@ It is fixture-tested but not wired to the WPF app yet.
 - Uses the action-scoped layout from Quarantine Action Draft.
 - Implements the fixture-first boundary accepted in ADR 0007.
 - Pairs with fixture-first Undo Quarantine Executor.
-- Precedes WPF execution wiring.
+- Precedes real-profile WPF execution wiring.
 
 #### Code implications
 
 - Use `QuarantineExecutor`, `QuarantineExecutionResult`, and `QuarantineExecutionEntryResult`.
 - Keep filesystem move APIs allowlisted only in this component.
-- Keep WPF `Execute quarantine` disabled until a separate UI wiring packet.
+- Keep WPF `Execute quarantine` disabled for real-profile and custom non-fixture Cleanup Scopes.
 - Do not overwrite existing destination paths.
 - Do not implement rollback or Undo Quarantine inside the executor.
 
@@ -2145,7 +2145,7 @@ Last reviewed: 2026-05-29
 
 A Quarantine Confirmation Draft is an in-memory readiness check that compares a Quarantine Preview with a Restore Manifest Draft before WPF Quarantine execution.
 
-It lists data blockers, records the exact preview counts and bytes to review, exposes the future confirmation phrase, and states that WPF execution is not wired in the current build.
+It lists data blockers, records the exact preview counts and bytes to review, exposes the confirmation phrase, and records whether WPF execution is available for the current Cleanup Scope.
 
 #### Examples
 
@@ -2164,22 +2164,22 @@ It lists data blockers, records the exact preview counts and bytes to review, ex
 #### Lifecycle
 
 - Generated in memory after a Quarantine Preview and Restore Manifest Draft exist.
-- Used to identify unresolved data blockers before WPF execution work.
+- Used to identify unresolved data blockers before WPF execution.
 - Discarded when the scan, Review Shortlist, Quarantine Preview, or Restore Manifest Draft changes.
-- Must remain read-only until an explicit Quarantine execution workflow exists.
+- Does not move files or write manifests itself.
 
 #### Relationships
 
 - Depends on Quarantine Preview.
 - Depends on Restore Manifest Draft.
-- Precedes any future explicit approval or Quarantine Cleanup Action.
+- Precedes explicit approval or Quarantine Cleanup Action.
 - Supports Undo Quarantine design by checking that preview and draft metadata agree before execution.
 
 #### Code implications
 
 - Use `QuarantineConfirmationDraft` and `QuarantineConfirmationDraftBuilder`.
 - Use `HasDataBlockers` only as readiness evidence, not as permission to execute.
-- Keep `IsExecutionImplemented` false until a separate WPF execution packet is designed and approved.
+- Keep `IsExecutionImplemented` true only for recognized fixture Cleanup Scopes in the current build.
 - Do not create folders, move files, delete files, write manifests, or persist cleanup jobs from confirmation draft code.
 
 ### Quarantine Execution Gate
@@ -2189,21 +2189,22 @@ Last reviewed: 2026-05-29
 
 #### Definition
 
-Quarantine Execution Gate is the read-only decision that combines Quarantine Confirmation Draft blockers, exact confirmation text, and implementation availability before WPF Quarantine execution can run.
+Quarantine Execution Gate is the decision that combines Quarantine Confirmation Draft blockers, exact confirmation text, and implementation availability before WPF Quarantine execution can run.
 
-In the current build the gate can show whether the confirmation text matches, but it must remain closed because WPF Quarantine execution is not wired.
+In the current build the gate can open only for recognized fixture Cleanup Scopes. It remains closed for real-profile and custom non-fixture Cleanup Scopes.
 
 #### Examples
 
 - Before Quarantine Preview exists, show that preview must be created first.
 - After a clean Quarantine Confirmation Draft exists, require the exact text `QUARANTINE`.
-- After `QUARANTINE` is typed, keep the gate closed while WPF execution is not wired.
+- After `QUARANTINE` is typed for a clean fixture preview, allow fixture-only WPF execution.
+- After `QUARANTINE` is typed for a real-profile or custom non-fixture scope, keep the gate closed.
 - Carry forward blocked preview row or manifest mismatch blockers from Quarantine Confirmation Draft.
 
 #### Non-examples
 
 - A Cleanup Action.
-- A file-moving command.
+- The file-moving command itself.
 - A Restore Manifest write.
 - Approval to bypass preview blockers.
 
@@ -2217,15 +2218,64 @@ In the current build the gate can show whether the confirmation text matches, bu
 #### Relationships
 
 - Depends on Quarantine Confirmation Draft.
-- Precedes any future Quarantine execution button behavior.
+- Precedes Quarantine execution button behavior.
 - Preserves explicit confirmation semantics separately from preview and manifest readiness.
 
 #### Code implications
 
 - Use `QuarantineExecutionGate` and `QuarantineExecutionGateBuilder`.
 - `CanExecute` must require no blockers, exact confirmation text, and implemented execution support.
-- Keep `CanExecute` false while WPF Quarantine execution is not wired.
-- Do not create folders, move files, delete files, write manifests, or persist cleanup jobs from gate code.
+- Keep `CanExecute` false for real-profile and custom non-fixture Cleanup Scopes.
+- Do not create folders, move files, delete files, write manifests, or persist cleanup jobs from gate builder code.
+
+### Fixture-only WPF Quarantine Execution
+
+Status: draft
+Last reviewed: 2026-05-29
+
+#### Definition
+
+Fixture-only WPF Quarantine Execution is the visible-app cleanup execution path that is available only when the scanned Cleanup Scope is a recognized synthetic fixture.
+
+It lets the WPF app call the core Quarantine Executor after Quarantine Preview readiness and exact `QUARANTINE` confirmation, while keeping real-profile cleanup execution unavailable.
+
+#### Examples
+
+- Running the WPF app against `...\test-fixtures\app\...`, shortlisting an eligible synthetic installer, previewing quarantine, typing `QUARANTINE`, then moving that synthetic file into the action-scoped quarantine items folder.
+- Writing `restore-manifest.json` under the selected action root for a fixture execution.
+- Showing that the current scan and review rows are stale after execution.
+
+#### Non-examples
+
+- Real-profile WPF Quarantine execution.
+- WPF Undo Quarantine.
+- Permanent deletion.
+- Cleanup history.
+- Quarantine folder cleanup.
+
+#### Lifecycle
+
+- Requires a completed fixture Storage Scan.
+- Requires Review Shortlist and Quarantine Preview.
+- Requires a Quarantine Confirmation Draft with no data blockers.
+- Requires the exact confirmation text `QUARANTINE`.
+- Calls `QuarantineExecutor.Execute` with the planned Restore Manifest.
+- Displays execution results and recovery-review need.
+- Clears stale Review Shortlist state and tells the user to rescan before further review.
+
+#### Relationships
+
+- Depends on Quarantine Execution Gate.
+- Depends on Quarantine Executor and Restore Manifest File Store.
+- Implements ADR 0009.
+- Precedes any real-profile WPF Quarantine execution.
+
+#### Code implications
+
+- Use `CleanupScopeSafetyNoteBuilder` to distinguish fixture scopes from real/custom scopes.
+- Use `QuarantineExecutor.Execute`; do not implement file movement in WPF code.
+- Keep real-profile and custom non-fixture execution blocked in WPF.
+- After execution, disable re-execution for the current preview and mark scan state stale.
 
 ### Quarantine Action Draft
 
