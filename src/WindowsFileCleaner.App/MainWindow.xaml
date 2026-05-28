@@ -206,6 +206,11 @@
                                 MinWidth="145"
                                 IsEnabled="False"
                                 Click="PreviewQuarantineButton_Click" />
+                        <Button x:Name="ExportQuarantinePreviewButton"
+                                Content="Export preview"
+                                MinWidth="120"
+                                IsEnabled="False"
+                                Click="ExportQuarantinePreviewButton_Click" />
                         <TextBlock Text="Category"
                                    VerticalAlignment="Center"
                                    Foreground="#526171"

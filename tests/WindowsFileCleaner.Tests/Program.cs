@@ -8,6 +8,7 @@ tests.ReviewBuilderSummarizesAndFiltersResults();
 tests.ReviewBuilderFiltersAccessIssues();
 tests.ReviewShortlistTracksSelectedRowsWithoutModifyingReview();
 tests.QuarantinePreviewBuildsReadOnlyPlanFromShortlist();
+tests.QuarantinePreviewCsvExporterWritesReviewReport();
 tests.ChildSummaryShowsLargestImmediateChildren();
 tests.PathInspectionPlanBuildsExplorerArguments();
 tests.CsvExporterWritesEscapedReviewRows();
@@ -267,6 +268,33 @@ internal sealed class StorageScanTests
         Assert(nonCandidatePreview.Disposition == QuarantinePreviewDisposition.Blocked, "Non-candidate row should be blocked.");
         Assert(nonCandidatePreview.Reasons.Any(reason => reason.Contains("Quarantine candidate", StringComparison.OrdinalIgnoreCase)), "Non-candidate row should explain recommendation blocking.");
         Assert(!Directory.Exists(quarantineRoot), "Preview should not create the quarantine root folder.");
+    }
+
+    public void QuarantinePreviewCsvExporterWritesReviewReport()
+    {
+        using var fixture = TestFixture.Create();
+
+        fixture.WriteFile(@"Downloads\OldInstallers\setup, old.msi", 1024 * 1024, DateTimeOffset.UtcNow.AddDays(-120));
+        fixture.WriteFile(@"Documents\important.txt", 1024, DateTimeOffset.UtcNow);
+
+        var scanner = new StorageScanner();
+        var result = scanner.Scan(new StorageScanOptions(fixture.RootPath));
+        var review = StorageScanReviewBuilder.Build(result);
+        var installer = SingleReviewEntry(review.Entries, @"Downloads\OldInstallers\setup, old.msi");
+        var protectedRow = SingleReviewEntry(review.Entries, @"Documents");
+        var quarantineRoot = Path.Combine(fixture.RootPath, "quarantine-root");
+        var preview = QuarantinePreviewBuilder.Build([installer, protectedRow], fixture.RootPath, quarantineRoot);
+
+        var csv = QuarantinePreviewCsvExporter.Export(preview);
+
+        Assert(csv.Contains("\"Cleanup scope\",\"Quarantine root\",\"Disposition\"", StringComparison.Ordinal), "Preview CSV should include header row.");
+        Assert(csv.Contains("\"Included\"", StringComparison.Ordinal), "Preview CSV should include included rows.");
+        Assert(csv.Contains("\"Blocked\"", StringComparison.Ordinal), "Preview CSV should include blocked rows.");
+        Assert(csv.Contains("\"setup, old.msi\"", StringComparison.Ordinal), "Preview CSV should quote names with commas.");
+        Assert(csv.Contains("\"No files were modified.\"", StringComparison.Ordinal), "Preview CSV should state that no files were modified.");
+        Assert(csv.Contains("High-risk rows require manual review and are blocked from this preview.", StringComparison.Ordinal), "Preview CSV should export blocked reasons.");
+        Assert(csv.Contains(Path.GetFullPath(Path.Combine(quarantineRoot, "preview", "Downloads", "OldInstallers", "setup, old.msi")), StringComparison.Ordinal), "Preview CSV should include destination paths for included rows.");
+        Assert(!Directory.Exists(quarantineRoot), "Exporting a preview should not create the quarantine root folder.");
     }
 
     public void ChildSummaryShowsLargestImmediateChildren()

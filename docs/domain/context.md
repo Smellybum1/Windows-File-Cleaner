@@ -561,6 +561,7 @@ It does not create folders, write manifests, move files, delete files, or approv
 - Generated from the current Review Shortlist on user request.
 - Uses the current Cleanup Scope and default Quarantine root.
 - Shows included, blocked, and redundant rows.
+- May be exported as a read-only CSV report.
 - Is discarded when scan results or the Review Shortlist change.
 
 #### Relationships
@@ -573,6 +574,7 @@ It does not create folders, write manifests, move files, delete files, or approv
 #### Code implications
 
 - Use `QuarantinePreview`, `QuarantinePreviewEntry`, and `QuarantinePreviewBuilder`.
+- Use `QuarantinePreviewCsvExporter` for CSV reports.
 - Keep preview generation read-only.
 - Do not create the quarantine folder or restore manifest during preview.
 - Compute previewed bytes from non-overlapping included rows only.
@@ -616,6 +618,7 @@ The initial export format is CSV for the currently active Storage Review Filter 
 - Uses Storage Review Filters.
 - Uses Bloat Category Filters.
 - May export a Review Shortlist, but that export remains a report rather than a Cleanup Action.
+- May export a Quarantine Preview, but that export remains a report rather than a Restore Manifest.
 - Supports manual review before Quarantine or any future cleanup action.
 
 #### Code implications

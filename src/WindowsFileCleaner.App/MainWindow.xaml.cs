@@ -170,11 +170,45 @@ public partial class MainWindow : Window
         var shortlistedRows = _shortlist.ApplyTo(_currentReview.Entries);
         _currentQuarantinePreview = QuarantinePreviewBuilder.Build(shortlistedRows, _currentCleanupScopePath);
         QuarantinePreviewText.Text = FormatQuarantinePreview(_currentQuarantinePreview);
+        ExportQuarantinePreviewButton.IsEnabled = ScanButton.IsEnabled;
         StatusText.Text =
             $"Quarantine Preview created: {_currentQuarantinePreview.IncludedCount:N0} included, " +
             $"{_currentQuarantinePreview.BlockedCount:N0} blocked, " +
             $"{_currentQuarantinePreview.RedundantCount:N0} redundant, " +
             $"{_currentQuarantinePreview.IncludedSizeDisplay} previewed. No files were modified.";
+    }
+
+    private void ExportQuarantinePreviewButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (_currentQuarantinePreview is null)
+        {
+            return;
+        }
+
+        var dialog = new SaveFileDialog
+        {
+            Title = "Export Quarantine Preview CSV",
+            Filter = "CSV files (*.csv)|*.csv|All files (*.*)|*.*",
+            FileName = $"storage-scan-{DateTime.Now:yyyyMMdd-HHmmss}-quarantine-preview.csv",
+            AddExtension = true,
+            DefaultExt = ".csv"
+        };
+
+        if (dialog.ShowDialog(this) != true)
+        {
+            return;
+        }
+
+        try
+        {
+            File.WriteAllText(dialog.FileName, QuarantinePreviewCsvExporter.Export(_currentQuarantinePreview));
+            StatusText.Text = $"Exported {_currentQuarantinePreview.Entries.Count:N0} preview rows to CSV. No scanned files were modified.";
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(this, ex.Message, "Export preview failed", MessageBoxButton.OK, MessageBoxImage.Error);
+            StatusText.Text = "Quarantine Preview export failed. No scanned files were modified.";
+        }
     }
 
     private void CategoryFilterBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -331,6 +365,7 @@ public partial class MainWindow : Window
         ExportShortlistCsvButton.IsEnabled = !isScanning && _currentReview is not null && _shortlist.Count > 0;
         ClearShortlistButton.IsEnabled = !isScanning && _shortlist.Count > 0;
         PreviewQuarantineButton.IsEnabled = !isScanning && _currentReview is not null && _shortlist.Count > 0;
+        ExportQuarantinePreviewButton.IsEnabled = !isScanning && _currentQuarantinePreview is not null;
         CategoryFilterBox.IsEnabled = !isScanning && _currentReview is not null && CategoryFilterBox.Items.Count > 1;
         UpdateShortlistControls();
     }
@@ -386,6 +421,7 @@ public partial class MainWindow : Window
             ExportShortlistCsvButton.IsEnabled = false;
             ClearShortlistButton.IsEnabled = false;
             PreviewQuarantineButton.IsEnabled = false;
+            ExportQuarantinePreviewButton.IsEnabled = false;
             return;
         }
 
@@ -400,6 +436,7 @@ public partial class MainWindow : Window
         ExportShortlistCsvButton.IsEnabled = _shortlist.Count > 0;
         ClearShortlistButton.IsEnabled = _shortlist.Count > 0;
         PreviewQuarantineButton.IsEnabled = _shortlist.Count > 0;
+        ExportQuarantinePreviewButton.IsEnabled = _currentQuarantinePreview is not null;
     }
 
     private StorageEntryRow[] ApplyCurrentFilter()
@@ -488,12 +525,14 @@ public partial class MainWindow : Window
         ExportShortlistCsvButton.IsEnabled = _currentReview is not null && hasShortlist && ScanButton.IsEnabled;
         ClearShortlistButton.IsEnabled = hasShortlist && ScanButton.IsEnabled;
         PreviewQuarantineButton.IsEnabled = _currentReview is not null && hasShortlist && ScanButton.IsEnabled;
+        ExportQuarantinePreviewButton.IsEnabled = _currentQuarantinePreview is not null && ScanButton.IsEnabled;
     }
 
     private void ClearQuarantinePreview()
     {
         _currentQuarantinePreview = null;
         QuarantinePreviewText.Text = "Preview appears after using Preview quarantine.";
+        ExportQuarantinePreviewButton.IsEnabled = false;
     }
 
     private static string FormatQuarantinePreview(QuarantinePreview preview)

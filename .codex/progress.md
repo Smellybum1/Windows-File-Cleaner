@@ -6,11 +6,11 @@ Use it to preserve what was completed, what was verified, what was rejected, and
 
 ## Current status
 
-Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. Review filters, selected-folder child breakdown, selected-path inspection actions, CSV export, Review Mix, Access issues filtering, Bloat Category Filter, No category filtering, Review Shortlist, and Quarantine Preview are implemented and verified. Quarantine Preview is awaiting user retest after push.
+Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. Review filters, selected-folder child breakdown, selected-path inspection actions, CSV export, Review Mix, Access issues filtering, Bloat Category Filter, No category filtering, Review Shortlist, Quarantine Preview, and Quarantine Preview CSV export are implemented and verified. Quarantine Preview export is awaiting user retest after push.
 
 ## Next recommended work
 
-1. Ask the user to rerun the WPF app and confirm Review Shortlist, Quarantine Preview, Review Mix, Access issues filter, category filter, No category filter, and filter wording are useful.
+1. Ask the user to rerun the WPF app and confirm Review Shortlist, Quarantine Preview, Export preview, Review Mix, Access issues filter, category filter, No category filter, and filter wording are useful.
 2. Use review feedback to refine Protected Locations and category grouping.
 3. Design Restore Manifest and explicit confirmation semantics before any actual Quarantine execution.
 4. Defer actual Quarantine and Undo Quarantine execution until scan review, preview semantics, and restore rules are trustworthy.
@@ -686,3 +686,47 @@ Rejected ideas buffer:
 - Do not add an Execute, Move, Delete, or Quarantine button in this packet.
 - Do not write a Restore Manifest during preview.
 - Do not count overlapping parent/child rows as separate Storage Savings.
+
+### 2026-05-28: Add Quarantine Preview CSV export
+
+Status: completed
+
+Evidence:
+
+- Quarantine Preview now produces more detail than the bounded UI preview pane can comfortably show.
+- The product still needs review/report workflows before any cleanup execution.
+
+Implementation:
+
+- Added `QuarantinePreviewCsvExporter`.
+- Added WPF Export preview control enabled only after a current Quarantine Preview exists.
+- Exported cleanup scope, quarantine root, disposition, source path, destination path, size, importance, recommendation, categories, reasons, evidence, access issue, and no-files-modified note.
+- Changing the Review Shortlist clears the current preview and disables preview export.
+- No folder creation, file move, deletion, manifest write, or cleanup execution was added.
+
+Verification:
+
+- `dotnet build WindowsFileCleaner.sln --no-restore` passed.
+- `dotnet run --project tests\WindowsFileCleaner.Tests\WindowsFileCleaner.Tests.csproj --no-build` passed.
+
+Docs updated:
+
+- `docs/domain/context.md`
+- `docs/domain/glossary.md`
+- `docs/features/2026-05-28-quarantine-preview-csv-export.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No new ADR. This is an incremental read-only report feature. Restore Manifest and actual Quarantine execution remain future design work.
+
+Open questions:
+
+- Should a later preview export support JSON for machine-readable restore-manifest drafting?
+- Should preview exports include a summary row or remain row-only CSV?
+
+Rejected ideas buffer:
+
+- Do not call the preview export a manifest.
+- Do not export an executable cleanup script.
+- Do not auto-save the preview without a user-selected report path.
