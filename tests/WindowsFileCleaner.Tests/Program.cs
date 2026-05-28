@@ -18,6 +18,7 @@ tests.ChildSummaryShowsLargestImmediateChildren();
 tests.PathInspectionPlanBuildsExplorerArguments();
 tests.CsvExporterWritesEscapedReviewRows();
 tests.ByteSizeFormatterUsesReadableUnits();
+tests.ProductionCodeDoesNotContainCleanupExecutionCalls();
 
 Console.WriteLine("All WindowsFileCleaner.Tests checks passed.");
 
@@ -653,6 +654,46 @@ internal sealed class StorageScanTests
         Assert(ByteSizeFormatter.Format(1024 * 1024 * 3) == "3 MB", "3 MiB should be 3 MB.");
     }
 
+    public void ProductionCodeDoesNotContainCleanupExecutionCalls()
+    {
+        var repositoryRoot = FindRepositoryRoot();
+        var sourceRoot = Path.Combine(repositoryRoot, "src");
+        var sourceFiles = Directory.EnumerateFiles(sourceRoot, "*.cs", SearchOption.AllDirectories).ToArray();
+        var blockedTokens = new[]
+        {
+            "Directory.CreateDirectory(",
+            "Directory.Delete(",
+            "Directory.Move(",
+            "File.Copy(",
+            "File.Delete(",
+            "File.Move(",
+            "File.Replace(",
+            "File.SetAttributes(",
+            "File.WriteAllBytes("
+        };
+
+        var blockedMatches = sourceFiles
+            .SelectMany(file => File.ReadLines(file)
+                .Select((line, index) => new SourceLine(file, index + 1, line))
+                .Where(sourceLine => blockedTokens.Any(token => sourceLine.Text.Contains(token, StringComparison.Ordinal))))
+            .ToArray();
+
+        Assert(blockedMatches.Length == 0, "Production code should not contain cleanup execution filesystem calls: " + FormatSourceLines(blockedMatches));
+
+        var reportWriteMatches = sourceFiles
+            .SelectMany(file => File.ReadLines(file)
+                .Select((line, index) => new SourceLine(file, index + 1, line))
+                .Where(sourceLine => sourceLine.Text.Contains("File.WriteAllText(", StringComparison.Ordinal)))
+            .ToArray();
+
+        Assert(reportWriteMatches.Length == 3, "Only the three user-selected CSV report writes should use File.WriteAllText.");
+        Assert(
+            reportWriteMatches.All(match =>
+                match.FilePath.EndsWith(@"src\WindowsFileCleaner.App\MainWindow.xaml.cs", StringComparison.OrdinalIgnoreCase)
+                && match.Text.Contains("dialog.FileName", StringComparison.Ordinal)),
+            "File.WriteAllText should only write user-selected report exports.");
+    }
+
     private static StorageEntry Single(IEnumerable<StorageEntry> entries, string name)
     {
         return entries.Single(entry => entry.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
@@ -692,6 +733,31 @@ internal sealed class StorageScanTests
             throw new InvalidOperationException(message);
         }
     }
+
+    private static string FindRepositoryRoot()
+    {
+        var directory = new DirectoryInfo(Environment.CurrentDirectory);
+        while (directory is not null)
+        {
+            if (File.Exists(Path.Combine(directory.FullName, "WindowsFileCleaner.sln")))
+            {
+                return directory.FullName;
+            }
+
+            directory = directory.Parent;
+        }
+
+        throw new DirectoryNotFoundException("Could not find repository root from test working directory.");
+    }
+
+    private static string FormatSourceLines(IReadOnlyList<SourceLine> sourceLines)
+    {
+        return sourceLines.Count == 0
+            ? "none"
+            : string.Join("; ", sourceLines.Select(line => $"{line.FilePath}:{line.LineNumber}: {line.Text.Trim()}"));
+    }
+
+    private sealed record SourceLine(string FilePath, int LineNumber, string Text);
 }
 
 internal sealed class TestFixture : IDisposable

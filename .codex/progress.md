@@ -6,7 +6,7 @@ Use it to preserve what was completed, what was verified, what was rejected, and
 
 ## Current status
 
-Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. Review filters, selected-folder child breakdown, selected-path inspection actions, CSV export, Review Mix, Storage Scan Safety Summary, Safety Summary review shortcuts, Access issues filtering, Bloat Category Filter, No category filtering, Review Shortlist, Quarantine Preview, Quarantine Preview CSV export, Restore Manifest Draft, Quarantine Confirmation Draft, Quarantine Readiness UI, and conservative app data classification are implemented and verified. Quarantine remains preview-only; no cleanup execution, manifest writing, or Undo Quarantine execution exists.
+Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. Review filters, selected-folder child breakdown, selected-path inspection actions, CSV export, Review Mix, Storage Scan Safety Summary, Safety Summary review shortcuts, Access issues filtering, Bloat Category Filter, No category filtering, Review Shortlist, Quarantine Preview, Quarantine Preview CSV export, Restore Manifest Draft, Quarantine Confirmation Draft, Quarantine Readiness UI, conservative app data classification, and read-only safety regression checks are implemented and verified. Quarantine remains preview-only; no cleanup execution, manifest writing, or Undo Quarantine execution exists.
 
 ## Next recommended work
 
@@ -1008,3 +1008,44 @@ Rejected ideas buffer:
 - Do not mark Windows app package data as likely safe by default.
 - Do not classify game folders as removable just because they look old.
 - Do not make `AppData\Local\Programs` a cleanup candidate.
+
+### 2026-05-28: Add read-only safety regression
+
+Status: completed
+
+Evidence:
+
+- The MVP boundary is read-only Storage Scan plus user-selected CSV reports.
+- Future cleanup execution has not been approved or designed.
+
+Implementation:
+
+- Added `ProductionCodeDoesNotContainCleanupExecutionCalls` to the fixture test harness.
+- The guard scans production C# files under `src/`.
+- The guard fails on obvious file/directory move, delete, replace, write-bytes, set-attributes, and production directory-creation APIs.
+- The guard allows exactly three `File.WriteAllText(dialog.FileName, ...)` calls for user-selected CSV report exports.
+- Tests still create/delete fixture directories only inside the test harness.
+
+Verification:
+
+- `dotnet build WindowsFileCleaner.sln --no-restore` passed.
+- `dotnet run --project tests\WindowsFileCleaner.Tests\WindowsFileCleaner.Tests.csproj --no-build` passed.
+
+Docs updated:
+
+- `docs/features/2026-05-28-read-only-safety-regression.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No new ADR. This is a verification guard for the existing read-only boundary.
+
+Open questions:
+
+- Should future approved Quarantine execution add a more precise allowlist for its own file-moving implementation?
+
+Rejected ideas buffer:
+
+- Do not block user-selected CSV report writes.
+- Do not scan docs or tests for banned APIs; fixtures are allowed to create/delete test files.
+- Do not treat this guard as a substitute for execution design if cleanup actions are added later.
