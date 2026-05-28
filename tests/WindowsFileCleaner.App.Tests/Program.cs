@@ -162,6 +162,8 @@ internal sealed class MainWindowSmokeTests
             Assert(window.AccessIssueCountTextValue == "0", "Synthetic fixture should scan without access issues.");
             Assert(window.ReviewMixTextValue.Contains("Quarantine candidates", StringComparison.OrdinalIgnoreCase), "Review Mix should summarize quarantine candidates.");
             Assert(window.SafetySummaryTextValue.Contains("No files were modified", StringComparison.OrdinalIgnoreCase), "Safety Summary should state the read-only boundary.");
+            Assert(window.SafetySummaryTextValue.Contains("Candidate examples:", StringComparison.OrdinalIgnoreCase), "Safety Summary should show bounded quarantine candidate examples.");
+            Assert(window.SafetySummaryTextValue.Contains(@"Downloads\old-installer.msi", StringComparison.OrdinalIgnoreCase), "Safety Summary candidate examples should include relative candidate paths.");
             Assert(window.FilterSummaryTextValue.Contains("All:", StringComparison.OrdinalIgnoreCase), "Filter summary should start on the All filter.");
             Assert(window.ReviewSizeNoteTextValue.Contains("parent and child rows can overlap", StringComparison.OrdinalIgnoreCase), "Review size note should explain recursive row overlap.");
             Assert(window.ReviewSizeNoteTextValue.Contains("not storage savings", StringComparison.OrdinalIgnoreCase), "Review size note should avoid treating row sizes as savings.");

@@ -924,6 +924,7 @@ It summarizes safety-relevant scan signals such as high-risk rows, Protected Loc
 - Show that the scan was read-only and no files were modified.
 - Show that access issues mean scan coverage is incomplete.
 - Show bounded access issue examples so the user can see where incomplete coverage starts.
+- Show bounded Quarantine candidate examples so the user can see the largest review candidates without treating them as cleanup approval.
 - Show that Protected Locations and high-risk rows require manual review.
 - Show that Quarantine candidates are only preview candidates, not approved cleanup.
 
@@ -953,6 +954,7 @@ It summarizes safety-relevant scan signals such as high-risk rows, Protected Loc
 - Use `StorageScanSafetySummary` and `StorageScanSafetySummaryBuilder`.
 - Use `StorageScanSafetyShortcut` and `StorageScanSafetyShortcutFilterBuilder` to map summary shortcuts to Storage Review Filters and Bloat Category Filters.
 - Keep access issue examples bounded and derived from scan rows.
+- Keep Quarantine candidate examples bounded, size-labeled, cleanup-scope-relative, and derived from scan rows.
 - Keep summary notes derived from scan results only.
 - Do not trigger permission changes, cleanup actions, quarantine actions, or rescans from the summary.
 

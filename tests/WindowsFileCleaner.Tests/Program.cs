@@ -562,6 +562,15 @@ internal sealed class StorageScanTests
             DeletionRecommendation: DeletionRecommendation.QuarantineCandidate,
             Evidence: "Installer.",
             Children: []);
+        var largerQuarantineCandidate = quarantineCandidate with
+        {
+            FullPath = @"C:\Users\moxhe\AppData\Local\NVIDIA\DXCache",
+            Name = "DXCache",
+            IsDirectory = true,
+            SizeBytes = 2048,
+            BloatCategories = [BloatCategory.AppCache, BloatCategory.GpuShaderCache],
+            Evidence = "GPU shader cache."
+        };
         var uncategorized = new StorageEntry(
             @"C:\Users\moxhe\Unknown\notes.txt",
             "notes.txt",
@@ -589,13 +598,13 @@ internal sealed class StorageScanTests
             ImportanceRating: ImportanceRating.Caution,
             DeletionRecommendation: DeletionRecommendation.Inspect,
             Evidence: "Root.",
-            Children: [protectedEntry, inaccessible, reparsePoint, quarantineCandidate, uncategorized]);
+            Children: [protectedEntry, inaccessible, reparsePoint, quarantineCandidate, largerQuarantineCandidate, uncategorized]);
         var result = new StorageScanResult(@"C:\Users\moxhe", now, now, root);
         var review = StorageScanReviewBuilder.Build(result);
 
         var summary = StorageScanSafetySummaryBuilder.Build(result, review);
 
-        Assert(summary.TotalEntries == 6, "Safety summary should count flattened scan rows.");
+        Assert(summary.TotalEntries == 7, "Safety summary should count flattened scan rows.");
         Assert(summary.HighRiskCount == 1, "Safety summary should count high-risk rows.");
         Assert(summary.ProtectedLocationCount == 1, "Safety summary should count protected locations.");
         Assert(summary.AccessIssueCount == 1, "Safety summary should count access issues.");
@@ -605,7 +614,15 @@ internal sealed class StorageScanTests
             && summary.AccessIssueExamples[0].Contains("Access denied", StringComparison.OrdinalIgnoreCase),
             "Safety summary access issue examples should include relative path and scanner error text.");
         Assert(summary.ReparsePointCount == 1, "Safety summary should count reparse points.");
-        Assert(summary.QuarantineCandidateCount == 1, "Safety summary should count quarantine candidates.");
+        Assert(summary.QuarantineCandidateCount == 2, "Safety summary should count quarantine candidates.");
+        Assert(summary.QuarantineCandidateExamples.Count == 2, "Safety summary should expose bounded quarantine candidate examples.");
+        Assert(
+            summary.QuarantineCandidateExamples[0].Contains(@"AppData\Local\NVIDIA\DXCache", StringComparison.OrdinalIgnoreCase)
+            && summary.QuarantineCandidateExamples[0].Contains("2 KB", StringComparison.OrdinalIgnoreCase),
+            "Safety summary candidate examples should show largest relative candidate path and size first.");
+        Assert(
+            summary.QuarantineCandidateExamples[1].Contains(@"Downloads\setup.msi", StringComparison.OrdinalIgnoreCase),
+            "Safety summary candidate examples should include additional relative candidate paths.");
         Assert(summary.UncategorizedCount == 1, "Safety summary should count uncategorized rows.");
         Assert(summary.StatusLabel == "Review needed", "Safety summary should require review when warning signals exist.");
         Assert(summary.Notes.Any(note => note.Contains("No files were modified", StringComparison.OrdinalIgnoreCase)), "Safety notes should preserve the read-only boundary.");

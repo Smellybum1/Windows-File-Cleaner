@@ -3,6 +3,7 @@ namespace WindowsFileCleaner.Core;
 public static class StorageScanSafetySummaryBuilder
 {
     private const int MaxAccessIssueExamples = 3;
+    private const int MaxQuarantineCandidateExamples = 3;
 
     public static StorageScanSafetySummary Build(StorageScanResult result, StorageScanReview review)
     {
@@ -23,6 +24,7 @@ public static class StorageScanSafetySummaryBuilder
             quarantineCandidateCount,
             uncategorizedCount,
             BuildAccessIssueExamples(result.CleanupScopePath, review.Entries),
+            BuildQuarantineCandidateExamples(result.CleanupScopePath, review.Entries),
             BuildNotes(
                 result.CleanupScopePath,
                 highRiskCount,
@@ -85,12 +87,28 @@ public static class StorageScanSafetySummaryBuilder
             .ToArray();
     }
 
+    private static IReadOnlyList<string> BuildQuarantineCandidateExamples(string cleanupScopePath, IReadOnlyList<StorageReviewEntry> entries)
+    {
+        return entries
+            .Where(row => row.Entry.DeletionRecommendation == DeletionRecommendation.QuarantineCandidate)
+            .OrderByDescending(row => row.Entry.SizeBytes)
+            .ThenBy(row => row.Entry.FullPath, StringComparer.OrdinalIgnoreCase)
+            .Take(MaxQuarantineCandidateExamples)
+            .Select(row => FormatQuarantineCandidateExample(cleanupScopePath, row.Entry))
+            .ToArray();
+    }
+
     private static string FormatAccessIssueExample(string cleanupScopePath, StorageEntry entry)
     {
         var path = FormatScopeRelativePath(cleanupScopePath, entry.FullPath);
         return string.IsNullOrWhiteSpace(entry.ErrorMessage)
             ? path
             : $"{path} ({entry.ErrorMessage})";
+    }
+
+    private static string FormatQuarantineCandidateExample(string cleanupScopePath, StorageEntry entry)
+    {
+        return $"{FormatScopeRelativePath(cleanupScopePath, entry.FullPath)} ({entry.SizeDisplay})";
     }
 
     private static string FormatScopeRelativePath(string cleanupScopePath, string fullPath)
