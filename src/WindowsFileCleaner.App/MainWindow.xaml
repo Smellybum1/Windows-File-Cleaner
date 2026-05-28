@@ -293,6 +293,24 @@
                                   IsEnabled="False"
                                   SelectionChanged="SizeThresholdFilterBox_SelectionChanged" />
                     </StackPanel>
+                    <StackPanel Orientation="Horizontal"
+                                Margin="6,0,0,0"
+                                VerticalAlignment="Center">
+                        <TextBlock Text="Category"
+                                   VerticalAlignment="Center"
+                                   Foreground="#526171"
+                                   Margin="0,0,8,0" />
+                        <ComboBox x:Name="CategoryFilterBox"
+                                  Width="290"
+                                  Height="30"
+                                  DisplayMemberPath="Label"
+                                  IsEnabled="False"
+                                  SelectionChanged="CategoryFilterBox_SelectionChanged" />
+                    </StackPanel>
+                </WrapPanel>
+
+                <WrapPanel x:Name="ReviewShortlistToolbar"
+                           Margin="0,6,0,0">
                     <Button x:Name="AddShownToShortlistButton"
                             Content="Shortlist shown"
                             MinWidth="125"
@@ -342,20 +360,6 @@
                             MinWidth="120"
                             IsEnabled="False"
                             Click="ExportQuarantinePreviewButton_Click" />
-                    <StackPanel Orientation="Horizontal"
-                                Margin="6,0,0,0"
-                                VerticalAlignment="Center">
-                        <TextBlock Text="Category"
-                                   VerticalAlignment="Center"
-                                   Foreground="#526171"
-                                   Margin="0,0,8,0" />
-                        <ComboBox x:Name="CategoryFilterBox"
-                                  Width="290"
-                                  Height="30"
-                                  DisplayMemberPath="Label"
-                                  IsEnabled="False"
-                                  SelectionChanged="CategoryFilterBox_SelectionChanged" />
-                    </StackPanel>
                 </WrapPanel>
             </StackPanel>
 

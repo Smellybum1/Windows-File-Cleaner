@@ -179,7 +179,9 @@ public partial class MainWindow : Window
     public string BrowseQuarantineRootButtonText => BrowseQuarantineRootButton.Content?.ToString() ?? "";
 
     public bool ReviewToolbarsUseWrappingLayout =>
-        ReviewFilterToolbar is WrapPanel && ReviewActionToolbar is WrapPanel;
+        ReviewFilterToolbar is WrapPanel
+        && ReviewActionToolbar is WrapPanel
+        && ReviewShortlistToolbar is WrapPanel;
 
     private async void ScanButton_Click(object sender, RoutedEventArgs e)
     {

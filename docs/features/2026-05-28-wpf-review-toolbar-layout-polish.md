@@ -146,6 +146,7 @@ What changed:
 - Kept Filter Summary on its own wrapping line between review filters and review actions.
 - Added a small WPF smoke assertion that the review controls use wrapping toolbars.
 - Kept all scan and review behavior read-only.
+- Later refinement on 2026-05-29 split shortlist and Quarantine Preview controls into a separate `ReviewShortlistToolbar` after Quarantine Root Selection and browse controls made the review toolbar wider.
 
 Files changed:
 
@@ -165,6 +166,7 @@ Tests run:
 - `dotnet run --project tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj --no-build`
 - `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\New-StorageScanSmokeFixture.ps1 -WhatIf`
 - `git -c safe.directory='D:/Codex/Windows File Cleaner' diff --check`
+- Later refinement verified with `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\Invoke-MvpPreflight.ps1`.
 
 Docs updated:
 
@@ -179,7 +181,7 @@ ADRs added or skipped:
 
 Follow-up work:
 
-- Manual visible fixture UI pass for actual layout quality, export dialogs, and wording.
+- Manual visible fixture UI pass for actual layout quality, especially the now-separated shortlist/quarantine controls, export dialogs, and wording.
 - Manual real-profile retest against `C:\Users\moxhe`.
 
 Open questions:

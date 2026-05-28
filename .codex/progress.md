@@ -6,7 +6,7 @@ Use it to preserve what was completed, what was verified, what was rejected, and
 
 ## Current status
 
-Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. Cleanup Scope Selection with folder browsing, Cleanup Scope Safety Note, Cleanup Scope Scan Gate, Cleanup Scope Root classification, review filters, Review View Reset, Storage Review Search with field prefixes, Storage Entry Type Filter, Storage Size Threshold Filter, Storage Review Display Limit wording, Storage Review Display Window navigation, Storage Review Size Note, selected-folder child breakdown, selected-path inspection actions, Selected Path Hierarchy Context including relative-path grid/detail context, Selected Row Contents Context including a grid Contents column, explicit Access Status, Access Status Search, Selected File Content Preview with Credential Data preview blocking, Selected Path Review Guidance including cache-specific guidance and scope-root guidance, CSV export including active search, searched filenames, hierarchy/contents/access/relative-path context and type- and size-filtered rows, Review Mix, Storage Scan Safety Summary with bounded access issue, Quarantine candidate, and No category examples, Safety Summary review shortcuts, Access issues filtering, Bloat Category Filter, Large old file classification, No category filtering, specific rebuildable cache candidate classification, conservative app/game/mod-manager/cloud-sync/credential data classification, Review Shortlist, Shortlist shown, Remove shown, Quarantine Preview with typed/browsable Quarantine Root Selection, protected-descendant blocking, and relative blocker examples, Quarantine Preview CSV export, Restore Manifest Draft, Quarantine Confirmation Draft, Quarantine Readiness UI, read-only safety regression checks, the MVP runbook, the MVP readiness audit, fixture-driven WPF launch support, WPF shell smoke testing, WPF fixture scan smoke testing, WPF display-limit smoke testing, WPF review interaction smoke testing, WPF review toolbar layout polish, the MVP preflight script, CI MVP preflight workflow, and the MVP fixture review launcher are implemented and verified. Quarantine remains preview-only; no cleanup execution, manifest writing, or Undo Quarantine execution exists.
+Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. Cleanup Scope Selection with folder browsing, Cleanup Scope Safety Note, Cleanup Scope Scan Gate, Cleanup Scope Root classification, review filters, Review View Reset, Storage Review Search with field prefixes, Storage Entry Type Filter, Storage Size Threshold Filter, Storage Review Display Limit wording, Storage Review Display Window navigation, Storage Review Size Note, selected-folder child breakdown, selected-path inspection actions, Selected Path Hierarchy Context including relative-path grid/detail context, Selected Row Contents Context including a grid Contents column, explicit Access Status, Access Status Search, Selected File Content Preview with Credential Data preview blocking, Selected Path Review Guidance including cache-specific guidance and scope-root guidance, CSV export including active search, searched filenames, hierarchy/contents/access/relative-path context and type- and size-filtered rows, Review Mix, Storage Scan Safety Summary with bounded access issue, Quarantine candidate, and No category examples, Safety Summary review shortcuts, Access issues filtering, Bloat Category Filter, Large old file classification, No category filtering, specific rebuildable cache candidate classification, conservative app/game/mod-manager/cloud-sync/credential data classification, Review Shortlist, Shortlist shown, Remove shown, Quarantine Preview with typed/browsable Quarantine Root Selection, protected-descendant blocking, and relative blocker examples, Quarantine Preview CSV export, Restore Manifest Draft, Quarantine Confirmation Draft, Quarantine Readiness UI, read-only safety regression checks, the MVP runbook, the MVP readiness audit, fixture-driven WPF launch support, WPF shell smoke testing, WPF fixture scan smoke testing, WPF display-limit smoke testing, WPF review interaction smoke testing, WPF review toolbar layout polish including a separate shortlist/quarantine toolbar, the MVP preflight script, CI MVP preflight workflow, and the MVP fixture review launcher are implemented and verified. Quarantine remains preview-only; no cleanup execution, manifest writing, or Undo Quarantine execution exists.
 
 ## Next recommended work
 
@@ -3420,3 +3420,42 @@ Rejected ideas buffer:
 
 - Do not treat browsing to a root as approval to execute Quarantine.
 - Do not create the selected folder during browse or preview.
+
+### 2026-05-29: Split Review Shortlist and Quarantine Toolbar
+
+Status: completed
+
+Evidence:
+
+- Quarantine Root Selection and browse controls made the review action toolbar wider.
+- The next recommended work is a visible fixture pass, so keeping review controls easy to scan is useful before more manual testing.
+
+Implementation:
+
+- Kept search, row-window, type, size, and category controls in the existing wrapping Review Action toolbar.
+- Moved Review Shortlist and Quarantine Preview controls into a separate wrapping `ReviewShortlistToolbar`.
+- Extended the WPF smoke layout assertion to require the new wrapping toolbar.
+- Kept the change UI-only and read-only; no scanner behavior, cleanup execution, Quarantine execution, Undo Quarantine, manifest writing, folder creation, or real-profile automation was added.
+
+Verification:
+
+- `dotnet build WindowsFileCleaner.sln --no-restore` passed with 0 warnings and 0 errors.
+- `dotnet run --project tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj --no-build` passed.
+- `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\Invoke-MvpPreflight.ps1` passed.
+
+Docs updated:
+
+- `docs/features/2026-05-28-wpf-review-toolbar-layout-polish.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No new ADR. This is reversible UI layout polish and does not change architecture, persistence, security, deployment, or cleanup behavior.
+
+Open questions:
+
+- In the next manual fixture pass, does the separated shortlist/quarantine toolbar make the Quarantine root controls easier to read?
+
+Rejected ideas buffer:
+
+- Do not treat structural layout assertions as proof of visible polish; keep the manual fixture pass as the visual check.
