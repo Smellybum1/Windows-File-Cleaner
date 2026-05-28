@@ -83,7 +83,7 @@ Rejected ideas buffer:
 
 | Requirement | Evidence inspected | Status | Notes |
 |---|---|---|---|
-| Windows-only desktop app | `src/WindowsFileCleaner.App/WindowsFileCleaner.App.csproj`, `src/WindowsFileCleaner.App/MainWindow.xaml`, `tests/WindowsFileCleaner.App.Tests`, ADR 0002 | Verified in current repo | WPF is the selected UI stack. Windows-only smoke tests construct the shell on an STA thread, run a fixture scan through the shell, and exercise read-only review interactions. |
+| Windows-only desktop app | `src/WindowsFileCleaner.App/WindowsFileCleaner.App.csproj`, `src/WindowsFileCleaner.App/MainWindow.xaml`, `tests/WindowsFileCleaner.App.Tests`, ADR 0002 | Verified in current repo | WPF is the selected UI stack. Windows-only smoke tests construct the shell on an STA thread, check wrapping review toolbar structure, run a fixture scan through the shell, and exercise read-only review interactions. |
 | .NET 8 target | `src/WindowsFileCleaner.App/WindowsFileCleaner.App.csproj`, `src/WindowsFileCleaner.Core/WindowsFileCleaner.Core.csproj`, `tests/WindowsFileCleaner.Tests/WindowsFileCleaner.Tests.csproj` | Verified in current repo | App targets `net8.0-windows`; core and tests target `net8.0`. |
 | Read-only Storage Scan | `src/WindowsFileCleaner.Core/StorageScanner.cs`, `src/WindowsFileCleaner.App/MainWindow.xaml.cs`, read-only safety regression test | Verified in current repo | Status text and safety summaries repeatedly state no files were modified. |
 | Default Cleanup Scope `C:\Users\moxhe` | `src/WindowsFileCleaner.Core/StorageScanOptions.cs`, `src/WindowsFileCleaner.App/MainWindow.xaml`, README | Verified in current repo | The UI defaults to the agreed Cleanup Scope. |
@@ -96,7 +96,7 @@ Rejected ideas buffer:
 | Quarantine on `D:` with undo path explored safely | Quarantine Preview, Restore Manifest Draft, Quarantine Confirmation Draft, ADR 0003 | Preview-only verified | The app proves destination/readiness shape without writing manifests or moving files. |
 | Docs kept current | README, domain docs, ADRs, feature briefs, `.codex/progress.md` | Verified in current repo | Docs use the Grill with Docs control layer requested for the project. |
 | Commits and remote push | Git history and remote `origin/main` | Verified at packet start | Branch was clean and tracking `origin/main` before this audit packet. |
-| Latest WPF UI retest | User screenshot, WPF shell, fixture scan, and review interaction smoke tests, README manual checklist | Partially automated, pending manual verification | Shell startup, launch-scope wiring, fixture scan state, filters, safety shortcuts, shortlist, and Quarantine Preview state are automated. The first scan was manually verified, but layout, wording, export dialogs, and real-profile behavior still need a fresh visible app run. Use the fixture smoke path first, then retest `C:\Users\moxhe`. |
+| Latest WPF UI retest | User screenshot, WPF shell, fixture scan, review interaction, and toolbar layout smoke tests, README manual checklist | Partially automated, pending manual verification | Shell startup, launch-scope wiring, wrapping review toolbar structure, fixture scan state, filters, safety shortcuts, shortlist, and Quarantine Preview state are automated. The first scan was manually verified, but visible layout quality, wording, export dialogs, and real-profile behavior still need a fresh visible app run. Use the fixture smoke path first, then retest `C:\Users\moxhe`. |
 | Actual Quarantine execution | README Not Implemented Yet, domain rules, ADR 0003 | Out of MVP | Requires explicit future design, confirmation semantics, restore rules, tests, and ADR review. |
 | Undo Quarantine execution | README Not Implemented Yet, Restore Manifest docs | Out of MVP | Requires executed manifests and file-moving workflow first. |
 
@@ -117,7 +117,7 @@ Results:
 - `dotnet restore WindowsFileCleaner.sln --configfile NuGet.Config` passed with escalation because sandboxed restore could not read the user's NuGet config.
 - `dotnet build WindowsFileCleaner.sln --no-restore` passed with 0 warnings and 0 errors.
 - `dotnet run --project tests\WindowsFileCleaner.Tests\WindowsFileCleaner.Tests.csproj --no-build` passed with `All WindowsFileCleaner.Tests checks passed.`
-- `dotnet run --project tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj --no-build` passed with `All WindowsFileCleaner.App.Tests checks passed.` The app smoke tests now cover WPF shell construction, fixture scan state, review filters, safety shortcuts, Review Shortlist, and Quarantine Preview state.
+- `dotnet run --project tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj --no-build` passed with `All WindowsFileCleaner.App.Tests checks passed.` The app smoke tests now cover WPF shell construction, wrapping review toolbar structure, fixture scan state, review filters, safety shortcuts, Review Shortlist, and Quarantine Preview state.
 - `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\New-StorageScanSmokeFixture.ps1 -WhatIf` passed and listed the synthetic fixture writes without creating files.
 - `git -c safe.directory='D:/Codex/Windows File Cleaner' diff --check` passed. Git reported line-ending normalization warnings for existing tracked Markdown files, but no whitespace errors.
 

@@ -6,7 +6,7 @@ Use it to preserve what was completed, what was verified, what was rejected, and
 
 ## Current status
 
-Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. Review filters, selected-folder child breakdown, selected-path inspection actions, CSV export, Review Mix, Storage Scan Safety Summary, Safety Summary review shortcuts, Access issues filtering, Bloat Category Filter, No category filtering, Review Shortlist, Quarantine Preview, Quarantine Preview CSV export, Restore Manifest Draft, Quarantine Confirmation Draft, Quarantine Readiness UI, conservative app data classification, read-only safety regression checks, the MVP runbook, the MVP readiness audit, fixture-driven WPF launch support, WPF shell smoke testing, WPF fixture scan smoke testing, and WPF review interaction smoke testing are implemented and verified. Quarantine remains preview-only; no cleanup execution, manifest writing, or Undo Quarantine execution exists.
+Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. Review filters, selected-folder child breakdown, selected-path inspection actions, CSV export, Review Mix, Storage Scan Safety Summary, Safety Summary review shortcuts, Access issues filtering, Bloat Category Filter, No category filtering, Review Shortlist, Quarantine Preview, Quarantine Preview CSV export, Restore Manifest Draft, Quarantine Confirmation Draft, Quarantine Readiness UI, conservative app data classification, read-only safety regression checks, the MVP runbook, the MVP readiness audit, fixture-driven WPF launch support, WPF shell smoke testing, WPF fixture scan smoke testing, WPF review interaction smoke testing, and WPF review toolbar layout polish are implemented and verified. Quarantine remains preview-only; no cleanup execution, manifest writing, or Undo Quarantine execution exists.
 
 ## Next recommended work
 
@@ -1321,3 +1321,50 @@ Rejected ideas buffer:
 - Do not automate file export dialogs in this packet.
 - Do not treat WPF review interaction state as proof of visible layout quality.
 - Do not automate real-profile scans in the test harness.
+
+### 2026-05-28: Polish WPF review toolbar layout
+
+Status: completed
+
+Evidence:
+
+- README and MVP audit still identify the visible fixture UI pass as the next manual verification step.
+- The review toolbar previously used fixed grid columns and a horizontal action stack that could crowd as labels and counts grow.
+- WPF app smoke tests can verify the intended wrapping toolbar structure without launching a visible desktop window.
+
+Implementation:
+
+- Replaced the fixed review toolbar grid with two named `WrapPanel` toolbars.
+- Kept Filter Summary as its own wrapping line between filters and action controls.
+- Added a small read-only WPF layout property for smoke-test assertions.
+- Added `WindowsFileCleaner.App.Tests` coverage that verifies the review controls use wrapping toolbars.
+- No scanner, classifier, cleanup, quarantine execution, or manifest-writing behavior was changed.
+
+Verification:
+
+- `dotnet restore WindowsFileCleaner.sln --configfile NuGet.Config` passed with escalation because sandboxed restore could not read the user's NuGet config.
+- `dotnet build WindowsFileCleaner.sln --no-restore` passed.
+- `dotnet run --project tests\WindowsFileCleaner.Tests\WindowsFileCleaner.Tests.csproj --no-build` passed.
+- `dotnet run --project tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj --no-build` passed.
+- `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\New-StorageScanSmokeFixture.ps1 -WhatIf` passed.
+- `git -c safe.directory='D:/Codex/Windows File Cleaner' diff --check` passed with line-ending normalization warnings only.
+
+Docs updated:
+
+- `README.md`
+- `docs/features/2026-05-28-mvp-readiness-audit.md`
+- `docs/features/2026-05-28-wpf-review-toolbar-layout-polish.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No new ADR. This is reversible UI layout polish and does not change architecture, persistence, security, deployment, or cleanup behavior.
+
+Open questions:
+
+- Should the entire app later get a broader visual design pass after the real-profile retest?
+
+Rejected ideas buffer:
+
+- Do not introduce a new UI framework or dependency for this polish.
+- Do not treat wrapping layout structure as proof of visual quality.

@@ -162,94 +162,65 @@
                 <ColumnDefinition Width="1*" />
             </Grid.ColumnDefinitions>
 
-            <Grid Grid.ColumnSpan="3" Margin="0,0,0,10">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
+            <StackPanel Grid.ColumnSpan="3" Margin="0,0,0,10">
+                <WrapPanel x:Name="ReviewFilterToolbar">
+                    <Button x:Name="AllFilterButton"
+                            Content="All"
+                            Click="AllFilterButton_Click" />
+                    <Button x:Name="LikelySafeFilterButton"
+                            Content="Likely safe"
+                            Click="LikelySafeFilterButton_Click" />
+                    <Button x:Name="CautionFilterButton"
+                            Content="Caution"
+                            Click="CautionFilterButton_Click" />
+                    <Button x:Name="HighRiskFilterButton"
+                            Content="High risk"
+                            Click="HighRiskFilterButton_Click" />
+                    <Button x:Name="QuarantineCandidateFilterButton"
+                            Content="Quarantine candidates"
+                            MinWidth="150"
+                            Click="QuarantineCandidateFilterButton_Click" />
+                    <Button x:Name="AccessIssuesFilterButton"
+                            Content="Access issues"
+                            MinWidth="125"
+                            Click="AccessIssuesFilterButton_Click" />
+                    <Button x:Name="ExportCsvButton"
+                            Content="Export CSV"
+                            MinWidth="110"
+                            IsEnabled="False"
+                            Click="ExportCsvButton_Click" />
+                </WrapPanel>
 
-                <Button x:Name="AllFilterButton"
-                        Grid.Column="0"
-                        Content="All"
-                        Click="AllFilterButton_Click" />
-                <Button x:Name="LikelySafeFilterButton"
-                        Grid.Column="1"
-                        Content="Likely safe"
-                        Click="LikelySafeFilterButton_Click" />
-                <Button x:Name="CautionFilterButton"
-                        Grid.Column="2"
-                        Content="Caution"
-                        Click="CautionFilterButton_Click" />
-                <Button x:Name="HighRiskFilterButton"
-                        Grid.Column="3"
-                        Content="High risk"
-                        Click="HighRiskFilterButton_Click" />
-                <Button x:Name="QuarantineCandidateFilterButton"
-                        Grid.Column="4"
-                        Content="Quarantine candidates"
-                        MinWidth="150"
-                        Click="QuarantineCandidateFilterButton_Click" />
-                <Button x:Name="AccessIssuesFilterButton"
-                        Grid.Column="5"
-                        Content="Access issues"
-                        MinWidth="125"
-                        Click="AccessIssuesFilterButton_Click" />
-                <Button x:Name="ExportCsvButton"
-                        Grid.Column="6"
-                        Content="Export CSV"
-                        MinWidth="110"
-                        IsEnabled="False"
-                        Click="ExportCsvButton_Click" />
-                <Grid Grid.Row="1"
-                      Grid.Column="0"
-                      Grid.ColumnSpan="10"
-                      Margin="6,6,0,0">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-                    <TextBlock x:Name="FilterSummaryText"
-                               Grid.Column="0"
-                               VerticalAlignment="Center"
-                               Foreground="#526171"
-                               Margin="0,2,16,0"
-                               Text="No scan loaded"
-                               TextWrapping="Wrap" />
-                    <StackPanel Grid.Column="1"
-                                Orientation="Horizontal"
-                                HorizontalAlignment="Right">
-                        <Button x:Name="ExportShortlistCsvButton"
-                                Content="Export shortlist"
-                                MinWidth="125"
-                                IsEnabled="False"
-                                Click="ExportShortlistCsvButton_Click" />
-                        <Button x:Name="ClearShortlistButton"
-                                Content="Clear shortlist"
-                                MinWidth="120"
-                                IsEnabled="False"
-                                Click="ClearShortlistButton_Click" />
-                        <Button x:Name="PreviewQuarantineButton"
-                                Content="Preview quarantine"
-                                MinWidth="145"
-                                IsEnabled="False"
-                                Click="PreviewQuarantineButton_Click" />
-                        <Button x:Name="ExportQuarantinePreviewButton"
-                                Content="Export preview"
-                                MinWidth="120"
-                                IsEnabled="False"
-                                Click="ExportQuarantinePreviewButton_Click" />
+                <TextBlock x:Name="FilterSummaryText"
+                           Foreground="#526171"
+                           Margin="6,8,0,6"
+                           Text="No scan loaded"
+                           TextWrapping="Wrap" />
+
+                <WrapPanel x:Name="ReviewActionToolbar">
+                    <Button x:Name="ExportShortlistCsvButton"
+                            Content="Export shortlist"
+                            MinWidth="125"
+                            IsEnabled="False"
+                            Click="ExportShortlistCsvButton_Click" />
+                    <Button x:Name="ClearShortlistButton"
+                            Content="Clear shortlist"
+                            MinWidth="120"
+                            IsEnabled="False"
+                            Click="ClearShortlistButton_Click" />
+                    <Button x:Name="PreviewQuarantineButton"
+                            Content="Preview quarantine"
+                            MinWidth="145"
+                            IsEnabled="False"
+                            Click="PreviewQuarantineButton_Click" />
+                    <Button x:Name="ExportQuarantinePreviewButton"
+                            Content="Export preview"
+                            MinWidth="120"
+                            IsEnabled="False"
+                            Click="ExportQuarantinePreviewButton_Click" />
+                    <StackPanel Orientation="Horizontal"
+                                Margin="6,0,0,0"
+                                VerticalAlignment="Center">
                         <TextBlock Text="Category"
                                    VerticalAlignment="Center"
                                    Foreground="#526171"
@@ -261,8 +232,8 @@
                                   IsEnabled="False"
                                   SelectionChanged="CategoryFilterBox_SelectionChanged" />
                     </StackPanel>
-                </Grid>
-            </Grid>
+                </WrapPanel>
+            </StackPanel>
 
             <DataGrid x:Name="ResultsGrid"
                       Grid.Row="1"

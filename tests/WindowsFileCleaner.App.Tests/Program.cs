@@ -22,6 +22,7 @@ internal static class Program
                 var tests = new MainWindowSmokeTests();
                 tests.MainWindowDefaultsToCurrentUserCleanupScope();
                 tests.MainWindowUsesLaunchCleanupScopeWithoutStartingScan();
+                tests.MainWindowUsesWrappingReviewToolbarLayout();
                 tests.MainWindowRunsFixtureStorageScanThroughWpfShell();
                 tests.MainWindowRunsFixtureReviewInteractionsThroughWpfShell();
             }
@@ -80,6 +81,21 @@ internal sealed class MainWindowSmokeTests
             Assert(window.CurrentStatusText == "Ready", "Launch Cleanup Scope should not trigger a scan.");
             Assert(window.CanStartStorageScan, "Launch Cleanup Scope should still require a user-triggered scan.");
             Assert(!window.CanExportScanCsv, "Launch Cleanup Scope should not create exportable scan data.");
+        }
+        finally
+        {
+            window.Close();
+        }
+    }
+
+    public void MainWindowUsesWrappingReviewToolbarLayout()
+    {
+        var window = new MainWindow();
+        try
+        {
+            Assert(
+                window.ReviewToolbarsUseWrappingLayout,
+                "Review controls should use wrapping toolbars so manual fixture review is not locked to one wide row.");
         }
         finally
         {

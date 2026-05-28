@@ -80,6 +80,9 @@ public partial class MainWindow : Window
 
     public bool CanExportQuarantinePreview => ExportQuarantinePreviewButton.IsEnabled;
 
+    public bool ReviewToolbarsUseWrappingLayout =>
+        ReviewFilterToolbar is WrapPanel && ReviewActionToolbar is WrapPanel;
+
     private async void ScanButton_Click(object sender, RoutedEventArgs e)
     {
         var scopePath = ScopePathBox.Text.Trim();
