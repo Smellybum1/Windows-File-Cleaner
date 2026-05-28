@@ -487,6 +487,11 @@ internal sealed class StorageScanTests
 
         shortlist.Clear();
         Assert(shortlist.Count == 0, "Clear should remove every shortlisted path.");
+
+        var addedMany = shortlist.AddMany([installer.Entry, installer.Entry, notes.Entry]);
+        Assert(addedMany == 2, "Bulk add should count only newly shortlisted paths.");
+        Assert(shortlist.Count == 2, "Bulk add should keep shortlist paths unique.");
+        Assert(shortlist.Contains(installer.Entry) && shortlist.Contains(notes.Entry), "Bulk add should shortlist each unique path.");
     }
 
     public void QuarantinePreviewBuildsReadOnlyPlanFromShortlist()

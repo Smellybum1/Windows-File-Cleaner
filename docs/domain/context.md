@@ -717,6 +717,7 @@ It is not a cleanup approval and does not modify files.
 #### Examples
 
 - Add a large cache folder to the Review Shortlist while inspecting Caution rows.
+- Shortlist the currently shown Quarantine candidate rows after narrowing with search or filters.
 - Add multiple likely cleanup opportunities, then export only those rows to CSV.
 - Clear the Review Shortlist before starting a new review pass.
 
@@ -730,7 +731,7 @@ It is not a cleanup approval and does not modify files.
 #### Lifecycle
 
 - Starts empty after each new Storage Scan.
-- Changes only when the user adds, removes, or clears selected rows.
+- Changes only when the user adds selected rows, shortlists shown rows, removes selected rows, or clears the shortlist.
 - Can be exported as a read-only CSV report.
 - Is discarded when a new Storage Scan completes.
 
@@ -743,6 +744,7 @@ It is not a cleanup approval and does not modify files.
 #### Code implications
 
 - Use `StorageReviewShortlist` for the in-memory selection model.
+- Bulk additions should use only currently displayed rows, not hidden matched rows beyond the Storage Review Display Limit.
 - Keep shortlisted paths separate from Cleanup Actions and Quarantine manifests.
 - Do not persist or execute the Review Shortlist as an action without a future explicit approval workflow.
 

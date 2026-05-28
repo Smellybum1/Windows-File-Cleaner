@@ -102,7 +102,7 @@ After the app opens:
 8. Use Storage Review Search for specific names such as `pip`, `NVIDIA`, `Codex`, app names, or game folders.
 9. Select large folders and inspect Evidence, Review guidance, and Largest immediate children.
 10. Try category filters such as App cache, Python package cache, GPU shader cache, Windows app data, Installed application, Game data, Protected location, and No category.
-11. Add a likely-safe cleanup candidate to the Review Shortlist.
+11. Add a likely-safe cleanup candidate to the Review Shortlist, or use `Shortlist shown` only after narrowing the grid to rows you intentionally want to review.
 12. Click `Preview quarantine` and confirm the preview, Restore Manifest Draft, and Quarantine Confirmation Draft all say no files were modified and execution is not implemented.
 13. Export CSV reports only when you intentionally choose an output file.
 
@@ -118,7 +118,7 @@ The intended review flow is:
 6. Check whether the grid is showing all matched rows or the first 2,000 matched rows.
 7. Use Storage Review Search and category filters to understand large buckets and specific app/tool paths.
 8. Use Selected Path Review Guidance, Child Breakdown, and Open in Explorer for manual inspection.
-9. Add interesting rows to Review Shortlist.
+9. Add interesting rows to Review Shortlist; use `Shortlist shown` only for the currently displayed review window.
 10. Generate Quarantine Preview for read-only readiness review.
 11. Stop before cleanup execution.
 

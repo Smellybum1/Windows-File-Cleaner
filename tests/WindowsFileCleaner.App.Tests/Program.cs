@@ -258,10 +258,15 @@ internal sealed class MainWindowSmokeTests
                 window.DetailGuidanceTextValue.Contains("not deletion approval", StringComparison.OrdinalIgnoreCase),
                 "Selected-row review guidance should not imply deletion approval.");
             Assert(window.CanAddSelectedRowToReviewShortlist, "Selected fixture installer should be addable to Review Shortlist.");
+            Assert(window.CanAddShownRowsToReviewShortlist, "Displayed quarantine candidates should be bulk-addable to Review Shortlist.");
             Assert(!window.CanPreviewQuarantine, "Quarantine Preview should be disabled before a shortlist exists.");
 
-            window.AddSelectedPathToReviewShortlist();
-            Assert(window.ReviewShortlistCount == 1, "Adding selected row should update Review Shortlist count.");
+            window.AddShownRowsToReviewShortlist();
+            Assert(window.ReviewShortlistCount == 1, "Bulk shortlisting shown rows should update Review Shortlist count.");
+            Assert(
+                window.CurrentStatusText.Contains("not cleanup approval", StringComparison.OrdinalIgnoreCase),
+                "Bulk shortlisting status should preserve the non-approval boundary.");
+            Assert(!window.CanAddShownRowsToReviewShortlist, "Bulk shortlist should disable once every shown row is already shortlisted.");
             Assert(window.CanRemoveSelectedRowFromReviewShortlist, "Shortlisted row should be removable.");
             Assert(window.CanPreviewQuarantine, "Quarantine Preview should be available after shortlisting a row.");
             Assert(
@@ -287,6 +292,12 @@ internal sealed class MainWindowSmokeTests
             Assert(
                 window.QuarantinePreviewTextValue.Contains("Preview and draft readiness appear", StringComparison.OrdinalIgnoreCase),
                 "Removing the shortlisted row should clear preview readiness text.");
+
+            Assert(window.CanAddSelectedRowToReviewShortlist, "Removed selected row should be addable again through the selected-row action.");
+            window.AddSelectedPathToReviewShortlist();
+            Assert(window.ReviewShortlistCount == 1, "Selected-row shortlisting should still update Review Shortlist count.");
+            window.ClearReviewShortlist();
+            Assert(window.ReviewShortlistCount == 0, "Clearing after selected-row shortlisting should empty Review Shortlist.");
         }
         finally
         {

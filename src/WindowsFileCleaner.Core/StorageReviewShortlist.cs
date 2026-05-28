@@ -11,6 +11,20 @@ public sealed class StorageReviewShortlist
         return _paths.Add(entry.FullPath);
     }
 
+    public int AddMany(IEnumerable<StorageEntry> entries)
+    {
+        var addedCount = 0;
+        foreach (var entry in entries)
+        {
+            if (Add(entry))
+            {
+                addedCount++;
+            }
+        }
+
+        return addedCount;
+    }
+
     public bool Remove(StorageEntry entry)
     {
         return _paths.Remove(entry.FullPath);

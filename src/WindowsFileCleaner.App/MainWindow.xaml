@@ -224,6 +224,11 @@
                             MinWidth="110"
                             IsEnabled="False"
                             Click="ClearSearchButton_Click" />
+                    <Button x:Name="AddShownToShortlistButton"
+                            Content="Shortlist shown"
+                            MinWidth="125"
+                            IsEnabled="False"
+                            Click="AddShownToShortlistButton_Click" />
                     <Button x:Name="ExportShortlistCsvButton"
                             Content="Export shortlist"
                             MinWidth="125"
