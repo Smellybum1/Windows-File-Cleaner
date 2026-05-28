@@ -83,7 +83,7 @@ Rejected ideas buffer:
 
 | Requirement | Evidence inspected | Status | Notes |
 |---|---|---|---|
-| Windows-only desktop app | `src/WindowsFileCleaner.App/WindowsFileCleaner.App.csproj`, `src/WindowsFileCleaner.App/MainWindow.xaml`, ADR 0002 | Verified in current repo | WPF is the selected UI stack. |
+| Windows-only desktop app | `src/WindowsFileCleaner.App/WindowsFileCleaner.App.csproj`, `src/WindowsFileCleaner.App/MainWindow.xaml`, `tests/WindowsFileCleaner.App.Tests`, ADR 0002 | Verified in current repo | WPF is the selected UI stack. A Windows-only smoke test constructs the shell on an STA thread. |
 | .NET 8 target | `src/WindowsFileCleaner.App/WindowsFileCleaner.App.csproj`, `src/WindowsFileCleaner.Core/WindowsFileCleaner.Core.csproj`, `tests/WindowsFileCleaner.Tests/WindowsFileCleaner.Tests.csproj` | Verified in current repo | App targets `net8.0-windows`; core and tests target `net8.0`. |
 | Read-only Storage Scan | `src/WindowsFileCleaner.Core/StorageScanner.cs`, `src/WindowsFileCleaner.App/MainWindow.xaml.cs`, read-only safety regression test | Verified in current repo | Status text and safety summaries repeatedly state no files were modified. |
 | Default Cleanup Scope `C:\Users\moxhe` | `src/WindowsFileCleaner.Core/StorageScanOptions.cs`, `src/WindowsFileCleaner.App/MainWindow.xaml`, README | Verified in current repo | The UI defaults to the agreed Cleanup Scope. |
@@ -91,12 +91,12 @@ Rejected ideas buffer:
 | Cleanup candidate categories | `BloatCategory` usage in core, WPF labels, CSV exporters, docs | Verified in current repo | Categories include caches, package caches, app data, protected locations, access issues, and conservative app/game labels. |
 | Importance ratings | `ImportanceRating`, WPF grid labels, fixture tests, glossary | Verified in current repo | User-facing labels are `Likely safe`, `Caution`, and `High risk`. |
 | Deletion recommendations | `DeletionRecommendation`, classifier rules, WPF grid labels, glossary | Verified in current repo | Recommendations remain conservative: `Keep`, `Inspect`, or `Quarantine candidate`. |
-| Fixture-based verification before real scan | `tests/WindowsFileCleaner.Tests/Program.cs`, WPF fixture smoke launch docs, progress log | Verified in current repo | Test harness covers scanner, classifier, summaries, preview, drafts, CSV, and safety guard behavior. The WPF app can also launch with a synthetic Cleanup Scope via `--scope`. |
+| Fixture-based verification before real scan | `tests/WindowsFileCleaner.Tests/Program.cs`, `tests/WindowsFileCleaner.App.Tests/Program.cs`, WPF fixture smoke launch docs, progress log | Verified in current repo | Test harnesses cover scanner, classifier, summaries, preview, drafts, CSV, safety guard behavior, and WPF shell startup state. The WPF app can also launch with a synthetic Cleanup Scope via `--scope`. |
 | No cleanup execution in MVP | `ProductionCodeDoesNotContainCleanupExecutionCalls`, README Safety Status | Verified in current repo | Source-level guard blocks obvious production move/delete/write execution APIs except user-selected CSV report writes. |
 | Quarantine on `D:` with undo path explored safely | Quarantine Preview, Restore Manifest Draft, Quarantine Confirmation Draft, ADR 0003 | Preview-only verified | The app proves destination/readiness shape without writing manifests or moving files. |
 | Docs kept current | README, domain docs, ADRs, feature briefs, `.codex/progress.md` | Verified in current repo | Docs use the Grill with Docs control layer requested for the project. |
 | Commits and remote push | Git history and remote `origin/main` | Verified at packet start | Branch was clean and tracking `origin/main` before this audit packet. |
-| Latest WPF UI retest | User screenshot plus README manual checklist | Pending manual verification | The first scan was manually verified, but later filters, shortlist, preview export, and readiness UI need a fresh app run. Use the fixture smoke path first, then retest `C:\Users\moxhe`. |
+| Latest WPF UI retest | User screenshot, WPF shell smoke test, README manual checklist | Partially automated, pending manual verification | Shell startup and launch-scope wiring are automated. The first scan was manually verified, but later filters, shortlist, preview export, and readiness UI still need a fresh app run. Use the fixture smoke path first, then retest `C:\Users\moxhe`. |
 | Actual Quarantine execution | README Not Implemented Yet, domain rules, ADR 0003 | Out of MVP | Requires explicit future design, confirmation semantics, restore rules, tests, and ADR review. |
 | Undo Quarantine execution | README Not Implemented Yet, Restore Manifest docs | Out of MVP | Requires executed manifests and file-moving workflow first. |
 
@@ -105,8 +105,10 @@ Rejected ideas buffer:
 Completed in this packet:
 
 ```powershell
+dotnet restore WindowsFileCleaner.sln --configfile NuGet.Config
 dotnet build WindowsFileCleaner.sln --no-restore
 dotnet run --project tests\WindowsFileCleaner.Tests\WindowsFileCleaner.Tests.csproj --no-build
+dotnet run --project tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj --no-build
 git -c safe.directory='D:/Codex/Windows File Cleaner' diff --check
 ```
 

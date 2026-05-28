@@ -27,14 +27,17 @@ Current readiness evidence is tracked in `docs/features/2026-05-28-mvp-readiness
 Run these from the repository root before scanning real user files:
 
 ```powershell
+dotnet restore WindowsFileCleaner.sln --configfile NuGet.Config
 dotnet build WindowsFileCleaner.sln --no-restore
 dotnet run --project tests\WindowsFileCleaner.Tests\WindowsFileCleaner.Tests.csproj --no-build
+dotnet run --project tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj --no-build
 ```
 
 Expected test output:
 
 ```txt
 All WindowsFileCleaner.Tests checks passed.
+All WindowsFileCleaner.App.Tests checks passed.
 ```
 
 ## WPF Fixture Smoke
@@ -85,13 +88,14 @@ After the app opens:
 The intended review flow is:
 
 1. Run fixture tests.
-2. Run Storage Scan.
-3. Inspect high-risk and protected rows first.
-4. Use category filters to understand large buckets.
-5. Use Child Breakdown and Open in Explorer for manual inspection.
-6. Add interesting rows to Review Shortlist.
-7. Generate Quarantine Preview for read-only readiness review.
-8. Stop before cleanup execution.
+2. Run the WPF app shell smoke test.
+3. Run Storage Scan.
+4. Inspect high-risk and protected rows first.
+5. Use category filters to understand large buckets.
+6. Use Child Breakdown and Open in Explorer for manual inspection.
+7. Add interesting rows to Review Shortlist.
+8. Generate Quarantine Preview for read-only readiness review.
+9. Stop before cleanup execution.
 
 ## Not Implemented Yet
 

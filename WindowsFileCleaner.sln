@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowsFileCleaner.App", "s
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowsFileCleaner.Core", "src\WindowsFileCleaner.Core\WindowsFileCleaner.Core.csproj", "{FB28C0A4-B576-4B63-A22B-A17E0FAFFCAF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowsFileCleaner.App.Tests", "tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj", "{A736EF9A-9839-4345-9F1B-5563C7643182}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -59,6 +61,18 @@ Global
 		{FB28C0A4-B576-4B63-A22B-A17E0FAFFCAF}.Release|x64.Build.0 = Release|Any CPU
 		{FB28C0A4-B576-4B63-A22B-A17E0FAFFCAF}.Release|x86.ActiveCfg = Release|Any CPU
 		{FB28C0A4-B576-4B63-A22B-A17E0FAFFCAF}.Release|x86.Build.0 = Release|Any CPU
+		{A736EF9A-9839-4345-9F1B-5563C7643182}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A736EF9A-9839-4345-9F1B-5563C7643182}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A736EF9A-9839-4345-9F1B-5563C7643182}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{A736EF9A-9839-4345-9F1B-5563C7643182}.Debug|x64.Build.0 = Debug|Any CPU
+		{A736EF9A-9839-4345-9F1B-5563C7643182}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{A736EF9A-9839-4345-9F1B-5563C7643182}.Debug|x86.Build.0 = Debug|Any CPU
+		{A736EF9A-9839-4345-9F1B-5563C7643182}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A736EF9A-9839-4345-9F1B-5563C7643182}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A736EF9A-9839-4345-9F1B-5563C7643182}.Release|x64.ActiveCfg = Release|Any CPU
+		{A736EF9A-9839-4345-9F1B-5563C7643182}.Release|x64.Build.0 = Release|Any CPU
+		{A736EF9A-9839-4345-9F1B-5563C7643182}.Release|x86.ActiveCfg = Release|Any CPU
+		{A736EF9A-9839-4345-9F1B-5563C7643182}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -67,5 +81,6 @@ Global
 		{05180F5A-9254-4E13-A782-B2463C77F937} = {0AB3BF05-4346-4AA6-1389-037BE0695223}
 		{7AA9812B-89EE-4E5D-B57E-1E64C27382FA} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
 		{FB28C0A4-B576-4B63-A22B-A17E0FAFFCAF} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
+		{A736EF9A-9839-4345-9F1B-5563C7643182} = {0AB3BF05-4346-4AA6-1389-037BE0695223}
 	EndGlobalSection
 EndGlobal

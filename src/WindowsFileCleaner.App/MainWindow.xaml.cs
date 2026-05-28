@@ -36,6 +36,14 @@ public partial class MainWindow : Window
         UpdateCategoryFilterOptions();
     }
 
+    public string CurrentCleanupScopePath => ScopePathBox.Text;
+
+    public string CurrentStatusText => StatusText.Text;
+
+    public bool CanStartStorageScan => ScanButton.IsEnabled;
+
+    public bool CanExportScanCsv => ExportCsvButton.IsEnabled;
+
     private async void ScanButton_Click(object sender, RoutedEventArgs e)
     {
         var scopePath = ScopePathBox.Text.Trim();

@@ -26,7 +26,7 @@ The project stack is C# with WPF for a Windows-only desktop app. The initial tar
 ```bash
 # Install dependencies
 # No package restore beyond the .NET SDK is expected for the initial app.
-dotnet restore
+dotnet restore WindowsFileCleaner.sln --configfile NuGet.Config
 
 # Start local development
 dotnet run --project src/WindowsFileCleaner.App
@@ -39,6 +39,7 @@ dotnet run --project src/WindowsFileCleaner.App -- --scope "D:\Codex\Windows Fil
 
 # Run tests
 dotnet run --project tests/WindowsFileCleaner.Tests/WindowsFileCleaner.Tests.csproj
+dotnet run --project tests/WindowsFileCleaner.App.Tests/WindowsFileCleaner.App.Tests.csproj
 
 # Run linting
 # No separate lint command selected yet.
