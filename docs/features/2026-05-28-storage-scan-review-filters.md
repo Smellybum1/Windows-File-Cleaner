@@ -38,7 +38,7 @@ The first user scan showed:
 
 - Add filters for All, Likely safe, Caution, High risk, and Quarantine candidates.
 - Show counts on filter buttons after a scan.
-- Show a compact filter summary with number of displayed rows and displayed bytes.
+- Show a compact filter summary with number of displayed rows and the largest displayed row.
 - Keep scan review read-only.
 - Label big container/cache patterns more clearly while keeping recommendations conservative.
 
@@ -60,7 +60,7 @@ The first user scan showed:
 
 1. Add core review entries, summaries, and filters.
 2. Wire filter buttons into the WPF screen.
-3. Add count and size summaries for filtered results.
+3. Add count and largest-row summaries for filtered results.
 4. Add classifier labels for real-scan patterns.
 5. Add fixture tests for review filters and classifier behavior.
 
@@ -83,6 +83,7 @@ What changed:
 
 - Added core review/filter types.
 - Added Storage Scan filter buttons and filter summary in WPF.
+- Later packet updated the summary wording from summed displayed bytes to largest displayed row because flattened recursive rows overlap.
 - Added conservative categories for profile containers, AppData areas, browser data, and GPU shader caches.
 - Added fixture tests for filter behavior and real-scan-inspired classification.
 

@@ -20,10 +20,19 @@ public static class StorageScanReviewBuilder
             entries.Count(row => row.Entry.ImportanceRating == ImportanceRating.Caution),
             entries.Count(row => row.Entry.ImportanceRating == ImportanceRating.HighRisk),
             entries.Count(row => row.Entry.DeletionRecommendation == DeletionRecommendation.QuarantineCandidate),
-            entries.Where(row => row.Entry.ImportanceRating == ImportanceRating.LikelySafe).Sum(row => row.Entry.SizeBytes),
-            entries.Where(row => row.Entry.ImportanceRating == ImportanceRating.Caution).Sum(row => row.Entry.SizeBytes),
-            entries.Where(row => row.Entry.ImportanceRating == ImportanceRating.HighRisk).Sum(row => row.Entry.SizeBytes),
-            entries.Where(row => row.Entry.DeletionRecommendation == DeletionRecommendation.QuarantineCandidate).Sum(row => row.Entry.SizeBytes));
+            Largest(entries),
+            Largest(entries.Where(row => row.Entry.ImportanceRating == ImportanceRating.LikelySafe)),
+            Largest(entries.Where(row => row.Entry.ImportanceRating == ImportanceRating.Caution)),
+            Largest(entries.Where(row => row.Entry.ImportanceRating == ImportanceRating.HighRisk)),
+            Largest(entries.Where(row => row.Entry.DeletionRecommendation == DeletionRecommendation.QuarantineCandidate)));
+    }
+
+    private static long Largest(IEnumerable<StorageReviewEntry> entries)
+    {
+        return entries
+            .Select(row => row.Entry.SizeBytes)
+            .DefaultIfEmpty(0)
+            .Max();
     }
 
     private static IEnumerable<StorageReviewEntry> Flatten(StorageEntry root)
@@ -41,4 +50,3 @@ public static class StorageScanReviewBuilder
         }
     }
 }
-

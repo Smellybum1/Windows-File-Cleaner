@@ -6,14 +6,14 @@ Use it to preserve what was completed, what was verified, what was rejected, and
 
 ## Current status
 
-Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. Review filters, selected-folder child breakdown, and selected-path inspection actions are pushed. Scan report CSV export has been implemented locally and is ready to commit/push.
+Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. Review filters, selected-folder child breakdown, selected-path inspection actions, and CSV export are pushed. Review Mix summary is implemented and awaiting user retest after push.
 
 ## Next recommended work
 
-1. Commit and push Scan Report CSV export.
-2. Ask the user to rerun the WPF app, choose filters, and export CSV reports.
-3. Use report feedback to refine Protected Locations and category grouping.
-4. Defer Quarantine and Undo Quarantine implementation until scan review is trustworthy.
+1. Ask the user to rerun the WPF app and confirm Review Mix/filter wording is useful.
+2. Use review feedback to refine Protected Locations and category grouping.
+3. Add a safer Quarantine preview only after review categories feel trustworthy.
+4. Defer actual Quarantine and Undo Quarantine execution until scan review is trustworthy.
 5. Revisit .NET 10 before packaging or long-term distribution.
 
 ## Completed packets
@@ -420,3 +420,45 @@ Rejected ideas buffer:
 
 - Do not export file contents.
 - Do not treat CSV export as scan history or restore metadata.
+
+### 2026-05-28: Add Review Mix summary and fix flattened-size semantics
+
+Status: completed
+
+Evidence:
+
+- Filtered recursive scan rows overlap because parent folders include child sizes.
+- Adding flattened row sizes would overstate storage and imply false savings.
+
+Implementation:
+
+- Added Review Mix display to WPF.
+- Changed `StorageReviewSummary` byte fields from summed totals to largest-row sizes.
+- Updated filter summary wording to show largest displayed row.
+- Added test coverage for largest quarantine candidate row.
+- No cleanup execution was added.
+
+Verification:
+
+- `dotnet build WindowsFileCleaner.sln --no-restore` passed.
+- `dotnet run --project tests\WindowsFileCleaner.Tests\WindowsFileCleaner.Tests.csproj --no-build` passed.
+
+Docs updated:
+
+- `docs/domain/context.md`
+- `docs/domain/glossary.md`
+- `docs/features/2026-05-28-review-mix-summary.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No new ADR. This is an incremental reporting semantics fix.
+
+Open questions:
+
+- User should confirm whether largest-row triage is useful in the real scan.
+
+Rejected ideas buffer:
+
+- Do not report summed bytes for flattened recursive rows.
+- Do not call filtered row totals Storage Savings until selections are non-overlapping.

@@ -53,6 +53,7 @@ public partial class MainWindow : Window
             StatusText.Text = $"Storage Scan completed. Showing {rows.Length:N0} paths. No files were modified.";
             UpdateFilterButtons();
             UpdateFilterSummary();
+            UpdateReviewMix();
 
             if (rows.Length > 0)
             {
@@ -279,8 +280,25 @@ public partial class MainWindow : Window
         }
 
         var rows = ApplyCurrentFilter();
-        var shownBytes = rows.Sum(row => row.SizeBytes);
-        FilterSummaryText.Text = $"{FormatFilter(_currentFilter)}: {rows.Length:N0} shown, {ByteSizeFormatter.Format(shownBytes)}";
+        var largestShownBytes = rows.Select(row => row.SizeBytes).DefaultIfEmpty(0).Max();
+        FilterSummaryText.Text = $"{FormatFilter(_currentFilter)}: {rows.Length:N0} shown, largest row {ByteSizeFormatter.Format(largestShownBytes)}";
+    }
+
+    private void UpdateReviewMix()
+    {
+        if (_currentReview is null)
+        {
+            ReviewMixText.Text = "Review mix appears after a scan.";
+            return;
+        }
+
+        var summary = _currentReview.Summary;
+        ReviewMixText.Text =
+            $"Review mix: " +
+            $"Likely safe {summary.LikelySafeCount:N0} (largest {ByteSizeFormatter.Format(summary.LikelySafeLargestEntryBytes)}) | " +
+            $"Caution {summary.CautionCount:N0} (largest {ByteSizeFormatter.Format(summary.CautionLargestEntryBytes)}) | " +
+            $"High risk {summary.HighRiskCount:N0} (largest {ByteSizeFormatter.Format(summary.HighRiskLargestEntryBytes)}) | " +
+            $"Quarantine candidates {summary.QuarantineCandidateCount:N0} (largest {ByteSizeFormatter.Format(summary.QuarantineCandidateLargestEntryBytes)})";
     }
 
     private static string FormatFilter(StorageReviewFilter filter)

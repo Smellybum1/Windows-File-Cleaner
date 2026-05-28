@@ -44,6 +44,7 @@ If a term needs to change, update this glossary first, then update code and docs
 | Importance Rating | Conservative estimate of how important a file or folder may be. | `ImportanceRating`, `importanceRating` | User-facing values: `Likely safe`, `Caution`, `High risk`. |
 | Deletion Recommendation | Suggested action for a candidate after inspection. | `DeletionRecommendation`, `deletionRecommendation` | Examples: keep, inspect, quarantine candidate, delete later. |
 | Storage Review Filter | Read-only filter applied to Storage Scan results. | `StorageReviewFilter`, `storageReviewFilter` | Initial filters: All, Likely safe, Caution, High risk, Quarantine candidates. |
+| Review Mix | Summary of result counts and largest rows by rating/recommendation. | `StorageReviewSummary` | Do not sum flattened recursive row sizes because parent and child rows overlap. |
 | Child Breakdown | Read-only summary of the largest immediate children inside a selected folder. | `StorageChildSummary`, `StorageChildSummaryBuilder` | Helps inspect large containers without marking the container safe. |
 | Selected Path Inspection | Read-only action for inspecting a selected scan result. | `PathInspectionPlan`, `PathInspectionPlanBuilder` | Initial actions: copy path, open in File Explorer. Not a Cleanup Action. |
 | Scan Report Export | Read-only report generated from Storage Scan results. | `StorageScanCsvExporter` | Initial format is CSV for the active Storage Review Filter. |

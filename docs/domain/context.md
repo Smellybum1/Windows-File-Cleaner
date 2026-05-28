@@ -272,6 +272,48 @@ Initial filters are All, Likely safe, Caution, High risk, and Quarantine candida
 - Keep filters read-only.
 - Show counts so the user can understand scan composition.
 
+### Review Mix
+
+Status: draft  
+Last reviewed: 2026-05-28
+
+#### Definition
+
+Review Mix is a read-only summary of how Storage Scan results are distributed across Importance Ratings and Deletion Recommendations.
+
+It shows counts and largest-row sizes for Likely safe, Caution, High risk, and Quarantine candidates.
+
+#### Examples
+
+- Likely safe count and largest likely-safe row.
+- Caution count and largest caution row.
+- High risk count and largest high-risk row.
+- Quarantine candidate count and largest quarantine-candidate row.
+
+#### Non-examples
+
+- A sum of all filtered row sizes.
+- Confirmed Storage Savings.
+- A cleanup approval.
+
+#### Lifecycle
+
+- Generated after a Storage Scan completes.
+- Updates with the scan result.
+- Remains read-only.
+
+#### Relationships
+
+- Uses Storage Review Filters.
+- Uses Importance Ratings and Deletion Recommendations.
+- Helps the user decide where to inspect next.
+
+#### Code implications
+
+- Use `StorageReviewSummary` for Review Mix data.
+- Do not sum recursive row sizes across flattened scan results; folders and their children overlap.
+- Use largest-row sizes for triage until the app has an explicit non-overlapping selection model.
+
 ### Child Breakdown
 
 Status: draft  

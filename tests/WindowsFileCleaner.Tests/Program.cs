@@ -98,7 +98,8 @@ internal sealed class StorageScanTests
         Assert(review.Summary.CautionCount > 0, "Review should count caution entries.");
         Assert(review.Summary.HighRiskCount > 0, "Review should count high-risk entries.");
         Assert(review.Summary.QuarantineCandidateCount > 0, "Review should count quarantine candidates.");
-        Assert(review.Summary.QuarantineCandidateBytes > 0, "Review should total quarantine candidate bytes.");
+        Assert(review.Summary.LargestEntryBytes >= 1024 * 1024, "Review should record the largest row size.");
+        Assert(review.Summary.QuarantineCandidateLargestEntryBytes == 1024 * 1024, "Review should record the largest quarantine candidate row without summing recursive rows.");
 
         var highRiskRows = review.ApplyFilter(StorageReviewFilter.HighRisk);
         Assert(highRiskRows.All(row => row.Entry.ImportanceRating == ImportanceRating.HighRisk), "High risk filter should only return high-risk entries.");
