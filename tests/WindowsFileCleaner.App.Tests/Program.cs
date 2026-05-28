@@ -414,6 +414,8 @@ internal sealed class MainWindowSmokeTests
                 "No-category shortcut should show only uncategorized rows.");
 
             window.ApplySafetyReviewShortcut(StorageScanSafetyShortcut.QuarantineCandidates);
+            window.ApplyStorageReviewSearch("old-installer");
+            Assert(window.DisplayedRows.Count == 1, "Old installer search should narrow the quarantine candidate review window to one row.");
             var installer = window.DisplayedRows.Single(row =>
                 row.FullPath.EndsWith(@"Downloads\old-installer.msi", StringComparison.OrdinalIgnoreCase));
 
@@ -464,6 +466,7 @@ internal sealed class MainWindowSmokeTests
                 window.CurrentStatusText.Contains("Review Shortlist was kept", StringComparison.OrdinalIgnoreCase),
                 "Reset view status should explain that shortlist entries were preserved.");
             window.ApplySafetyReviewShortcut(StorageScanSafetyShortcut.QuarantineCandidates);
+            window.ApplyStorageReviewSearch("old-installer");
             Assert(window.SelectDisplayedPath(installer.FullPath), "Shortlisted fixture installer should be selectable after resetting and restoring the candidate view.");
 
             window.RemoveShownRowsFromReviewShortlist();

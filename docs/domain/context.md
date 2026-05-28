@@ -408,6 +408,7 @@ Initial candidate categories include cleanup scope roots, profile containers, Ap
 - Use `BloatCategory` for the category concept.
 - Use specific category names in code and UI rather than generic labels such as `junk`.
 - Container categories such as Profile container, AppData area, and Browser data should be conservative and should not imply cleanup approval.
+- Specific rebuildable cache rows with strong cache evidence, such as GPU shader caches or package-cache rows under an app cache path, may be `Likely safe` / `Quarantine candidate`; broad parent containers such as `AppData`, `NVIDIA`, or `pip` should remain inspection-first.
 
 ### Storage Review Filter
 
@@ -1185,8 +1186,8 @@ Selected Path Review Guidance is read-only wording shown for the currently selec
 - Tell the user to inspect children instead of shortlisting a whole profile container.
 - Tell the user to keep Protected Location rows by default.
 - Tell the user that a Quarantine candidate may be added to Review Shortlist only after recognition and review.
-- Tell the user that GPU shader caches may be rebuildable but can cause temporary recompile delays.
-- Tell the user that Python or Node package caches should be separated from active development tools and Codex-related paths.
+- Tell the user that GPU shader cache candidates may be rebuildable but can cause temporary recompile delays.
+- Tell the user that Python or Node package cache candidates should be separated from active development tools and Codex-related paths before using Review Shortlist.
 - Tell the user to classify Uncategorized Results before cleanup.
 
 #### Non-examples
@@ -1424,6 +1425,7 @@ It should explain whether the candidate appears safe to ignore, inspect further,
 - Inspect.
 - Quarantine candidate.
 - Delete later after quarantine and confirmation.
+- Specific rebuildable cache rows such as `DXCache` or `pip\Cache` can be Quarantine candidates after the app identifies strong cache-path evidence; their broad parent folders should remain Inspect.
 
 #### Non-examples
 
@@ -1772,6 +1774,7 @@ Implementation implications:
 - The selected row should explain the safest next review step through Selected Path Review Guidance.
 - The review should support Storage Review Search so large scans can find specific apps, caches, tools, and categories without scrolling.
 - The review should distinguish displayed rows from matched rows when the Storage Review Display Limit is reached.
+- Specific recognized cache rows can be recommended as Quarantine candidates, but broad parent folders should stay inspection-first until child rows prove the cleanup target.
 - Protected Locations can be shown for awareness but should default to high importance.
 - Recommendations should be explainable, not just a score.
 

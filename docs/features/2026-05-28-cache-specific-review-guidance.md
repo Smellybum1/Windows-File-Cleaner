@@ -35,8 +35,8 @@ As the project owner, I want rows like `DXCache`, `pip`, and broad `AppData` fol
 
 ## Decisions made
 
-- Keep GPU shader caches as `Caution` / `Inspect`.
-- Tune guidance only; do not make cache rows Quarantine candidates automatically.
+- Initial packet kept GPU shader caches as `Caution` / `Inspect`; `docs/features/2026-05-28-specific-rebuildable-cache-candidates.md` later refined specific rebuildable cache rows such as `DXCache` to `Likely safe` / `Quarantine candidate`.
+- This packet tuned guidance only; later candidate classification is tracked separately in the specific rebuildable cache feature brief.
 - Keep guidance short enough for the existing detail pane.
 
 ## Verification

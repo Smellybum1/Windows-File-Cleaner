@@ -271,6 +271,11 @@ public sealed class CleanupCandidateClassifier
 
     private static bool IsCautionCategory(HashSet<BloatCategory> categories, PathSnapshot path)
     {
+        if (HasSpecificRebuildableCacheEvidence(categories))
+        {
+            return false;
+        }
+
         if (categories.Contains(BloatCategory.LargeOldFile)
             && !HasLikelySafeCleanupCategory(categories))
         {
@@ -352,6 +357,14 @@ public sealed class CleanupCandidateClassifier
             || categories.Contains(BloatCategory.TemporaryFolder)
             || categories.Contains(BloatCategory.InstallerCache)
             || categories.Contains(BloatCategory.AppCache);
+    }
+
+    private static bool HasSpecificRebuildableCacheEvidence(HashSet<BloatCategory> categories)
+    {
+        return categories.Contains(BloatCategory.GpuShaderCache)
+            || (categories.Contains(BloatCategory.AppCache)
+                && (categories.Contains(BloatCategory.NodePackageCache)
+                    || categories.Contains(BloatCategory.PythonPackageCache)));
     }
 
     private static bool LooksLikeAppCache(string fullPath, string name)

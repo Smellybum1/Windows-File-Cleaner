@@ -55,23 +55,13 @@ public static class SelectedPathReviewGuidanceBuilder
                 ]);
         }
 
-        if (entry.DeletionRecommendation == DeletionRecommendation.QuarantineCandidate)
-        {
-            return new SelectedPathReviewGuidance(
-                "Shortlist after review",
-                [
-                    "This looks like one of the better cleanup candidates, but it is still not deletion approval.",
-                    "Add it to Review Shortlist only if you recognize it, then use Quarantine Preview to check the dry-run outcome."
-                ]);
-        }
-
         if (entry.BloatCategories.Contains(BloatCategory.GpuShaderCache))
         {
             return new SelectedPathReviewGuidance(
                 "Review shader cache",
                 [
                     "GPU shader caches can usually be rebuilt, but cleanup may cause temporary shader recompile delays or affect apps that are currently running.",
-                    "Prefer narrowing to specific shader-cache child rows and use Quarantine Preview before any future cleanup execution."
+                    "If this specific cache row is the intended target, add it to Review Shortlist after inspection and use Quarantine Preview before any future cleanup execution."
                 ]);
         }
 
@@ -81,7 +71,7 @@ public static class SelectedPathReviewGuidanceBuilder
                 "Review Python cache",
                 [
                     "Python package caches are often rebuildable, but active development tools can still depend on nearby environments, wheels, or indexes.",
-                    "Target only recognized cache rows after inspection; do not shortlist virtual environments, source folders, or Codex-related paths."
+                    "Add only recognized cache rows to Review Shortlist after inspection; do not shortlist virtual environments, source folders, or Codex-related paths."
                 ]);
         }
 
@@ -91,7 +81,7 @@ public static class SelectedPathReviewGuidanceBuilder
                 "Review Node cache",
                 [
                     "Node package caches may be rebuildable, but dependency folders can be part of active projects or tools.",
-                    "Use parent/depth context and child rows to avoid shortlisting active project dependencies."
+                    "Use parent/depth context and child rows before adding cache rows to Review Shortlist, and avoid active project dependencies."
                 ]);
         }
 
@@ -102,6 +92,16 @@ public static class SelectedPathReviewGuidanceBuilder
                 [
                     "This looks cache-like, but AppData can mix disposable cache files with active app state.",
                     "Prefer specific cache child rows over broad app folders, then use Quarantine Preview for a dry-run review."
+                ]);
+        }
+
+        if (entry.DeletionRecommendation == DeletionRecommendation.QuarantineCandidate)
+        {
+            return new SelectedPathReviewGuidance(
+                "Shortlist after review",
+                [
+                    "This looks like one of the better cleanup candidates, but it is still not deletion approval.",
+                    "Add it to Review Shortlist only if you recognize it, then use Quarantine Preview to check the dry-run outcome."
                 ]);
         }
 

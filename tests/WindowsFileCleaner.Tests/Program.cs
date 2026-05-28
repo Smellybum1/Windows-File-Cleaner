@@ -181,11 +181,18 @@ internal sealed class StorageScanTests
         var pip = Single(rows, "pip");
         Assert(pip.BloatCategories.Contains(BloatCategory.ApplicationDataArea), "pip should be marked as AppData area.");
         Assert(pip.BloatCategories.Contains(BloatCategory.PythonPackageCache), "pip should be marked as Python package cache.");
-        Assert(pip.ImportanceRating == ImportanceRating.Caution, "pip cache container should stay caution.");
+        Assert(pip.ImportanceRating == ImportanceRating.Caution, "Broad pip container should stay caution until a specific cache child is selected.");
+
+        var pipCache = Single(rows, "Cache");
+        Assert(pipCache.BloatCategories.Contains(BloatCategory.AppCache), "pip Cache should be marked as app cache.");
+        Assert(pipCache.BloatCategories.Contains(BloatCategory.PythonPackageCache), "pip Cache should be marked as Python package cache.");
+        Assert(pipCache.ImportanceRating == ImportanceRating.LikelySafe, "Specific pip cache rows should be likely safe.");
+        Assert(pipCache.DeletionRecommendation == DeletionRecommendation.QuarantineCandidate, "Specific pip cache rows should be quarantine candidates.");
 
         var dxCache = Single(rows, "DXCache");
         Assert(dxCache.BloatCategories.Contains(BloatCategory.GpuShaderCache), "DXCache should be marked as GPU shader cache.");
-        Assert(dxCache.ImportanceRating == ImportanceRating.Caution, "GPU shader cache should stay caution.");
+        Assert(dxCache.ImportanceRating == ImportanceRating.LikelySafe, "Specific GPU shader cache rows should be likely safe.");
+        Assert(dxCache.DeletionRecommendation == DeletionRecommendation.QuarantineCandidate, "Specific GPU shader cache rows should be quarantine candidates.");
 
         var userData = Single(rows, "User Data");
         Assert(userData.BloatCategories.Contains(BloatCategory.BrowserData), "Browser User Data should be marked as browser data.");
@@ -1010,8 +1017,8 @@ internal sealed class StorageScanTests
             IsReparsePoint: false,
             ErrorMessage: null,
             BloatCategories: [BloatCategory.ApplicationDataArea, BloatCategory.AppCache, BloatCategory.GpuShaderCache],
-            ImportanceRating: ImportanceRating.Caution,
-            DeletionRecommendation: DeletionRecommendation.Inspect,
+            ImportanceRating: ImportanceRating.LikelySafe,
+            DeletionRecommendation: DeletionRecommendation.QuarantineCandidate,
             Evidence: "GPU shader cache.",
             Children: []);
         var pythonCache = new StorageEntry(
@@ -1024,8 +1031,8 @@ internal sealed class StorageScanTests
             IsReparsePoint: false,
             ErrorMessage: null,
             BloatCategories: [BloatCategory.ApplicationDataArea, BloatCategory.AppCache, BloatCategory.PythonPackageCache],
-            ImportanceRating: ImportanceRating.Caution,
-            DeletionRecommendation: DeletionRecommendation.Inspect,
+            ImportanceRating: ImportanceRating.LikelySafe,
+            DeletionRecommendation: DeletionRecommendation.QuarantineCandidate,
             Evidence: "Python package cache.",
             Children: []);
         var appDataArea = new StorageEntry(
@@ -1075,12 +1082,18 @@ internal sealed class StorageScanTests
         Assert(
             shaderGuidance.Notes.Any(note => note.Contains("recompile delays", StringComparison.OrdinalIgnoreCase)),
             "Shader-cache guidance should mention temporary recompile delays.");
+        Assert(
+            shaderGuidance.Notes.Any(note => note.Contains("Review Shortlist", StringComparison.OrdinalIgnoreCase)),
+            "Shader-cache guidance should still route likely-safe rows through Review Shortlist.");
 
         var pythonGuidance = SelectedPathReviewGuidanceBuilder.Build(pythonCache);
         Assert(pythonGuidance.ActionLabel == "Review Python cache", "Python package cache rows should get specific package-cache guidance.");
         Assert(
             pythonGuidance.Notes.Any(note => note.Contains("Codex-related", StringComparison.OrdinalIgnoreCase)),
             "Python-cache guidance should protect Codex-related paths.");
+        Assert(
+            pythonGuidance.Notes.Any(note => note.Contains("Review Shortlist", StringComparison.OrdinalIgnoreCase)),
+            "Python-cache guidance should still route likely-safe rows through Review Shortlist.");
 
         var appDataGuidance = SelectedPathReviewGuidanceBuilder.Build(appDataArea);
         Assert(appDataGuidance.ActionLabel == "Inspect AppData carefully", "Generic AppData rows should remain careful-inspection guidance.");
