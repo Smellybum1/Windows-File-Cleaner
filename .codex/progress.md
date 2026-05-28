@@ -6,7 +6,7 @@ Use it to preserve what was completed, what was verified, what was rejected, and
 
 ## Current status
 
-Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. Cleanup Scope Safety Note, review filters, Storage Review Search, Storage Review Display Limit wording, selected-folder child breakdown, selected-path inspection actions, Selected Path Review Guidance, CSV export including active search and searched filenames, Review Mix, Storage Scan Safety Summary, Safety Summary review shortcuts, Access issues filtering, Bloat Category Filter, No category filtering, Review Shortlist, Shortlist shown, Remove shown, Quarantine Preview, Quarantine Preview CSV export, Restore Manifest Draft, Quarantine Confirmation Draft, Quarantine Readiness UI, conservative app data classification, read-only safety regression checks, the MVP runbook, the MVP readiness audit, fixture-driven WPF launch support, WPF shell smoke testing, WPF fixture scan smoke testing, WPF display-limit smoke testing, WPF review interaction smoke testing, WPF review toolbar layout polish, the MVP preflight script, and the MVP fixture review launcher are implemented and verified. Quarantine remains preview-only; no cleanup execution, manifest writing, or Undo Quarantine execution exists.
+Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. Cleanup Scope Safety Note, review filters, Storage Review Search, Storage Review Display Limit wording, selected-folder child breakdown, selected-path inspection actions, Selected Path Review Guidance, CSV export including active search, searched filenames, and hierarchy context, Review Mix, Storage Scan Safety Summary, Safety Summary review shortcuts, Access issues filtering, Bloat Category Filter, No category filtering, Review Shortlist, Shortlist shown, Remove shown, Quarantine Preview, Quarantine Preview CSV export, Restore Manifest Draft, Quarantine Confirmation Draft, Quarantine Readiness UI, conservative app data classification, read-only safety regression checks, the MVP runbook, the MVP readiness audit, fixture-driven WPF launch support, WPF shell smoke testing, WPF fixture scan smoke testing, WPF display-limit smoke testing, WPF review interaction smoke testing, WPF review toolbar layout polish, the MVP preflight script, and the MVP fixture review launcher are implemented and verified. Quarantine remains preview-only; no cleanup execution, manifest writing, or Undo Quarantine execution exists.
 
 ## Next recommended work
 
@@ -1844,3 +1844,47 @@ Rejected ideas buffer:
 
 - Do not treat report filenames as scan history.
 - Do not include raw user paths in generated filenames.
+
+### 2026-05-28: Add hierarchy context to Scan Report Export
+
+Status: completed
+
+Evidence:
+
+- Recursive Storage Scan rows are flattened in the grid and CSV report.
+- Full paths are present, but spreadsheet review is easier when each row also carries its immediate parent and depth.
+
+Implementation:
+
+- Added `Parent path` and `Depth` columns to `StorageScanCsvExporter`.
+- Kept root-level parent path blank so the export does not invent a parent outside the reviewed hierarchy.
+- Extended CSV fixture coverage for the new hierarchy columns.
+- No cleanup execution, Quarantine execution, Undo Quarantine, manifest writing, or real-profile automation was added.
+
+Verification:
+
+- `dotnet build WindowsFileCleaner.sln --no-restore` passed with 0 warnings and 0 errors.
+- `dotnet run --project tests\WindowsFileCleaner.Tests\WindowsFileCleaner.Tests.csproj --no-build` passed.
+- `dotnet run --project tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj --no-build` passed.
+- `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\Invoke-MvpPreflight.ps1` passed.
+
+Docs updated:
+
+- `README.md`
+- `docs/domain/context.md`
+- `docs/domain/glossary.md`
+- `docs/features/2026-05-28-scan-report-csv-export.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No new ADR. This is a reversible read-only report schema improvement and does not change architecture, persistence, security, deployment, or cleanup execution.
+
+Open questions:
+
+- Should a future export include a separate cleanup-scope-relative path column?
+
+Rejected ideas buffer:
+
+- Do not make Scan Report Export a persisted scan history feature.
+- Do not include cleanup approval or restore-manifest data in this CSV.

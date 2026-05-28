@@ -11,6 +11,8 @@ public static class StorageScanCsvExporter
             builder,
             [
                 "Full path",
+                "Parent path",
+                "Depth",
                 "Name",
                 "Type",
                 "Size bytes",
@@ -29,6 +31,8 @@ public static class StorageScanCsvExporter
                 builder,
                 [
                     entry.Entry.FullPath,
+                    FormatParentPath(entry),
+                    entry.Depth.ToString(System.Globalization.CultureInfo.InvariantCulture),
                     entry.Entry.Name,
                     entry.Entry.IsDirectory ? "Folder" : "File",
                     entry.Entry.SizeBytes.ToString(System.Globalization.CultureInfo.InvariantCulture),
@@ -63,6 +67,13 @@ public static class StorageScanCsvExporter
     private static string Escape(string value)
     {
         return $"\"{value.Replace("\"", "\"\"", StringComparison.Ordinal)}\"";
+    }
+
+    private static string FormatParentPath(StorageReviewEntry entry)
+    {
+        return entry.Depth <= 0
+            ? ""
+            : Path.GetDirectoryName(entry.Entry.FullPath) ?? "";
     }
 
     private static string FormatImportance(ImportanceRating rating)

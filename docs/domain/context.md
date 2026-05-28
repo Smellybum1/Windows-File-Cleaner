@@ -828,6 +828,7 @@ The initial export format is CSV for the currently active Storage Review Filter 
 
 - Available after a Storage Scan completes.
 - Uses the current Storage Review Filter, selected Bloat Category Filter, and Storage Review Search.
+- Includes parent path and depth columns so recursive rows keep their hierarchy context outside the app.
 - Writes a user-selected CSV report path and suggests a filename that describes active review filters/search.
 - Does not modify scanned files.
 
@@ -845,6 +846,7 @@ The initial export format is CSV for the currently active Storage Review Filter 
 
 - Use `StorageScanCsvExporter` for CSV report generation.
 - Export user-facing labels for Importance Ratings and Deletion Recommendations.
+- Export parent path and depth from the flattened Storage Review row.
 - Keep generated report filenames descriptive and filesystem-safe when filters or search are active.
 - Keep exports separate from Quarantine manifests.
 

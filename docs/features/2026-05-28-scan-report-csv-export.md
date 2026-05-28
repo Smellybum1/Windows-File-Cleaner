@@ -28,7 +28,7 @@ The app shows scan results, filters, child breakdowns, and selected-path inspect
 - Export CSV is available after a Storage Scan completes.
 - Export uses the active Storage Review Filter.
 - Later packets also apply the selected Bloat Category Filter and Storage Review Search.
-- Export includes path, name, type, size, importance, recommendation, categories, modified time, evidence, and access issue.
+- Export includes path, parent path, depth, name, type, size, importance, recommendation, categories, modified time, evidence, and access issue.
 - Export uses user-facing labels such as `Likely safe` and `Quarantine candidate`.
 - Export does not modify scanned files.
 
@@ -77,6 +77,7 @@ What changed:
 - Added Export CSV button in the Storage Scan toolbar.
 - Added fixture coverage for CSV header, escaping, labels, categories, and evidence.
 - Later packets included the selected Bloat Category Filter in the exported row set and generated filename, aligned the export row set with active Storage Review Search, and added a sanitized search segment to suggested export filenames.
+- Later hierarchy-context packet added parent path and depth columns so recursive rows remain understandable in spreadsheets.
 
 Files changed:
 
@@ -84,6 +85,7 @@ Files changed:
 - `src/WindowsFileCleaner.App/MainWindow.xaml`
 - `src/WindowsFileCleaner.App/MainWindow.xaml.cs`
 - `tests/WindowsFileCleaner.Tests/Program.cs`
+- `README.md`
 - `docs/domain/context.md`
 - `docs/domain/glossary.md`
 - `.codex/progress.md`
@@ -108,11 +110,17 @@ Tests run:
   - `dotnet run --project tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj --no-build`
   - `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\New-StorageScanSmokeFixture.ps1 -WhatIf`
   - `git -c safe.directory='D:/Codex/Windows File Cleaner' diff --check`
+- Later hierarchy-context packet:
+  - `dotnet build WindowsFileCleaner.sln --no-restore`
+  - `dotnet run --project tests\WindowsFileCleaner.Tests\WindowsFileCleaner.Tests.csproj --no-build`
+  - `dotnet run --project tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj --no-build`
+  - `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\Invoke-MvpPreflight.ps1`
 
 Docs updated:
 
 - `docs/domain/context.md`
 - `docs/domain/glossary.md`
+- `README.md`
 - `.codex/progress.md`
 - This feature brief
 
