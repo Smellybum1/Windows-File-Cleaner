@@ -22,6 +22,7 @@ public partial class MainWindow : Window
     private StorageCategoryFilter _currentCategoryFilter = StorageCategoryFilter.All;
     private StorageEntryTypeFilter _currentEntryTypeFilter = StorageEntryTypeFilter.All;
     private StorageReviewSearch _currentSearch = StorageReviewSearch.Empty;
+    private int _currentDisplayStartIndex;
     private StorageEntryRow? _selectedRow;
     private bool _isScanning;
     private bool _isUpdatingCategoryFilterOptions;
@@ -65,6 +66,10 @@ public partial class MainWindow : Window
         .Select(row => row.Entry.FullPath)
         .ToArray();
 
+    public IReadOnlyList<string> CurrentScanReportExportTypes => BuildCurrentScanReportExportRows()
+        .Select(row => row.Entry.IsDirectory ? "Folder" : "File")
+        .ToArray();
+
     public string CurrentScanReportExportFileName => BuildExportFileName();
 
     public bool CanUseCategoryFilter => CategoryFilterBox.IsEnabled;
@@ -98,6 +103,12 @@ public partial class MainWindow : Window
     public string FilterSummaryTextValue => FilterSummaryText.Text;
 
     public string ReviewSizeNoteTextValue => ReviewSizeNoteText.Text;
+
+    public string ReviewWindowTextValue => ReviewWindowText.Text;
+
+    public bool CanShowPreviousReviewWindow => PreviousReviewWindowButton.IsEnabled;
+
+    public bool CanShowNextReviewWindow => NextReviewWindowButton.IsEnabled;
 
     public string CurrentSearchText => SearchBox.Text;
 
@@ -225,6 +236,7 @@ public partial class MainWindow : Window
         _currentCategoryFilter = StorageCategoryFilter.All;
         _currentEntryTypeFilter = StorageEntryTypeFilter.All;
         _currentSearch = StorageReviewSearch.Empty;
+        _currentDisplayStartIndex = 0;
         _shortlist.Clear();
         ClearQuarantinePreview();
         SetSearchTextSilently("");
@@ -238,7 +250,7 @@ public partial class MainWindow : Window
         FolderCountText.Text = result.FolderCount.ToString("N0");
         FileCountText.Text = result.FileCount.ToString("N0");
         AccessIssueCountText.Text = result.InaccessibleCount.ToString("N0");
-        StatusText.Text = FormatScanCompletedStatus(rows.Length, matchedEntries.Count);
+        StatusText.Text = FormatScanCompletedStatus(matchedEntries.Count);
         UpdateFilterButtons();
         UpdateFilterSummary();
         UpdateReviewMix();
@@ -559,6 +571,7 @@ public partial class MainWindow : Window
         }
 
         _currentSearch = StorageReviewSearch.FromText(SearchBox.Text);
+        _currentDisplayStartIndex = 0;
         RefreshResults();
     }
 
@@ -570,6 +583,16 @@ public partial class MainWindow : Window
     private void ResetViewButton_Click(object sender, RoutedEventArgs e)
     {
         ResetReviewView();
+    }
+
+    private void PreviousReviewWindowButton_Click(object sender, RoutedEventArgs e)
+    {
+        ShowPreviousReviewWindow();
+    }
+
+    private void NextReviewWindowButton_Click(object sender, RoutedEventArgs e)
+    {
+        ShowNextReviewWindow();
     }
 
     private void ExportCsvButton_Click(object sender, RoutedEventArgs e)
@@ -608,7 +631,7 @@ public partial class MainWindow : Window
 
     private IReadOnlyList<StorageReviewEntry> BuildCurrentScanReportExportRows()
     {
-        return _currentReview?.ApplyFilter(_currentFilter, _currentCategoryFilter, _currentSearch) ?? [];
+        return ApplyCurrentReviewFilters();
     }
 
     private void ExportShortlistCsvButton_Click(object sender, RoutedEventArgs e)
@@ -753,6 +776,9 @@ public partial class MainWindow : Window
         SearchBox.IsEnabled = !isScanning && _currentReview is not null;
         ClearSearchButton.IsEnabled = !isScanning && _currentReview is not null && _currentSearch.IsActive;
         ResetViewButton.IsEnabled = !isScanning && _currentReview is not null && IsReviewViewFiltered();
+        var matchedEntries = ApplyCurrentReviewFilters();
+        PreviousReviewWindowButton.IsEnabled = !isScanning && _currentReview is not null && _currentDisplayStartIndex > 0;
+        NextReviewWindowButton.IsEnabled = !isScanning && _currentReview is not null && _currentDisplayStartIndex + MaxDisplayedRows < matchedEntries.Count;
         UpdateShortlistControls();
         UpdateSafetyShortcutButtons();
     }
@@ -781,6 +807,7 @@ public partial class MainWindow : Window
         }
 
         _currentFilter = filter;
+        _currentDisplayStartIndex = 0;
         RefreshResults();
     }
 
@@ -792,6 +819,7 @@ public partial class MainWindow : Window
         }
 
         _currentCategoryFilter = filter;
+        _currentDisplayStartIndex = 0;
         SelectCategoryFilterOption(_currentCategoryFilter);
         RefreshResults();
     }
@@ -804,6 +832,7 @@ public partial class MainWindow : Window
         }
 
         _currentEntryTypeFilter = filter;
+        _currentDisplayStartIndex = 0;
         SelectEntryTypeFilterOption(_currentEntryTypeFilter);
         RefreshResults();
     }
@@ -816,6 +845,7 @@ public partial class MainWindow : Window
         }
 
         _currentSearch = StorageReviewSearch.FromText(searchText);
+        _currentDisplayStartIndex = 0;
         SetSearchTextSilently(_currentSearch.Query);
         RefreshResults();
     }
@@ -831,6 +861,7 @@ public partial class MainWindow : Window
         _currentCategoryFilter = StorageCategoryFilter.All;
         _currentEntryTypeFilter = StorageEntryTypeFilter.All;
         _currentSearch = StorageReviewSearch.Empty;
+        _currentDisplayStartIndex = 0;
         SelectCategoryFilterOption(_currentCategoryFilter);
         SelectEntryTypeFilterOption(_currentEntryTypeFilter);
         SetSearchTextSilently("");
@@ -848,9 +879,39 @@ public partial class MainWindow : Window
         var shortcutFilter = StorageScanSafetyShortcutFilterBuilder.Build(shortcut);
         _currentFilter = shortcutFilter.ReviewFilter;
         _currentCategoryFilter = shortcutFilter.CategoryFilter;
+        _currentDisplayStartIndex = 0;
         SelectCategoryFilterOption(_currentCategoryFilter);
         RefreshResults();
         StatusText.Text = $"Review shortcut applied: {shortcutFilter.Label}. No files were modified.";
+    }
+
+    public void ShowNextReviewWindow()
+    {
+        MoveReviewWindow(MaxDisplayedRows);
+    }
+
+    public void ShowPreviousReviewWindow()
+    {
+        MoveReviewWindow(-MaxDisplayedRows);
+    }
+
+    private void MoveReviewWindow(int offset)
+    {
+        if (_currentReview is null)
+        {
+            return;
+        }
+
+        var matchedEntries = ApplyCurrentReviewFilters();
+        if (matchedEntries.Count == 0)
+        {
+            return;
+        }
+
+        _currentDisplayStartIndex += offset;
+        ClampDisplayStartIndex(matchedEntries.Count);
+        RefreshResults();
+        StatusText.Text = $"Review window changed to {FormatReviewWindowRange(matchedEntries.Count)}. No files were modified.";
     }
 
     public bool SelectDisplayedPath(string fullPath)
@@ -874,7 +935,9 @@ public partial class MainWindow : Window
             return;
         }
 
-        var rows = ApplyCurrentFilter();
+        var matchedEntries = ApplyCurrentReviewFilters();
+        ClampDisplayStartIndex(matchedEntries.Count);
+        var rows = BuildDisplayedRows(matchedEntries);
         ResultsGrid.ItemsSource = rows;
         UpdateFilterButtons();
         UpdateFilterSummary();
@@ -914,6 +977,9 @@ public partial class MainWindow : Window
             EntryTypeFilterBox.IsEnabled = false;
             ResetViewButton.IsEnabled = false;
             ClearSearchButton.IsEnabled = false;
+            PreviousReviewWindowButton.IsEnabled = false;
+            NextReviewWindowButton.IsEnabled = false;
+            ReviewWindowText.Text = "Rows appear after a scan.";
             return;
         }
 
@@ -942,11 +1008,6 @@ public partial class MainWindow : Window
             || _currentSearch.IsActive;
     }
 
-    private StorageEntryRow[] ApplyCurrentFilter()
-    {
-        return BuildDisplayedRows(ApplyCurrentReviewFilters());
-    }
-
     private IReadOnlyList<StorageReviewEntry> ApplyCurrentReviewFilters()
     {
         return _currentReview?.ApplyFilter(_currentFilter, _currentCategoryFilter, _currentEntryTypeFilter, _currentSearch) ?? [];
@@ -954,7 +1015,9 @@ public partial class MainWindow : Window
 
     private StorageEntryRow[] BuildDisplayedRows(IReadOnlyList<StorageReviewEntry> entries)
     {
+        ClampDisplayStartIndex(entries.Count);
         return entries
+            .Skip(_currentDisplayStartIndex)
             .Take(MaxDisplayedRows)
             .Select(entry => new StorageEntryRow(entry, _shortlist.Contains(entry.Entry)))
             .ToArray();
@@ -1040,37 +1103,70 @@ public partial class MainWindow : Window
         }
     }
 
+    private void ClampDisplayStartIndex(int matchedCount)
+    {
+        if (matchedCount <= 0)
+        {
+            _currentDisplayStartIndex = 0;
+            return;
+        }
+
+        var lastWindowStart = ((matchedCount - 1) / MaxDisplayedRows) * MaxDisplayedRows;
+        _currentDisplayStartIndex = Math.Clamp(_currentDisplayStartIndex, 0, lastWindowStart);
+    }
+
+    private string FormatReviewWindowRange(int matchedCount)
+    {
+        if (matchedCount <= 0)
+        {
+            return "0 matched rows";
+        }
+
+        ClampDisplayStartIndex(matchedCount);
+        var start = _currentDisplayStartIndex + 1;
+        var end = Math.Min(_currentDisplayStartIndex + MaxDisplayedRows, matchedCount);
+        return $"rows {start:N0}-{end:N0} of {matchedCount:N0} matched";
+    }
+
+    private void UpdateReviewWindowControls(int matchedCount)
+    {
+        ClampDisplayStartIndex(matchedCount);
+        ReviewWindowText.Text = _currentReview is null
+            ? "Rows appear after a scan."
+            : FormatReviewWindowRange(matchedCount);
+        var canUseWindowControls = _currentReview is not null && ScanButton.IsEnabled;
+        PreviousReviewWindowButton.IsEnabled = canUseWindowControls && _currentDisplayStartIndex > 0;
+        NextReviewWindowButton.IsEnabled = canUseWindowControls && _currentDisplayStartIndex + MaxDisplayedRows < matchedCount;
+    }
+
     private void UpdateFilterSummary()
     {
         if (_currentReview is null)
         {
             FilterSummaryText.Text = "No scan loaded";
+            UpdateReviewWindowControls(0);
             return;
         }
 
         var matchedEntries = ApplyCurrentReviewFilters();
-        var displayedCount = Math.Min(matchedEntries.Count, MaxDisplayedRows);
+        ClampDisplayStartIndex(matchedEntries.Count);
         var largestMatchedBytes = matchedEntries.Select(row => row.Entry.SizeBytes).DefaultIfEmpty(0).Max();
         var categoryLabel = _currentCategoryFilter.Kind == StorageCategoryFilterKind.All ? "" : $" + {FormatCategoryFilter(_currentCategoryFilter)}";
         var typeLabel = _currentEntryTypeFilter == StorageEntryTypeFilter.All ? "" : $" + {FormatEntryTypeFilter(_currentEntryTypeFilter)}";
         var searchLabel = _currentSearch.IsActive ? $" + Search \"{_currentSearch.Query}\"" : "";
-        var matchLabel = matchedEntries.Count > displayedCount
-            ? $"{displayedCount:N0} shown of {matchedEntries.Count:N0} matched"
-            : $"{displayedCount:N0} shown";
-        var limitLabel = matchedEntries.Count > displayedCount
-            ? $" Display limit {MaxDisplayedRows:N0}; narrow filters/search to inspect more matches."
+        var limitLabel = matchedEntries.Count > MaxDisplayedRows
+            ? $" Display window {MaxDisplayedRows:N0}; use Previous/Next rows or narrow filters/search to inspect more matches."
             : "";
         FilterSummaryText.Text =
-            $"{FormatFilter(_currentFilter)}{categoryLabel}{typeLabel}{searchLabel}: {matchLabel}, " +
+            $"{FormatFilter(_currentFilter)}{categoryLabel}{typeLabel}{searchLabel}: {FormatReviewWindowRange(matchedEntries.Count)}, " +
             $"largest matched row {ByteSizeFormatter.Format(largestMatchedBytes)}, " +
             $"shortlist {_shortlist.Count:N0}.{limitLabel}";
+        UpdateReviewWindowControls(matchedEntries.Count);
     }
 
-    private static string FormatScanCompletedStatus(int displayedCount, int matchedCount)
+    private string FormatScanCompletedStatus(int matchedCount)
     {
-        return matchedCount > displayedCount
-            ? $"Storage Scan completed. Showing {displayedCount:N0} of {matchedCount:N0} paths. No files were modified."
-            : $"Storage Scan completed. Showing {displayedCount:N0} paths. No files were modified.";
+        return $"Storage Scan completed. Showing {FormatReviewWindowRange(matchedCount)}. No files were modified.";
     }
 
     private void UpdateShortlistControls()

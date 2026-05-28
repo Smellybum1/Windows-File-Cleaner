@@ -81,6 +81,7 @@ What changed:
 - Later type-filter packet included the active Storage Entry Type Filter in exported row selection and generated filenames.
 - Later contents-context packet added contained file and folder count columns for recursive row comparison.
 - Later access-status packet added an `Access status` column separate from access issue error text.
+- Later Storage Review Display Window packet added WPF coverage proving Scan Report Export uses the full active type-filtered review lens rather than only the visible row window.
 
 Files changed:
 

@@ -277,17 +277,55 @@ internal sealed class MainWindowSmokeTests
                 window.DisplayedRowCount == 2000,
                 "Large fixture scan should cap the WPF grid at the display limit.");
             Assert(
-                window.CurrentStatusText.Contains("Showing 2,000 of", StringComparison.OrdinalIgnoreCase),
-                "Large fixture status should distinguish displayed rows from matched paths.");
+                window.CurrentStatusText.Contains("Showing rows 1-2,000", StringComparison.OrdinalIgnoreCase),
+                "Large fixture status should show the active review window.");
             Assert(
-                window.FilterSummaryTextValue.Contains("2,000 shown of", StringComparison.OrdinalIgnoreCase),
-                "Filter summary should distinguish displayed rows from matched rows.");
+                window.FilterSummaryTextValue.Contains("rows 1-2,000", StringComparison.OrdinalIgnoreCase),
+                "Filter summary should show the active review window.");
             Assert(
-                window.FilterSummaryTextValue.Contains("Display limit 2,000", StringComparison.OrdinalIgnoreCase),
-                "Filter summary should explain the display limit when more matches exist.");
+                window.ReviewWindowTextValue.Contains("rows 1-2,000", StringComparison.OrdinalIgnoreCase),
+                "Review window text should show the first matched row window.");
+            Assert(!window.CanShowPreviousReviewWindow, "First review window should not allow previous rows.");
+            Assert(window.CanShowNextReviewWindow, "Large fixture scan should allow moving to the next review window.");
             Assert(
                 window.FilterSummaryTextValue.Contains("largest matched row", StringComparison.OrdinalIgnoreCase),
                 "Filter summary should label largest-row size as matched-row triage.");
+
+            var firstWindowPaths = window.DisplayedRows
+                .Select(row => row.FullPath)
+                .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+            window.ShowNextReviewWindow();
+            Assert(window.DisplayedRowCount > 0, "Next review window should show remaining matched rows.");
+            Assert(window.DisplayedRowCount < 2000, "Next review window should not repeat the full first display window.");
+            Assert(
+                window.ReviewWindowTextValue.Contains("rows 2,001-", StringComparison.OrdinalIgnoreCase),
+                "Next review window text should show the second matched row window.");
+            Assert(
+                window.FilterSummaryTextValue.Contains("rows 2,001-", StringComparison.OrdinalIgnoreCase),
+                "Filter summary should update after moving to the next review window.");
+            Assert(window.CanShowPreviousReviewWindow, "Second review window should allow returning to previous rows.");
+            Assert(!window.CanShowNextReviewWindow, "Large fixture with one partial second window should not allow another next page.");
+            Assert(
+                window.DisplayedRows.All(row => !firstWindowPaths.Contains(row.FullPath)),
+                "Next review window should not repeat first-window rows.");
+            Assert(
+                window.CurrentStatusText.Contains("Review window changed", StringComparison.OrdinalIgnoreCase)
+                && window.CurrentStatusText.Contains("No files were modified", StringComparison.OrdinalIgnoreCase),
+                "Changing review windows should preserve the read-only status boundary.");
+
+            window.ShowPreviousReviewWindow();
+            Assert(window.DisplayedRowCount == 2000, "Previous review window should return to the capped first window.");
+            Assert(window.ReviewWindowTextValue.Contains("rows 1-2,000", StringComparison.OrdinalIgnoreCase), "Previous review window should restore the first row window.");
+
+            window.ShowNextReviewWindow();
+            window.ApplyEntryTypeFilter(StorageEntryTypeFilter.Files);
+            Assert(
+                window.ReviewWindowTextValue.Contains("rows 1-2,000", StringComparison.OrdinalIgnoreCase),
+                "Changing the review lens should reset the review window to the first matched rows.");
+            Assert(
+                window.CurrentScanReportExportTypes.All(type => type == "File"),
+                "Scan Report Export rows should honor the active file type filter.");
             Assert(File.Exists(fixture.MarkerPath), "Large fixture marker file should still exist after the read-only scan.");
         }
         finally
@@ -308,6 +346,7 @@ internal sealed class MainWindowSmokeTests
             Assert(window.FilterSummaryTextValue.Contains("Files", StringComparison.OrdinalIgnoreCase), "File type filter should update the filter summary.");
             Assert(window.DisplayedRows.Count > 0, "File type filter should show fixture files.");
             Assert(window.DisplayedRows.All(row => row.Type == "File"), "File type filter should only show files.");
+            Assert(window.CurrentScanReportExportTypes.All(type => type == "File"), "Scan Report Export should honor the active file type filter.");
             Assert(window.CurrentScanReportExportFileName.Contains("-files", StringComparison.OrdinalIgnoreCase), "Scan Report Export filename should include active file type filter.");
             Assert(window.CanResetReviewView, "Reset view should be enabled after type filtering.");
 
@@ -315,6 +354,7 @@ internal sealed class MainWindowSmokeTests
             Assert(window.FilterSummaryTextValue.Contains("Folders", StringComparison.OrdinalIgnoreCase), "Folder type filter should update the filter summary.");
             Assert(window.DisplayedRows.Count > 0, "Folder type filter should show fixture folders.");
             Assert(window.DisplayedRows.All(row => row.Type == "Folder"), "Folder type filter should only show folders.");
+            Assert(window.CurrentScanReportExportTypes.All(type => type == "Folder"), "Scan Report Export should honor the active folder type filter.");
 
             window.ApplyEntryTypeFilter(StorageEntryTypeFilter.All);
             Assert(window.CurrentEntryTypeFilterLabel.Contains("All types", StringComparison.OrdinalIgnoreCase), "Type filter should return to All types.");

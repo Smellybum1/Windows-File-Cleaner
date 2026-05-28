@@ -101,7 +101,7 @@ After the app opens:
 4. Click `Scan`.
 5. Confirm the status says no files were modified.
 6. Review the summary cards for total size, folders, files, and access issues.
-7. If the status or filter summary says `2,000 shown of ... matched`, treat the grid as the first review window and narrow with search or filters.
+7. If the status or filter summary says `rows 1-2,000 of ... matched`, use `Next rows` / `Previous rows` to move through matched rows, or narrow with search and filters.
 8. Treat row sizes as triage clues, not storage savings; folder rows include children and can overlap with child rows.
 9. Use Review Mix and Safety Summary to inspect the cleanup scope root, high-risk, protected, access issue, reparse point, quarantine candidate, and no-category rows.
 10. Use Storage Review Search for specific names such as `pip`, `NVIDIA`, `Codex`, app names, or game folders; use prefixes such as `path:pip`, `category:Python package cache`, `rating:High risk`, `recommendation:Quarantine candidate`, `access:readable`, or `access:access issue` when you want one field.
@@ -110,9 +110,9 @@ After the app opens:
 13. Select small text files and use `Preview file` only when you intentionally want a bounded read-only text snippet; binary and unsupported files should not render as text.
 14. Try category filters such as Cleanup scope root, App cache, Python package cache, GPU shader cache, Large old file, Windows app data, Installed application, Game data, Protected location, and No category.
 15. Use `Reset view` after stacking filters/search; it clears the review lens but keeps Review Shortlist.
-16. Add a likely-safe cleanup candidate to the Review Shortlist, or use `Shortlist shown` / `Remove shown` only after narrowing the grid to rows you intentionally want to review.
+16. Add a likely-safe cleanup candidate to the Review Shortlist, or use `Shortlist shown` / `Remove shown` only after narrowing or paging the grid to rows you intentionally want to review.
 17. Click `Preview quarantine` and confirm broad parent rows are blocked when protected descendants are present; confirmation readiness blockers should be separate from preview row details, and Restore Manifest Draft / Quarantine Confirmation Draft should still say no files were modified and execution is not implemented.
-18. Export CSV reports only when you intentionally choose an output file; the main report export follows the active filters/search, includes parent/depth and access-status context for recursive rows, and the suggested filename includes the search term when one is active.
+18. Export CSV reports only when you intentionally choose an output file; the main report export follows the active filters/type/search, includes parent/depth and access-status context for recursive rows, and the suggested filename includes the search term when one is active.
 
 ## Current Workflow
 
@@ -123,8 +123,8 @@ The intended review flow is:
 3. Confirm the Cleanup Scope Safety Note before scanning.
 4. Run Storage Scan.
 5. Inspect high-risk and protected rows first.
-6. Check whether the grid is showing all matched rows or the first 2,000 matched rows.
-7. Use Storage Review Search, Type filter, and category filters to understand large buckets and specific app/tool paths.
+6. Check whether the grid is showing all matched rows or one 2,000-row display window.
+7. Use `Next rows` / `Previous rows`, Storage Review Search, Type filter, and category filters to understand large buckets and specific app/tool paths.
 8. Use `Reset view` when the active review lens becomes too narrow; it does not clear Review Shortlist.
 9. Use Selected Path Hierarchy Context, Selected File Content Preview, Selected Path Review Guidance, Child Breakdown, and Open in Explorer for manual inspection.
 10. Add interesting rows to Review Shortlist; use `Shortlist shown` and `Remove shown` only for the currently displayed review window.

@@ -30,6 +30,7 @@ When the active review result has more than 2,000 matched rows:
 - The filter summary should say `2,000 shown of ... matched`.
 - The filter summary should explain the display limit and suggest narrowing with filters/search.
 - The wording should remain read-only and not imply files were modified.
+- A later Storage Review Display Window packet replaced first-window-only wording with row ranges such as `rows 1-2,000 of ... matched` and added Previous rows / Next rows navigation.
 
 ## Domain language changes
 
@@ -159,6 +160,7 @@ What changed:
 - Split matched review rows from displayed WPF rows.
 - Updated completed-scan status and filter summary to say when only the first 2,000 matched rows are shown.
 - Added WPF smoke coverage for a large synthetic fixture that exceeds the display limit.
+- Later Storage Review Display Window packet added Previous rows / Next rows controls over matched in-memory rows and updated wording to show row ranges.
 
 Files changed:
 
@@ -196,10 +198,11 @@ ADRs added or skipped:
 Follow-up work:
 
 - Consider paging or virtualization only after the visible real-profile review flow shows the 2,000-row cap is still too limiting.
+- Row-window navigation now exists; consider virtualization or a tree/grid only if row windows are still too limiting.
 
 Open questions:
 
-- Should a future UI add paging or a virtualized tree/grid for all matched rows?
+- Should a future UI add a virtualized tree/grid for all matched rows?
 
 Risky assumptions:
 

@@ -619,9 +619,9 @@ The current display limit is 2,000 rows. It is a UI review boundary, not a scann
 
 #### Examples
 
-- A real scan may contain 188,580 files and still show only the largest 2,000 matched review rows in the grid.
-- The filter summary can say `2,000 shown of 12,345 matched` when the active filter/search still matches more rows than the grid displays.
-- Narrowing by Storage Review Search or Bloat Category Filter can reduce the matched set and reveal rows outside the first display window.
+- A real scan may contain 188,580 files and initially show only rows `1-2,000` of the matched review rows in the grid.
+- The filter summary can say `rows 2,001-4,000 of 12,345 matched` when the user moves to the next Storage Review Display Window.
+- Narrowing by Storage Review Search, Storage Entry Type Filter, or Bloat Category Filter can reduce the matched set and reset the display window to the first matched rows.
 
 #### Non-examples
 
@@ -633,20 +633,65 @@ The current display limit is 2,000 rows. It is a UI review boundary, not a scann
 #### Lifecycle
 
 - Applies after a Storage Scan completes and review rows are available.
-- Recomputed when the active Storage Review Filter, Bloat Category Filter, Storage Review Search, or Review Shortlist changes.
+- Recomputed when the active Storage Review Filter, Bloat Category Filter, Storage Entry Type Filter, Storage Review Search, or Review Shortlist changes.
 - Does not modify files.
 
 #### Relationships
 
 - Uses Storage Scan review results.
-- Combines with Storage Review Filter, Bloat Category Filter, and Storage Review Search.
+- Combines with Storage Review Filter, Bloat Category Filter, Storage Entry Type Filter, and Storage Review Search.
 - Helps keep very large scans reviewable without hiding that additional matched rows exist.
 
 #### Code implications
 
 - Keep the limit in the WPF review layer.
-- Show displayed count and matched count when the limit is reached.
-- Do not treat displayed rows as the complete scan result when exporting, previewing, or documenting review behavior.
+- Show the current row range and matched count when the limit is reached.
+- Provide read-only Previous rows and Next rows controls over matched in-memory review results.
+- Do not treat displayed rows as the complete scan result when exporting, documenting scan scope, or describing review behavior.
+
+### Storage Review Display Window
+
+Status: draft
+Last reviewed: 2026-05-28
+
+#### Definition
+
+A Storage Review Display Window is the current slice of matched Storage Scan review rows shown in the WPF grid under the Storage Review Display Limit.
+
+The initial window starts at row `1`. Previous rows and Next rows move the window through the matched in-memory result set without rescanning.
+
+#### Examples
+
+- `rows 1-2,000 of 12,345 matched`
+- `rows 2,001-4,000 of 12,345 matched`
+- `rows 4,001-4,112 of 4,112 matched`
+
+#### Non-examples
+
+- A Cleanup Action.
+- A rescan.
+- A change to Bloat Categories, Importance Ratings, or Deletion Recommendations.
+- A limit on CSV export rows.
+
+#### Lifecycle
+
+- Available after a Storage Scan completes.
+- Resets to the first matched rows when the active review lens changes.
+- Moves backward or forward only within the current matched review result.
+- Does not modify files.
+
+#### Relationships
+
+- Uses Storage Review Display Limit.
+- Uses Storage Review Filter, Bloat Category Filter, Storage Entry Type Filter, and Storage Review Search.
+- Defines which rows `Shortlist shown` and `Remove shown` apply to.
+- Does not constrain Scan Report Export, which uses the full active review lens rather than only the visible window.
+
+#### Code implications
+
+- Use `_currentDisplayStartIndex` for the WPF display window offset.
+- Reset the offset when filters, type filters, category filters, search, safety shortcuts, or Review View Reset change the active lens.
+- Keep Previous rows and Next rows read-only and disabled when no adjacent window exists.
 
 ### Bloat Category Filter
 
