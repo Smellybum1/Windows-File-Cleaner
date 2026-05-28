@@ -19,6 +19,7 @@ tests.StorageScanSafetySummaryHighlightsReviewBoundaries();
 tests.StorageScanSafetyShortcutsMapToReadOnlyFilters();
 tests.ReviewShortlistTracksSelectedRowsWithoutModifyingReview();
 tests.QuarantinePreviewBuildsReadOnlyPlanFromShortlist();
+tests.QuarantineRootSafetyNoteRequiresFullyQualifiedPreviewRoot();
 tests.QuarantinePreviewBlocksParentsWithProtectedDescendants();
 tests.QuarantinePreviewCsvExporterWritesReviewReport();
 tests.RestoreManifestDraftBuildsJsonUndoMetadataFromIncludedPreviewRows();
@@ -870,6 +871,29 @@ internal sealed class StorageScanTests
         Assert(nonCandidatePreview.Disposition == QuarantinePreviewDisposition.Blocked, "Non-candidate row should be blocked.");
         Assert(nonCandidatePreview.Reasons.Any(reason => reason.Contains("Quarantine candidate", StringComparison.OrdinalIgnoreCase)), "Non-candidate row should explain recommendation blocking.");
         Assert(!Directory.Exists(quarantineRoot), "Preview should not create the quarantine root folder.");
+    }
+
+    public void QuarantineRootSafetyNoteRequiresFullyQualifiedPreviewRoot()
+    {
+        var defaultNote = QuarantineRootSafetyNoteBuilder.Build(" ");
+
+        Assert(defaultNote.CanPreview, "Blank Quarantine root should fall back to the default preview root.");
+        Assert(defaultNote.RootPath == Path.GetFullPath(QuarantinePreviewBuilder.DefaultQuarantineRootPath), "Blank Quarantine root should resolve to the default path.");
+        Assert(defaultNote.IsPreferredDrive, "Default Quarantine root should be on the preferred D: drive.");
+        Assert(defaultNote.Message.Contains("does not create folders", StringComparison.OrdinalIgnoreCase), "Default note should preserve preview-only wording.");
+
+        var customD = QuarantineRootSafetyNoteBuilder.Build(@"D:\ReviewQuarantine");
+        Assert(customD.CanPreview, "Fully qualified D: roots should be usable for preview.");
+        Assert(customD.IsPreferredDrive, "D: roots should be marked as preferred.");
+
+        var nonD = QuarantineRootSafetyNoteBuilder.Build(@"C:\Temp\WindowsFileCleanerQuarantine");
+        Assert(nonD.CanPreview, "Fully qualified non-D roots should still be usable for preview.");
+        Assert(!nonD.IsPreferredDrive, "Non-D roots should not be marked as preferred.");
+        Assert(nonD.Message.Contains("D:", StringComparison.OrdinalIgnoreCase), "Non-D roots should explain that D: remains preferred.");
+
+        var relative = QuarantineRootSafetyNoteBuilder.Build(@"relative\quarantine");
+        Assert(!relative.CanPreview, "Relative Quarantine roots should be blocked from preview.");
+        Assert(relative.Message.Contains("fully qualified", StringComparison.OrdinalIgnoreCase), "Relative roots should ask for a fully qualified path.");
     }
 
     public void QuarantinePreviewBlocksParentsWithProtectedDescendants()

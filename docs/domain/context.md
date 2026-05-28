@@ -1465,6 +1465,8 @@ Last reviewed: 2026-05-29
 
 Quarantine Root Selection is the read-only preview setting that chooses the destination root used when building Quarantine Preview destination paths. The root can be typed or chosen with the Quarantine root browse action.
 
+The root must be fully qualified before Quarantine Preview can build destination paths. `D:` remains preferred for future quarantine storage, but a fully qualified non-`D:` path may still be used for preview with a safety note.
+
 It does not create folders, move files, write manifests, or approve future Quarantine execution.
 
 #### Examples
@@ -1472,6 +1474,8 @@ It does not create folders, move files, write manifests, or approve future Quara
 - Use the default `D:\WindowsFileCleanerQuarantine`.
 - Type another absolute `D:` folder before creating a Quarantine Preview.
 - Browse to a `D:` folder before creating a Quarantine Preview.
+- Type a fully qualified non-`D:` folder and see a warning that `D:` remains preferred.
+- Type a relative folder such as `relative\quarantine` and see Quarantine Preview disabled until the path is corrected.
 
 #### Non-examples
 
@@ -1486,20 +1490,68 @@ It does not create folders, move files, write manifests, or approve future Quara
 - Used when the user creates a Quarantine Preview.
 - Changing it clears stale Quarantine Preview, Restore Manifest Draft, and Quarantine Confirmation Draft output.
 - Browsing for a root updates the preview setting only.
+- Invalid or relative roots disable Quarantine Preview without touching the filesystem.
 
 #### Relationships
 
 - Feeds Quarantine Preview destination paths.
 - Supports the user's preference for a quarantine location on `D:`.
+- Feeds Quarantine Root Safety Note so the UI explains whether preview is currently available.
 - Must remain separate from Quarantine execution approval.
 
 #### Code implications
 
 - Use `QuarantineRootBox` for the WPF input.
 - Use `BrowseQuarantineRootButton` for the WPF browse action.
+- Use `QuarantineRootSafetyNote` and `QuarantineRootSafetyNoteBuilder` for preview-root messaging and gating.
 - Use the typed value when calling `QuarantinePreviewBuilder`.
 - Keep the default as `D:\WindowsFileCleanerQuarantine`.
 - Do not create or validate the folder by touching the filesystem during preview.
+
+### Quarantine Root Safety Note
+
+Status: draft
+Last reviewed: 2026-05-29
+
+#### Definition
+
+Quarantine Root Safety Note is read-only UI text explaining whether the current Quarantine Root Selection is usable for Quarantine Preview and whether it is on the preferred `D:` drive.
+
+It is a path-shape check for preview only. It does not prove that a folder exists, create folders, move files, write manifests, or approve future Quarantine execution.
+
+#### Examples
+
+- Preferred Quarantine Root: the selected root is fully qualified on `D:`.
+- Non-D: Quarantine Root: the selected root is fully qualified, but `D:` remains preferred for future quarantine storage.
+- Choose Full Quarantine Root: the selected root is relative and Quarantine Preview is disabled.
+- Invalid Quarantine Root: the selected root cannot be parsed for preview.
+
+#### Non-examples
+
+- A Cleanup Action.
+- A Quarantine execution approval.
+- A folder existence check.
+- A persisted app preference.
+
+#### Lifecycle
+
+- Generated when the WPF app starts.
+- Updates when the Quarantine Root Selection text changes.
+- Controls whether `Preview quarantine` is enabled while a Review Shortlist exists.
+- Is not persisted.
+
+#### Relationships
+
+- Supports Quarantine Root Selection and Quarantine Preview.
+- Preserves the preview-only boundary before actual Quarantine execution exists.
+- Complements, but does not replace, future execution-time validation.
+
+#### Code implications
+
+- Use `QuarantineRootSafetyNote` and `QuarantineRootSafetyNoteBuilder`.
+- Require fully qualified roots before building Quarantine Preview destination paths.
+- Keep the note informational and read-only.
+- Do not touch the filesystem from the note builder.
 
 ### Scan Report Export
 

@@ -65,3 +65,7 @@ ADRs added or skipped:
 Follow-up work:
 
 - In the next manual fixture or real-profile pass, confirm the Quarantine root field remains readable in the toolbar and that preview destinations match the intended `D:` location.
+
+Later note:
+
+- Follow-up packet `2026-05-29-quarantine-root-safety-note.md` added a read-only safety note and fully qualified preview-root gate.

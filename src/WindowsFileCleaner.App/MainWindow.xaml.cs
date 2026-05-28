@@ -30,6 +30,7 @@ public partial class MainWindow : Window
     private bool _isUpdatingEntryTypeFilterOptions;
     private bool _isUpdatingSizeThresholdFilterOptions;
     private bool _isUpdatingSearchBox;
+    private bool _isWindowInitialized;
 
     public MainWindow()
         : this(StorageScanOptions.DefaultForCurrentUser().CleanupScopePath)
@@ -39,12 +40,14 @@ public partial class MainWindow : Window
     public MainWindow(string initialCleanupScopePath)
     {
         InitializeComponent();
+        _isWindowInitialized = true;
         ScopePathBox.Text = initialCleanupScopePath;
         ResultsGrid.ItemsSource = Array.Empty<StorageEntryRow>();
         UpdateCategoryFilterOptions();
         UpdateEntryTypeFilterOptions();
         UpdateSizeThresholdFilterOptions();
         UpdateCleanupScopeSafetyNote();
+        UpdateQuarantineRootSafetyNote();
     }
 
     public string CurrentCleanupScopePath => ScopePathBox.Text;
@@ -151,6 +154,8 @@ public partial class MainWindow : Window
     public string QuarantinePreviewTextValue => QuarantinePreviewText.Text;
 
     public string CurrentQuarantineRootPath => QuarantineRootBox.Text;
+
+    public string QuarantineRootSafetyNoteTextValue => QuarantineRootSafetyNoteText.Text;
 
     public string? CurrentQuarantinePreviewRootPath => _currentQuarantinePreview?.QuarantineRootPath;
 
@@ -559,25 +564,17 @@ public partial class MainWindow : Window
         }
 
         var shortlistedRows = _shortlist.ApplyTo(_currentReview.Entries);
-        var quarantineRootPath = GetQuarantineRootPathForPreview();
-        try
+        var quarantineRootNote = QuarantineRootSafetyNoteBuilder.Build(QuarantineRootBox.Text);
+        if (!quarantineRootNote.CanPreview)
         {
-            _currentQuarantinePreview = QuarantinePreviewBuilder.Build(
-                shortlistedRows,
-                _currentCleanupScopePath,
-                quarantineRootPath);
-        }
-        catch (ArgumentException)
-        {
-            ReportInvalidQuarantineRootPath();
-            return;
-        }
-        catch (NotSupportedException)
-        {
-            ReportInvalidQuarantineRootPath();
+            ReportInvalidQuarantineRootPath(quarantineRootNote);
             return;
         }
 
+        _currentQuarantinePreview = QuarantinePreviewBuilder.Build(
+            shortlistedRows,
+            _currentCleanupScopePath,
+            quarantineRootNote.RootPath);
         _currentRestoreManifestDraft = RestoreManifestDraftBuilder.Build(
             _currentQuarantinePreview,
             DateTimeOffset.UtcNow,
@@ -686,12 +683,20 @@ public partial class MainWindow : Window
 
     private void QuarantineRootBox_TextChanged(object sender, TextChangedEventArgs e)
     {
-        if (_currentQuarantinePreview is null)
+        if (!_isWindowInitialized)
         {
             return;
         }
 
+        UpdateQuarantineRootSafetyNote();
+        if (_currentQuarantinePreview is null)
+        {
+            UpdateShortlistControls();
+            return;
+        }
+
         ClearQuarantinePreview();
+        UpdateShortlistControls();
         StatusText.Text = "Quarantine root changed. Recreate Quarantine Preview to review destinations. No files were modified.";
     }
 
@@ -892,7 +897,7 @@ public partial class MainWindow : Window
         ExportCsvButton.IsEnabled = !isScanning && _currentReview is not null;
         ExportShortlistCsvButton.IsEnabled = !isScanning && _currentReview is not null && _shortlist.Count > 0;
         ClearShortlistButton.IsEnabled = !isScanning && _shortlist.Count > 0;
-        PreviewQuarantineButton.IsEnabled = !isScanning && _currentReview is not null && _shortlist.Count > 0;
+        PreviewQuarantineButton.IsEnabled = !isScanning && _currentReview is not null && _shortlist.Count > 0 && CanUseQuarantineRootForPreview();
         ExportQuarantinePreviewButton.IsEnabled = !isScanning && _currentQuarantinePreview is not null;
         CategoryFilterBox.IsEnabled = !isScanning && _currentReview is not null && CategoryFilterBox.Items.Count > 1;
         EntryTypeFilterBox.IsEnabled = !isScanning && _currentReview is not null;
@@ -936,7 +941,8 @@ public partial class MainWindow : Window
                 return Path.GetFullPath(currentPath);
             }
 
-            var root = Path.GetPathRoot(PathSafety.GetFullPath(GetQuarantineRootPathForPreview()));
+            var note = QuarantineRootSafetyNoteBuilder.Build(currentPath);
+            var root = note.CanPreview ? Path.GetPathRoot(note.RootPath) : null;
             return !string.IsNullOrWhiteSpace(root) && Directory.Exists(root)
                 ? root
                 : Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
@@ -965,6 +971,17 @@ public partial class MainWindow : Window
         RealProfilePreflightCheckBox.Visibility = note.IsRealUserProfileScope ? Visibility.Visible : Visibility.Collapsed;
         RealProfilePreflightCheckBox.IsEnabled = !_isScanning && note.IsRealUserProfileScope;
         ScanButton.IsEnabled = !_isScanning && scanGate.CanScan;
+    }
+
+    private void UpdateQuarantineRootSafetyNote()
+    {
+        if (QuarantineRootSafetyNoteText is null)
+        {
+            return;
+        }
+
+        var note = QuarantineRootSafetyNoteBuilder.Build(QuarantineRootBox.Text);
+        QuarantineRootSafetyNoteText.Text = $"{note.Label}: {note.Message}";
     }
 
     public void ApplyStorageReviewFilter(StorageReviewFilter filter)
@@ -1215,7 +1232,7 @@ public partial class MainWindow : Window
         ExportCsvButton.IsEnabled = true;
         ExportShortlistCsvButton.IsEnabled = _shortlist.Count > 0;
         ClearShortlistButton.IsEnabled = _shortlist.Count > 0;
-        PreviewQuarantineButton.IsEnabled = _shortlist.Count > 0;
+        PreviewQuarantineButton.IsEnabled = _shortlist.Count > 0 && CanUseQuarantineRootForPreview();
         ExportQuarantinePreviewButton.IsEnabled = _currentQuarantinePreview is not null;
         SearchBox.IsEnabled = true;
         SizeThresholdFilterBox.IsEnabled = true;
@@ -1465,7 +1482,7 @@ public partial class MainWindow : Window
         RemoveShownFromShortlistButton.IsEnabled = _currentReview is not null && hasShortlistedDisplayedRows && ScanButton.IsEnabled;
         ExportShortlistCsvButton.IsEnabled = _currentReview is not null && hasShortlist && ScanButton.IsEnabled;
         ClearShortlistButton.IsEnabled = hasShortlist && ScanButton.IsEnabled;
-        PreviewQuarantineButton.IsEnabled = _currentReview is not null && hasShortlist && ScanButton.IsEnabled;
+        PreviewQuarantineButton.IsEnabled = _currentReview is not null && hasShortlist && ScanButton.IsEnabled && CanUseQuarantineRootForPreview();
         ExportQuarantinePreviewButton.IsEnabled = _currentQuarantinePreview is not null && ScanButton.IsEnabled;
         SearchBox.IsEnabled = _currentReview is not null && ScanButton.IsEnabled;
         ClearSearchButton.IsEnabled = _currentReview is not null && _currentSearch.IsActive && ScanButton.IsEnabled;
@@ -1486,18 +1503,16 @@ public partial class MainWindow : Window
         }
     }
 
-    private string GetQuarantineRootPathForPreview()
+    private bool CanUseQuarantineRootForPreview()
     {
-        var root = QuarantineRootBox.Text.Trim();
-        return string.IsNullOrWhiteSpace(root)
-            ? QuarantinePreviewBuilder.DefaultQuarantineRootPath
-            : root;
+        return QuarantineRootSafetyNoteBuilder.Build(QuarantineRootBox.Text).CanPreview;
     }
 
-    private void ReportInvalidQuarantineRootPath()
+    private void ReportInvalidQuarantineRootPath(QuarantineRootSafetyNote note)
     {
         ClearQuarantinePreview();
-        StatusText.Text = "Quarantine Preview could not be created because the quarantine root path is invalid. No files were modified.";
+        UpdateShortlistControls();
+        StatusText.Text = $"Quarantine Preview could not be created: {note.Message} No files were modified.";
     }
 
     private void ClearQuarantinePreview()

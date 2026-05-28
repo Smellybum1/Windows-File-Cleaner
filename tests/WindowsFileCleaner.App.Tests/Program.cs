@@ -72,6 +72,10 @@ internal sealed class MainWindowSmokeTests
             Assert(
                 window.CurrentQuarantineRootPath == QuarantinePreviewBuilder.DefaultQuarantineRootPath,
                 "MainWindow should default Quarantine Preview to the D: root requested by the user.");
+            Assert(
+                window.QuarantineRootSafetyNoteTextValue.Contains("Preferred Quarantine Root", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineRootSafetyNoteTextValue.Contains("does not create folders", StringComparison.OrdinalIgnoreCase),
+                "Default Quarantine root note should explain preferred D: preview-only behavior.");
             Assert(window.BrowseCleanupScopeButtonText.Contains("Browse", StringComparison.OrdinalIgnoreCase), "Cleanup Scope browse action should be visible in the header.");
             Assert(window.IsRealProfilePreflightConfirmationVisible, "MainWindow should show the real-profile preflight acknowledgement.");
             Assert(!window.IsRealProfilePreflightConfirmed, "Real-profile preflight acknowledgement should start unchecked.");
@@ -486,6 +490,12 @@ internal sealed class MainWindowSmokeTests
             Assert(
                 window.DisplayedRows.Any(row => row.FullPath == installer.FullPath && row.Shortlist == "Yes"),
                 "Shortlisted row should be marked in the WPF grid.");
+
+            window.SetQuarantineRootForPreview(@"relative\quarantine");
+            Assert(!window.CanPreviewQuarantine, "Relative Quarantine roots should disable Quarantine Preview.");
+            Assert(
+                window.QuarantineRootSafetyNoteTextValue.Contains("fully qualified", StringComparison.OrdinalIgnoreCase),
+                "Relative Quarantine roots should show a fully qualified path warning.");
 
             window.ApplyEntryTypeFilter(StorageEntryTypeFilter.Files);
             window.ApplySizeThresholdFilter(StorageSizeThresholdFilter.AtLeast1Mb);
