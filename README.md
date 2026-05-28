@@ -52,7 +52,15 @@ All WindowsFileCleaner.App.Tests checks passed.
 
 ## WPF Fixture Smoke
 
-Create a small synthetic Cleanup Scope inside the repo:
+Use the fixture review launcher for the manual fixture UI pass:
+
+```powershell
+.\tools\Start-MvpFixtureReview.ps1
+```
+
+The launcher runs preflight, creates a small synthetic Cleanup Scope inside the repo, and launches the WPF app with that scope. The app does not auto-scan; click `Scan` yourself after it opens.
+
+For focused troubleshooting, the individual fixture commands are:
 
 ```powershell
 .\tools\New-StorageScanSmokeFixture.ps1

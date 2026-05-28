@@ -61,8 +61,9 @@ try {
     Write-Host ""
     Write-Host "MVP preflight passed. No real user files were scanned or modified."
     Write-Host "Next manual fixture step:"
-    Write-Host ".\tools\New-StorageScanSmokeFixture.ps1"
-    Write-Host "dotnet run --project src\WindowsFileCleaner.App -- --scope `"$fixtureRoot`""
+    Write-Host ".\tools\Start-MvpFixtureReview.ps1 -SkipPreflight"
+    Write-Host "This creates the synthetic fixture and launches WPF with this Cleanup Scope:"
+    Write-Host $fixtureRoot
 }
 finally {
     Pop-Location

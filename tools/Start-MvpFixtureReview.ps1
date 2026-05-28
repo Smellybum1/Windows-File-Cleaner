@@ -1,0 +1,57 @@
+[CmdletBinding(SupportsShouldProcess)]
+param(
+    [string]$FixtureRoot = ".local\storage-scan-smoke-fixture",
+    [switch]$SkipPreflight,
+    [switch]$SkipLaunch
+)
+
+Set-StrictMode -Version Latest
+$ErrorActionPreference = "Stop"
+
+$repoRoot = Split-Path -Parent $PSScriptRoot
+$repoFullPath = [System.IO.Path]::GetFullPath($repoRoot).TrimEnd([System.IO.Path]::DirectorySeparatorChar)
+$preflightScript = Join-Path $PSScriptRoot "Invoke-MvpPreflight.ps1"
+$fixtureScript = Join-Path $PSScriptRoot "New-StorageScanSmokeFixture.ps1"
+
+if ([System.IO.Path]::IsPathRooted($FixtureRoot)) {
+    $fixtureFullPath = [System.IO.Path]::GetFullPath($FixtureRoot).TrimEnd([System.IO.Path]::DirectorySeparatorChar)
+}
+else {
+    $fixtureFullPath = [System.IO.Path]::GetFullPath((Join-Path $repoRoot $FixtureRoot)).TrimEnd([System.IO.Path]::DirectorySeparatorChar)
+}
+
+if (-not ($fixtureFullPath.Equals($repoFullPath, [System.StringComparison]::OrdinalIgnoreCase) -or
+    $fixtureFullPath.StartsWith($repoFullPath + [System.IO.Path]::DirectorySeparatorChar, [System.StringComparison]::OrdinalIgnoreCase))) {
+    throw "Fixture root must stay inside the repository: $repoFullPath"
+}
+
+Push-Location $repoRoot
+try {
+    if (-not $SkipPreflight) {
+        if ($PSCmdlet.ShouldProcess("MVP preflight", "Run")) {
+            & powershell.exe -NoProfile -ExecutionPolicy Bypass -File $preflightScript
+        }
+    }
+
+    if ($PSCmdlet.ShouldProcess($fixtureFullPath, "Create synthetic Storage Scan fixture")) {
+        & powershell.exe -NoProfile -ExecutionPolicy Bypass -File $fixtureScript -Root $fixtureFullPath
+    }
+
+    Write-Host ""
+    Write-Host "Fixture Cleanup Scope: $fixtureFullPath"
+    Write-Host "The WPF app will only prefill the Cleanup Scope. It will not auto-scan."
+    Write-Host "After the app opens, click Scan yourself and confirm the status says no files were modified."
+
+    if (-not $SkipLaunch) {
+        if ($PSCmdlet.ShouldProcess("Windows File Cleaner fixture review", "Launch WPF app")) {
+            & dotnet run --project src\WindowsFileCleaner.App -- --scope $fixtureFullPath
+        }
+    }
+    else {
+        Write-Host "Launch skipped. Manual command:"
+        Write-Host "dotnet run --project src\WindowsFileCleaner.App -- --scope `"$fixtureFullPath`""
+    }
+}
+finally {
+    Pop-Location
+}

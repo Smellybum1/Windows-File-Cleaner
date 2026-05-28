@@ -33,7 +33,7 @@ The repo should include a script that:
 - Runs WPF app smoke tests.
 - Runs the synthetic fixture generator in `-WhatIf` mode.
 - Runs `git diff --check`.
-- Prints the next manual fixture command.
+- Prints the next fixture review launcher command.
 - States that no real user files were scanned or modified by preflight.
 
 ## Domain language changes
@@ -140,7 +140,7 @@ What changed:
 
 - Added `tools/Invoke-MvpPreflight.ps1`.
 - Preflight runs restore, build, core tests, WPF app tests, fixture `-WhatIf`, and `git diff --check`.
-- Preflight prints the next manual fixture creation and WPF launch commands.
+- Preflight prints the next fixture review launcher command.
 - Kept the workflow read-only with respect to real user files.
 
 Files changed:

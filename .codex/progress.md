@@ -6,13 +6,13 @@ Use it to preserve what was completed, what was verified, what was rejected, and
 
 ## Current status
 
-Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. Review filters, selected-folder child breakdown, selected-path inspection actions, CSV export, Review Mix, Storage Scan Safety Summary, Safety Summary review shortcuts, Access issues filtering, Bloat Category Filter, No category filtering, Review Shortlist, Quarantine Preview, Quarantine Preview CSV export, Restore Manifest Draft, Quarantine Confirmation Draft, Quarantine Readiness UI, conservative app data classification, read-only safety regression checks, the MVP runbook, the MVP readiness audit, fixture-driven WPF launch support, WPF shell smoke testing, WPF fixture scan smoke testing, WPF review interaction smoke testing, WPF review toolbar layout polish, and the MVP preflight script are implemented and verified. Quarantine remains preview-only; no cleanup execution, manifest writing, or Undo Quarantine execution exists.
+Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. Review filters, selected-folder child breakdown, selected-path inspection actions, CSV export, Review Mix, Storage Scan Safety Summary, Safety Summary review shortcuts, Access issues filtering, Bloat Category Filter, No category filtering, Review Shortlist, Quarantine Preview, Quarantine Preview CSV export, Restore Manifest Draft, Quarantine Confirmation Draft, Quarantine Readiness UI, conservative app data classification, read-only safety regression checks, the MVP runbook, the MVP readiness audit, fixture-driven WPF launch support, WPF shell smoke testing, WPF fixture scan smoke testing, WPF review interaction smoke testing, WPF review toolbar layout polish, the MVP preflight script, and the MVP fixture review launcher are implemented and verified. Quarantine remains preview-only; no cleanup execution, manifest writing, or Undo Quarantine execution exists.
 
 ## Next recommended work
 
-1. Run `.\tools\Invoke-MvpPreflight.ps1`.
-2. Run `.\tools\New-StorageScanSmokeFixture.ps1`, launch the WPF app with the printed `--scope` command, and manually inspect layout, visible wording, export dialogs, Safety Summary shortcuts, Review Shortlist, Quarantine Preview, Review Mix, Access issues filter, category filter, No category filter, and filter wording.
-3. Use `README.md` and `docs/features/2026-05-28-mvp-readiness-audit.md` to rerun the WPF app against `C:\Users\moxhe`.
+1. Run `.\tools\Start-MvpFixtureReview.ps1`, click `Scan` in the launched fixture app, and manually inspect layout, visible wording, export dialogs, Safety Summary shortcuts, Review Shortlist, Quarantine Preview, Review Mix, Access issues filter, category filter, No category filter, and filter wording.
+2. Use `README.md` and `docs/features/2026-05-28-mvp-readiness-audit.md` to rerun the WPF app against `C:\Users\moxhe`.
+3. Run `.\tools\Invoke-MvpPreflight.ps1` before any later real-profile scan if the worktree changes.
 4. Rerun the real scan and check whether Windows app data, installed applications, and game data labels make the large app/game rows easier to triage.
 5. Retest the Quarantine Readiness UI with a real scan and confirm the draft/readiness wording is understandable.
 6. Defer actual Quarantine and Undo Quarantine execution until scan review, preview semantics, confirmation semantics, and restore rules are trustworthy.
@@ -1383,7 +1383,7 @@ Implementation:
 
 - Added `tools/Invoke-MvpPreflight.ps1`.
 - Preflight runs restore, build, core tests, WPF app tests, the fixture generator in `-WhatIf` mode, and `git diff --check`.
-- Preflight prints the next manual fixture creation and launch commands.
+- Preflight prints the next fixture review launcher command.
 - Added `-SkipRestore`, `-SkipFixtureWhatIf`, and `-SkipDiffCheck` switches for focused local loops.
 - No real profile scan, WPF launch, fixture creation, cleanup execution, quarantine execution, or manifest writing was added.
 
@@ -1414,3 +1414,50 @@ Rejected ideas buffer:
 - Do not make preflight launch the WPF app or scan `C:\Users\moxhe`.
 - Do not create fixture files by default from preflight.
 - Do not hide individual commands from README; keep them visible for troubleshooting.
+
+### 2026-05-28: Add MVP fixture review launcher
+
+Status: completed
+
+Evidence:
+
+- Progress log identified the manual fixture UI pass as the next recommended work.
+- Preflight and fixture scripts existed, but the user still had to run multiple commands and copy the fixture launch command manually.
+- WPF launch-scope support only pre-fills the Cleanup Scope and does not auto-scan.
+
+Implementation:
+
+- Added `tools/Start-MvpFixtureReview.ps1`.
+- The launcher runs MVP preflight by default, creates the synthetic fixture Cleanup Scope inside the repo, and launches the WPF app with that fixture scope.
+- The launcher prints that the app will not auto-scan and that the user must click `Scan`.
+- Added `-SkipPreflight`, `-SkipLaunch`, and `-WhatIf` support for safe verification and focused local loops.
+- No real profile scan, auto-scan, cleanup execution, quarantine execution, or manifest writing was added.
+
+Verification:
+
+- `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\Start-MvpFixtureReview.ps1 -WhatIf` passed and showed intended preflight, fixture creation, and WPF launch actions without executing them.
+- `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\Invoke-MvpPreflight.ps1` passed.
+- Preflight restored, built, ran core tests, ran WPF app tests, ran fixture `-WhatIf`, ran `git diff --check`, and reported that no real user files were scanned or modified.
+- `git -c safe.directory='D:/Codex/Windows File Cleaner' diff --check` passed with line-ending normalization warnings only.
+
+Docs updated:
+
+- `README.md`
+- `AGENTS.md`
+- `docs/features/2026-05-28-mvp-fixture-review-launcher.md`
+- `docs/features/2026-05-28-mvp-readiness-audit.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No new ADR. This is a local workflow launcher around existing preflight, fixture, and WPF launch paths; it does not change architecture, persistence, security, deployment, or cleanup behavior.
+
+Open questions:
+
+- Should the app later include an in-app fixture/demo mode for visual QA?
+
+Rejected ideas buffer:
+
+- Do not make the launcher scan automatically.
+- Do not point the launcher at `C:\Users\moxhe`.
+- Do not make fixture creation happen from production app code.
