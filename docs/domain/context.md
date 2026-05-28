@@ -1905,7 +1905,7 @@ The selected durable format is JSON with schema version `restore-manifest.v1`.
 ### Quarantine Confirmation Draft
 
 Status: draft
-Last reviewed: 2026-05-28
+Last reviewed: 2026-05-29
 
 #### Definition
 
@@ -1947,6 +1947,51 @@ It lists data blockers, records the exact preview counts and bytes to review, ex
 - Use `HasDataBlockers` only as readiness evidence, not as permission to execute.
 - Keep `IsExecutionImplemented` false until a separate execution packet is designed and approved.
 - Do not create folders, move files, delete files, write manifests, or persist cleanup jobs from confirmation draft code.
+
+### Quarantine Execution Gate
+
+Status: draft
+Last reviewed: 2026-05-29
+
+#### Definition
+
+Quarantine Execution Gate is the read-only decision that combines Quarantine Confirmation Draft blockers, exact confirmation text, and implementation availability before any future Quarantine execution can run.
+
+In the current build the gate can show whether the confirmation text matches, but it must remain closed because Quarantine execution is not implemented.
+
+#### Examples
+
+- Before Quarantine Preview exists, show that preview must be created first.
+- After a clean Quarantine Confirmation Draft exists, require the exact text `QUARANTINE`.
+- After `QUARANTINE` is typed, keep the gate closed while execution is not implemented.
+- Carry forward blocked preview row or manifest mismatch blockers from Quarantine Confirmation Draft.
+
+#### Non-examples
+
+- A Cleanup Action.
+- A file-moving command.
+- A Restore Manifest write.
+- Approval to bypass preview blockers.
+
+#### Lifecycle
+
+- Generated when the WPF app starts with a blocker saying Quarantine Preview is required first.
+- Regenerated after Quarantine Preview and Quarantine Confirmation Draft are created.
+- Updates when the confirmation text changes.
+- Resets when scan results, Review Shortlist, Quarantine Preview, Restore Manifest Draft, or Quarantine Root Selection change.
+
+#### Relationships
+
+- Depends on Quarantine Confirmation Draft.
+- Precedes any future Quarantine execution button behavior.
+- Preserves explicit confirmation semantics separately from preview and manifest readiness.
+
+#### Code implications
+
+- Use `QuarantineExecutionGate` and `QuarantineExecutionGateBuilder`.
+- `CanExecute` must require no blockers, exact confirmation text, and implemented execution support.
+- Keep `CanExecute` false while actual Quarantine execution is not implemented.
+- Do not create folders, move files, delete files, write manifests, or persist cleanup jobs from gate code.
 
 ### Undo Quarantine
 

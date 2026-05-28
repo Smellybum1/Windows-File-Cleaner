@@ -502,6 +502,33 @@
                                        FontFamily="Consolas"
                                        FontSize="12"
                                        TextWrapping="Wrap" />
+                            <TextBlock Text="Quarantine execution gate"
+                                       FontWeight="SemiBold"
+                                       Margin="0,18,0,4" />
+                            <WrapPanel>
+                                <TextBlock Text="Confirmation"
+                                           VerticalAlignment="Center"
+                                           Foreground="#526171"
+                                           Margin="0,0,8,0" />
+                                <TextBox x:Name="QuarantineConfirmationBox"
+                                         Width="170"
+                                         Height="30"
+                                         IsEnabled="False"
+                                         VerticalContentAlignment="Center"
+                                         ToolTip="Read-only execution gate proof. No files are moved in this build."
+                                         TextChanged="QuarantineConfirmationBox_TextChanged" />
+                                <Button x:Name="ExecuteQuarantineButton"
+                                        Content="Execute quarantine"
+                                        MinWidth="145"
+                                        IsEnabled="False"
+                                        Click="ExecuteQuarantineButton_Click" />
+                            </WrapPanel>
+                            <TextBlock x:Name="QuarantineExecutionGateText"
+                                       Text="Execution gate appears after using Preview quarantine."
+                                       FontFamily="Consolas"
+                                       FontSize="12"
+                                       Margin="0,6,0,0"
+                                       TextWrapping="Wrap" />
                         </StackPanel>
                     </ScrollViewer>
                 </Grid>

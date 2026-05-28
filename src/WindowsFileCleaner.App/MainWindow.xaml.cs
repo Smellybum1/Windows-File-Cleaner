@@ -17,6 +17,7 @@ public partial class MainWindow : Window
     private QuarantinePreview? _currentQuarantinePreview;
     private RestoreManifestDraft? _currentRestoreManifestDraft;
     private QuarantineConfirmationDraft? _currentQuarantineConfirmationDraft;
+    private QuarantineExecutionGate? _currentQuarantineExecutionGate;
     private string? _currentCleanupScopePath;
     private StorageReviewFilter _currentFilter = StorageReviewFilter.All;
     private StorageCategoryFilter _currentCategoryFilter = StorageCategoryFilter.All;
@@ -30,6 +31,7 @@ public partial class MainWindow : Window
     private bool _isUpdatingEntryTypeFilterOptions;
     private bool _isUpdatingSizeThresholdFilterOptions;
     private bool _isUpdatingSearchBox;
+    private bool _isUpdatingQuarantineConfirmationBox;
     private bool _isWindowInitialized;
 
     public MainWindow()
@@ -48,6 +50,7 @@ public partial class MainWindow : Window
         UpdateSizeThresholdFilterOptions();
         UpdateCleanupScopeSafetyNote();
         UpdateQuarantineRootSafetyNote();
+        UpdateQuarantineExecutionGate();
     }
 
     public string CurrentCleanupScopePath => ScopePathBox.Text;
@@ -153,6 +156,8 @@ public partial class MainWindow : Window
 
     public string QuarantinePreviewTextValue => QuarantinePreviewText.Text;
 
+    public string QuarantineExecutionGateTextValue => QuarantineExecutionGateText.Text;
+
     public string CurrentQuarantineRootPath => QuarantineRootBox.Text;
 
     public string QuarantineRootSafetyNoteTextValue => QuarantineRootSafetyNoteText.Text;
@@ -176,6 +181,12 @@ public partial class MainWindow : Window
     public bool CanPreviewQuarantine => PreviewQuarantineButton.IsEnabled;
 
     public bool CanExportQuarantinePreview => ExportQuarantinePreviewButton.IsEnabled;
+
+    public bool CanEnterQuarantineConfirmation => QuarantineConfirmationBox.IsEnabled;
+
+    public string CurrentQuarantineConfirmationText => QuarantineConfirmationBox.Text;
+
+    public bool CanExecuteQuarantine => ExecuteQuarantineButton.IsEnabled;
 
     public bool CanEditQuarantineRoot => QuarantineRootBox.IsEnabled;
 
@@ -584,6 +595,8 @@ public partial class MainWindow : Window
             _currentRestoreManifestDraft,
             DateTimeOffset.UtcNow,
             BuildDraftId("quarantine-confirmation-draft"));
+        SetQuarantineConfirmationTextSilently("");
+        UpdateQuarantineExecutionGate();
 
         QuarantinePreviewText.Text = FormatQuarantinePreview(
             _currentQuarantinePreview,
@@ -910,6 +923,7 @@ public partial class MainWindow : Window
         NextReviewWindowButton.IsEnabled = !isScanning && _currentReview is not null && _currentDisplayStartIndex + MaxDisplayedRows < matchedEntries.Count;
         UpdateShortlistControls();
         UpdateSafetyShortcutButtons();
+        UpdateQuarantineExecutionGate();
     }
 
     private string? GetInitialBrowseDirectory()
@@ -982,6 +996,21 @@ public partial class MainWindow : Window
 
         var note = QuarantineRootSafetyNoteBuilder.Build(QuarantineRootBox.Text);
         QuarantineRootSafetyNoteText.Text = $"{note.Label}: {note.Message}";
+    }
+
+    private void UpdateQuarantineExecutionGate()
+    {
+        if (QuarantineExecutionGateText is null)
+        {
+            return;
+        }
+
+        _currentQuarantineExecutionGate = QuarantineExecutionGateBuilder.Build(
+            _currentQuarantineConfirmationDraft,
+            QuarantineConfirmationBox.Text);
+        QuarantineConfirmationBox.IsEnabled = _currentQuarantineConfirmationDraft is not null && ScanButton.IsEnabled;
+        ExecuteQuarantineButton.IsEnabled = _currentQuarantineExecutionGate.CanExecute && ScanButton.IsEnabled;
+        QuarantineExecutionGateText.Text = FormatQuarantineExecutionGate(_currentQuarantineExecutionGate);
     }
 
     public void ApplyStorageReviewFilter(StorageReviewFilter filter)
@@ -1071,6 +1100,11 @@ public partial class MainWindow : Window
     public void SetQuarantineRootForPreview(string quarantineRootPath)
     {
         QuarantineRootBox.Text = quarantineRootPath;
+    }
+
+    public void SetQuarantineConfirmationText(string confirmationText)
+    {
+        QuarantineConfirmationBox.Text = confirmationText;
     }
 
     public void ApplyStorageReviewSearch(string searchText)
@@ -1520,8 +1554,42 @@ public partial class MainWindow : Window
         _currentQuarantinePreview = null;
         _currentRestoreManifestDraft = null;
         _currentQuarantineConfirmationDraft = null;
+        _currentQuarantineExecutionGate = null;
+        SetQuarantineConfirmationTextSilently("");
         QuarantinePreviewText.Text = "Preview and draft readiness appear after using Preview quarantine.";
         ExportQuarantinePreviewButton.IsEnabled = false;
+        UpdateQuarantineExecutionGate();
+    }
+
+    private void SetQuarantineConfirmationTextSilently(string text)
+    {
+        _isUpdatingQuarantineConfirmationBox = true;
+        try
+        {
+            QuarantineConfirmationBox.Text = text;
+        }
+        finally
+        {
+            _isUpdatingQuarantineConfirmationBox = false;
+        }
+    }
+
+    private void QuarantineConfirmationBox_TextChanged(object sender, TextChangedEventArgs e)
+    {
+        if (!_isWindowInitialized || _isUpdatingQuarantineConfirmationBox)
+        {
+            return;
+        }
+
+        UpdateQuarantineExecutionGate();
+    }
+
+    private void ExecuteQuarantineButton_Click(object sender, RoutedEventArgs e)
+    {
+        UpdateQuarantineExecutionGate();
+        StatusText.Text = _currentQuarantineExecutionGate?.CanExecute == true
+            ? "Quarantine execution is not wired in this build. No files were modified."
+            : "Quarantine execution gate is not open. No files were modified.";
     }
 
     private static string FormatQuarantinePreview(
@@ -1565,6 +1633,30 @@ public partial class MainWindow : Window
         if (preview.Entries.Count > maxRows)
         {
             lines.Add($"... {preview.Entries.Count - maxRows:N0} more shortlisted rows not shown in this pane.");
+        }
+
+        return string.Join(Environment.NewLine, lines);
+    }
+
+    private static string FormatQuarantineExecutionGate(QuarantineExecutionGate gate)
+    {
+        var lines = new List<string>
+        {
+            $"Required confirmation text: {gate.RequiredConfirmationText}",
+            $"Entered confirmation matches: {FormatYesNo(gate.IsConfirmationTextMatched)}",
+            $"Execution implemented: {FormatYesNo(gate.IsExecutionImplemented)}",
+            $"Can execute: {FormatYesNo(gate.CanExecute)}",
+            "No files were modified."
+        };
+
+        foreach (var blocker in gate.Blockers.Take(6))
+        {
+            lines.Add($"Execution gate blocker | {blocker}");
+        }
+
+        if (gate.Blockers.Count > 6)
+        {
+            lines.Add($"... {gate.Blockers.Count - 6:N0} more execution gate blocker(s) not shown in this pane.");
         }
 
         return string.Join(Environment.NewLine, lines);

@@ -25,6 +25,7 @@ tests.QuarantinePreviewCsvExporterWritesReviewReport();
 tests.RestoreManifestDraftBuildsJsonUndoMetadataFromIncludedPreviewRows();
 tests.QuarantineConfirmationDraftChecksPreviewAndManifestReadiness();
 tests.QuarantineConfirmationDraftReportsPreviewAndManifestBlockers();
+tests.QuarantineExecutionGateRequiresExactConfirmationAndImplementedExecution();
 tests.ChildSummaryShowsLargestImmediateChildren();
 tests.SelectedPathReviewGuidanceExplainsReviewNextSteps();
 tests.PathInspectionPlanBuildsExplorerArguments();
@@ -1072,6 +1073,54 @@ internal sealed class StorageScanTests
         Assert(confirmation.Blockers.Any(blocker => blocker.Contains("redundant preview row", StringComparison.OrdinalIgnoreCase)), "Confirmation draft should report redundant preview rows.");
         Assert(confirmation.Blockers.Any(blocker => blocker.Contains("Quarantine root", StringComparison.OrdinalIgnoreCase)), "Confirmation draft should report quarantine root mismatches.");
         Assert(!Directory.Exists(quarantineRoot), "Blocked confirmation draft checks should not create the quarantine root folder.");
+    }
+
+    public void QuarantineExecutionGateRequiresExactConfirmationAndImplementedExecution()
+    {
+        using var fixture = TestFixture.Create();
+
+        fixture.WriteFile(@"Downloads\old-installer.msi", 1024 * 1024, DateTimeOffset.UtcNow.AddDays(-120));
+        var scanner = new StorageScanner();
+        var result = scanner.Scan(new StorageScanOptions(fixture.RootPath));
+        var review = StorageScanReviewBuilder.Build(result);
+        var installer = SingleReviewEntry(review.Entries, @"Downloads\old-installer.msi");
+        var quarantineRoot = Path.Combine(fixture.RootPath, "quarantine-root");
+        var preview = QuarantinePreviewBuilder.Build([installer], fixture.RootPath, quarantineRoot);
+        var manifestDraft = RestoreManifestDraftBuilder.Build(
+            preview,
+            new DateTimeOffset(2026, 5, 29, 1, 2, 3, TimeSpan.Zero),
+            "manifest-draft-gate");
+        var confirmation = QuarantineConfirmationDraftBuilder.Build(
+            preview,
+            manifestDraft,
+            new DateTimeOffset(2026, 5, 29, 2, 3, 4, TimeSpan.Zero),
+            "confirmation-draft-gate");
+
+        var missingPreviewGate = QuarantineExecutionGateBuilder.Build(null, "QUARANTINE");
+        Assert(!missingPreviewGate.CanExecute, "Execution gate should stay closed before a Quarantine Preview exists.");
+        Assert(missingPreviewGate.Blockers.Any(blocker => blocker.Contains("Create a Quarantine Preview", StringComparison.OrdinalIgnoreCase)), "Missing preview gate should explain the preview dependency.");
+
+        var blankGate = QuarantineExecutionGateBuilder.Build(confirmation, "");
+        Assert(!blankGate.CanExecute, "Blank confirmation text should not open execution.");
+        Assert(!blankGate.IsConfirmationTextMatched, "Blank confirmation text should not match.");
+        Assert(blankGate.Blockers.Any(blocker => blocker.Contains("Type QUARANTINE", StringComparison.OrdinalIgnoreCase)), "Gate should require the exact confirmation phrase.");
+        Assert(blankGate.Blockers.Any(blocker => blocker.Contains("not implemented", StringComparison.OrdinalIgnoreCase)), "Gate should keep execution blocked while no executor exists.");
+
+        var matchedGate = QuarantineExecutionGateBuilder.Build(confirmation, " QUARANTINE ");
+        Assert(matchedGate.IsConfirmationTextMatched, "Gate should trim and match the exact confirmation phrase.");
+        Assert(!matchedGate.CanExecute, "Matched confirmation should still not execute while execution is unimplemented.");
+        Assert(!matchedGate.Blockers.Any(blocker => blocker.Contains("Type QUARANTINE", StringComparison.OrdinalIgnoreCase)), "Matched confirmation should clear the phrase blocker.");
+        Assert(matchedGate.Blockers.Any(blocker => blocker.Contains("not implemented", StringComparison.OrdinalIgnoreCase)), "Matched confirmation should keep the implementation blocker.");
+        Assert(matchedGate.ReviewNotes.Any(note => note.Contains("No files were modified", StringComparison.OrdinalIgnoreCase)), "Gate notes should preserve the read-only boundary.");
+
+        var blockedConfirmation = confirmation with
+        {
+            Blockers = ["1 blocked preview row must be removed before confirmation."]
+        };
+        var blockedGate = QuarantineExecutionGateBuilder.Build(blockedConfirmation, "QUARANTINE");
+        Assert(!blockedGate.CanExecute, "Confirmation data blockers should keep execution closed.");
+        Assert(blockedGate.Blockers.Any(blocker => blocker.Contains("blocked preview row", StringComparison.OrdinalIgnoreCase)), "Gate should carry confirmation data blockers forward.");
+        Assert(!Directory.Exists(quarantineRoot), "Building execution gates should not create the quarantine root folder.");
     }
 
     public void ChildSummaryShowsLargestImmediateChildren()

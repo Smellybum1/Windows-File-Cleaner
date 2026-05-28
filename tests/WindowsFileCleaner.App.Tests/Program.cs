@@ -92,6 +92,11 @@ internal sealed class MainWindowSmokeTests
             Assert(!window.CanUseEntryTypeFilter, "MainWindow should not allow type filtering before a scan.");
             Assert(!window.CanUseSizeThresholdFilter, "MainWindow should not allow size threshold filtering before a scan.");
             Assert(!window.CanResetReviewView, "MainWindow should not allow review view reset before a scan.");
+            Assert(!window.CanEnterQuarantineConfirmation, "MainWindow should not allow quarantine confirmation before a preview exists.");
+            Assert(!window.CanExecuteQuarantine, "MainWindow should not allow quarantine execution before a preview exists.");
+            Assert(
+                window.QuarantineExecutionGateTextValue.Contains("Create a Quarantine Preview", StringComparison.OrdinalIgnoreCase),
+                "Quarantine execution gate should explain the preview dependency at startup.");
             Assert(window.SearchHelpToolTipValue.Contains("path:", StringComparison.OrdinalIgnoreCase), "Search tooltip should show field-prefix examples.");
             Assert(window.SearchHelpToolTipValue.Contains("category:", StringComparison.OrdinalIgnoreCase), "Search tooltip should include category-prefix guidance.");
             Assert(window.SearchHelpToolTipValue.Contains("access:readable", StringComparison.OrdinalIgnoreCase), "Search tooltip should include readable access-prefix guidance.");
@@ -543,6 +548,22 @@ internal sealed class MainWindowSmokeTests
             Assert(window.QuarantinePreviewTextValue.Contains("Execution implemented: no", StringComparison.OrdinalIgnoreCase), "Preview pane should state execution is not implemented.");
             Assert(window.QuarantinePreviewTextValue.Contains("Preview rows:", StringComparison.OrdinalIgnoreCase), "Preview pane should label row-level preview details.");
             Assert(window.QuarantinePreviewTextValue.Contains("Preview row | Included", StringComparison.OrdinalIgnoreCase), "Preview pane should distinguish included row details from readiness blockers.");
+            Assert(window.CanEnterQuarantineConfirmation, "Quarantine confirmation text should be enabled after preview readiness exists.");
+            Assert(!window.CanExecuteQuarantine, "Quarantine execution should remain unavailable while execution is not implemented.");
+            Assert(
+                window.QuarantineExecutionGateTextValue.Contains("Type QUARANTINE", StringComparison.OrdinalIgnoreCase),
+                "Execution gate should require the confirmation phrase before execution can ever be enabled.");
+            window.SetQuarantineConfirmationText("NOPE");
+            Assert(
+                window.QuarantineExecutionGateTextValue.Contains("Entered confirmation matches: no", StringComparison.OrdinalIgnoreCase),
+                "Wrong confirmation text should keep the execution gate unmatched.");
+            window.SetQuarantineConfirmationText("QUARANTINE");
+            Assert(window.CurrentQuarantineConfirmationText == "QUARANTINE", "Confirmation text should be editable in the WPF gate.");
+            Assert(
+                window.QuarantineExecutionGateTextValue.Contains("Entered confirmation matches: yes", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineExecutionGateTextValue.Contains("Execution implemented: no", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineExecutionGateTextValue.Contains("Can execute: no", StringComparison.OrdinalIgnoreCase),
+                "Matched confirmation should still keep execution closed until execution is implemented.");
             Assert(
                 window.QuarantinePreviewTextValue.Contains(Path.Combine(customQuarantineRoot, "preview", "Downloads", "old-installer.msi"), StringComparison.OrdinalIgnoreCase),
                 "Preview pane should map included rows under the typed quarantine root.");
@@ -556,6 +577,11 @@ internal sealed class MainWindowSmokeTests
             Assert(window.CurrentStatusText.Contains("Quarantine root changed", StringComparison.OrdinalIgnoreCase), "Changing the quarantine root should invalidate stale preview destinations.");
             Assert(window.CanPreviewQuarantine, "Changing the quarantine root should keep preview available while the shortlist exists.");
             Assert(!window.CanExportQuarantinePreview, "Changing the quarantine root should disable exporting the stale preview.");
+            Assert(!window.CanEnterQuarantineConfirmation, "Changing the quarantine root should disable stale confirmation text.");
+            Assert(window.CurrentQuarantineConfirmationText == "", "Changing the quarantine root should clear stale confirmation text.");
+            Assert(
+                window.QuarantineExecutionGateTextValue.Contains("Create a Quarantine Preview", StringComparison.OrdinalIgnoreCase),
+                "Changing the quarantine root should reset execution gate wording.");
             Assert(
                 window.QuarantinePreviewTextValue.Contains("Preview and draft readiness appear", StringComparison.OrdinalIgnoreCase),
                 "Changing the quarantine root should clear stale preview readiness text.");
