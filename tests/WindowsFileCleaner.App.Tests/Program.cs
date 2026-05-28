@@ -65,6 +65,8 @@ internal sealed class MainWindowSmokeTests
                 "Default Cleanup Scope safety note should remind the user to run preflight.");
             Assert(window.CurrentStatusText == "Ready", "MainWindow should not start scanning when constructed.");
             Assert(!window.CanStartStorageScan, "MainWindow should require preflight acknowledgement before scanning the real profile.");
+            Assert(window.CanBrowseCleanupScope, "MainWindow should allow choosing a Cleanup Scope without starting a scan.");
+            Assert(window.BrowseCleanupScopeButtonText.Contains("Browse", StringComparison.OrdinalIgnoreCase), "Cleanup Scope browse action should be visible in the header.");
             Assert(window.IsRealProfilePreflightConfirmationVisible, "MainWindow should show the real-profile preflight acknowledgement.");
             Assert(!window.IsRealProfilePreflightConfirmed, "Real-profile preflight acknowledgement should start unchecked.");
             Assert(
@@ -111,6 +113,7 @@ internal sealed class MainWindowSmokeTests
                 "Fixture safety note should preserve the user-triggered scan boundary.");
             Assert(window.CurrentStatusText == "Ready", "Launch Cleanup Scope should not trigger a scan.");
             Assert(window.CanStartStorageScan, "Launch Cleanup Scope should still require a user-triggered scan.");
+            Assert(window.CanBrowseCleanupScope, "Launch Cleanup Scope should still allow choosing a different Cleanup Scope before scanning.");
             Assert(!window.IsRealProfilePreflightConfirmationVisible, "Fixture Cleanup Scope should not show real-profile acknowledgement.");
             Assert(!window.CanExportScanCsv, "Launch Cleanup Scope should not create exportable scan data.");
         }
@@ -147,6 +150,7 @@ internal sealed class MainWindowSmokeTests
             Assert(window.CurrentStatusText.Contains("No files were modified", StringComparison.OrdinalIgnoreCase), "Fixture scan should preserve the read-only status text.");
             Assert(window.DisplayedRowCount > 0, "Fixture scan should show rows in the WPF grid.");
             Assert(window.CanStartStorageScan, "Scan button should be re-enabled after the fixture scan.");
+            Assert(window.CanBrowseCleanupScope, "Cleanup Scope browse action should be re-enabled after the fixture scan.");
             Assert(window.CanExportScanCsv, "CSV export should be enabled after a completed scan.");
             Assert(window.CanUseCategoryFilter, "Category filter should be enabled after a categorized fixture scan.");
             Assert(window.CanUseEntryTypeFilter, "Type filter should be enabled after a completed scan.");

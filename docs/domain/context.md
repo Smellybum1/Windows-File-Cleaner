@@ -181,6 +181,49 @@ For the initial real scan, the Cleanup Scope Root is `C:\Users\moxhe`.
 - Keep the Cleanup Scope Root as `High risk` / `Keep`.
 - Do not shortlist, quarantine, or delete the Cleanup Scope Root as a whole.
 
+### Cleanup Scope Selection
+
+Status: draft
+Last reviewed: 2026-05-28
+
+#### Definition
+
+Cleanup Scope Selection is the pre-scan action of choosing the Cleanup Scope path in the WPF app.
+
+The path may be typed or chosen through the native folder browser. Selecting a folder updates the Cleanup Scope text and safety note, but does not start scanning.
+
+#### Examples
+
+- Type `C:\Users\moxhe`.
+- Use `Browse...` to choose the synthetic fixture Cleanup Scope.
+- Use `Browse...` to choose a custom folder before manually clicking `Scan`.
+
+#### Non-examples
+
+- A Storage Scan.
+- A Cleanup Action.
+- Real-profile preflight acknowledgement.
+- Approval to scan a real profile.
+
+#### Lifecycle
+
+- Available before a Storage Scan starts.
+- Disabled while scanning.
+- Re-enabled after a scan completes or is canceled.
+- Feeds Cleanup Scope Safety Note and Cleanup Scope Scan Gate.
+
+#### Relationships
+
+- Belongs to Cleanup Scope.
+- Supports fixture-first review by making synthetic Cleanup Scope selection less error-prone.
+- Does not bypass the real-profile scan gate.
+
+#### Code implications
+
+- Use `BrowseScopeButton` for the WPF folder browser action.
+- Keep folder selection separate from `Scan`; never auto-scan after a folder is selected.
+- Keep the selected path in `ScopePathBox` so existing safety-note and scan-gate behavior remains authoritative.
+
 ### Cleanup Scope Safety Note
 
 Status: draft

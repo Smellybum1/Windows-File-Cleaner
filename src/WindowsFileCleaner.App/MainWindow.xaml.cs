@@ -52,6 +52,10 @@ public partial class MainWindow : Window
 
     public bool CanStartStorageScan => ScanButton.IsEnabled;
 
+    public bool CanBrowseCleanupScope => BrowseScopeButton.IsEnabled;
+
+    public string BrowseCleanupScopeButtonText => BrowseScopeButton.Content?.ToString() ?? "";
+
     public bool IsRealProfilePreflightConfirmationVisible => RealProfilePreflightCheckBox.Visibility == Visibility.Visible;
 
     public bool IsRealProfilePreflightConfirmed => RealProfilePreflightCheckBox.IsChecked == true;
@@ -191,6 +195,23 @@ public partial class MainWindow : Window
             _scanCancellation = null;
             SetScanningState(isScanning: false);
         }
+    }
+
+    private void BrowseScopeButton_Click(object sender, RoutedEventArgs e)
+    {
+        var dialog = new OpenFolderDialog
+        {
+            Title = "Choose Cleanup Scope",
+            InitialDirectory = GetInitialBrowseDirectory()
+        };
+
+        if (dialog.ShowDialog(this) != true)
+        {
+            return;
+        }
+
+        ScopePathBox.Text = dialog.FolderName;
+        StatusText.Text = "Cleanup Scope selected. Click Scan to start a read-only Storage Scan.";
     }
 
     public async Task RunStorageScanForCurrentScopeAsync(CancellationToken cancellationToken = default)
@@ -776,6 +797,7 @@ public partial class MainWindow : Window
         _isScanning = isScanning;
         CancelButton.IsEnabled = isScanning;
         ScopePathBox.IsEnabled = !isScanning;
+        BrowseScopeButton.IsEnabled = !isScanning;
         UpdateCleanupScopeSafetyNote();
         ExportCsvButton.IsEnabled = !isScanning && _currentReview is not null;
         ExportShortlistCsvButton.IsEnabled = !isScanning && _currentReview is not null && _shortlist.Count > 0;
@@ -792,6 +814,25 @@ public partial class MainWindow : Window
         NextReviewWindowButton.IsEnabled = !isScanning && _currentReview is not null && _currentDisplayStartIndex + MaxDisplayedRows < matchedEntries.Count;
         UpdateShortlistControls();
         UpdateSafetyShortcutButtons();
+    }
+
+    private string? GetInitialBrowseDirectory()
+    {
+        try
+        {
+            var currentPath = ScopePathBox.Text.Trim();
+            return Directory.Exists(currentPath)
+                ? Path.GetFullPath(currentPath)
+                : Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+        }
+        catch (ArgumentException)
+        {
+            return Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+        }
+        catch (NotSupportedException)
+        {
+            return Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+        }
     }
 
     private void UpdateCleanupScopeSafetyNote()

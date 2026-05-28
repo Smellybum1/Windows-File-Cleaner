@@ -62,6 +62,10 @@
                              VerticalContentAlignment="Center"
                              Text="C:\Users\moxhe"
                              TextChanged="ScopePathBox_TextChanged" />
+                    <Button x:Name="BrowseScopeButton"
+                            Content="Browse..."
+                            MinWidth="100"
+                            Click="BrowseScopeButton_Click" />
                     <Button x:Name="ScanButton"
                             Content="Scan"
                             Click="ScanButton_Click" />

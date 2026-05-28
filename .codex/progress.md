@@ -6,7 +6,7 @@ Use it to preserve what was completed, what was verified, what was rejected, and
 
 ## Current status
 
-Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. Cleanup Scope Safety Note, Cleanup Scope Scan Gate, Cleanup Scope Root classification, review filters, Review View Reset, Storage Review Search with field prefixes, Storage Entry Type Filter, Storage Review Display Limit wording, Storage Review Display Window navigation, Storage Review Size Note, selected-folder child breakdown, selected-path inspection actions, Selected Path Hierarchy Context, Selected Row Contents Context including a grid Contents column, explicit Access Status, Access Status Search, Selected File Content Preview, Selected Path Review Guidance including cache-specific guidance and scope-root guidance, CSV export including active search, searched filenames, hierarchy/contents/access/relative-path context and type-filtered rows, Review Mix, Storage Scan Safety Summary with bounded access issue examples, Safety Summary review shortcuts, Access issues filtering, Bloat Category Filter, Large old file classification, No category filtering, Review Shortlist, Shortlist shown, Remove shown, Quarantine Preview with protected-descendant blocking, Quarantine Preview CSV export, Restore Manifest Draft, Quarantine Confirmation Draft, Quarantine Readiness UI, conservative app data classification, read-only safety regression checks, the MVP runbook, the MVP readiness audit, fixture-driven WPF launch support, WPF shell smoke testing, WPF fixture scan smoke testing, WPF display-limit smoke testing, WPF review interaction smoke testing, WPF review toolbar layout polish, the MVP preflight script, CI MVP preflight workflow, and the MVP fixture review launcher are implemented and verified. Quarantine remains preview-only; no cleanup execution, manifest writing, or Undo Quarantine execution exists.
+Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. Cleanup Scope Selection with folder browsing, Cleanup Scope Safety Note, Cleanup Scope Scan Gate, Cleanup Scope Root classification, review filters, Review View Reset, Storage Review Search with field prefixes, Storage Entry Type Filter, Storage Review Display Limit wording, Storage Review Display Window navigation, Storage Review Size Note, selected-folder child breakdown, selected-path inspection actions, Selected Path Hierarchy Context, Selected Row Contents Context including a grid Contents column, explicit Access Status, Access Status Search, Selected File Content Preview, Selected Path Review Guidance including cache-specific guidance and scope-root guidance, CSV export including active search, searched filenames, hierarchy/contents/access/relative-path context and type-filtered rows, Review Mix, Storage Scan Safety Summary with bounded access issue examples, Safety Summary review shortcuts, Access issues filtering, Bloat Category Filter, Large old file classification, No category filtering, Review Shortlist, Shortlist shown, Remove shown, Quarantine Preview with protected-descendant blocking, Quarantine Preview CSV export, Restore Manifest Draft, Quarantine Confirmation Draft, Quarantine Readiness UI, conservative app data classification, read-only safety regression checks, the MVP runbook, the MVP readiness audit, fixture-driven WPF launch support, WPF shell smoke testing, WPF fixture scan smoke testing, WPF display-limit smoke testing, WPF review interaction smoke testing, WPF review toolbar layout polish, the MVP preflight script, CI MVP preflight workflow, and the MVP fixture review launcher are implemented and verified. Quarantine remains preview-only; no cleanup execution, manifest writing, or Undo Quarantine execution exists.
 
 ## Next recommended work
 
@@ -2931,3 +2931,47 @@ Open questions:
 Rejected ideas buffer:
 
 - Do not duplicate the local preflight command list in CI YAML.
+
+### 2026-05-28: Add Cleanup Scope Browse Action
+
+Status: completed
+
+Evidence:
+
+- The WPF app allowed typing a Cleanup Scope path, but manual fixture/custom scope review is less error-prone with native folder selection.
+- Cleanup Scope Selection should remain separate from Storage Scan so fixture review and real-profile preflight gates stay explicit.
+
+Implementation:
+
+- Added a `Browse...` button beside the Cleanup Scope path box.
+- Used WPF's native `OpenFolderDialog` to choose a folder.
+- Folder selection updates `ScopePathBox`, which keeps existing Cleanup Scope Safety Note and Scan Gate behavior authoritative.
+- Disabled browsing while scanning and re-enabled it after fixture scans.
+- Added WPF smoke assertions for browse visibility and availability.
+- No scanner traversal changes, auto-scan behavior, real-profile automation, cleanup execution, Quarantine execution, Undo Quarantine, manifest writing, or real user file access was added.
+
+Verification:
+
+- `dotnet build WindowsFileCleaner.sln --no-restore` passed with 0 warnings and 0 errors.
+- `dotnet run --project tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj --no-build` passed.
+- `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\Invoke-MvpPreflight.ps1` passed.
+
+Docs updated:
+
+- `README.md`
+- `docs/domain/context.md`
+- `docs/domain/glossary.md`
+- `docs/features/2026-05-28-cleanup-scope-browse-action.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No new ADR. This is a reversible WPF usability improvement that does not change scan, persistence, security, deployment, or cleanup behavior.
+
+Open questions:
+
+- Does the extra header button fit comfortably during the next manual fixture UI pass?
+
+Rejected ideas buffer:
+
+- Do not auto-start a scan after folder selection.
