@@ -827,7 +827,7 @@ The initial export format is CSV for the currently active Storage Review Filter 
 #### Lifecycle
 
 - Available after a Storage Scan completes.
-- Uses the current Storage Review Filter and selected Bloat Category Filter.
+- Uses the current Storage Review Filter, selected Bloat Category Filter, and Storage Review Search.
 - Writes a user-selected CSV report path.
 - Does not modify scanned files.
 
@@ -836,6 +836,7 @@ The initial export format is CSV for the currently active Storage Review Filter 
 - Uses Storage Scan results.
 - Uses Storage Review Filters.
 - Uses Bloat Category Filters.
+- Uses Storage Review Search.
 - May export a Review Shortlist, but that export remains a report rather than a Cleanup Action.
 - May export a Quarantine Preview, but that export remains a report rather than a Restore Manifest.
 - Supports manual review before Quarantine or any future cleanup action.

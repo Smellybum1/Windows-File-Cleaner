@@ -104,7 +104,7 @@ After the app opens:
 10. Try category filters such as App cache, Python package cache, GPU shader cache, Windows app data, Installed application, Game data, Protected location, and No category.
 11. Add a likely-safe cleanup candidate to the Review Shortlist, or use `Shortlist shown` / `Remove shown` only after narrowing the grid to rows you intentionally want to review.
 12. Click `Preview quarantine` and confirm the preview, Restore Manifest Draft, and Quarantine Confirmation Draft all say no files were modified and execution is not implemented.
-13. Export CSV reports only when you intentionally choose an output file.
+13. Export CSV reports only when you intentionally choose an output file; the main report export follows the active filters and search.
 
 ## Current Workflow
 

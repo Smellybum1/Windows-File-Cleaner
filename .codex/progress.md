@@ -6,7 +6,7 @@ Use it to preserve what was completed, what was verified, what was rejected, and
 
 ## Current status
 
-Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. Cleanup Scope Safety Note, review filters, Storage Review Search, Storage Review Display Limit wording, selected-folder child breakdown, selected-path inspection actions, Selected Path Review Guidance, CSV export, Review Mix, Storage Scan Safety Summary, Safety Summary review shortcuts, Access issues filtering, Bloat Category Filter, No category filtering, Review Shortlist, Shortlist shown, Remove shown, Quarantine Preview, Quarantine Preview CSV export, Restore Manifest Draft, Quarantine Confirmation Draft, Quarantine Readiness UI, conservative app data classification, read-only safety regression checks, the MVP runbook, the MVP readiness audit, fixture-driven WPF launch support, WPF shell smoke testing, WPF fixture scan smoke testing, WPF display-limit smoke testing, WPF review interaction smoke testing, WPF review toolbar layout polish, the MVP preflight script, and the MVP fixture review launcher are implemented and verified. Quarantine remains preview-only; no cleanup execution, manifest writing, or Undo Quarantine execution exists.
+Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. Cleanup Scope Safety Note, review filters, Storage Review Search, Storage Review Display Limit wording, selected-folder child breakdown, selected-path inspection actions, Selected Path Review Guidance, CSV export including active search, Review Mix, Storage Scan Safety Summary, Safety Summary review shortcuts, Access issues filtering, Bloat Category Filter, No category filtering, Review Shortlist, Shortlist shown, Remove shown, Quarantine Preview, Quarantine Preview CSV export, Restore Manifest Draft, Quarantine Confirmation Draft, Quarantine Readiness UI, conservative app data classification, read-only safety regression checks, the MVP runbook, the MVP readiness audit, fixture-driven WPF launch support, WPF shell smoke testing, WPF fixture scan smoke testing, WPF display-limit smoke testing, WPF review interaction smoke testing, WPF review toolbar layout polish, the MVP preflight script, and the MVP fixture review launcher are implemented and verified. Quarantine remains preview-only; no cleanup execution, manifest writing, or Undo Quarantine execution exists.
 
 ## Next recommended work
 
@@ -1750,3 +1750,50 @@ Rejected ideas buffer:
 - Do not add or remove all matched rows when the grid is capped.
 - Do not treat Review Shortlist as cleanup approval.
 - Do not add cleanup execution from the shortlist toolbar.
+
+### 2026-05-28: Align Scan Report Export with Storage Review Search
+
+Status: completed
+
+Evidence:
+
+- Storage Review Search narrows the WPF grid and filter summary, but the main Scan Report Export path still used only Storage Review Filter and Bloat Category Filter.
+- A searched review should export the same active review lens, while still exporting all matched rows rather than only the 2,000 displayed rows.
+
+Implementation:
+
+- Added a WPF export-row helper that applies Storage Review Filter, Bloat Category Filter, and Storage Review Search.
+- Updated Export CSV to use that helper.
+- Added WPF smoke coverage that searched export rows honor the active `pip` search.
+- No cleanup execution, Quarantine execution, Undo Quarantine, manifest writing, or real-profile automation was added.
+
+Verification:
+
+- `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\Invoke-MvpPreflight.ps1` passed.
+- `dotnet restore WindowsFileCleaner.sln --configfile NuGet.Config` passed.
+- `dotnet build WindowsFileCleaner.sln --no-restore` passed with 0 warnings and 0 errors during final preflight.
+- `dotnet run --project tests\WindowsFileCleaner.Tests\WindowsFileCleaner.Tests.csproj --no-build` passed.
+- `dotnet run --project tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj --no-build` passed.
+- `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\New-StorageScanSmokeFixture.ps1 -WhatIf` passed.
+- `git -c safe.directory='D:/Codex/Windows File Cleaner' diff --check` passed with line-ending normalization warnings only.
+
+Docs updated:
+
+- `README.md`
+- `docs/domain/context.md`
+- `docs/domain/glossary.md`
+- `docs/features/2026-05-28-scan-report-csv-export.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No new ADR. This is a reversible read-only report alignment fix and does not change architecture, persistence, security, deployment, or cleanup execution.
+
+Open questions:
+
+- Should export filenames include a sanitized search segment later?
+
+Rejected ideas buffer:
+
+- Do not export only displayed rows; export all rows matched by the active review lens.
+- Do not treat exported reports as cleanup history or restore manifests.

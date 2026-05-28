@@ -49,6 +49,12 @@ public partial class MainWindow : Window
 
     public bool CanExportScanCsv => ExportCsvButton.IsEnabled;
 
+    public int CurrentScanReportExportRowCount => BuildCurrentScanReportExportRows().Count;
+
+    public IReadOnlyList<string> CurrentScanReportExportPaths => BuildCurrentScanReportExportRows()
+        .Select(row => row.Entry.FullPath)
+        .ToArray();
+
     public bool CanUseCategoryFilter => CategoryFilterBox.IsEnabled;
 
     public int DisplayedRowCount => DisplayedRows.Count;
@@ -498,7 +504,7 @@ public partial class MainWindow : Window
             return;
         }
 
-        var exportRows = _currentReview.ApplyFilter(_currentFilter, _currentCategoryFilter);
+        var exportRows = BuildCurrentScanReportExportRows();
         var dialog = new SaveFileDialog
         {
             Title = "Export Storage Scan CSV",
@@ -523,6 +529,11 @@ public partial class MainWindow : Window
             MessageBox.Show(this, ex.Message, "Export CSV failed", MessageBoxButton.OK, MessageBoxImage.Error);
             StatusText.Text = "CSV export failed. No scanned files were modified.";
         }
+    }
+
+    private IReadOnlyList<StorageReviewEntry> BuildCurrentScanReportExportRows()
+    {
+        return _currentReview?.ApplyFilter(_currentFilter, _currentCategoryFilter, _currentSearch) ?? [];
     }
 
     private void ExportShortlistCsvButton_Click(object sender, RoutedEventArgs e)

@@ -167,6 +167,12 @@ internal sealed class MainWindowSmokeTests
                     || row.Categories.Contains("Python package cache", StringComparison.OrdinalIgnoreCase)
                     || row.Evidence.Contains("Python", StringComparison.OrdinalIgnoreCase)),
                 "Search should only show rows matching path, category, or evidence text.");
+            Assert(
+                window.CurrentScanReportExportRowCount == window.DisplayedRows.Count,
+                "Scan Report Export row count should honor the active Storage Review Search.");
+            Assert(
+                window.CurrentScanReportExportPaths.All(path => path.Contains("pip", StringComparison.OrdinalIgnoreCase)),
+                "Scan Report Export paths should honor the active Storage Review Search.");
 
             window.ApplyStorageReviewSearch("");
             Assert(window.CurrentSearchText == "", "Clearing Storage Review Search should clear WPF search text.");
