@@ -23,7 +23,12 @@ function Invoke-PreflightStep {
 
     Write-Host ""
     Write-Host "== $Name =="
+    $global:LASTEXITCODE = 0
     & $Command
+    $exitCode = $global:LASTEXITCODE
+    if ($exitCode -ne 0) {
+        throw "Preflight step '$Name' failed with exit code $exitCode."
+    }
 }
 
 Push-Location $repoRoot

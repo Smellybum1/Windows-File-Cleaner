@@ -54,6 +54,7 @@ tests.SelectedFileContentPreviewReadsBoundedTextOnly();
 tests.CsvExporterWritesEscapedReviewRows();
 tests.ByteSizeFormatterUsesReadableUnits();
 tests.ProductionCodeDoesNotContainCleanupExecutionCalls();
+tests.MvpPreflightScriptChecksNativeCommandExitCodes();
 
 Console.WriteLine("All WindowsFileCleaner.Tests checks passed.");
 
@@ -2373,6 +2374,18 @@ internal sealed class StorageScanTests
         Assert(executorWriteMatches.Length == 3, "Only QuarantineExecutor should create destination parents and move files or folders.");
         Assert(undoExecutorWriteMatches.Length == 3, "Only UndoQuarantineExecutor should create original parents and move files or folders back.");
         Assert(writeTextMatches.Length == reportWriteMatches.Length + manifestWriteMatches.Length, "Every File.WriteAllText production use should be explicitly allowlisted.");
+    }
+
+    public void MvpPreflightScriptChecksNativeCommandExitCodes()
+    {
+        var repositoryRoot = FindRepositoryRoot();
+        var scriptPath = Path.Combine(repositoryRoot, "tools", "Invoke-MvpPreflight.ps1");
+        var script = File.ReadAllText(scriptPath);
+
+        Assert(script.Contains("& $Command", StringComparison.Ordinal), "Preflight should run each step through the shared step wrapper.");
+        Assert(script.Contains("$global:LASTEXITCODE = 0", StringComparison.Ordinal), "Preflight should reset native command exit code before each step.");
+        Assert(script.Contains("$exitCode = $global:LASTEXITCODE", StringComparison.Ordinal), "Preflight should capture native command exit code after each step.");
+        Assert(script.Contains("failed with exit code", StringComparison.Ordinal), "Preflight should throw when a native command exits non-zero.");
     }
 
     private static bool IsAllowedProductionFilesystemWrite(SourceLine sourceLine, string token)

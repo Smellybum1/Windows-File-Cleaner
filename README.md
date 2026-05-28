@@ -42,7 +42,7 @@ Run the MVP preflight from the repository root before scanning real user files:
 .\tools\Invoke-MvpPreflight.ps1
 ```
 
-The preflight restores, builds, runs both test harnesses, runs the fixture generator in `-WhatIf` mode, and runs `git diff --check`. It does not scan `C:\Users\moxhe`.
+The preflight restores, builds, runs both test harnesses, runs the fixture generator in `-WhatIf` mode, and runs `git diff --check`. It fails if any child command exits non-zero. It does not scan `C:\Users\moxhe`.
 
 The individual commands are:
 
@@ -64,7 +64,7 @@ All WindowsFileCleaner.App.Tests checks passed.
 
 ## CI Preflight
 
-Pushes and pull requests to `main` run the same MVP preflight on GitHub Actions with a Windows runner and .NET 8. The CI job restores, builds, runs both test harnesses, runs the fixture generator in `-WhatIf` mode, and runs `git diff --check`. It does not scan `C:\Users\moxhe`.
+Pushes and pull requests to `main` run the same MVP preflight on GitHub Actions with a Windows runner and .NET 8. The CI job restores, builds, runs both test harnesses, runs the fixture generator in `-WhatIf` mode, and runs `git diff --check`; any non-zero child command fails the job. It does not scan `C:\Users\moxhe`.
 
 ## WPF Fixture Smoke
 

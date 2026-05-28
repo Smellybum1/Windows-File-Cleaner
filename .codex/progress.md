@@ -3982,3 +3982,45 @@ Rejected ideas buffer:
 - Do not call discovery cleanup history.
 - Do not scan the entire quarantine root recursively.
 - Do not clean up empty action folders.
+
+### 2026-05-29: Fix MVP Preflight Failure Propagation
+
+Status: completed
+
+Evidence:
+
+- During Quarantine Manifest Discovery work, a WPF app test failure still let `Invoke-MvpPreflight.ps1` print `MVP preflight passed`.
+- PowerShell native command failures did not throw from `$ErrorActionPreference = "Stop"` without checking `$LASTEXITCODE`.
+
+Implementation:
+
+- Updated `Invoke-PreflightStep` to reset and check `$global:LASTEXITCODE` for every step.
+- Added a source-level regression check that the preflight script captures and throws on native non-zero exit codes.
+- Updated README preflight wording to state that non-zero child commands fail preflight/CI.
+
+Verification:
+
+- `dotnet build WindowsFileCleaner.sln --no-restore` passed with 0 warnings and 0 errors.
+- `dotnet run --project tests\WindowsFileCleaner.Tests\WindowsFileCleaner.Tests.csproj --no-build` passed.
+- `dotnet run --project tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj --no-build` passed.
+- `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\Invoke-MvpPreflight.ps1` passed.
+- Preflight restored, built, ran core tests, ran WPF app tests, ran fixture `-WhatIf`, ran `git diff --check`, and reported that no real user files were scanned or modified.
+
+Docs updated:
+
+- `README.md`
+- `docs/features/2026-05-29-mvp-preflight-failure-propagation.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No ADR. This is a reversible verification script fix.
+
+Open questions:
+
+- Should the preflight script also emit structured machine-readable output later?
+
+Rejected ideas buffer:
+
+- Do not add a fake failure mode to the production preflight script.
+- Do not duplicate the local preflight command list in CI.
