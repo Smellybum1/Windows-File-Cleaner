@@ -79,6 +79,8 @@ public partial class MainWindow : Window
 
     public string FilterSummaryTextValue => FilterSummaryText.Text;
 
+    public string ReviewSizeNoteTextValue => ReviewSizeNoteText.Text;
+
     public string CurrentSearchText => SearchBox.Text;
 
     public string DetailGuidanceTextValue => DetailGuidanceText.Text;

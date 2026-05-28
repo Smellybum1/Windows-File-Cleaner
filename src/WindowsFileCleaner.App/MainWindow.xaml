@@ -203,6 +203,11 @@
                            Margin="6,8,0,6"
                            Text="No scan loaded"
                            TextWrapping="Wrap" />
+                <TextBlock x:Name="ReviewSizeNoteText"
+                           Foreground="#526171"
+                           Margin="6,0,0,8"
+                           Text="Folder sizes include child files; parent and child rows can overlap. Treat row sizes as triage clues, not storage savings."
+                           TextWrapping="Wrap" />
 
                 <WrapPanel x:Name="ReviewActionToolbar">
                     <StackPanel Orientation="Horizontal"

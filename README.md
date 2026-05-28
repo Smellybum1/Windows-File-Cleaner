@@ -98,13 +98,14 @@ After the app opens:
 4. Confirm the status says no files were modified.
 5. Review the summary cards for total size, folders, files, and access issues.
 6. If the status or filter summary says `2,000 shown of ... matched`, treat the grid as the first review window and narrow with search or filters.
-7. Use Review Mix and Safety Summary to inspect high-risk, protected, access issue, reparse point, quarantine candidate, and no-category rows.
-8. Use Storage Review Search for specific names such as `pip`, `NVIDIA`, `Codex`, app names, or game folders.
-9. Select large folders and inspect Evidence, Review guidance, and Largest immediate children.
-10. Try category filters such as App cache, Python package cache, GPU shader cache, Windows app data, Installed application, Game data, Protected location, and No category.
-11. Add a likely-safe cleanup candidate to the Review Shortlist, or use `Shortlist shown` / `Remove shown` only after narrowing the grid to rows you intentionally want to review.
-12. Click `Preview quarantine` and confirm the preview, Restore Manifest Draft, and Quarantine Confirmation Draft all say no files were modified and execution is not implemented.
-13. Export CSV reports only when you intentionally choose an output file; the main report export follows the active filters/search, includes parent/depth context for recursive rows, and the suggested filename includes the search term when one is active.
+7. Treat row sizes as triage clues, not storage savings; folder rows include children and can overlap with child rows.
+8. Use Review Mix and Safety Summary to inspect high-risk, protected, access issue, reparse point, quarantine candidate, and no-category rows.
+9. Use Storage Review Search for specific names such as `pip`, `NVIDIA`, `Codex`, app names, or game folders.
+10. Select large folders and inspect Evidence, Review guidance, and Largest immediate children.
+11. Try category filters such as App cache, Python package cache, GPU shader cache, Windows app data, Installed application, Game data, Protected location, and No category.
+12. Add a likely-safe cleanup candidate to the Review Shortlist, or use `Shortlist shown` / `Remove shown` only after narrowing the grid to rows you intentionally want to review.
+13. Click `Preview quarantine` and confirm the preview, Restore Manifest Draft, and Quarantine Confirmation Draft all say no files were modified and execution is not implemented.
+14. Export CSV reports only when you intentionally choose an output file; the main report export follows the active filters/search, includes parent/depth context for recursive rows, and the suggested filename includes the search term when one is active.
 
 ## Current Workflow
 

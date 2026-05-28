@@ -535,6 +535,46 @@ It shows counts and largest-row sizes for Likely safe, Caution, High risk, and Q
 - Use largest-row sizes for triage until the app has an explicit non-overlapping selection model.
 - Show Access issues as a count because unreadable rows may not have meaningful size data.
 
+### Storage Review Size Note
+
+Status: draft
+Last reviewed: 2026-05-28
+
+#### Definition
+
+The Storage Review Size Note is a visible read-only reminder that folder sizes include child files and that parent/child rows can overlap in the flattened Storage Scan grid.
+
+It tells the user to treat row sizes as triage clues, not confirmed Storage Savings.
+
+#### Examples
+
+- A large `AppData` folder and a large child cache folder may both appear in the review grid.
+- The `Size` column can help decide what to inspect first.
+- The `Size` column alone does not prove how much space a future cleanup would recover.
+
+#### Non-examples
+
+- A Cleanup Action.
+- Confirmed Storage Savings.
+- A replacement for Quarantine Preview's non-overlapping byte calculation.
+
+#### Lifecycle
+
+- Visible in the WPF Storage Scan review surface.
+- Does not change scan, filter, shortlist, export, or preview behavior.
+- Does not modify files.
+
+#### Relationships
+
+- Complements Review Mix, Storage Review Display Limit, Child Breakdown, and Scan Report Export.
+- Reinforces the rule that flattened recursive rows must not be summed.
+
+#### Code implications
+
+- Keep the wording short enough to fit beside the existing review filters.
+- Mention overlap and storage-savings semantics directly.
+- Do not hide or change the underlying row sizes.
+
 ### Storage Scan Safety Summary
 
 Status: draft
