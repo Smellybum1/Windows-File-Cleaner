@@ -217,6 +217,8 @@ Verification:
 - `dotnet restore WindowsFileCleaner.sln --configfile NuGet.Config` passed with escalation because sandboxed restore could not read the user's NuGet config.
 - `dotnet build WindowsFileCleaner.sln --no-restore` passed.
 - `dotnet run --project tests\WindowsFileCleaner.Tests\WindowsFileCleaner.Tests.csproj --no-build` passed.
+- Committed checkpoint: `de7b854 Build initial Storage Scan MVP`.
+- Pushed `main` to `https://github.com/Smellybum1/Windows-File-Cleaner.git`.
 
 Docs updated:
 
