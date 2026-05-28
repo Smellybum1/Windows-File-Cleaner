@@ -57,6 +57,7 @@ If a term needs to change, update this glossary first, then update code and docs
 | Undo Quarantine | Restore a quarantined file or folder to its original path. | `UndoQuarantine`, `undoQuarantine` | Requires a restore manifest. |
 | Restore Manifest | Versioned JSON metadata needed to undo an executed quarantine action. | `RestoreManifest`, `restoreManifestPath` | Schema version `restore-manifest.v1`; should include original path, quarantine path, size, timestamps, and action time. |
 | Restore Manifest Draft | In-memory draft of future Restore Manifest metadata generated from included Quarantine Preview rows. | `RestoreManifestDraft`, `RestoreManifestEntryDraft`, `RestoreManifestDraftBuilder`, `RestoreManifestDraftJsonSerializer` | Not an executed manifest, not proof that files moved, and must not be written by preview code. |
+| Quarantine Confirmation Draft | In-memory readiness check comparing a Quarantine Preview with a Restore Manifest Draft before future execution. | `QuarantineConfirmationDraft`, `QuarantineConfirmationDraftBuilder` | Not approval, not execution, and not a persisted cleanup job. Exposes blockers, counts, bytes, and the future confirmation phrase. |
 | Desktop App | The preferred app shape for this project. | `DesktopApp` only if needed | Implement with C# and WPF. |
 | WPF | Windows Presentation Foundation, the selected desktop UI framework. | Avoid domain-model names unless framework-specific. | Use for Windows-only desktop UI. |
 
@@ -80,6 +81,7 @@ If a term needs to change, update this glossary first, then update code and docs
 | Score | Importance Rating or Deletion Recommendation | Too vague unless the specific rating is named. |
 | Restore Log | Restore Manifest | Use manifest when it is required for undo behavior. |
 | Manifest Preview | Restore Manifest Draft | Use draft when no cleanup action has executed. |
+| Confirmation Plan | Quarantine Confirmation Draft | Use draft while no cleanup action has executed and no approval has been given. |
 | Cleanup Plan | Quarantine Preview | Use the more precise preview term until actual Cleanup Actions exist. |
 
 ## Term template

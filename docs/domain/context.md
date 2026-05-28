@@ -599,6 +599,7 @@ It does not create folders, write manifests, move files, delete files, or approv
 
 - A Cleanup Action.
 - A Restore Manifest.
+- A Quarantine Confirmation Draft.
 - A persisted cleanup job.
 - Confirmation that files should be moved.
 
@@ -614,6 +615,7 @@ It does not create folders, write manifests, move files, delete files, or approv
 
 - Depends on Review Shortlist.
 - Precedes any future Quarantine Cleanup Action.
+- Feeds Restore Manifest Draft and Quarantine Confirmation Draft work.
 - Helps validate Storage Savings without double-counting selected parent/child paths.
 - Uses Quarantine as the future destination concept but does not perform Quarantine.
 
@@ -945,6 +947,7 @@ The selected durable format is JSON with schema version `restore-manifest.v1`.
 
 - Depends on Quarantine Preview for draft shape.
 - Depends on Quarantine execution for actual manifest writing.
+- Is checked by Quarantine Confirmation Draft before any future execution flow.
 - Required by Undo Quarantine.
 
 #### Code implications
@@ -953,6 +956,52 @@ The selected durable format is JSON with schema version `restore-manifest.v1`.
 - Do not write Restore Manifest files in preview or draft code.
 - Use a versioned JSON schema for future executed manifests.
 - Keep preview CSV exports separate from Restore Manifest drafts and executed manifests.
+
+### Quarantine Confirmation Draft
+
+Status: draft
+Last reviewed: 2026-05-28
+
+#### Definition
+
+A Quarantine Confirmation Draft is an in-memory readiness check that compares a Quarantine Preview with a Restore Manifest Draft before any future Quarantine execution.
+
+It lists data blockers, records the exact preview counts and bytes to review, exposes the future confirmation phrase, and states that execution is not implemented in the current build.
+
+#### Examples
+
+- Show that a Quarantine Preview has 1 included row, 0 blocked rows, 0 redundant rows, and matching Restore Manifest Draft metadata.
+- Block confirmation when the preview still contains blocked or redundant rows.
+- Block confirmation when the Restore Manifest Draft does not match the preview Cleanup Scope, Quarantine root, entry count, destination paths, or bytes.
+
+#### Non-examples
+
+- A Cleanup Action.
+- A user approval.
+- A persisted cleanup job.
+- An executed Restore Manifest.
+- A file-moving command.
+
+#### Lifecycle
+
+- Generated in memory after a Quarantine Preview and Restore Manifest Draft exist.
+- Used to identify unresolved data blockers before future execution work.
+- Discarded when the scan, Review Shortlist, Quarantine Preview, or Restore Manifest Draft changes.
+- Must remain read-only until an explicit Quarantine execution workflow exists.
+
+#### Relationships
+
+- Depends on Quarantine Preview.
+- Depends on Restore Manifest Draft.
+- Precedes any future explicit approval or Quarantine Cleanup Action.
+- Supports Undo Quarantine design by checking that preview and draft metadata agree before execution.
+
+#### Code implications
+
+- Use `QuarantineConfirmationDraft` and `QuarantineConfirmationDraftBuilder`.
+- Use `HasDataBlockers` only as readiness evidence, not as permission to execute.
+- Keep `IsExecutionImplemented` false until a separate execution packet is designed and approved.
+- Do not create folders, move files, delete files, write manifests, or persist cleanup jobs from confirmation draft code.
 
 ### Undo Quarantine
 
@@ -1040,6 +1089,7 @@ Any operation that moves, deletes, or otherwise modifies files must require expl
 Implementation implications:
 
 - Cleanup Actions should have dry-run or preview output where possible.
+- Future Quarantine execution should pass a Quarantine Confirmation Draft with no data blockers before asking for explicit approval.
 - The app should log attempted paths, outcomes, and errors.
 - Reversible actions are preferred over permanent deletion.
 

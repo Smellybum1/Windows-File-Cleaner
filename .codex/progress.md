@@ -6,14 +6,14 @@ Use it to preserve what was completed, what was verified, what was rejected, and
 
 ## Current status
 
-Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. Review filters, selected-folder child breakdown, selected-path inspection actions, CSV export, Review Mix, Storage Scan Safety Summary, Safety Summary review shortcuts, Access issues filtering, Bloat Category Filter, No category filtering, Review Shortlist, Quarantine Preview, Quarantine Preview CSV export, and Restore Manifest Draft are implemented and verified. Restore Manifest Draft is core-only and awaits future confirmation-flow work.
+Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. Review filters, selected-folder child breakdown, selected-path inspection actions, CSV export, Review Mix, Storage Scan Safety Summary, Safety Summary review shortcuts, Access issues filtering, Bloat Category Filter, No category filtering, Review Shortlist, Quarantine Preview, Quarantine Preview CSV export, Restore Manifest Draft, and Quarantine Confirmation Draft are implemented and verified. Restore Manifest Draft and Quarantine Confirmation Draft are core-only and await future WPF wiring and execution-flow review.
 
 ## Next recommended work
 
 1. Ask the user to rerun the WPF app and confirm Safety Summary shortcuts, Review Shortlist, Quarantine Preview, Export preview, Review Mix, Access issues filter, category filter, No category filter, and filter wording are useful.
 2. Use review feedback to refine Protected Locations and category grouping.
-3. Design explicit Quarantine confirmation semantics before any actual Quarantine execution.
-4. Defer actual Quarantine and Undo Quarantine execution until scan review, preview semantics, and restore rules are trustworthy.
+3. Add WPF display for Restore Manifest Draft and Quarantine Confirmation Draft without writing files or executing quarantine.
+4. Defer actual Quarantine and Undo Quarantine execution until scan review, preview semantics, confirmation semantics, and restore rules are trustworthy.
 5. Revisit .NET 10 before packaging or long-term distribution.
 
 ## Completed packets
@@ -874,3 +874,48 @@ Rejected ideas buffer:
 - Do not write a draft file automatically.
 - Do not use CSV as the executed restore manifest format.
 - Do not include blocked or redundant preview rows as draft entries.
+
+### 2026-05-28: Add Quarantine Confirmation Draft
+
+Status: completed
+
+Evidence:
+
+- Quarantine Preview and Restore Manifest Draft now exist as read-only core artifacts.
+- Actual Quarantine execution still needs an explicit confirmation gate before any file-moving code.
+
+Implementation:
+
+- Added `QuarantineConfirmationDraft`.
+- Added `QuarantineConfirmationDraftBuilder`.
+- Confirmation Draft records included counts and bytes, blocked/redundant counts, Restore Manifest Draft id, required future confirmation text, data blockers, and review notes.
+- Builder checks preview and manifest agreement for Cleanup Scope, Quarantine root, schema version, entry count, bytes, destination paths, missing rows, duplicate rows, and stray manifest rows.
+- `IsExecutionImplemented` remains false.
+- No folder creation, file move, deletion, manifest file write, quarantine execution, or undo execution was added.
+
+Verification:
+
+- `dotnet build WindowsFileCleaner.sln --no-restore` passed.
+- `dotnet run --project tests\WindowsFileCleaner.Tests\WindowsFileCleaner.Tests.csproj --no-build` passed.
+
+Docs updated:
+
+- `docs/domain/context.md`
+- `docs/domain/glossary.md`
+- `docs/features/2026-05-28-quarantine-confirmation-draft.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No new ADR. This is a read-only draft gate; actual execution flow should get ADR review when designed.
+
+Open questions:
+
+- What exact UI should ask for the confirmation phrase?
+- Should future execution require hashes before moving files?
+
+Rejected ideas buffer:
+
+- Do not call this a cleanup plan.
+- Do not make execution availability depend only on a boolean.
+- Do not treat the confirmation phrase as sufficient without matching preview and manifest data.

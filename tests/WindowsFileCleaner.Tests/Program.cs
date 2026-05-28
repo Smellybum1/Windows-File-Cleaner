@@ -12,6 +12,8 @@ tests.ReviewShortlistTracksSelectedRowsWithoutModifyingReview();
 tests.QuarantinePreviewBuildsReadOnlyPlanFromShortlist();
 tests.QuarantinePreviewCsvExporterWritesReviewReport();
 tests.RestoreManifestDraftBuildsJsonUndoMetadataFromIncludedPreviewRows();
+tests.QuarantineConfirmationDraftChecksPreviewAndManifestReadiness();
+tests.QuarantineConfirmationDraftReportsPreviewAndManifestBlockers();
 tests.ChildSummaryShowsLargestImmediateChildren();
 tests.PathInspectionPlanBuildsExplorerArguments();
 tests.CsvExporterWritesEscapedReviewRows();
@@ -478,6 +480,80 @@ internal sealed class StorageScanTests
         Assert(json.Contains("\"isExecutedManifest\": false", StringComparison.Ordinal), "JSON should clearly identify the draft as not executed.");
         Assert(json.Contains("\"quarantinePath\"", StringComparison.Ordinal), "JSON should include quarantine paths for undo.");
         Assert(!Directory.Exists(quarantineRoot), "Building and serializing a Restore Manifest Draft should not create the quarantine root folder.");
+    }
+
+    public void QuarantineConfirmationDraftChecksPreviewAndManifestReadiness()
+    {
+        using var fixture = TestFixture.Create();
+
+        fixture.WriteFile(@"Downloads\old-installer.msi", 1024 * 1024, DateTimeOffset.UtcNow.AddDays(-120));
+        var scanner = new StorageScanner();
+        var result = scanner.Scan(new StorageScanOptions(fixture.RootPath));
+        var review = StorageScanReviewBuilder.Build(result);
+        var installer = SingleReviewEntry(review.Entries, @"Downloads\old-installer.msi");
+        var quarantineRoot = Path.Combine(fixture.RootPath, "quarantine-root");
+        var preview = QuarantinePreviewBuilder.Build([installer], fixture.RootPath, quarantineRoot);
+        var manifestDraft = RestoreManifestDraftBuilder.Build(
+            preview,
+            new DateTimeOffset(2026, 5, 28, 1, 2, 3, TimeSpan.Zero),
+            "manifest-draft-1");
+
+        var confirmation = QuarantineConfirmationDraftBuilder.Build(
+            preview,
+            manifestDraft,
+            new DateTimeOffset(2026, 5, 28, 2, 3, 4, TimeSpan.Zero),
+            " confirmation-draft-1 ");
+
+        Assert(confirmation.ConfirmationId == "confirmation-draft-1", "Confirmation draft should trim and preserve the provided id.");
+        Assert(confirmation.RestoreManifestDraftId == "manifest-draft-1", "Confirmation draft should reference the Restore Manifest Draft id.");
+        Assert(confirmation.IncludedCount == preview.IncludedCount, "Confirmation draft should copy the preview included count.");
+        Assert(confirmation.IncludedBytes == preview.IncludedBytes, "Confirmation draft should copy preview included bytes.");
+        Assert(confirmation.BlockedCount == 0, "Clean confirmation draft should have no blocked preview rows.");
+        Assert(confirmation.RedundantCount == 0, "Clean confirmation draft should have no redundant preview rows.");
+        Assert(!confirmation.HasDataBlockers, "Matching preview and manifest draft should have no data blockers.");
+        Assert(!confirmation.IsExecutionImplemented, "Confirmation draft must not imply execution exists.");
+        Assert(confirmation.RequiredConfirmationText == QuarantineConfirmationDraft.DefaultRequiredConfirmationText, "Confirmation draft should expose the future confirmation phrase.");
+        Assert(confirmation.ReviewNotes.Any(note => note.Contains("No files were modified", StringComparison.OrdinalIgnoreCase)), "Confirmation notes should preserve the read-only boundary.");
+        Assert(confirmation.ReviewNotes.Any(note => note.Contains("not implemented", StringComparison.OrdinalIgnoreCase)), "Confirmation notes should state execution is not implemented.");
+        Assert(!Directory.Exists(quarantineRoot), "Building a Quarantine Confirmation Draft should not create the quarantine root folder.");
+    }
+
+    public void QuarantineConfirmationDraftReportsPreviewAndManifestBlockers()
+    {
+        using var fixture = TestFixture.Create();
+
+        fixture.WriteFile(@"Downloads\OldInstallers\setup.msi", 1024 * 1024 * 2, DateTimeOffset.UtcNow.AddDays(-120));
+        fixture.WriteFile(@"Documents\important.txt", 1024, DateTimeOffset.UtcNow);
+        var scanner = new StorageScanner();
+        var result = scanner.Scan(new StorageScanOptions(fixture.RootPath));
+        var review = StorageScanReviewBuilder.Build(result);
+        var parent = SingleReviewEntry(review.Entries, @"Downloads\OldInstallers");
+        var child = SingleReviewEntry(review.Entries, @"Downloads\OldInstallers\setup.msi");
+        var protectedRow = SingleReviewEntry(review.Entries, @"Documents");
+        var quarantineRoot = Path.Combine(fixture.RootPath, "quarantine-root");
+        var preview = QuarantinePreviewBuilder.Build(
+            [child, parent, protectedRow],
+            fixture.RootPath,
+            quarantineRoot);
+        var manifestDraft = RestoreManifestDraftBuilder.Build(
+            preview,
+            new DateTimeOffset(2026, 5, 28, 1, 2, 3, TimeSpan.Zero),
+            "manifest-draft-2") with
+        {
+            QuarantineRootPath = Path.Combine(quarantineRoot, "other-root")
+        };
+
+        var confirmation = QuarantineConfirmationDraftBuilder.Build(
+            preview,
+            manifestDraft,
+            new DateTimeOffset(2026, 5, 28, 2, 3, 4, TimeSpan.Zero),
+            "confirmation-draft-2");
+
+        Assert(confirmation.HasDataBlockers, "Confirmation draft should report preview or manifest mismatches.");
+        Assert(confirmation.Blockers.Any(blocker => blocker.Contains("blocked preview row", StringComparison.OrdinalIgnoreCase)), "Confirmation draft should report blocked preview rows.");
+        Assert(confirmation.Blockers.Any(blocker => blocker.Contains("redundant preview row", StringComparison.OrdinalIgnoreCase)), "Confirmation draft should report redundant preview rows.");
+        Assert(confirmation.Blockers.Any(blocker => blocker.Contains("Quarantine root", StringComparison.OrdinalIgnoreCase)), "Confirmation draft should report quarantine root mismatches.");
+        Assert(!Directory.Exists(quarantineRoot), "Blocked confirmation draft checks should not create the quarantine root folder.");
     }
 
     public void ChildSummaryShowsLargestImmediateChildren()
