@@ -167,6 +167,7 @@ What changed:
 
 - Added Selected Path Review Guidance for the WPF selected-row detail pane.
 - Added core guidance rules for access issues, reparse points, profile containers, protected/high-risk rows, quarantine candidates, cache/package rows, uncategorized rows, and generic evidence review.
+- Later tuned cache/package guidance so GPU shader caches, Python package caches, Node package caches, app caches, and generic AppData rows get more specific read-only review wording without changing ratings or recommendations.
 - Added automated coverage for core guidance and WPF selected-row guidance display.
 
 Files changed:

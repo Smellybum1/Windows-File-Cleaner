@@ -912,6 +912,8 @@ Selected Path Review Guidance is read-only wording shown for the currently selec
 - Tell the user to inspect children instead of shortlisting a whole profile container.
 - Tell the user to keep Protected Location rows by default.
 - Tell the user that a Quarantine candidate may be added to Review Shortlist only after recognition and review.
+- Tell the user that GPU shader caches may be rebuildable but can cause temporary recompile delays.
+- Tell the user that Python or Node package caches should be separated from active development tools and Codex-related paths.
 - Tell the user to classify Uncategorized Results before cleanup.
 
 #### Non-examples

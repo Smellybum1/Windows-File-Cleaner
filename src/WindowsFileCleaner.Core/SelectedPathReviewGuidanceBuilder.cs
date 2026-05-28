@@ -55,13 +55,53 @@ public static class SelectedPathReviewGuidanceBuilder
                 ]);
         }
 
-        if (IsCacheOrPackageReview(entry))
+        if (entry.BloatCategories.Contains(BloatCategory.GpuShaderCache))
         {
             return new SelectedPathReviewGuidance(
-                "Inspect before shortlisting",
+                "Review shader cache",
                 [
-                    "This looks cache-like or package-cache-related, but current apps and development tools may still depend on it.",
-                    "Prefer reviewing smaller child rows and using Quarantine Preview before any future cleanup execution."
+                    "GPU shader caches can usually be rebuilt, but cleanup may cause temporary shader recompile delays or affect apps that are currently running.",
+                    "Prefer narrowing to specific shader-cache child rows and use Quarantine Preview before any future cleanup execution."
+                ]);
+        }
+
+        if (entry.BloatCategories.Contains(BloatCategory.PythonPackageCache))
+        {
+            return new SelectedPathReviewGuidance(
+                "Review Python cache",
+                [
+                    "Python package caches are often rebuildable, but active development tools can still depend on nearby environments, wheels, or indexes.",
+                    "Target only recognized cache rows after inspection; do not shortlist virtual environments, source folders, or Codex-related paths."
+                ]);
+        }
+
+        if (entry.BloatCategories.Contains(BloatCategory.NodePackageCache))
+        {
+            return new SelectedPathReviewGuidance(
+                "Review Node cache",
+                [
+                    "Node package caches may be rebuildable, but dependency folders can be part of active projects or tools.",
+                    "Use parent/depth context and child rows to avoid shortlisting active project dependencies."
+                ]);
+        }
+
+        if (entry.BloatCategories.Contains(BloatCategory.AppCache))
+        {
+            return new SelectedPathReviewGuidance(
+                "Review app cache",
+                [
+                    "This looks cache-like, but AppData can mix disposable cache files with active app state.",
+                    "Prefer specific cache child rows over broad app folders, then use Quarantine Preview for a dry-run review."
+                ]);
+        }
+
+        if (entry.BloatCategories.Contains(BloatCategory.ApplicationDataArea))
+        {
+            return new SelectedPathReviewGuidance(
+                "Inspect AppData carefully",
+                [
+                    "This is inside AppData, where caches, settings, sessions, credentials, and app state can sit close together.",
+                    "Use the category filters, child breakdown, and file preview before expanding cleanup rules."
                 ]);
         }
 
@@ -81,14 +121,5 @@ public static class SelectedPathReviewGuidanceBuilder
                 "Review the category evidence and largest immediate children before shortlisting this path.",
                 "Storage Scan is read-only; no files were modified."
             ]);
-    }
-
-    private static bool IsCacheOrPackageReview(StorageEntry entry)
-    {
-        return entry.BloatCategories.Contains(BloatCategory.ApplicationDataArea)
-            || entry.BloatCategories.Contains(BloatCategory.AppCache)
-            || entry.BloatCategories.Contains(BloatCategory.GpuShaderCache)
-            || entry.BloatCategories.Contains(BloatCategory.NodePackageCache)
-            || entry.BloatCategories.Contains(BloatCategory.PythonPackageCache);
     }
 }

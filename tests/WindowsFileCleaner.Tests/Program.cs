@@ -893,6 +893,48 @@ internal sealed class StorageScanTests
             DeletionRecommendation: DeletionRecommendation.Inspect,
             Evidence: "No cleanup-specific category matched this file.",
             Children: []);
+        var shaderCache = new StorageEntry(
+            @"C:\Users\moxhe\AppData\Local\NVIDIA\DXCache",
+            "DXCache",
+            IsDirectory: true,
+            SizeBytes: 10L * 1024 * 1024 * 1024,
+            LastModifiedUtc: now,
+            IsAccessible: true,
+            IsReparsePoint: false,
+            ErrorMessage: null,
+            BloatCategories: [BloatCategory.ApplicationDataArea, BloatCategory.AppCache, BloatCategory.GpuShaderCache],
+            ImportanceRating: ImportanceRating.Caution,
+            DeletionRecommendation: DeletionRecommendation.Inspect,
+            Evidence: "GPU shader cache.",
+            Children: []);
+        var pythonCache = new StorageEntry(
+            @"C:\Users\moxhe\AppData\Local\pip\Cache",
+            "Cache",
+            IsDirectory: true,
+            SizeBytes: 1024,
+            LastModifiedUtc: now,
+            IsAccessible: true,
+            IsReparsePoint: false,
+            ErrorMessage: null,
+            BloatCategories: [BloatCategory.ApplicationDataArea, BloatCategory.AppCache, BloatCategory.PythonPackageCache],
+            ImportanceRating: ImportanceRating.Caution,
+            DeletionRecommendation: DeletionRecommendation.Inspect,
+            Evidence: "Python package cache.",
+            Children: []);
+        var appDataArea = new StorageEntry(
+            @"C:\Users\moxhe\AppData\Roaming\SomeTool",
+            "SomeTool",
+            IsDirectory: true,
+            SizeBytes: 1024,
+            LastModifiedUtc: now,
+            IsAccessible: true,
+            IsReparsePoint: false,
+            ErrorMessage: null,
+            BloatCategories: [BloatCategory.ApplicationDataArea],
+            ImportanceRating: ImportanceRating.Caution,
+            DeletionRecommendation: DeletionRecommendation.Inspect,
+            Evidence: "AppData area.",
+            Children: []);
 
         var profileGuidance = SelectedPathReviewGuidanceBuilder.Build(profile);
         Assert(profileGuidance.ActionLabel == "Inspect children, not the container", "Profile containers should direct review to child rows.");
@@ -914,6 +956,24 @@ internal sealed class StorageScanTests
 
         var uncategorizedGuidance = SelectedPathReviewGuidanceBuilder.Build(uncategorized);
         Assert(uncategorizedGuidance.ActionLabel == "Classify before cleanup", "Uncategorized rows should require classification before cleanup.");
+
+        var shaderGuidance = SelectedPathReviewGuidanceBuilder.Build(shaderCache);
+        Assert(shaderGuidance.ActionLabel == "Review shader cache", "GPU shader cache rows should get specific shader-cache guidance.");
+        Assert(
+            shaderGuidance.Notes.Any(note => note.Contains("recompile delays", StringComparison.OrdinalIgnoreCase)),
+            "Shader-cache guidance should mention temporary recompile delays.");
+
+        var pythonGuidance = SelectedPathReviewGuidanceBuilder.Build(pythonCache);
+        Assert(pythonGuidance.ActionLabel == "Review Python cache", "Python package cache rows should get specific package-cache guidance.");
+        Assert(
+            pythonGuidance.Notes.Any(note => note.Contains("Codex-related", StringComparison.OrdinalIgnoreCase)),
+            "Python-cache guidance should protect Codex-related paths.");
+
+        var appDataGuidance = SelectedPathReviewGuidanceBuilder.Build(appDataArea);
+        Assert(appDataGuidance.ActionLabel == "Inspect AppData carefully", "Generic AppData rows should remain careful-inspection guidance.");
+        Assert(
+            appDataGuidance.Notes.Any(note => note.Contains("credentials", StringComparison.OrdinalIgnoreCase)),
+            "AppData guidance should mention sensitive active state.");
     }
 
     public void PathInspectionPlanBuildsExplorerArguments()
