@@ -54,20 +54,27 @@
             </StackPanel>
 
             <StackPanel Grid.Column="1"
-                        Orientation="Horizontal"
                         VerticalAlignment="Center">
-                <TextBox x:Name="ScopePathBox"
-                         Width="420"
-                         Height="34"
-                         VerticalContentAlignment="Center"
-                         Text="C:\Users\moxhe" />
-                <Button x:Name="ScanButton"
-                        Content="Scan"
-                        Click="ScanButton_Click" />
-                <Button x:Name="CancelButton"
-                        Content="Cancel"
-                        IsEnabled="False"
-                        Click="CancelButton_Click" />
+                <StackPanel Orientation="Horizontal">
+                    <TextBox x:Name="ScopePathBox"
+                             Width="420"
+                             Height="34"
+                             VerticalContentAlignment="Center"
+                             Text="C:\Users\moxhe"
+                             TextChanged="ScopePathBox_TextChanged" />
+                    <Button x:Name="ScanButton"
+                            Content="Scan"
+                            Click="ScanButton_Click" />
+                    <Button x:Name="CancelButton"
+                            Content="Cancel"
+                            IsEnabled="False"
+                            Click="CancelButton_Click" />
+                </StackPanel>
+                <TextBlock x:Name="ScopeSafetyNoteText"
+                           Foreground="#526171"
+                           Margin="0,6,0,0"
+                           Width="680"
+                           TextWrapping="Wrap" />
             </StackPanel>
         </Grid>
 

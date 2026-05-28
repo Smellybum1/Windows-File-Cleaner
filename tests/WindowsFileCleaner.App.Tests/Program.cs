@@ -55,6 +55,12 @@ internal sealed class MainWindowSmokeTests
             Assert(
                 window.CurrentCleanupScopePath == StorageScanOptions.DefaultForCurrentUser().CleanupScopePath,
                 "MainWindow should default to the current user's Cleanup Scope.");
+            Assert(
+                window.CleanupScopeSafetyNoteTextValue.Contains("Real Profile Cleanup Scope", StringComparison.OrdinalIgnoreCase),
+                "MainWindow should show a real-profile Cleanup Scope safety note at startup.");
+            Assert(
+                window.CleanupScopeSafetyNoteTextValue.Contains("preflight", StringComparison.OrdinalIgnoreCase),
+                "Default Cleanup Scope safety note should remind the user to run preflight.");
             Assert(window.CurrentStatusText == "Ready", "MainWindow should not start scanning when constructed.");
             Assert(window.CanStartStorageScan, "MainWindow should allow a user-triggered Storage Scan.");
             Assert(!window.CanExportScanCsv, "MainWindow should not allow CSV export before a scan.");
@@ -78,6 +84,12 @@ internal sealed class MainWindowSmokeTests
             Assert(
                 window.CurrentCleanupScopePath == smokeScope,
                 "MainWindow should use the launch Cleanup Scope.");
+            Assert(
+                window.CleanupScopeSafetyNoteTextValue.Contains("Fixture Cleanup Scope", StringComparison.OrdinalIgnoreCase),
+                "Launch fixture Cleanup Scope should show fixture safety note.");
+            Assert(
+                window.CleanupScopeSafetyNoteTextValue.Contains("click Scan", StringComparison.OrdinalIgnoreCase),
+                "Fixture safety note should preserve the user-triggered scan boundary.");
             Assert(window.CurrentStatusText == "Ready", "Launch Cleanup Scope should not trigger a scan.");
             Assert(window.CanStartStorageScan, "Launch Cleanup Scope should still require a user-triggered scan.");
             Assert(!window.CanExportScanCsv, "Launch Cleanup Scope should not create exportable scan data.");

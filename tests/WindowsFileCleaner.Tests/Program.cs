@@ -4,6 +4,7 @@ var tests = new StorageScanTests();
 tests.ScannerTotalsFilesAndClassifiesCandidates();
 tests.ScannerRefusesToLeaveCleanupScope();
 tests.LaunchOptionsDefaultAndScopeArgument();
+tests.CleanupScopeSafetyNoteDistinguishesFixtureAndRealProfile();
 tests.ClassifierLabelsRealScanContainerPatterns();
 tests.ReviewBuilderSummarizesAndFiltersResults();
 tests.ReviewBuilderFiltersAccessIssues();
@@ -91,6 +92,33 @@ internal sealed class StorageScanTests
         }
 
         Assert(missingScopeFailed, "Launch options should reject --scope without a path.");
+    }
+
+    public void CleanupScopeSafetyNoteDistinguishesFixtureAndRealProfile()
+    {
+        var realProfile = CleanupScopeSafetyNoteBuilder.Build(@"C:\Users\moxhe");
+        Assert(realProfile.IsRealUserProfileScope, "Default Cleanup Scope should be recognized as a real user profile scope.");
+        Assert(!realProfile.IsFixtureScope, "Default Cleanup Scope should not be recognized as fixture scope.");
+        Assert(realProfile.Label == "Real Profile Cleanup Scope", "Real profile scope should use the expected label.");
+        Assert(
+            realProfile.Message.Contains("preflight", StringComparison.OrdinalIgnoreCase),
+            "Real profile scope should remind the user to run preflight before scanning.");
+
+        var realProfileChild = CleanupScopeSafetyNoteBuilder.Build(@"C:\Users\moxhe\AppData\Local");
+        Assert(realProfileChild.IsRealUserProfileScope, "Child paths under the default Cleanup Scope should still be recognized as real user profile scope.");
+
+        var fixture = CleanupScopeSafetyNoteBuilder.Build(@"D:\Codex\Windows File Cleaner\.local\storage-scan-smoke-fixture");
+        Assert(fixture.IsFixtureScope, "Synthetic fixture scope should be recognized as fixture scope.");
+        Assert(!fixture.IsRealUserProfileScope, "Synthetic fixture scope should not be recognized as real profile scope.");
+        Assert(fixture.Label == "Fixture Cleanup Scope", "Fixture scope should use the expected label.");
+
+        var custom = CleanupScopeSafetyNoteBuilder.Build(@"D:\Scratch\Review");
+        Assert(!custom.IsFixtureScope, "Custom path should not be recognized as fixture scope.");
+        Assert(!custom.IsRealUserProfileScope, "Custom path should not be recognized as default real profile scope.");
+        Assert(custom.Label == "Custom Cleanup Scope", "Custom path should use the expected label.");
+
+        var empty = CleanupScopeSafetyNoteBuilder.Build(" ");
+        Assert(empty.Label == "Choose Cleanup Scope", "Blank paths should ask for a Cleanup Scope.");
     }
 
     public void ClassifierLabelsRealScanContainerPatterns()

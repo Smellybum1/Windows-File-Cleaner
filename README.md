@@ -93,15 +93,16 @@ C:\Users\moxhe
 After the app opens:
 
 1. Confirm the scope box shows the intended Cleanup Scope.
-2. Click `Scan`.
-3. Confirm the status says no files were modified.
-4. Review the summary cards for total size, folders, files, and access issues.
-5. Use Review Mix and Safety Summary to inspect high-risk, protected, access issue, reparse point, quarantine candidate, and no-category rows.
-6. Select large folders and inspect Evidence, Review guidance, and Largest immediate children.
-7. Try category filters such as App cache, Python package cache, GPU shader cache, Windows app data, Installed application, Game data, Protected location, and No category.
-8. Add a likely-safe cleanup candidate to the Review Shortlist.
-9. Click `Preview quarantine` and confirm the preview, Restore Manifest Draft, and Quarantine Confirmation Draft all say no files were modified and execution is not implemented.
-10. Export CSV reports only when you intentionally choose an output file.
+2. Confirm the Cleanup Scope Safety Note matches the path: fixture first for smoke testing, real profile only after preflight.
+3. Click `Scan`.
+4. Confirm the status says no files were modified.
+5. Review the summary cards for total size, folders, files, and access issues.
+6. Use Review Mix and Safety Summary to inspect high-risk, protected, access issue, reparse point, quarantine candidate, and no-category rows.
+7. Select large folders and inspect Evidence, Review guidance, and Largest immediate children.
+8. Try category filters such as App cache, Python package cache, GPU shader cache, Windows app data, Installed application, Game data, Protected location, and No category.
+9. Add a likely-safe cleanup candidate to the Review Shortlist.
+10. Click `Preview quarantine` and confirm the preview, Restore Manifest Draft, and Quarantine Confirmation Draft all say no files were modified and execution is not implemented.
+11. Export CSV reports only when you intentionally choose an output file.
 
 ## Current Workflow
 
@@ -109,13 +110,14 @@ The intended review flow is:
 
 1. Run fixture tests.
 2. Run the WPF app smoke tests.
-3. Run Storage Scan.
-4. Inspect high-risk and protected rows first.
-5. Use category filters to understand large buckets.
-6. Use Selected Path Review Guidance, Child Breakdown, and Open in Explorer for manual inspection.
-7. Add interesting rows to Review Shortlist.
-8. Generate Quarantine Preview for read-only readiness review.
-9. Stop before cleanup execution.
+3. Confirm the Cleanup Scope Safety Note before scanning.
+4. Run Storage Scan.
+5. Inspect high-risk and protected rows first.
+6. Use category filters to understand large buckets.
+7. Use Selected Path Review Guidance, Child Breakdown, and Open in Explorer for manual inspection.
+8. Add interesting rows to Review Shortlist.
+9. Generate Quarantine Preview for read-only readiness review.
+10. Stop before cleanup execution.
 
 ## Not Implemented Yet
 

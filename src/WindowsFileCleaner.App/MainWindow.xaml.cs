@@ -34,9 +34,12 @@ public partial class MainWindow : Window
         ScopePathBox.Text = initialCleanupScopePath;
         ResultsGrid.ItemsSource = Array.Empty<StorageEntryRow>();
         UpdateCategoryFilterOptions();
+        UpdateCleanupScopeSafetyNote();
     }
 
     public string CurrentCleanupScopePath => ScopePathBox.Text;
+
+    public string CleanupScopeSafetyNoteTextValue => ScopeSafetyNoteText.Text;
 
     public string CurrentStatusText => StatusText.Text;
 
@@ -187,6 +190,16 @@ public partial class MainWindow : Window
     private void CancelButton_Click(object sender, RoutedEventArgs e)
     {
         _scanCancellation?.Cancel();
+    }
+
+    private void ScopePathBox_TextChanged(object sender, TextChangedEventArgs e)
+    {
+        if (!IsInitialized)
+        {
+            return;
+        }
+
+        UpdateCleanupScopeSafetyNote();
     }
 
     private void AllFilterButton_Click(object sender, RoutedEventArgs e)
@@ -524,6 +537,7 @@ public partial class MainWindow : Window
         ScanButton.IsEnabled = !isScanning;
         CancelButton.IsEnabled = isScanning;
         ScopePathBox.IsEnabled = !isScanning;
+        UpdateCleanupScopeSafetyNote();
         ExportCsvButton.IsEnabled = !isScanning && _currentReview is not null;
         ExportShortlistCsvButton.IsEnabled = !isScanning && _currentReview is not null && _shortlist.Count > 0;
         ClearShortlistButton.IsEnabled = !isScanning && _shortlist.Count > 0;
@@ -532,6 +546,17 @@ public partial class MainWindow : Window
         CategoryFilterBox.IsEnabled = !isScanning && _currentReview is not null && CategoryFilterBox.Items.Count > 1;
         UpdateShortlistControls();
         UpdateSafetyShortcutButtons();
+    }
+
+    private void UpdateCleanupScopeSafetyNote()
+    {
+        if (ScopeSafetyNoteText is null)
+        {
+            return;
+        }
+
+        var note = CleanupScopeSafetyNoteBuilder.Build(ScopePathBox.Text);
+        ScopeSafetyNoteText.Text = $"{note.Label}: {note.Message}";
     }
 
     public void ApplyStorageReviewFilter(StorageReviewFilter filter)

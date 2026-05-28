@@ -139,6 +139,46 @@ The initial Cleanup Scope is `C:\Users\moxhe`.
 - Use `cleanupScopePath` or `cleanupScopePaths` for paths.
 - Keep scan and cleanup logic constrained to the active Cleanup Scope.
 
+### Cleanup Scope Safety Note
+
+Status: draft
+Last reviewed: 2026-05-28
+
+#### Definition
+
+A Cleanup Scope Safety Note is read-only UI text that explains what kind of Cleanup Scope is currently entered and what safety step should happen before scanning it.
+
+Initial scope note kinds are Fixture Cleanup Scope, Real Profile Cleanup Scope, Custom Cleanup Scope, Choose Cleanup Scope, and Check Cleanup Scope.
+
+#### Examples
+
+- Fixture Cleanup Scope: remind the user this is the synthetic fixture review path and the app still waits for a manual Scan click.
+- Real Profile Cleanup Scope: remind the user to run MVP preflight and fixture review before scanning the real profile.
+- Custom Cleanup Scope: remind the user to verify the path before scanning real user files.
+
+#### Non-examples
+
+- A Cleanup Action.
+- A scan approval.
+- Proof that preflight was run.
+- A replacement for the README or MVP preflight script.
+
+#### Lifecycle
+
+- Generated when the WPF app starts.
+- Updates when the Cleanup Scope text changes.
+- Remains read-only and does not persist state.
+
+#### Relationships
+
+- Supports Cleanup Scope, Storage Scan, fixture-based verification, and the read-only before cleanup rule.
+- Does not modify Storage Scan behavior or cleanup eligibility.
+
+#### Code implications
+
+- Use `CleanupScopeSafetyNote` and `CleanupScopeSafetyNoteBuilder`.
+- Keep the note informational; do not scan, create fixtures, run preflight, or block user action from the note builder.
+
 ### Cleanup Candidate
 
 Status: draft  
@@ -1096,6 +1136,7 @@ Implementation implications:
 - Recursive scanning should be expected, but it must handle access errors and long-running scans gracefully.
 - The first version should verify scanner behavior against fixture directories before scanning the real Cleanup Scope.
 - The WPF app may be launched with `--scope` to prefill a synthetic Cleanup Scope for manual smoke testing; startup must not auto-scan.
+- The WPF app should show a Cleanup Scope Safety Note so fixture and real-profile scopes are visibly distinct.
 - Storage Scan must not modify files.
 
 ### Rule: Read-only before cleanup

@@ -34,6 +34,7 @@ If a term needs to change, update this glossary first, then update code and docs
 | System Drive | The Windows operating-system partition. | `SystemDrive`, `systemDrivePath` | Known current value is `C:`. |
 | User Profile Root | The top-level folder containing Windows user profiles. | `UserProfileRoot`, `userProfileRootPath` | Known current value is `C:\Users`. |
 | Cleanup Scope | The path or paths allowed for a scan or cleanup run. | `CleanupScope`, `cleanupScopePath`, `cleanupScopePaths` | Initial value is `C:\Users\moxhe`. Must constrain both scanning and cleanup execution. |
+| Cleanup Scope Safety Note | Read-only UI text explaining whether the current Cleanup Scope looks like a fixture, real profile, custom path, blank path, or invalid path. | `CleanupScopeSafetyNote`, `CleanupScopeSafetyNoteBuilder` | Reminds the user to run preflight and fixture review before real-profile scans. Not scan approval. |
 | Storage Scan | The first read-only workflow for recursively scanning the Cleanup Scope. | `StorageScan`, `storageScanId` | Must not modify files. |
 | Cleanup Candidate | A file or folder proposed for review as potentially removable. | `CleanupCandidate`, `cleanupCandidateId` | Candidate does not mean safe to delete. |
 | Cleanup Action | A user-approved operation that modifies files or folders. | `CleanupAction`, `cleanupActionId` | Examples include moving to Recycle Bin, quarantine, or deletion. |
