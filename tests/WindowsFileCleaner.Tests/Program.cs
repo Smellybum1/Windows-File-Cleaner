@@ -5,6 +5,7 @@ tests.ScannerTotalsFilesAndClassifiesCandidates();
 tests.ScannerRefusesToLeaveCleanupScope();
 tests.ClassifierLabelsRealScanContainerPatterns();
 tests.ReviewBuilderSummarizesAndFiltersResults();
+tests.ChildSummaryShowsLargestImmediateChildren();
 tests.ByteSizeFormatterUsesReadableUnits();
 
 Console.WriteLine("All WindowsFileCleaner.Tests checks passed.");
@@ -102,6 +103,29 @@ internal sealed class StorageScanTests
 
         var quarantineRows = review.ApplyFilter(StorageReviewFilter.QuarantineCandidates);
         Assert(quarantineRows.All(row => row.Entry.DeletionRecommendation == DeletionRecommendation.QuarantineCandidate), "Quarantine filter should only return quarantine candidates.");
+    }
+
+    public void ChildSummaryShowsLargestImmediateChildren()
+    {
+        using var fixture = TestFixture.Create();
+
+        fixture.WriteFile(@"AppData\Local\large-cache.bin", 1024 * 1024 * 2, DateTimeOffset.UtcNow.AddDays(-5));
+        fixture.WriteFile(@"AppData\Roaming\medium-cache.bin", 1024 * 1024, DateTimeOffset.UtcNow.AddDays(-5));
+        fixture.WriteFile(@"AppData\Local\Nested\deep-file.bin", 1024 * 1024 * 4, DateTimeOffset.UtcNow.AddDays(-5));
+        fixture.WriteFile(@"Downloads\outside.bin", 1024 * 512, DateTimeOffset.UtcNow.AddDays(-120));
+
+        var scanner = new StorageScanner();
+        var result = scanner.Scan(new StorageScanOptions(fixture.RootPath));
+        var appData = Flatten(result.Root).Single(entry => entry.Name.Equals("AppData", StringComparison.OrdinalIgnoreCase));
+        var summary = StorageChildSummaryBuilder.Build(appData, maxChildren: 2);
+
+        Assert(summary.Count == 2, "Child summary should respect the max child count.");
+        Assert(summary[0].Name == "Local", "Largest immediate child should be Local because it contains nested storage.");
+        Assert(summary[1].Name == "Roaming", "Second largest immediate child should be Roaming.");
+        Assert(summary.All(child => Path.GetDirectoryName(child.FullPath)?.Equals(appData.FullPath, StringComparison.OrdinalIgnoreCase) == true), "Child summary should only include immediate children.");
+
+        var file = Flatten(result.Root).Single(entry => entry.Name.Equals("outside.bin", StringComparison.OrdinalIgnoreCase));
+        Assert(StorageChildSummaryBuilder.Build(file).Count == 0, "Files should not have child summaries.");
     }
 
     public void ByteSizeFormatterUsesReadableUnits()

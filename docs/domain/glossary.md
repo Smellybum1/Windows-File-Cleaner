@@ -44,6 +44,7 @@ If a term needs to change, update this glossary first, then update code and docs
 | Importance Rating | Conservative estimate of how important a file or folder may be. | `ImportanceRating`, `importanceRating` | User-facing values: `Likely safe`, `Caution`, `High risk`. |
 | Deletion Recommendation | Suggested action for a candidate after inspection. | `DeletionRecommendation`, `deletionRecommendation` | Examples: keep, inspect, quarantine candidate, delete later. |
 | Storage Review Filter | Read-only filter applied to Storage Scan results. | `StorageReviewFilter`, `storageReviewFilter` | Initial filters: All, Likely safe, Caution, High risk, Quarantine candidates. |
+| Child Breakdown | Read-only summary of the largest immediate children inside a selected folder. | `StorageChildSummary`, `StorageChildSummaryBuilder` | Helps inspect large containers without marking the container safe. |
 | Quarantine | A reversible holding location for selected files or folders before deletion. | `Quarantine`, `quarantinePath` | Preferred on `D:`. Exact path is still open. |
 | Undo Quarantine | Restore a quarantined file or folder to its original path. | `UndoQuarantine`, `undoQuarantine` | Requires a restore manifest. |
 | Restore Manifest | Metadata needed to undo a quarantine action. | `RestoreManifest`, `restoreManifestPath` | Should include original path, quarantine path, size, timestamps, and action time. |

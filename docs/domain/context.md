@@ -272,6 +272,47 @@ Initial filters are All, Likely safe, Caution, High risk, and Quarantine candida
 - Keep filters read-only.
 - Show counts so the user can understand scan composition.
 
+### Child Breakdown
+
+Status: draft  
+Last reviewed: 2026-05-28
+
+#### Definition
+
+A Child Breakdown is a read-only summary of the largest immediate children inside a selected folder.
+
+It helps the user understand what is inside large container folders such as `AppData`, `Local`, `pip`, or browser folders without treating the container itself as safe to clean.
+
+#### Examples
+
+- Selecting `AppData` shows its largest immediate children such as `Local`, `Roaming`, and `LocalLow`.
+- Selecting `pip` shows its largest cache subfolders.
+- Selecting a file shows that files do not have children.
+
+#### Non-examples
+
+- A recursive duplicate of the entire results table.
+- A Cleanup Action.
+- A guarantee that child paths are safe to remove.
+
+#### Lifecycle
+
+- Generated from a completed Storage Scan.
+- Updates when the user selects a different result row.
+- Remains read-only.
+
+#### Relationships
+
+- Belongs to a selected Storage Scan result.
+- Uses the same Importance Ratings, Deletion Recommendations, Bloat Categories, and Storage Savings values as the main result.
+
+#### Code implications
+
+- Use `StorageChildSummaryBuilder` for child summaries.
+- Show only immediate children by default.
+- Sort children by size descending.
+- Keep the number of displayed children bounded.
+
 ### Importance Rating
 
 Status: draft  

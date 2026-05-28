@@ -6,13 +6,13 @@ Use it to preserve what was completed, what was verified, what was rejected, and
 
 ## Current status
 
-Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. A follow-up review-filter packet has been implemented locally and is ready to commit/push.
+Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. Review filters are pushed. Selected-folder child breakdown has been implemented locally and is ready to commit/push.
 
 ## Next recommended work
 
-1. Commit and push the Storage Scan review-filter checkpoint.
-2. Ask the user to rerun the WPF app and try the new filters.
-3. Use the user's filter feedback to refine Protected Locations and category grouping.
+1. Commit and push the selected-folder child breakdown checkpoint.
+2. Ask the user to rerun the WPF app and select big folders such as `AppData`, `Local`, `pip`, and `DXCache`.
+3. Use the user's child-breakdown feedback to refine Protected Locations and category grouping.
 4. Defer Quarantine and Undo Quarantine implementation until scan review is trustworthy.
 5. Revisit .NET 10 before packaging or long-term distribution.
 
@@ -293,3 +293,45 @@ Rejected ideas buffer:
 
 - Do not make AppData-derived cache rows "Likely safe" just because they are caches.
 - Do not add cleanup buttons based only on the first successful scan.
+
+### 2026-05-28: Add selected-folder child breakdown
+
+Status: completed
+
+Evidence:
+
+- Real scan screenshot showed large container rows such as `moxhe`, `AppData`, `Local`, `pip`, and browser folders.
+- The user originally asked for the app to show what is inside folders before cleanup decisions.
+
+Implementation:
+
+- Added `StorageChildSummaryEntry`.
+- Added `StorageChildSummaryBuilder`.
+- Updated the WPF detail pane with Evidence and Largest immediate children sections.
+- Child breakdown shows immediate children with name, size, importance, recommendation, and categories.
+- Files explicitly show they have no immediate children.
+- No cleanup execution was added.
+
+Verification:
+
+- `dotnet build WindowsFileCleaner.sln --no-restore` passed.
+- `dotnet run --project tests\WindowsFileCleaner.Tests\WindowsFileCleaner.Tests.csproj --no-build` passed.
+
+Docs updated:
+
+- `docs/domain/context.md`
+- `docs/domain/glossary.md`
+- `docs/features/2026-05-28-selected-folder-child-breakdown.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No new ADR. This is a reversible review UI improvement.
+
+Open questions:
+
+- User should rerun the app and confirm whether the child breakdown makes large folders understandable.
+
+Rejected ideas buffer:
+
+- Do not replace the main flat table with a tree view until the detail-pane approach is tested.

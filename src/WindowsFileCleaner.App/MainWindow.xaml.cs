@@ -110,6 +110,7 @@ public partial class MainWindow : Window
             DetailPathText.Text = "";
             DetailMetaText.Text = "";
             DetailEvidenceText.Text = "";
+            DetailChildrenText.Text = "";
             return;
         }
 
@@ -119,6 +120,7 @@ public partial class MainWindow : Window
         DetailEvidenceText.Text = string.IsNullOrWhiteSpace(row.Error)
             ? row.Evidence
             : $"{row.Evidence}\n\nAccess issue: {row.Error}";
+        DetailChildrenText.Text = FormatChildSummary(row.Entry);
     }
 
     private void SetScanningState(bool isScanning)
@@ -207,6 +209,77 @@ public partial class MainWindow : Window
             StorageReviewFilter.HighRisk => "High risk",
             StorageReviewFilter.QuarantineCandidates => "Quarantine candidates",
             _ => "All"
+        };
+    }
+
+    private static string FormatChildSummary(StorageEntry entry)
+    {
+        var children = StorageChildSummaryBuilder.Build(entry);
+        if (children.Count == 0)
+        {
+            return entry.IsDirectory
+                ? "No immediate children were found or the folder could not be expanded."
+                : "Files do not have immediate children.";
+        }
+
+        return string.Join(
+            Environment.NewLine,
+            children.Select(child =>
+                $"{child.Name} | {child.SizeDisplay} | {FormatImportance(child.ImportanceRating)} | {FormatRecommendation(child.DeletionRecommendation)} | {FormatCategories(child.BloatCategories)}"));
+    }
+
+    private static string FormatImportance(ImportanceRating rating)
+    {
+        return rating switch
+        {
+            ImportanceRating.LikelySafe => "Likely safe",
+            ImportanceRating.Caution => "Caution",
+            ImportanceRating.HighRisk => "High risk",
+            _ => rating.ToString()
+        };
+    }
+
+    private static string FormatRecommendation(DeletionRecommendation recommendation)
+    {
+        return recommendation switch
+        {
+            DeletionRecommendation.Keep => "Keep",
+            DeletionRecommendation.Inspect => "Inspect",
+            DeletionRecommendation.QuarantineCandidate => "Quarantine candidate",
+            DeletionRecommendation.DeleteLater => "Delete later",
+            _ => recommendation.ToString()
+        };
+    }
+
+    private static string FormatCategories(IReadOnlyList<BloatCategory> categories)
+    {
+        return categories.Count == 0
+            ? "None"
+            : string.Join(", ", categories.Select(FormatCategory));
+    }
+
+    private static string FormatCategory(BloatCategory category)
+    {
+        return category switch
+        {
+            BloatCategory.Unknown => "Unknown",
+            BloatCategory.ProfileContainer => "Profile container",
+            BloatCategory.ApplicationDataArea => "AppData area",
+            BloatCategory.BrowserData => "Browser data",
+            BloatCategory.OldDownload => "Old download",
+            BloatCategory.TemporaryFolder => "Temporary folder",
+            BloatCategory.InstallerCache => "Installer cache",
+            BloatCategory.AppCache => "App cache",
+            BloatCategory.GpuShaderCache => "GPU shader cache",
+            BloatCategory.DuplicateFileCandidate => "Duplicate file candidate",
+            BloatCategory.OldGameFile => "Old game file",
+            BloatCategory.NodePackageCache => "Node package cache",
+            BloatCategory.PythonPackageCache => "Python package cache",
+            BloatCategory.WindowsAppLeftover => "Windows app leftover",
+            BloatCategory.ProtectedLocation => "Protected location",
+            BloatCategory.ReparsePoint => "Reparse point",
+            BloatCategory.AccessIssue => "Access issue",
+            _ => category.ToString()
         };
     }
 }
