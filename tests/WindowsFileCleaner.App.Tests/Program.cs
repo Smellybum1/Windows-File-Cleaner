@@ -403,6 +403,8 @@ internal sealed class MainWindowSmokeTests
             Assert(window.QuarantinePreviewTextValue.Contains("Restore Manifest Draft", StringComparison.OrdinalIgnoreCase), "Preview pane should show Restore Manifest Draft readiness.");
             Assert(window.QuarantinePreviewTextValue.Contains("Quarantine Confirmation Draft", StringComparison.OrdinalIgnoreCase), "Preview pane should show Quarantine Confirmation Draft readiness.");
             Assert(window.QuarantinePreviewTextValue.Contains("Execution implemented: no", StringComparison.OrdinalIgnoreCase), "Preview pane should state execution is not implemented.");
+            Assert(window.QuarantinePreviewTextValue.Contains("Preview rows:", StringComparison.OrdinalIgnoreCase), "Preview pane should label row-level preview details.");
+            Assert(window.QuarantinePreviewTextValue.Contains("Preview row | Included", StringComparison.OrdinalIgnoreCase), "Preview pane should distinguish included row details from readiness blockers.");
             Assert(window.QuarantinePreviewTextValue.Contains("No files were modified", StringComparison.OrdinalIgnoreCase), "Preview pane should preserve the read-only boundary.");
             Assert(File.Exists(installer.FullPath), "Shortlisted fixture installer should still exist after preview.");
             Assert(File.Exists(fixture.MarkerPath), "Fixture marker file should still exist after review interactions.");
@@ -455,8 +457,11 @@ internal sealed class MainWindowSmokeTests
                 "Preview status should report the protected-descendant blocker without modifying files.");
             Assert(window.QuarantinePreviewTextValue.Contains("Included: 0", StringComparison.OrdinalIgnoreCase), "Preview pane should show zero included rows.");
             Assert(window.QuarantinePreviewTextValue.Contains("Blocked: 1", StringComparison.OrdinalIgnoreCase), "Preview pane should show one blocked row.");
-            Assert(window.QuarantinePreviewTextValue.Contains("Readiness blockers:", StringComparison.OrdinalIgnoreCase), "Confirmation readiness should surface blockers.");
+            Assert(window.QuarantinePreviewTextValue.Contains("Confirmation readiness blockers:", StringComparison.OrdinalIgnoreCase), "Confirmation readiness should surface blockers.");
+            Assert(window.QuarantinePreviewTextValue.Contains("Confirmation blocker |", StringComparison.OrdinalIgnoreCase), "Confirmation blockers should be labeled separately from preview rows.");
             Assert(window.QuarantinePreviewTextValue.Contains("blocked preview row", StringComparison.OrdinalIgnoreCase), "Confirmation readiness should call out the blocked preview row.");
+            Assert(window.QuarantinePreviewTextValue.Contains("Preview rows:", StringComparison.OrdinalIgnoreCase), "Preview pane should label row-level preview details.");
+            Assert(window.QuarantinePreviewTextValue.Contains("Preview row | Blocked", StringComparison.OrdinalIgnoreCase), "Blocked row details should be labeled as preview rows.");
             Assert(window.QuarantinePreviewTextValue.Contains("codex-runtimes", StringComparison.OrdinalIgnoreCase), "Preview pane should show the protected descendant evidence.");
             Assert(window.QuarantinePreviewTextValue.Contains("Select narrower reviewed child rows", StringComparison.OrdinalIgnoreCase), "Preview pane should guide the user toward narrower rows.");
             Assert(window.QuarantinePreviewTextValue.Contains("No files were modified", StringComparison.OrdinalIgnoreCase), "Preview pane should preserve read-only wording.");

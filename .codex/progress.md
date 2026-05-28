@@ -2488,3 +2488,47 @@ Open questions:
 Rejected ideas buffer:
 
 - Do not weaken confirmation readiness just to make the blocked-row count read as a single blocker.
+
+### 2026-05-28: Improve Quarantine Preview Pane Readability
+
+Status: completed
+
+Evidence:
+
+- The WPF preview pane showed confirmation-readiness blockers and row-level blocked reasons close together.
+- A blocked broad parent can have both confirmation blockers and row-specific reasons, so the visible wording should keep those concepts separate.
+
+Implementation:
+
+- Renamed the readiness count line to `Confirmation readiness blockers`.
+- Labeled readiness entries as `Confirmation blocker`.
+- Added a `Preview rows:` section before row-level included/blocked/redundant entries.
+- Labeled each row entry as `Preview row | Included`, `Preview row | Blocked`, or `Preview row | Redundant`.
+- Updated WPF smoke assertions for both included-row preview and protected-descendant blocked preview.
+- No Quarantine Preview eligibility rules, cleanup execution, Quarantine execution, Undo Quarantine, manifest writing, scanner traversal, real-profile automation, or real user file access was changed.
+
+Verification:
+
+- `dotnet build WindowsFileCleaner.sln --no-restore` passed with 0 warnings and 0 errors.
+- `dotnet run --project tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj --no-build` passed after rebuilding.
+- `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\Invoke-MvpPreflight.ps1` passed.
+
+Docs updated:
+
+- `README.md`
+- `docs/features/2026-05-28-quarantine-preview-pane-readability.md`
+- `docs/features/2026-05-28-quarantine-preview-protected-descendant-blocker.md`
+- `docs/features/2026-05-28-wpf-review-interaction-smoke-test.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No new ADR. This is reversible WPF wording and smoke coverage.
+
+Open questions:
+
+- Does the real scan need a more structured preview table instead of plain text for long blocked paths?
+
+Rejected ideas buffer:
+
+- Do not change preview eligibility or confirmation readiness semantics as part of wording polish.

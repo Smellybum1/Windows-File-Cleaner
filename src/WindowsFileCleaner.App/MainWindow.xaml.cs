@@ -1131,14 +1131,14 @@ public partial class MainWindow : Window
             $"Restore Manifest Draft: {restoreManifestDraft.DraftId} | Entries: {restoreManifestDraft.EntryCount:N0} | Bytes: {restoreManifestDraft.TotalSizeDisplay} | Executed manifest: {FormatYesNo(restoreManifestDraft.IsExecutedManifest)}",
             $"Quarantine Confirmation Draft: {confirmationDraft.ConfirmationId} | Required future text: {confirmationDraft.RequiredConfirmationText} | Execution implemented: {FormatYesNo(confirmationDraft.IsExecutionImplemented)}",
             confirmationDraft.HasDataBlockers
-                ? $"Readiness blockers: {confirmationDraft.Blockers.Count:N0}"
-                : "Readiness blockers: 0",
+                ? $"Confirmation readiness blockers: {confirmationDraft.Blockers.Count:N0}"
+                : "Confirmation readiness blockers: 0",
             "No files were modified."
         };
 
         foreach (var blocker in confirmationDraft.Blockers.Take(6))
         {
-            lines.Add($"Blocker | {blocker}");
+            lines.Add($"Confirmation blocker | {blocker}");
         }
 
         if (confirmationDraft.Blockers.Count > 6)
@@ -1146,12 +1146,13 @@ public partial class MainWindow : Window
             lines.Add($"... {confirmationDraft.Blockers.Count - 6:N0} more readiness blocker(s) not shown in this pane.");
         }
 
+        lines.Add("Preview rows:");
         foreach (var entry in preview.Entries.Take(maxRows))
         {
             var details = entry.Disposition == QuarantinePreviewDisposition.Included
-                ? $"{entry.SourcePath} -> {entry.DestinationPath}"
-                : $"{entry.SourcePath} | {string.Join("; ", entry.Reasons)}";
-            lines.Add($"{FormatPreviewDisposition(entry.Disposition)} | {entry.SizeDisplay} | {details}");
+                ? $"Source: {entry.SourcePath} -> Destination: {entry.DestinationPath}"
+                : $"Source: {entry.SourcePath} | Reasons: {string.Join("; ", entry.Reasons)}";
+            lines.Add($"Preview row | {FormatPreviewDisposition(entry.Disposition)} | {entry.SizeDisplay} | {details}");
         }
 
         if (preview.Entries.Count > maxRows)

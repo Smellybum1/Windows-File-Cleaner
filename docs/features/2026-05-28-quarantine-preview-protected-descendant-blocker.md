@@ -54,6 +54,7 @@ What changed:
 - Added descendant blocker checks to `QuarantinePreviewBuilder`.
 - Added fixture coverage for `.cache` containing protected `codex-runtimes` data.
 - Added WPF smoke coverage that shortlists the broad cache parent and confirms the preview pane shows the blocked descendant evidence.
+- Later readability packet separated confirmation-readiness blockers from row-level preview details in the WPF pane.
 - Updated README and domain docs to describe the broad-parent blocker.
 - No files are moved, deleted, copied, restored, or written by preview generation.
 
