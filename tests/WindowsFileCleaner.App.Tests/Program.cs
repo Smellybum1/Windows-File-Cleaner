@@ -178,6 +178,15 @@ internal sealed class MainWindowSmokeTests
                 rows.Any(row => row.Categories.Contains("Python package cache", StringComparison.OrdinalIgnoreCase)),
                 "Fixture scan should surface Python package cache category evidence.");
 
+            var downloads = rows.Single(row =>
+                row.FullPath.EndsWith("Downloads", StringComparison.OrdinalIgnoreCase));
+            Assert(window.SelectDisplayedPath(downloads.FullPath), "Fixture Downloads folder should be selectable for contents context.");
+            Assert(downloads.Contents.Contains("1 file", StringComparison.OrdinalIgnoreCase), "Folder row should expose contained file count.");
+            Assert(
+                window.DetailPathContextTextValue.Contains("Contents:", StringComparison.OrdinalIgnoreCase)
+                && window.DetailPathContextTextValue.Contains("1 file", StringComparison.OrdinalIgnoreCase),
+                "Selected folder detail pane should show contained file/folder counts.");
+
             Assert(window.SelectDisplayedPath(fixture.MarkerPath), "Fixture note file should be selectable for preview.");
             Assert(window.CanPreviewSelectedFile, "Selected file preview should be enabled for a selected file.");
             window.PreviewSelectedFileContent();

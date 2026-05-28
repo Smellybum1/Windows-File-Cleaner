@@ -6,14 +6,14 @@ Use it to preserve what was completed, what was verified, what was rejected, and
 
 ## Current status
 
-Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. Cleanup Scope Safety Note, Cleanup Scope Scan Gate, review filters, Review View Reset, Storage Review Search with field prefixes, Storage Entry Type Filter, Storage Review Display Limit wording, Storage Review Size Note, selected-folder child breakdown, selected-path inspection actions, Selected Path Hierarchy Context, Selected File Content Preview, Selected Path Review Guidance including cache-specific guidance, CSV export including active search, searched filenames, and hierarchy context, Review Mix, Storage Scan Safety Summary, Safety Summary review shortcuts, Access issues filtering, Bloat Category Filter, Large old file classification, No category filtering, Review Shortlist, Shortlist shown, Remove shown, Quarantine Preview, Quarantine Preview CSV export, Restore Manifest Draft, Quarantine Confirmation Draft, Quarantine Readiness UI, conservative app data classification, read-only safety regression checks, the MVP runbook, the MVP readiness audit, fixture-driven WPF launch support, WPF shell smoke testing, WPF fixture scan smoke testing, WPF display-limit smoke testing, WPF review interaction smoke testing, WPF review toolbar layout polish, the MVP preflight script, and the MVP fixture review launcher are implemented and verified. Quarantine remains preview-only; no cleanup execution, manifest writing, or Undo Quarantine execution exists.
+Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. Cleanup Scope Safety Note, Cleanup Scope Scan Gate, review filters, Review View Reset, Storage Review Search with field prefixes, Storage Entry Type Filter, Storage Review Display Limit wording, Storage Review Size Note, selected-folder child breakdown, selected-path inspection actions, Selected Path Hierarchy Context, Selected Row Contents Context, Selected File Content Preview, Selected Path Review Guidance including cache-specific guidance, CSV export including active search, searched filenames, and hierarchy/contents context, Review Mix, Storage Scan Safety Summary, Safety Summary review shortcuts, Access issues filtering, Bloat Category Filter, Large old file classification, No category filtering, Review Shortlist, Shortlist shown, Remove shown, Quarantine Preview, Quarantine Preview CSV export, Restore Manifest Draft, Quarantine Confirmation Draft, Quarantine Readiness UI, conservative app data classification, read-only safety regression checks, the MVP runbook, the MVP readiness audit, fixture-driven WPF launch support, WPF shell smoke testing, WPF fixture scan smoke testing, WPF display-limit smoke testing, WPF review interaction smoke testing, WPF review toolbar layout polish, the MVP preflight script, and the MVP fixture review launcher are implemented and verified. Quarantine remains preview-only; no cleanup execution, manifest writing, or Undo Quarantine execution exists.
 
 ## Next recommended work
 
 1. Run `.\tools\Start-MvpFixtureReview.ps1`, confirm the launched app shows Fixture Cleanup Scope, click `Scan`, and manually inspect layout, visible wording, Storage Review Search, Storage Review Display Limit wording, the `Parent` column, Selected Path Hierarchy Context, Selected File Content Preview, Selected Path Review Guidance, export dialogs, Safety Summary shortcuts, Review Shortlist, Shortlist shown, Remove shown, Quarantine Preview, Review Mix, Access issues filter, category filter, No category filter, and filter wording.
 2. Use `README.md` and `docs/features/2026-05-28-mvp-readiness-audit.md` to rerun the WPF app against `C:\Users\moxhe`; confirm `Scan` is disabled until the real-profile preflight acknowledgement is checked.
 3. Run `.\tools\Invoke-MvpPreflight.ps1` before any later real-profile scan if the worktree changes.
-4. Rerun the real scan and check whether the `Parent` column, selected-row parent/depth context, cache-specific Review guidance, and `Preview file` action make unfamiliar rows easier to triage.
+4. Rerun the real scan and check whether the `Parent` column, selected-row parent/depth context, contents counts, cache-specific Review guidance, and `Preview file` action make unfamiliar rows easier to triage.
 5. Retest the Quarantine Readiness UI with a real scan and confirm the draft/readiness wording is understandable.
 6. Defer actual Quarantine and Undo Quarantine execution until scan review, preview semantics, confirmation semantics, and restore rules are trustworthy.
 7. Revisit .NET 10 before packaging or long-term distribution.
@@ -2304,3 +2304,49 @@ Rejected ideas buffer:
 
 - Do not run preflight or create fixture files from WPF.
 - Do not persist real-profile scan acknowledgement yet.
+
+### 2026-05-28: Add Selected Row Contents Context
+
+Status: completed
+
+Evidence:
+
+- Large recursive scan rows need more context than size alone because parent and child row sizes overlap.
+- The app already shows largest immediate children, but selected rows did not show contained file/folder counts.
+
+Implementation:
+
+- Added contained file and descendant folder counts to `StorageEntryRow`.
+- Added contents context to the WPF selected-row detail pane.
+- Added `Contained files` and `Contained folders` columns to Scan Report CSV export.
+- Added WPF fixture coverage for selected-folder contents context.
+- Added CSV coverage for exported contents counts.
+- No scanner traversal, Bloat Category, Importance Rating, Deletion Recommendation, cleanup execution, Quarantine execution, Undo Quarantine, manifest writing, or real-profile automation was changed.
+
+Verification:
+
+- `dotnet build WindowsFileCleaner.sln --no-restore` passed with 0 warnings and 0 errors.
+- `dotnet run --project tests\WindowsFileCleaner.Tests\WindowsFileCleaner.Tests.csproj --no-build` passed.
+- `dotnet run --project tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj --no-build` passed.
+- `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\Invoke-MvpPreflight.ps1` passed.
+
+Docs updated:
+
+- `README.md`
+- `docs/domain/context.md`
+- `docs/domain/glossary.md`
+- `docs/features/2026-05-28-scan-report-csv-export.md`
+- `docs/features/2026-05-28-selected-row-contents-context.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No new ADR. This is reversible read-only review/export context and does not change architecture, persistence, security, deployment, or cleanup execution.
+
+Open questions:
+
+- Do contents counts make the next real scan easier to review alongside largest-child breakdowns?
+
+Rejected ideas buffer:
+
+- Do not treat contained file/folder counts as recoverable storage savings.

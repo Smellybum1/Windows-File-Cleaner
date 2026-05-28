@@ -1066,9 +1066,10 @@ internal sealed class StorageScanTests
 
         var csv = StorageScanCsvExporter.Export([new StorageReviewEntry(entry, Depth: 2)]);
 
-        Assert(csv.Contains("\"Full path\",\"Parent path\",\"Depth\",\"Name\",\"Type\",\"Size bytes\"", StringComparison.Ordinal), "CSV should include header row.");
+        Assert(csv.Contains("\"Full path\",\"Parent path\",\"Depth\",\"Name\",\"Type\",\"Size bytes\",\"Size\",\"Contained files\",\"Contained folders\"", StringComparison.Ordinal), "CSV should include header row with contents counts.");
         Assert(csv.Contains("\"C:\\Users\\moxhe\\Downloads\\setup, old.msi\"", StringComparison.Ordinal), "CSV should quote paths with commas.");
         Assert(csv.Contains("\"C:\\Users\\moxhe\\Downloads\",\"2\"", StringComparison.Ordinal), "CSV should include same-scope hierarchy context.");
+        Assert(csv.Contains("\"2048\",\"2 KB\",\"1\",\"0\"", StringComparison.Ordinal), "CSV should include contained file/folder counts.");
         Assert(csv.Contains("\"Likely safe\"", StringComparison.Ordinal), "CSV should use user-facing importance labels.");
         Assert(csv.Contains("\"Quarantine candidate\"", StringComparison.Ordinal), "CSV should use user-facing recommendation labels.");
         Assert(csv.Contains("\"Old download; Installer cache\"", StringComparison.Ordinal), "CSV should export formatted categories.");

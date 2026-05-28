@@ -27,6 +27,11 @@ public sealed class StorageEntryRow
     public string Type => Entry.IsDirectory ? "Folder" : "File";
     public string Size => Entry.SizeDisplay;
     public long SizeBytes => Entry.SizeBytes;
+    public int ContainedFileCount => Entry.FileCount;
+    public int ContainedFolderCount => Entry.IsDirectory ? Math.Max(0, Entry.FolderCount - 1) : 0;
+    public string Contents => Entry.IsDirectory
+        ? $"{FormatCount(ContainedFileCount, "file")} | {FormatCount(ContainedFolderCount, "folder")} inside"
+        : "Single file";
     public string Importance => FormatImportance(Entry.ImportanceRating);
     public string Recommendation => FormatRecommendation(Entry.DeletionRecommendation);
     public string Categories => Entry.BloatCategories.Count == 0
@@ -47,6 +52,12 @@ public sealed class StorageEntryRow
         {
             return "(unknown)";
         }
+    }
+
+    private static string FormatCount(int count, string singular)
+    {
+        var label = count == 1 ? singular : singular + "s";
+        return $"{count:N0} {label}";
     }
 
     private static string FormatImportance(ImportanceRating rating)

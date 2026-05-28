@@ -666,7 +666,7 @@ public partial class MainWindow : Window
         _selectedRow = row;
         DetailTitleText.Text = row.Entry.Name;
         DetailPathText.Text = row.FullPath;
-        DetailPathContextText.Text = $"Parent: {row.ParentLocation}\nDepth: {row.Depth:N0} | Modified: {row.LastModified}";
+        DetailPathContextText.Text = $"Parent: {row.ParentLocation}\nDepth: {row.Depth:N0} | Modified: {row.LastModified}\nContents: {row.Contents}";
         DetailMetaText.Text = $"{row.Size} | {row.Type} | {row.Importance} | {row.Recommendation}";
         DetailEvidenceText.Text = string.IsNullOrWhiteSpace(row.Error)
             ? row.Evidence

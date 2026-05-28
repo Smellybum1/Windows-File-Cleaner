@@ -79,6 +79,7 @@ What changed:
 - Later packets included the selected Bloat Category Filter in the exported row set and generated filename, aligned the export row set with active Storage Review Search, and added a sanitized search segment to suggested export filenames.
 - Later hierarchy-context packet added parent path and depth columns so recursive rows remain understandable in spreadsheets.
 - Later type-filter packet included the active Storage Entry Type Filter in exported row selection and generated filenames.
+- Later contents-context packet added contained file and folder count columns for recursive row comparison.
 
 Files changed:
 
@@ -116,6 +117,9 @@ Tests run:
   - `dotnet run --project tests\WindowsFileCleaner.Tests\WindowsFileCleaner.Tests.csproj --no-build`
   - `dotnet run --project tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj --no-build`
   - `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\Invoke-MvpPreflight.ps1`
+- Later contents-context packet:
+  - `dotnet run --project tests\WindowsFileCleaner.Tests\WindowsFileCleaner.Tests.csproj --no-build`
+  - `dotnet run --project tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj --no-build`
 
 Docs updated:
 

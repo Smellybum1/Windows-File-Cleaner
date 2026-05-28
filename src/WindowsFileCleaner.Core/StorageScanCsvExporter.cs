@@ -17,6 +17,8 @@ public static class StorageScanCsvExporter
                 "Type",
                 "Size bytes",
                 "Size",
+                "Contained files",
+                "Contained folders",
                 "Importance",
                 "Recommendation",
                 "Categories",
@@ -37,6 +39,8 @@ public static class StorageScanCsvExporter
                     entry.Entry.IsDirectory ? "Folder" : "File",
                     entry.Entry.SizeBytes.ToString(System.Globalization.CultureInfo.InvariantCulture),
                     entry.Entry.SizeDisplay,
+                    entry.Entry.FileCount.ToString(System.Globalization.CultureInfo.InvariantCulture),
+                    GetContainedFolderCount(entry.Entry).ToString(System.Globalization.CultureInfo.InvariantCulture),
                     FormatImportance(entry.Entry.ImportanceRating),
                     FormatRecommendation(entry.Entry.DeletionRecommendation),
                     FormatCategories(entry.Entry.BloatCategories),
@@ -74,6 +78,11 @@ public static class StorageScanCsvExporter
         return entry.Depth <= 0
             ? ""
             : Path.GetDirectoryName(entry.Entry.FullPath) ?? "";
+    }
+
+    private static int GetContainedFolderCount(StorageEntry entry)
+    {
+        return entry.IsDirectory ? Math.Max(0, entry.FolderCount - 1) : 0;
     }
 
     private static string FormatImportance(ImportanceRating rating)

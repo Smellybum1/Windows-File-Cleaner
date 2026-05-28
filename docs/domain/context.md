@@ -891,7 +891,7 @@ It helps explain short or hashed names in deep cache folders without changing th
 #### Relationships
 
 - Supports manual review of deeply nested Storage Scan rows.
-- Complements Storage Review Search, Storage Entry Type Filter, Child Breakdown, and Selected Path Inspection.
+- Complements Storage Review Search, Storage Entry Type Filter, Selected Row Contents Context, Child Breakdown, and Selected Path Inspection.
 - Scan Report Export also includes parent/depth context for offline review.
 
 #### Code implications
@@ -899,6 +899,50 @@ It helps explain short or hashed names in deep cache folders without changing th
 - Use `StorageEntryRow.ParentLocation` for the WPF review grid.
 - Keep parent/depth display derived from scan results.
 - Do not use parent/depth context as cleanup approval.
+
+### Selected Row Contents Context
+
+Status: draft
+Last reviewed: 2026-05-28
+
+#### Definition
+
+Selected Row Contents Context is read-only file and folder count information shown for Storage Scan review rows.
+
+For folder rows, it shows contained files and descendant folders. For file rows, it identifies the row as a single file.
+
+#### Examples
+
+- Show that `AppData` contains many files and descendant folders.
+- Show that `Downloads` contains one fixture installer in a smoke test.
+- Include contained file/folder counts in Scan Report CSV exports.
+
+#### Non-examples
+
+- A Cleanup Action.
+- Cleanup approval.
+- A storage savings estimate.
+- A replacement for Largest immediate children.
+
+#### Lifecycle
+
+- Available after a Storage Scan completes.
+- Updates when selected row changes.
+- Included in CSV report exports.
+- Remains read-only and in-memory except for user-selected CSV reports.
+
+#### Relationships
+
+- Supports manual review of recursive folder rows.
+- Complements Selected Path Hierarchy Context, Child Breakdown, Storage Review Size Note, and Scan Report Export.
+- Does not change Bloat Categories, Importance Ratings, Deletion Recommendations, Review Shortlist, or Quarantine Preview.
+
+#### Code implications
+
+- Use `StorageEntryRow.Contents`, `ContainedFileCount`, and `ContainedFolderCount` for WPF display.
+- In CSV exports, use numeric contained counts for offline comparison.
+- For folders, descendant folder count should exclude the selected folder itself.
+- Do not present counts as confirmed recoverable storage.
 
 ### Selected File Content Preview
 
