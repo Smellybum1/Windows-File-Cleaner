@@ -27,6 +27,7 @@ internal static class Program
                 tests.MainWindowShowsDisplayLimitForLargeFixtureScan();
                 tests.MainWindowRunsFixtureReviewInteractionsThroughWpfShell();
                 tests.MainWindowExecutesQuarantineForFixtureScopeOnly();
+                tests.MainWindowDiscoversQuarantineManifestsReadOnly();
                 tests.MainWindowKeepsQuarantineExecutionUnavailableForCustomScope();
                 tests.MainWindowBlocksQuarantinePreviewForParentWithProtectedDescendant();
             }
@@ -70,6 +71,7 @@ internal sealed class MainWindowSmokeTests
             Assert(window.CanBrowseCleanupScope, "MainWindow should allow choosing a Cleanup Scope without starting a scan.");
             Assert(window.CanEditQuarantineRoot, "MainWindow should allow editing the read-only Quarantine Preview root before scanning.");
             Assert(window.CanBrowseQuarantineRoot, "MainWindow should allow browsing for the read-only Quarantine Preview root before scanning.");
+            Assert(window.CanDiscoverQuarantineManifests, "MainWindow should allow read-only Quarantine Manifest Discovery before scanning.");
             Assert(window.BrowseQuarantineRootButtonText.Contains("Browse", StringComparison.OrdinalIgnoreCase), "Quarantine root browse action should be visible in the review toolbar.");
             Assert(
                 window.CurrentQuarantineRootPath == QuarantinePreviewBuilder.DefaultQuarantineRootPath,
@@ -78,6 +80,9 @@ internal sealed class MainWindowSmokeTests
                 window.QuarantineRootSafetyNoteTextValue.Contains("Preferred Quarantine Root", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantineRootSafetyNoteTextValue.Contains("does not create folders", StringComparison.OrdinalIgnoreCase),
                 "Default Quarantine root note should explain preferred D: preview-only behavior.");
+            Assert(
+                window.QuarantineManifestDiscoveryTextValue.Contains("Read-only manifest discovery", StringComparison.OrdinalIgnoreCase),
+                "Quarantine Manifest Discovery pane should start in a read-only placeholder state.");
             Assert(window.BrowseCleanupScopeButtonText.Contains("Browse", StringComparison.OrdinalIgnoreCase), "Cleanup Scope browse action should be visible in the header.");
             Assert(window.IsRealProfilePreflightConfirmationVisible, "MainWindow should show the real-profile preflight acknowledgement.");
             Assert(!window.IsRealProfilePreflightConfirmed, "Real-profile preflight acknowledgement should start unchecked.");
@@ -697,6 +702,72 @@ internal sealed class MainWindowSmokeTests
         finally
         {
             window.Close();
+        }
+    }
+
+    public void MainWindowDiscoversQuarantineManifestsReadOnly()
+    {
+        using var fixture = SmokeFixture.Create();
+        var setupWindow = new MainWindow(fixture.RootPath);
+        var customQuarantineRoot = Path.GetFullPath(Path.Combine(fixture.RootPath, "discovery-quarantine-root"));
+        string manifestPath;
+        string quarantinePath;
+        string originalPath;
+
+        try
+        {
+            RunDispatcherTask(() => setupWindow.RunStorageScanForCurrentScopeAsync());
+
+            var installer = setupWindow.DisplayedRows.Single(row =>
+                row.FullPath.EndsWith(@"Downloads\old-installer.msi", StringComparison.OrdinalIgnoreCase));
+            originalPath = installer.FullPath;
+            Assert(setupWindow.SelectDisplayedPath(installer.FullPath), "Fixture installer should be selectable for discovery setup.");
+            setupWindow.AddSelectedPathToReviewShortlist();
+            setupWindow.SetQuarantineRootForPreview(customQuarantineRoot);
+            setupWindow.PreviewQuarantineForReviewShortlist();
+            setupWindow.SetQuarantineConfirmationText("QUARANTINE");
+
+            manifestPath = setupWindow.CurrentRestoreManifestPath ?? "";
+            quarantinePath = setupWindow.CurrentFirstQuarantinePath ?? "";
+            setupWindow.ExecuteQuarantineForCurrentPreview();
+
+            Assert(File.Exists(manifestPath), "Discovery setup should persist a Restore Manifest.");
+            Assert(File.Exists(quarantinePath), "Discovery setup should move the synthetic file into quarantine.");
+            Assert(!File.Exists(originalPath), "Discovery setup should leave the original path moved.");
+        }
+        finally
+        {
+            setupWindow.Close();
+        }
+
+        var discoveryWindow = new MainWindow(fixture.RootPath);
+        try
+        {
+            discoveryWindow.SetQuarantineRootForPreview(customQuarantineRoot);
+            Assert(discoveryWindow.CanDiscoverQuarantineManifests, "Read-only manifest discovery should be available without scanning.");
+            Assert(!discoveryWindow.CanUndoQuarantine, "Old-manifest discovery should not expose broad Undo Quarantine.");
+
+            discoveryWindow.DiscoverQuarantineManifestsForCurrentRoot();
+            var discoveryText = discoveryWindow.QuarantineManifestDiscoveryTextValue;
+
+            Assert(
+                discoveryWindow.CurrentStatusText.Contains("Quarantine Manifest Discovery completed", StringComparison.OrdinalIgnoreCase)
+                && discoveryWindow.CurrentStatusText.Contains("No files were modified", StringComparison.OrdinalIgnoreCase),
+                "Discovery status should report a read-only result.");
+            Assert(
+                discoveryText.Contains("Quarantine Manifest Discovery: read-only", StringComparison.OrdinalIgnoreCase)
+                && discoveryText.Contains("Discovered manifests: 1", StringComparison.OrdinalIgnoreCase)
+                && discoveryText.Contains(manifestPath, StringComparison.OrdinalIgnoreCase),
+                "Discovery pane should show the persisted manifest summary. Text: " + discoveryText);
+            Assert(
+                discoveryText.Contains("No restore action is available", StringComparison.OrdinalIgnoreCase),
+                "Discovery pane should not imply old-manifest restore is available.");
+            Assert(File.Exists(quarantinePath), "Discovery should not move quarantined files.");
+            Assert(!File.Exists(originalPath), "Discovery should not restore original paths.");
+        }
+        finally
+        {
+            discoveryWindow.Close();
         }
     }
 

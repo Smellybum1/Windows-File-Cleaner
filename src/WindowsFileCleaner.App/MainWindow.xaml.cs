@@ -22,6 +22,7 @@ public partial class MainWindow : Window
     private QuarantineActionDraft? _currentQuarantineActionDraft;
     private QuarantineExecutionResult? _currentQuarantineExecutionResult;
     private UndoQuarantineResult? _currentUndoQuarantineResult;
+    private QuarantineManifestDiscovery? _currentQuarantineManifestDiscovery;
     private string? _currentCleanupScopePath;
     private StorageReviewFilter _currentFilter = StorageReviewFilter.All;
     private StorageCategoryFilter _currentCategoryFilter = StorageCategoryFilter.All;
@@ -162,6 +163,8 @@ public partial class MainWindow : Window
 
     public string QuarantineExecutionGateTextValue => QuarantineExecutionGateText.Text;
 
+    public string QuarantineManifestDiscoveryTextValue => QuarantineManifestDiscoveryText.Text;
+
     public string CurrentQuarantineRootPath => QuarantineRootBox.Text;
 
     public string QuarantineRootSafetyNoteTextValue => QuarantineRootSafetyNoteText.Text;
@@ -175,6 +178,8 @@ public partial class MainWindow : Window
     public string? CurrentFirstQuarantinePath => _currentRestoreManifest?.Entries.FirstOrDefault()?.QuarantinePath;
 
     public bool CanUndoQuarantine => UndoQuarantineButton.IsEnabled;
+
+    public bool CanDiscoverQuarantineManifests => DiscoverQuarantineManifestsButton.IsEnabled;
 
     public string? SelectedRowFullPath => _selectedRow?.FullPath;
 
@@ -285,6 +290,11 @@ public partial class MainWindow : Window
         StatusText.Text = hadPreview
             ? "Quarantine root selected for preview. Recreate Quarantine Preview to review destinations. No folders were created and no files were modified."
             : "Quarantine root selected for preview. No folders were created and no files were modified.";
+    }
+
+    private void DiscoverQuarantineManifestsButton_Click(object sender, RoutedEventArgs e)
+    {
+        DiscoverQuarantineManifestsForCurrentRoot();
     }
 
     public async Task RunStorageScanForCurrentScopeAsync(CancellationToken cancellationToken = default)
@@ -730,6 +740,7 @@ public partial class MainWindow : Window
         }
 
         UpdateQuarantineRootSafetyNote();
+        ClearQuarantineManifestDiscovery();
         if (_currentQuarantinePreview is null)
         {
             UpdateShortlistControls();
@@ -934,6 +945,7 @@ public partial class MainWindow : Window
         BrowseScopeButton.IsEnabled = !isScanning;
         QuarantineRootBox.IsEnabled = !isScanning;
         BrowseQuarantineRootButton.IsEnabled = !isScanning;
+        DiscoverQuarantineManifestsButton.IsEnabled = !isScanning;
         UpdateCleanupScopeSafetyNote();
         ExportCsvButton.IsEnabled = !isScanning && _currentReview is not null;
         ExportShortlistCsvButton.IsEnabled = !isScanning && _currentReview is not null && _shortlist.Count > 0;
@@ -952,6 +964,7 @@ public partial class MainWindow : Window
         UpdateShortlistControls();
         UpdateSafetyShortcutButtons();
         UpdateQuarantineExecutionGate();
+        UpdateQuarantineManifestDiscoveryControls();
     }
 
     private string? GetInitialBrowseDirectory()
@@ -1140,6 +1153,15 @@ public partial class MainWindow : Window
     public void SetQuarantineConfirmationText(string confirmationText)
     {
         QuarantineConfirmationBox.Text = confirmationText;
+    }
+
+    public void DiscoverQuarantineManifestsForCurrentRoot()
+    {
+        _currentQuarantineManifestDiscovery = QuarantineManifestDiscoveryBuilder.Discover(QuarantineRootBox.Text);
+        QuarantineManifestDiscoveryText.Text = FormatQuarantineManifestDiscovery(_currentQuarantineManifestDiscovery);
+        UpdateQuarantineManifestDiscoveryControls();
+
+        StatusText.Text = $"Quarantine Manifest Discovery completed: {_currentQuarantineManifestDiscovery.ManifestCount:N0} manifest(s), {_currentQuarantineManifestDiscovery.Issues.Count:N0} issue(s). No files were modified.";
     }
 
     public void ApplyStorageReviewSearch(string searchText)
@@ -1559,6 +1581,17 @@ public partial class MainWindow : Window
         ClearSearchButton.IsEnabled = _currentReview is not null && _currentSearch.IsActive && ScanButton.IsEnabled;
         SizeThresholdFilterBox.IsEnabled = _currentReview is not null && ScanButton.IsEnabled;
         ResetViewButton.IsEnabled = _currentReview is not null && IsReviewViewFiltered() && ScanButton.IsEnabled;
+        UpdateQuarantineManifestDiscoveryControls();
+    }
+
+    private void UpdateQuarantineManifestDiscoveryControls()
+    {
+        if (DiscoverQuarantineManifestsButton is null)
+        {
+            return;
+        }
+
+        DiscoverQuarantineManifestsButton.IsEnabled = !_isScanning;
     }
 
     private void SetSearchTextSilently(string text)
@@ -1619,6 +1652,17 @@ public partial class MainWindow : Window
         QuarantinePreviewText.Text = "Preview and draft readiness appear after using Preview quarantine.";
         ExportQuarantinePreviewButton.IsEnabled = false;
         UpdateQuarantineExecutionGate();
+    }
+
+    private void ClearQuarantineManifestDiscovery()
+    {
+        if (QuarantineManifestDiscoveryText is null)
+        {
+            return;
+        }
+
+        _currentQuarantineManifestDiscovery = null;
+        QuarantineManifestDiscoveryText.Text = "Read-only manifest discovery appears after using Discover manifests.";
     }
 
     private void SetQuarantineConfirmationTextSilently(string text)
@@ -1890,6 +1934,40 @@ public partial class MainWindow : Window
         if (result.Entries.Count > 12)
         {
             lines.Add($"... {result.Entries.Count - 12:N0} more undo row(s) not shown in this pane.");
+        }
+
+        return string.Join(Environment.NewLine, lines);
+    }
+
+    private static string FormatQuarantineManifestDiscovery(QuarantineManifestDiscovery discovery)
+    {
+        var lines = new List<string>
+        {
+            "Quarantine Manifest Discovery: read-only",
+            $"Quarantine root: {discovery.QuarantineRootPath}",
+            $"Actions root: {discovery.ActionsRootPath}",
+            $"Discovered manifests: {discovery.ManifestCount:N0} | Issues: {discovery.Issues.Count:N0}",
+            "No restore action is available from this discovery pane."
+        };
+
+        foreach (var summary in discovery.Manifests.Take(8))
+        {
+            lines.Add($"Manifest | {FormatRestoreManifestActionStatus(summary.ActionStatus)} | Entries {summary.EntryCount:N0} | Size {summary.TotalSizeDisplay} | Moved {summary.MovedCount:N0} | Restored {summary.RestoredCount:N0} | Recovery review: {FormatYesNo(summary.RequiresRecoveryReview)} | {summary.ManifestPath}");
+        }
+
+        if (discovery.Manifests.Count > 8)
+        {
+            lines.Add($"... {discovery.Manifests.Count - 8:N0} more manifest(s) not shown in this pane.");
+        }
+
+        foreach (var issue in discovery.Issues.Take(8))
+        {
+            lines.Add($"Discovery issue | {issue.Path} | {issue.Message}");
+        }
+
+        if (discovery.Issues.Count > 8)
+        {
+            lines.Add($"... {discovery.Issues.Count - 8:N0} more discovery issue(s) not shown in this pane.");
         }
 
         return string.Join(Environment.NewLine, lines);

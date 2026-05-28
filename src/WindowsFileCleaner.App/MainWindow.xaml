@@ -534,6 +534,21 @@
                                        FontSize="12"
                                        Margin="0,6,0,0"
                                        TextWrapping="Wrap" />
+                            <TextBlock Text="Quarantine manifest discovery"
+                                       FontWeight="SemiBold"
+                                       Margin="0,18,0,4" />
+                            <WrapPanel>
+                                <Button x:Name="DiscoverQuarantineManifestsButton"
+                                        Content="Discover manifests"
+                                        MinWidth="145"
+                                        Click="DiscoverQuarantineManifestsButton_Click" />
+                            </WrapPanel>
+                            <TextBlock x:Name="QuarantineManifestDiscoveryText"
+                                       Text="Read-only manifest discovery appears after using Discover manifests."
+                                       FontFamily="Consolas"
+                                       FontSize="12"
+                                       Margin="0,6,0,0"
+                                       TextWrapping="Wrap" />
                         </StackPanel>
                     </ScrollViewer>
                 </Grid>

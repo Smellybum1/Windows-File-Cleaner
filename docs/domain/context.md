@@ -2324,6 +2324,93 @@ It is not a manifest discovery or history workflow.
 - Keep undo unavailable before execution, after an undo attempt, and for real-profile/custom non-fixture scopes.
 - Do not clean up quarantine folders in this action.
 
+### Quarantine Manifest Discovery
+
+Status: draft
+Last reviewed: 2026-05-29
+
+#### Definition
+
+Quarantine Manifest Discovery is the read-only workflow that finds action-scoped Restore Manifests under the selected Quarantine Root.
+
+It is discovery and status review only, not Undo Quarantine execution and not persisted cleanup history.
+
+#### Examples
+
+- Looking under `<quarantine-root>\actions\*\restore-manifest.json`.
+- Showing that one discovered Restore Manifest is Completed and has Moved entries.
+- Reporting an invalid or unreadable manifest file as a discovery issue.
+
+#### Non-examples
+
+- Restoring a discovered Restore Manifest.
+- Real-profile WPF Undo Quarantine.
+- Cleanup history.
+- Quarantine folder cleanup.
+- Scanning arbitrary files under the Quarantine Root.
+
+#### Lifecycle
+
+- Uses the current Quarantine Root Selection.
+- Reads direct action-scoped `restore-manifest.json` files under the `actions` folder.
+- Deserializes supported Restore Manifest JSON.
+- Produces Restore Manifest Summary rows and discovery issues.
+- Does not create, move, delete, restore, or clean up files or folders.
+
+#### Relationships
+
+- Depends on Quarantine Root Selection.
+- Depends on Restore Manifest and the action-scoped layout from ADR 0004.
+- Implements ADR 0011.
+- Precedes broad WPF Undo Quarantine for discovered manifests.
+
+#### Code implications
+
+- Use `QuarantineManifestDiscovery`, `QuarantineManifestDiscoveryBuilder`, and `QuarantineManifestDiscoveryIssue`.
+- Keep discovery limited to `<quarantine-root>\actions\*\restore-manifest.json`.
+- Keep discovered manifests status-only until a separate Undo Quarantine selection/execution design exists.
+- Do not call this cleanup history.
+
+### Restore Manifest Summary
+
+Status: draft
+Last reviewed: 2026-05-29
+
+#### Definition
+
+Restore Manifest Summary is a compact read-only status view of one discovered Restore Manifest.
+
+#### Examples
+
+- Manifest path.
+- Action id.
+- Action status.
+- Entry count and total size.
+- Moved/restored/failed counts.
+- Recovery-review flag.
+
+#### Non-examples
+
+- The full Restore Manifest JSON.
+- Approval to restore.
+- Cleanup history.
+
+#### Lifecycle
+
+- Created from a valid discovered Restore Manifest.
+- Shown in Quarantine Manifest Discovery.
+- Discarded when the Quarantine Root changes or discovery is rerun.
+
+#### Relationships
+
+- Belongs to Quarantine Manifest Discovery.
+- Summarizes Restore Manifest.
+
+#### Code implications
+
+- Use `RestoreManifestSummary`.
+- Keep it read-only and derived from manifest metadata.
+
 ### Quarantine Action Draft
 
 Status: draft
@@ -2397,7 +2484,7 @@ The current core implementation is fixture-tested through Undo Quarantine Execut
 - Uses the Restore Manifest to return files to original paths.
 - Must refuse to overwrite an original path that now exists.
 - Must preserve recovery evidence when restore or manifest writes fail.
-- Broad WPF Undo Quarantine with manifest discovery remains a future workflow.
+- Broad WPF Undo Quarantine that restores discovered manifests remains a future workflow.
 
 #### Relationships
 
@@ -2405,6 +2492,7 @@ The current core implementation is fixture-tested through Undo Quarantine Execut
 - Depends on Restore Manifest.
 - Depends on Undo Quarantine Executor for the fixture-tested core restore behavior.
 - Has a current-fixture WPF path for the immediately executed fixture action.
+- Has read-only Quarantine Manifest Discovery for older action-scoped manifests.
 - Reverses a quarantine Cleanup Action.
 
 #### Code implications

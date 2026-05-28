@@ -10,6 +10,12 @@ public static class RestoreManifestJsonSerializer
         return JsonSerializer.Serialize(manifest, CreateOptions());
     }
 
+    public static RestoreManifest Deserialize(string json)
+    {
+        var manifest = JsonSerializer.Deserialize<RestoreManifest>(json, CreateOptions());
+        return manifest ?? throw new InvalidOperationException("Restore Manifest JSON did not contain a manifest.");
+    }
+
     private static JsonSerializerOptions CreateOptions()
     {
         var options = new JsonSerializerOptions

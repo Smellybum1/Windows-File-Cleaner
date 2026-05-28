@@ -31,6 +31,9 @@ tests.RestoreManifestBuildsWriteAheadActionRecordFromActionDraft();
 tests.RestoreManifestTracksPartialFailureStatusForFutureExecution();
 tests.RestoreManifestFileStoreWritesAndReplacesManifestWithoutMovingSources();
 tests.RestoreManifestFileStoreRejectsPathsOutsideActionRoot();
+tests.QuarantineManifestDiscoverySummarizesActionManifestsReadOnly();
+tests.QuarantineManifestDiscoveryReportsMissingAndInvalidManifests();
+tests.QuarantineManifestDiscoveryRejectsManifestPathMismatch();
 tests.QuarantineExecutorMovesFixtureFilesWithWriteAheadManifest();
 tests.QuarantineExecutorRecordsPartialFailureWithoutOverwritingDestination();
 tests.QuarantineExecutorFailsMissingSourceWithoutCreatingDestination();
@@ -1528,6 +1531,86 @@ internal sealed class StorageScanTests
         Assert(!File.Exists(wrongFileName), "Rejected manifest filename should not be written.");
         Assert(!Directory.Exists(quarantineRoot), "Rejected manifest writes should not create quarantine folders.");
         Assert(File.Exists(installer.Entry.FullPath), "Rejected manifest writes should not move or delete source files.");
+    }
+
+    public void QuarantineManifestDiscoverySummarizesActionManifestsReadOnly()
+    {
+        using var fixture = TestFixture.Create();
+        fixture.WriteFile(@"Downloads\old-installer.msi", 1024 * 1024 * 3, DateTimeOffset.UtcNow.AddDays(-120));
+
+        var plan = BuildPlannedRestoreManifest(fixture, [@"Downloads\old-installer.msi"], "discovery-valid");
+        var movedManifest = RestoreManifestBuilder.WithEntryStatus(
+            plan.Manifest,
+            plan.Manifest.Entries.Single().OriginalPath,
+            RestoreManifestEntryStatus.Moved,
+            new DateTimeOffset(2026, 5, 29, 5, 6, 7, TimeSpan.Zero));
+        var write = RestoreManifestFileStore.Write(movedManifest);
+
+        var discovery = QuarantineManifestDiscoveryBuilder.Discover(plan.Manifest.QuarantineRootPath);
+
+        Assert(write.BytesWritten > 0, "Fixture setup should write a Restore Manifest.");
+        Assert(discovery.ManifestCount == 1, "Discovery should find one action-scoped Restore Manifest.");
+        Assert(discovery.Issues.Count == 0, "Valid manifest discovery should not report issues.");
+        var summary = discovery.Manifests.Single();
+        Assert(summary.ManifestPath == movedManifest.ManifestPath, "Summary should expose the manifest path.");
+        Assert(summary.ActionId == movedManifest.ActionId, "Summary should expose the action id.");
+        Assert(summary.ActionStatus == RestoreManifestActionStatus.Completed, "Summary should expose action status.");
+        Assert(summary.EntryCount == 1, "Summary should expose entry count.");
+        Assert(summary.MovedCount == 1, "Summary should expose moved count for future undo visibility.");
+        Assert(summary.HasUndoWork, "Moved manifests should indicate undo work exists.");
+        Assert(summary.TotalSizeDisplay == "3 MB", "Summary should format total size.");
+        Assert(File.Exists(plan.Manifest.Entries.Single().OriginalPath), "Discovery should not move the original source file.");
+        Assert(!File.Exists(plan.Manifest.Entries.Single().QuarantinePath), "Discovery should not create quarantine item files.");
+    }
+
+    public void QuarantineManifestDiscoveryReportsMissingAndInvalidManifests()
+    {
+        using var fixture = TestFixture.Create();
+        var quarantineRoot = Path.Combine(fixture.RootPath, "quarantine-root");
+
+        var missingActionsDiscovery = QuarantineManifestDiscoveryBuilder.Discover(quarantineRoot);
+        Assert(missingActionsDiscovery.ManifestCount == 0, "Missing actions folder should produce no manifest summaries.");
+        Assert(
+            missingActionsDiscovery.Issues.Any(issue => issue.Message.Contains("No quarantine actions folder", StringComparison.OrdinalIgnoreCase)),
+            "Missing actions folder should be reported as a discovery issue.");
+
+        var actionsRoot = Path.Combine(quarantineRoot, "actions");
+        Directory.CreateDirectory(Path.Combine(actionsRoot, "action-without-manifest"));
+        var invalidActionRoot = Path.Combine(actionsRoot, "action-invalid-json");
+        Directory.CreateDirectory(invalidActionRoot);
+        File.WriteAllText(Path.Combine(invalidActionRoot, RestoreManifestFileStore.RestoreManifestFileName), "{ not valid json");
+
+        var discovery = QuarantineManifestDiscoveryBuilder.Discover(quarantineRoot);
+
+        Assert(discovery.ManifestCount == 0, "Invalid and missing manifests should not produce summaries.");
+        Assert(
+            discovery.Issues.Any(issue => issue.Message.Contains("does not contain restore-manifest.json", StringComparison.OrdinalIgnoreCase)),
+            "Action folders without manifests should be reported.");
+        Assert(
+            discovery.Issues.Any(issue => issue.Message.Contains("Could not parse Restore Manifest", StringComparison.OrdinalIgnoreCase)),
+            "Invalid manifest JSON should be reported.");
+    }
+
+    public void QuarantineManifestDiscoveryRejectsManifestPathMismatch()
+    {
+        using var fixture = TestFixture.Create();
+        fixture.WriteFile(@"Downloads\old-installer.msi", 1024 * 1024, DateTimeOffset.UtcNow.AddDays(-120));
+
+        var plan = BuildPlannedRestoreManifest(fixture, [@"Downloads\old-installer.msi"], "discovery-mismatch");
+        Directory.CreateDirectory(plan.Manifest.ActionRootPath);
+        File.WriteAllText(
+            plan.Manifest.ManifestPath,
+            RestoreManifestJsonSerializer.Serialize(plan.Manifest with
+            {
+                ManifestPath = Path.Combine(fixture.RootPath, "outside", RestoreManifestFileStore.RestoreManifestFileName)
+            }));
+
+        var discovery = QuarantineManifestDiscoveryBuilder.Discover(plan.Manifest.QuarantineRootPath);
+
+        Assert(discovery.ManifestCount == 0, "Manifest path mismatches should not produce summaries.");
+        Assert(
+            discovery.Issues.Any(issue => issue.Message.Contains("does not match its discovered file path", StringComparison.OrdinalIgnoreCase)),
+            "Manifest path mismatches should be reported.");
     }
 
     public void QuarantineExecutorMovesFixtureFilesWithWriteAheadManifest()
