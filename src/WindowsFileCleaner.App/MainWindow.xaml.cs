@@ -21,12 +21,14 @@ public partial class MainWindow : Window
     private StorageReviewFilter _currentFilter = StorageReviewFilter.All;
     private StorageCategoryFilter _currentCategoryFilter = StorageCategoryFilter.All;
     private StorageEntryTypeFilter _currentEntryTypeFilter = StorageEntryTypeFilter.All;
+    private StorageSizeThresholdFilter _currentSizeThresholdFilter = StorageSizeThresholdFilter.All;
     private StorageReviewSearch _currentSearch = StorageReviewSearch.Empty;
     private int _currentDisplayStartIndex;
     private StorageEntryRow? _selectedRow;
     private bool _isScanning;
     private bool _isUpdatingCategoryFilterOptions;
     private bool _isUpdatingEntryTypeFilterOptions;
+    private bool _isUpdatingSizeThresholdFilterOptions;
     private bool _isUpdatingSearchBox;
 
     public MainWindow()
@@ -41,6 +43,7 @@ public partial class MainWindow : Window
         ResultsGrid.ItemsSource = Array.Empty<StorageEntryRow>();
         UpdateCategoryFilterOptions();
         UpdateEntryTypeFilterOptions();
+        UpdateSizeThresholdFilterOptions();
         UpdateCleanupScopeSafetyNote();
     }
 
@@ -84,9 +87,15 @@ public partial class MainWindow : Window
 
     public bool CanUseEntryTypeFilter => EntryTypeFilterBox.IsEnabled;
 
+    public bool CanUseSizeThresholdFilter => SizeThresholdFilterBox.IsEnabled;
+
     public bool CanResetReviewView => ResetViewButton.IsEnabled;
 
     public string CurrentEntryTypeFilterLabel => EntryTypeFilterBox.SelectedItem is EntryTypeFilterOption option
+        ? option.Label
+        : "";
+
+    public string CurrentSizeThresholdFilterLabel => SizeThresholdFilterBox.SelectedItem is SizeThresholdFilterOption option
         ? option.Label
         : "";
 
@@ -269,6 +278,7 @@ public partial class MainWindow : Window
         _currentFilter = StorageReviewFilter.All;
         _currentCategoryFilter = StorageCategoryFilter.All;
         _currentEntryTypeFilter = StorageEntryTypeFilter.All;
+        _currentSizeThresholdFilter = StorageSizeThresholdFilter.All;
         _currentSearch = StorageReviewSearch.Empty;
         _currentDisplayStartIndex = 0;
         _shortlist.Clear();
@@ -276,6 +286,7 @@ public partial class MainWindow : Window
         SetSearchTextSilently("");
         UpdateCategoryFilterOptions();
         UpdateEntryTypeFilterOptions();
+        UpdateSizeThresholdFilterOptions();
         var matchedEntries = ApplyCurrentReviewFilters();
         var rows = BuildDisplayedRows(matchedEntries);
 
@@ -599,6 +610,18 @@ public partial class MainWindow : Window
         RefreshResults();
     }
 
+    private void SizeThresholdFilterBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (_isUpdatingSizeThresholdFilterOptions || SizeThresholdFilterBox.SelectedItem is not SizeThresholdFilterOption option)
+        {
+            return;
+        }
+
+        _currentSizeThresholdFilter = option.Filter;
+        _currentDisplayStartIndex = 0;
+        RefreshResults();
+    }
+
     private void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
     {
         if (_isUpdatingSearchBox || _currentReview is null)
@@ -810,6 +833,7 @@ public partial class MainWindow : Window
         ExportQuarantinePreviewButton.IsEnabled = !isScanning && _currentQuarantinePreview is not null;
         CategoryFilterBox.IsEnabled = !isScanning && _currentReview is not null && CategoryFilterBox.Items.Count > 1;
         EntryTypeFilterBox.IsEnabled = !isScanning && _currentReview is not null;
+        SizeThresholdFilterBox.IsEnabled = !isScanning && _currentReview is not null;
         SearchBox.IsEnabled = !isScanning && _currentReview is not null;
         ClearSearchButton.IsEnabled = !isScanning && _currentReview is not null && _currentSearch.IsActive;
         ResetViewButton.IsEnabled = !isScanning && _currentReview is not null && IsReviewViewFiltered();
@@ -893,6 +917,19 @@ public partial class MainWindow : Window
         RefreshResults();
     }
 
+    public void ApplySizeThresholdFilter(StorageSizeThresholdFilter filter)
+    {
+        if (_currentReview is null)
+        {
+            return;
+        }
+
+        _currentSizeThresholdFilter = filter;
+        _currentDisplayStartIndex = 0;
+        SelectSizeThresholdFilterOption(_currentSizeThresholdFilter);
+        RefreshResults();
+    }
+
     public void SelectEntryTypeFilterThroughCombo(StorageEntryTypeFilter filter)
     {
         var option = EntryTypeFilterBox.Items
@@ -901,6 +938,17 @@ public partial class MainWindow : Window
         if (option is not null)
         {
             EntryTypeFilterBox.SelectedItem = option;
+        }
+    }
+
+    public void SelectSizeThresholdFilterThroughCombo(StorageSizeThresholdFilter filter)
+    {
+        var option = SizeThresholdFilterBox.Items
+            .Cast<SizeThresholdFilterOption>()
+            .FirstOrDefault(candidate => candidate.Filter == filter);
+        if (option is not null)
+        {
+            SizeThresholdFilterBox.SelectedItem = option;
         }
     }
 
@@ -938,10 +986,12 @@ public partial class MainWindow : Window
         _currentFilter = StorageReviewFilter.All;
         _currentCategoryFilter = StorageCategoryFilter.All;
         _currentEntryTypeFilter = StorageEntryTypeFilter.All;
+        _currentSizeThresholdFilter = StorageSizeThresholdFilter.All;
         _currentSearch = StorageReviewSearch.Empty;
         _currentDisplayStartIndex = 0;
         SelectCategoryFilterOption(_currentCategoryFilter);
         SelectEntryTypeFilterOption(_currentEntryTypeFilter);
+        SelectSizeThresholdFilterOption(_currentSizeThresholdFilter);
         SetSearchTextSilently("");
         RefreshResults();
         StatusText.Text = "Review view reset. Review Shortlist was kept. No files were modified.";
@@ -1053,6 +1103,7 @@ public partial class MainWindow : Window
             RemoveShownFromShortlistButton.IsEnabled = false;
             SearchBox.IsEnabled = false;
             EntryTypeFilterBox.IsEnabled = false;
+            SizeThresholdFilterBox.IsEnabled = false;
             ResetViewButton.IsEnabled = false;
             ClearSearchButton.IsEnabled = false;
             PreviousReviewWindowButton.IsEnabled = false;
@@ -1074,6 +1125,7 @@ public partial class MainWindow : Window
         PreviewQuarantineButton.IsEnabled = _shortlist.Count > 0;
         ExportQuarantinePreviewButton.IsEnabled = _currentQuarantinePreview is not null;
         SearchBox.IsEnabled = true;
+        SizeThresholdFilterBox.IsEnabled = true;
         ClearSearchButton.IsEnabled = _currentSearch.IsActive;
         ResetViewButton.IsEnabled = IsReviewViewFiltered();
     }
@@ -1083,12 +1135,18 @@ public partial class MainWindow : Window
         return _currentFilter != StorageReviewFilter.All
             || _currentCategoryFilter.Kind != StorageCategoryFilterKind.All
             || _currentEntryTypeFilter != StorageEntryTypeFilter.All
+            || _currentSizeThresholdFilter != StorageSizeThresholdFilter.All
             || _currentSearch.IsActive;
     }
 
     private IReadOnlyList<StorageReviewEntry> ApplyCurrentReviewFilters()
     {
-        return _currentReview?.ApplyFilter(_currentFilter, _currentCategoryFilter, _currentEntryTypeFilter, _currentSearch) ?? [];
+        return _currentReview?.ApplyFilter(
+            _currentFilter,
+            _currentCategoryFilter,
+            _currentEntryTypeFilter,
+            _currentSizeThresholdFilter,
+            _currentSearch) ?? [];
     }
 
     private StorageEntryRow[] BuildDisplayedRows(IReadOnlyList<StorageReviewEntry> entries)
@@ -1181,6 +1239,55 @@ public partial class MainWindow : Window
         }
     }
 
+    private void UpdateSizeThresholdFilterOptions()
+    {
+        _isUpdatingSizeThresholdFilterOptions = true;
+        try
+        {
+            if (_currentReview is null)
+            {
+                SizeThresholdFilterBox.ItemsSource = new[]
+                {
+                    new SizeThresholdFilterOption(StorageSizeThresholdFilter.All, "All sizes", "all-sizes")
+                };
+                SizeThresholdFilterBox.SelectedIndex = 0;
+                SizeThresholdFilterBox.IsEnabled = false;
+                return;
+            }
+
+            SizeThresholdFilterBox.ItemsSource = new[]
+            {
+                BuildSizeThresholdFilterOption(StorageSizeThresholdFilter.All, "All sizes", "all-sizes"),
+                BuildSizeThresholdFilterOption(StorageSizeThresholdFilter.AtLeast1Mb, "1 MB+", "size-1mb-plus"),
+                BuildSizeThresholdFilterOption(StorageSizeThresholdFilter.AtLeast100Mb, "100 MB+", "size-100mb-plus"),
+                BuildSizeThresholdFilterOption(StorageSizeThresholdFilter.AtLeast1Gb, "1 GB+", "size-1gb-plus"),
+                BuildSizeThresholdFilterOption(StorageSizeThresholdFilter.AtLeast5Gb, "5 GB+", "size-5gb-plus"),
+                BuildSizeThresholdFilterOption(StorageSizeThresholdFilter.AtLeast10Gb, "10 GB+", "size-10gb-plus")
+            };
+            SelectSizeThresholdFilterOption(_currentSizeThresholdFilter);
+            SizeThresholdFilterBox.IsEnabled = true;
+        }
+        finally
+        {
+            _isUpdatingSizeThresholdFilterOptions = false;
+        }
+    }
+
+    private SizeThresholdFilterOption BuildSizeThresholdFilterOption(
+        StorageSizeThresholdFilter filter,
+        string label,
+        string fileNameSegment)
+    {
+        var minimumSizeBytes = filter.GetMinimumSizeBytes();
+        if (_currentReview is null || minimumSizeBytes <= 0)
+        {
+            return new SizeThresholdFilterOption(filter, label, fileNameSegment);
+        }
+
+        var count = _currentReview.Entries.Count(row => row.Entry.SizeBytes >= minimumSizeBytes);
+        return new SizeThresholdFilterOption(filter, $"{label} ({count:N0})", fileNameSegment);
+    }
+
     private void ClampDisplayStartIndex(int matchedCount)
     {
         if (matchedCount <= 0)
@@ -1231,12 +1338,13 @@ public partial class MainWindow : Window
         var largestMatchedBytes = matchedEntries.Select(row => row.Entry.SizeBytes).DefaultIfEmpty(0).Max();
         var categoryLabel = _currentCategoryFilter.Kind == StorageCategoryFilterKind.All ? "" : $" + {FormatCategoryFilter(_currentCategoryFilter)}";
         var typeLabel = _currentEntryTypeFilter == StorageEntryTypeFilter.All ? "" : $" + {FormatEntryTypeFilter(_currentEntryTypeFilter)}";
+        var sizeLabel = _currentSizeThresholdFilter == StorageSizeThresholdFilter.All ? "" : $" + {FormatSizeThresholdFilter(_currentSizeThresholdFilter)}";
         var searchLabel = _currentSearch.IsActive ? $" + Search \"{_currentSearch.Query}\"" : "";
         var limitLabel = matchedEntries.Count > MaxDisplayedRows
             ? $" Display window {MaxDisplayedRows:N0}; use Previous/Next rows or narrow filters/search to inspect more matches."
             : "";
         FilterSummaryText.Text =
-            $"{FormatFilter(_currentFilter)}{categoryLabel}{typeLabel}{searchLabel}: {FormatReviewWindowRange(matchedEntries.Count)}, " +
+            $"{FormatFilter(_currentFilter)}{categoryLabel}{typeLabel}{sizeLabel}{searchLabel}: {FormatReviewWindowRange(matchedEntries.Count)}, " +
             $"largest matched row {ByteSizeFormatter.Format(largestMatchedBytes)}, " +
             $"shortlist {_shortlist.Count:N0}.{limitLabel}";
         UpdateReviewWindowControls(matchedEntries.Count);
@@ -1268,6 +1376,7 @@ public partial class MainWindow : Window
         ExportQuarantinePreviewButton.IsEnabled = _currentQuarantinePreview is not null && ScanButton.IsEnabled;
         SearchBox.IsEnabled = _currentReview is not null && ScanButton.IsEnabled;
         ClearSearchButton.IsEnabled = _currentReview is not null && _currentSearch.IsActive && ScanButton.IsEnabled;
+        SizeThresholdFilterBox.IsEnabled = _currentReview is not null && ScanButton.IsEnabled;
         ResetViewButton.IsEnabled = _currentReview is not null && IsReviewViewFiltered() && ScanButton.IsEnabled;
     }
 
@@ -1494,10 +1603,13 @@ public partial class MainWindow : Window
         var typeSegment = EntryTypeFilterBox.SelectedItem is EntryTypeFilterOption typeOption
             ? typeOption.FileNameSegment
             : "all-types";
+        var sizeSegment = SizeThresholdFilterBox.SelectedItem is SizeThresholdFilterOption sizeOption
+            ? sizeOption.FileNameSegment
+            : "all-sizes";
         var searchSegment = _currentSearch.IsActive
             ? $"-search-{FormatFileNameSearch(_currentSearch.Query)}"
             : "";
-        return $"storage-scan-{DateTime.Now:yyyyMMdd-HHmmss}-{FormatFileNameFilter(_currentFilter)}-{categorySegment}-{typeSegment}{searchSegment}.csv";
+        return $"storage-scan-{DateTime.Now:yyyyMMdd-HHmmss}-{FormatFileNameFilter(_currentFilter)}-{categorySegment}-{typeSegment}-{sizeSegment}{searchSegment}.csv";
     }
 
     private static string FormatFileNameSearch(string searchQuery)
@@ -1543,6 +1655,19 @@ public partial class MainWindow : Window
         };
     }
 
+    private static string FormatSizeThresholdFilter(StorageSizeThresholdFilter filter)
+    {
+        return filter switch
+        {
+            StorageSizeThresholdFilter.AtLeast1Mb => "1 MB+",
+            StorageSizeThresholdFilter.AtLeast100Mb => "100 MB+",
+            StorageSizeThresholdFilter.AtLeast1Gb => "1 GB+",
+            StorageSizeThresholdFilter.AtLeast5Gb => "5 GB+",
+            StorageSizeThresholdFilter.AtLeast10Gb => "10 GB+",
+            _ => "All sizes"
+        };
+    }
+
     private void SelectCategoryFilterOption(StorageCategoryFilter filter)
     {
         var option = CategoryFilterBox.Items
@@ -1582,6 +1707,27 @@ public partial class MainWindow : Window
         finally
         {
             _isUpdatingEntryTypeFilterOptions = false;
+        }
+    }
+
+    private void SelectSizeThresholdFilterOption(StorageSizeThresholdFilter filter)
+    {
+        var option = SizeThresholdFilterBox.Items
+            .Cast<SizeThresholdFilterOption>()
+            .FirstOrDefault(candidate => candidate.Filter == filter);
+        if (option is null)
+        {
+            return;
+        }
+
+        _isUpdatingSizeThresholdFilterOptions = true;
+        try
+        {
+            SizeThresholdFilterBox.SelectedItem = option;
+        }
+        finally
+        {
+            _isUpdatingSizeThresholdFilterOptions = false;
         }
     }
 

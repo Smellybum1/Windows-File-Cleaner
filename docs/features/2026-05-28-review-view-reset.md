@@ -26,6 +26,7 @@ As the project owner, I want one action that clears active filters and search, s
 - Reset Storage Review Filter to `All`.
 - Reset Bloat Category Filter to `All categories`.
 - Reset Storage Entry Type Filter to `All types`.
+- Reset Storage Size Threshold Filter to `All sizes`.
 - Clear Storage Review Search.
 - Keep Review Shortlist entries.
 - Report that no files were modified.
@@ -58,7 +59,7 @@ What changed:
 - Added `Reset view` button.
 - Added `ResetReviewView` WPF command.
 - Added reset-enabled state handling.
-- Added WPF smoke coverage that reset clears filters/search and keeps Review Shortlist.
+- Added WPF smoke coverage that reset clears filters/search, including Storage Size Threshold Filter, and keeps Review Shortlist.
 
 ADRs added or skipped:
 

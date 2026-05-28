@@ -22,7 +22,7 @@ As the project owner, I want to filter the review grid to files or folders, so t
 ## Desired behavior
 
 - Add a Type filter with `All types`, `Files`, and `Folders`.
-- Combine Type with Storage Review Filter, Bloat Category Filter, and Storage Review Search.
+- Combine Type with Storage Review Filter, Bloat Category Filter, Storage Size Threshold Filter, and Storage Review Search.
 - Include the active Type filter in the filter summary and Scan Report Export filename.
 - Keep Review Shortlist actions scoped to the currently displayed rows after all active filters.
 - Keep all behavior read-only.

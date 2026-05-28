@@ -29,6 +29,16 @@ public sealed record StorageScanReview(
         StorageEntryTypeFilter typeFilter,
         StorageReviewSearch search)
     {
+        return ApplyFilter(filter, categoryFilter, typeFilter, StorageSizeThresholdFilter.All, search);
+    }
+
+    public IReadOnlyList<StorageReviewEntry> ApplyFilter(
+        StorageReviewFilter filter,
+        StorageCategoryFilter categoryFilter,
+        StorageEntryTypeFilter typeFilter,
+        StorageSizeThresholdFilter sizeThresholdFilter,
+        StorageReviewSearch search)
+    {
         var filtered = ApplyReviewFilter(filter);
         filtered = categoryFilter.Kind switch
         {
@@ -45,6 +55,12 @@ public sealed record StorageScanReview(
             StorageEntryTypeFilter.Folders => filtered.Where(row => row.Entry.IsDirectory).ToArray(),
             _ => filtered
         };
+
+        var minimumSizeBytes = sizeThresholdFilter.GetMinimumSizeBytes();
+        if (minimumSizeBytes > 0)
+        {
+            filtered = filtered.Where(row => row.Entry.SizeBytes >= minimumSizeBytes).ToArray();
+        }
 
         return search.IsActive
             ? filtered.Where(row => MatchesSearch(row.Entry, search)).ToArray()

@@ -10,6 +10,7 @@ tests.CleanupScopeScanGateRequiresRealProfileAcknowledgement();
 tests.ClassifierLabelsRealScanContainerPatterns();
 tests.ClassifierLabelsLargeOldUnknownFilesConservatively();
 tests.ReviewBuilderSummarizesAndFiltersResults();
+tests.ReviewBuilderFiltersBySizeThreshold();
 tests.ReviewBuilderFiltersAccessIssues();
 tests.ReviewSearchCombinesWithReviewAndCategoryFilters();
 tests.ReviewSearchSupportsFieldPrefixes();
@@ -324,6 +325,48 @@ internal sealed class StorageScanTests
                 && row.Entry.BloatCategories.Contains(BloatCategory.InstallerCache)
                 && row.Entry.FullPath.Contains("old-installer", StringComparison.OrdinalIgnoreCase)),
             "Combined type-filtered rows should preserve all active review lenses.");
+    }
+
+    public void ReviewBuilderFiltersBySizeThreshold()
+    {
+        using var fixture = TestFixture.Create();
+
+        fixture.WriteFile(@"Downloads\old-installer.msi", 1024 * 1024, DateTimeOffset.UtcNow.AddDays(-120));
+        fixture.WriteFile(@"Unknown\notes.txt", 1024, DateTimeOffset.UtcNow);
+
+        var scanner = new StorageScanner();
+        var result = scanner.Scan(new StorageScanOptions(fixture.RootPath));
+        var review = StorageScanReviewBuilder.Build(result);
+
+        var oneMegabyteRows = review.ApplyFilter(
+            StorageReviewFilter.All,
+            StorageCategoryFilter.All,
+            StorageEntryTypeFilter.All,
+            StorageSizeThresholdFilter.AtLeast1Mb,
+            StorageReviewSearch.Empty);
+        Assert(oneMegabyteRows.Count > 0, "1 MB+ size threshold should return matching rows.");
+        Assert(
+            oneMegabyteRows.All(row => row.Entry.SizeBytes >= 1024L * 1024),
+            "1 MB+ size threshold should only return rows at or above the threshold.");
+
+        var largeInstallerFiles = review.ApplyFilter(
+            StorageReviewFilter.QuarantineCandidates,
+            StorageCategoryFilter.ForCategory(BloatCategory.InstallerCache),
+            StorageEntryTypeFilter.Files,
+            StorageSizeThresholdFilter.AtLeast1Mb,
+            StorageReviewSearch.FromText("old-installer"));
+        Assert(largeInstallerFiles.Count == 1, "Size threshold should combine with review, category, type, and search filters.");
+        Assert(
+            largeInstallerFiles.Single().Entry.FullPath.EndsWith(@"Downloads\old-installer.msi", StringComparison.OrdinalIgnoreCase),
+            "Combined size-threshold row should preserve the expected installer match.");
+
+        var hundredMegabyteRows = review.ApplyFilter(
+            StorageReviewFilter.All,
+            StorageCategoryFilter.All,
+            StorageEntryTypeFilter.All,
+            StorageSizeThresholdFilter.AtLeast100Mb,
+            StorageReviewSearch.Empty);
+        Assert(hundredMegabyteRows.Count == 0, "100 MB+ size threshold should hide smaller fixture rows.");
     }
 
     public void ReviewBuilderFiltersAccessIssues()

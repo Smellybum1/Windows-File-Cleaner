@@ -279,6 +279,20 @@
                                   IsEnabled="False"
                                   SelectionChanged="EntryTypeFilterBox_SelectionChanged" />
                     </StackPanel>
+                    <StackPanel Orientation="Horizontal"
+                                Margin="6,0,0,0"
+                                VerticalAlignment="Center">
+                        <TextBlock Text="Size"
+                                   VerticalAlignment="Center"
+                                   Foreground="#526171"
+                                   Margin="0,0,8,0" />
+                        <ComboBox x:Name="SizeThresholdFilterBox"
+                                  Width="135"
+                                  Height="30"
+                                  DisplayMemberPath="Label"
+                                  IsEnabled="False"
+                                  SelectionChanged="SizeThresholdFilterBox_SelectionChanged" />
+                    </StackPanel>
                     <Button x:Name="AddShownToShortlistButton"
                             Content="Shortlist shown"
                             MinWidth="125"

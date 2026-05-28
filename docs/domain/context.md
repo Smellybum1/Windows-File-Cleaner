@@ -585,7 +585,7 @@ It helps the user separate actual files from container folders in a recursive sc
 
 - Available after a Storage Scan completes.
 - Resets to `All types` after a new Storage Scan completes.
-- Combines with Storage Review Filter, Bloat Category Filter, and Storage Review Search.
+- Combines with Storage Review Filter, Bloat Category Filter, Storage Size Threshold Filter, and Storage Review Search.
 - Does not modify files.
 
 #### Relationships
@@ -601,6 +601,51 @@ It helps the user separate actual files from container folders in a recursive sc
 - Keep type filtering read-only and in-memory.
 - Do not use type filters as cleanup approval.
 
+### Storage Size Threshold Filter
+
+Status: draft
+Last reviewed: 2026-05-28
+
+#### Definition
+
+The Storage Size Threshold Filter is a read-only lens that narrows completed Storage Scan review rows to paths at or above a selected row-size threshold.
+
+It helps the user focus a large recursive scan on the biggest review targets without treating size as cleanup safety evidence.
+
+#### Examples
+
+- Show only `1 GB+` rows while reviewing a real-profile scan.
+- Show only `5 GB+` rows to compare the largest app/cache containers.
+- Combine `1 GB+` with `Folders` and `No category` to classify large unknown folders.
+- Combine `100 MB+` with `Quarantine candidates` to review large specific cache rows.
+
+#### Non-examples
+
+- A Cleanup Action.
+- A confirmation that a large file or folder is bloat.
+- A storage-savings estimate.
+- A change to scanner traversal or Bloat Category assignment.
+
+#### Lifecycle
+
+- Available after a Storage Scan completes.
+- Resets to `All sizes` after a new Storage Scan completes.
+- Combines with Storage Review Filter, Bloat Category Filter, Storage Entry Type Filter, and Storage Review Search.
+- Does not modify files.
+
+#### Relationships
+
+- Uses Storage Scan review results.
+- Complements Storage Review Size Note because recursive folder rows can overlap with child rows.
+- Applies to Scan Report Export row selection and suggested filenames.
+
+#### Code implications
+
+- Use `StorageSizeThresholdFilter`.
+- Apply size-threshold filtering in `StorageScanReview` before search.
+- Keep size-threshold filtering read-only and in-memory.
+- Do not use size thresholds as cleanup approval or importance scoring.
+
 ### Review View Reset
 
 Status: draft
@@ -615,6 +660,7 @@ It restores:
 - Storage Review Filter: `All`
 - Bloat Category Filter: `All categories`
 - Storage Entry Type Filter: `All types`
+- Storage Size Threshold Filter: `All sizes`
 - Storage Review Search: empty
 
 It does not clear Review Shortlist and does not modify files.
@@ -640,7 +686,7 @@ It does not clear Review Shortlist and does not modify files.
 
 #### Relationships
 
-- Uses Storage Review Filter, Bloat Category Filter, Storage Entry Type Filter, and Storage Review Search.
+- Uses Storage Review Filter, Bloat Category Filter, Storage Entry Type Filter, Storage Size Threshold Filter, and Storage Review Search.
 - Keeps Review Shortlist separate from the active review lens.
 - Helps recover from stacked filters during manual review.
 
@@ -665,7 +711,7 @@ The current display limit is 2,000 rows. It is a UI review boundary, not a scann
 
 - A real scan may contain 188,580 files and initially show only rows `1-2,000` of the matched review rows in the grid.
 - The filter summary can say `rows 2,001-4,000 of 12,345 matched` when the user moves to the next Storage Review Display Window.
-- Narrowing by Storage Review Search, Storage Entry Type Filter, or Bloat Category Filter can reduce the matched set and reset the display window to the first matched rows.
+- Narrowing by Storage Review Search, Storage Entry Type Filter, Storage Size Threshold Filter, or Bloat Category Filter can reduce the matched set and reset the display window to the first matched rows.
 
 #### Non-examples
 
@@ -677,13 +723,13 @@ The current display limit is 2,000 rows. It is a UI review boundary, not a scann
 #### Lifecycle
 
 - Applies after a Storage Scan completes and review rows are available.
-- Recomputed when the active Storage Review Filter, Bloat Category Filter, Storage Entry Type Filter, Storage Review Search, or Review Shortlist changes.
+- Recomputed when the active Storage Review Filter, Bloat Category Filter, Storage Entry Type Filter, Storage Size Threshold Filter, Storage Review Search, or Review Shortlist changes.
 - Does not modify files.
 
 #### Relationships
 
 - Uses Storage Scan review results.
-- Combines with Storage Review Filter, Bloat Category Filter, Storage Entry Type Filter, and Storage Review Search.
+- Combines with Storage Review Filter, Bloat Category Filter, Storage Entry Type Filter, Storage Size Threshold Filter, and Storage Review Search.
 - Helps keep very large scans reviewable without hiding that additional matched rows exist.
 
 #### Code implications
@@ -727,14 +773,14 @@ The initial window starts at row `1`. Previous rows and Next rows move the windo
 #### Relationships
 
 - Uses Storage Review Display Limit.
-- Uses Storage Review Filter, Bloat Category Filter, Storage Entry Type Filter, and Storage Review Search.
+- Uses Storage Review Filter, Bloat Category Filter, Storage Entry Type Filter, Storage Size Threshold Filter, and Storage Review Search.
 - Defines which rows `Shortlist shown` and `Remove shown` apply to.
 - Does not constrain Scan Report Export, which uses the full active review lens rather than only the visible window.
 
 #### Code implications
 
 - Use `_currentDisplayStartIndex` for the WPF display window offset.
-- Reset the offset when filters, type filters, category filters, search, safety shortcuts, or Review View Reset change the active lens.
+- Reset the offset when filters, type filters, size threshold filters, category filters, search, safety shortcuts, or Review View Reset change the active lens.
 - Keep Previous rows and Next rows read-only and disabled when no adjacent window exists.
 
 ### Bloat Category Filter
@@ -746,7 +792,7 @@ Last reviewed: 2026-05-28
 
 A Bloat Category Filter narrows Storage Scan results to rows that match one Bloat Category, or to rows with no category.
 
-It is a read-only lens that can be combined with the active Storage Review Filter.
+It is a read-only lens that can be combined with the active Storage Review Filter, Storage Entry Type Filter, Storage Size Threshold Filter, and Storage Review Search.
 
 #### Examples
 
@@ -773,7 +819,7 @@ It is a read-only lens that can be combined with the active Storage Review Filte
 #### Relationships
 
 - Uses Bloat Categories.
-- Combines with Storage Review Filters.
+- Combines with Storage Review Filter, Storage Entry Type Filter, Storage Size Threshold Filter, and Storage Review Search.
 - A row may match more than one Bloat Category Filter because a row may have multiple categories.
 - No category matches Uncategorized Results and is not itself a Bloat Category.
 
@@ -1329,7 +1375,7 @@ Last reviewed: 2026-05-28
 
 A Scan Report Export is a read-only report file generated from Storage Scan results.
 
-The initial export format is CSV for the currently active Storage Review Filter, Storage Entry Type Filter, and selected Bloat Category Filter.
+The initial export format is CSV for the currently active Storage Review Filter, Storage Entry Type Filter, Storage Size Threshold Filter, selected Bloat Category Filter, and Storage Review Search.
 
 #### Examples
 
@@ -1337,6 +1383,7 @@ The initial export format is CSV for the currently active Storage Review Filter,
 - Export only High risk rows to CSV.
 - Export Quarantine candidates to CSV for spreadsheet review.
 - Export files-only rows for large file review.
+- Export `1 GB+` rows for large-path review.
 - Export App cache rows within the current review filter to CSV.
 
 #### Non-examples
@@ -1349,11 +1396,11 @@ The initial export format is CSV for the currently active Storage Review Filter,
 #### Lifecycle
 
 - Available after a Storage Scan completes.
-- Uses the current Storage Review Filter, Storage Entry Type Filter, selected Bloat Category Filter, and Storage Review Search.
+- Uses the current Storage Review Filter, Storage Entry Type Filter, Storage Size Threshold Filter, selected Bloat Category Filter, and Storage Review Search.
 - Includes cleanup-scope-relative paths so repeated `C:\Users\moxhe` prefixes do not hide the meaningful part of each row in spreadsheets.
 - Includes parent path and depth columns so recursive rows keep their hierarchy context outside the app.
 - Includes Access Status and access issue text so incomplete scan coverage remains visible outside the app.
-- Writes a user-selected CSV report path and suggests a filename that describes active review filters/type/search.
+- Writes a user-selected CSV report path and suggests a filename that describes active review filters/type/size/search.
 - Does not modify scanned files.
 
 #### Relationships
@@ -1361,6 +1408,7 @@ The initial export format is CSV for the currently active Storage Review Filter,
 - Uses Storage Scan results.
 - Uses Storage Review Filters.
 - Uses Storage Entry Type Filter.
+- Uses Storage Size Threshold Filter.
 - Uses Bloat Category Filters.
 - Uses Storage Review Search.
 - May export a Review Shortlist, but that export remains a report rather than a Cleanup Action.
@@ -1374,7 +1422,7 @@ The initial export format is CSV for the currently active Storage Review Filter,
 - Export user-facing labels for Importance Ratings and Deletion Recommendations.
 - Export parent path and depth from the flattened Storage Review row.
 - Export Access Status separately from access issue text.
-- Keep generated report filenames descriptive and filesystem-safe when filters, type, or search are active.
+- Keep generated report filenames descriptive and filesystem-safe when filters, type, size, or search are active.
 - Keep exports separate from Quarantine manifests.
 
 ### Importance Rating

@@ -80,6 +80,7 @@ internal sealed class MainWindowSmokeTests
                 "Confirmed real-profile scan gate should preserve read-only wording.");
             Assert(!window.CanExportScanCsv, "MainWindow should not allow CSV export before a scan.");
             Assert(!window.CanUseEntryTypeFilter, "MainWindow should not allow type filtering before a scan.");
+            Assert(!window.CanUseSizeThresholdFilter, "MainWindow should not allow size threshold filtering before a scan.");
             Assert(!window.CanResetReviewView, "MainWindow should not allow review view reset before a scan.");
             Assert(window.SearchHelpToolTipValue.Contains("path:", StringComparison.OrdinalIgnoreCase), "Search tooltip should show field-prefix examples.");
             Assert(window.SearchHelpToolTipValue.Contains("category:", StringComparison.OrdinalIgnoreCase), "Search tooltip should include category-prefix guidance.");
@@ -154,8 +155,10 @@ internal sealed class MainWindowSmokeTests
             Assert(window.CanExportScanCsv, "CSV export should be enabled after a completed scan.");
             Assert(window.CanUseCategoryFilter, "Category filter should be enabled after a categorized fixture scan.");
             Assert(window.CanUseEntryTypeFilter, "Type filter should be enabled after a completed scan.");
+            Assert(window.CanUseSizeThresholdFilter, "Size threshold filter should be enabled after a completed scan.");
             Assert(!window.CanResetReviewView, "Reset view should be disabled while the review view is unfiltered.");
             Assert(window.CurrentEntryTypeFilterLabel.Contains("All types", StringComparison.OrdinalIgnoreCase), "Type filter should start on All types.");
+            Assert(window.CurrentSizeThresholdFilterLabel.Contains("All sizes", StringComparison.OrdinalIgnoreCase), "Size threshold filter should start on All sizes.");
             Assert(window.TotalSizeTextValue != "-", "Total size card should be populated after scan.");
             Assert(window.FolderCountTextValue != "-", "Folder count card should be populated after scan.");
             Assert(window.FileCountTextValue != "-", "File count card should be populated after scan.");
@@ -396,6 +399,22 @@ internal sealed class MainWindowSmokeTests
             window.ApplyEntryTypeFilter(StorageEntryTypeFilter.All);
             Assert(window.CurrentEntryTypeFilterLabel.Contains("All types", StringComparison.OrdinalIgnoreCase), "Type filter should return to All types.");
 
+            window.SelectSizeThresholdFilterThroughCombo(StorageSizeThresholdFilter.AtLeast1Mb);
+            Assert(window.FilterSummaryTextValue.Contains("1 MB+", StringComparison.OrdinalIgnoreCase), "Size threshold combo should update the filter summary.");
+            Assert(window.DisplayedRows.Count > 0, "1 MB+ size threshold should show matching fixture rows.");
+            Assert(
+                window.DisplayedRows.All(row => row.SizeBytes >= 1024L * 1024),
+                "1 MB+ size threshold should only show rows at or above the threshold.");
+            Assert(
+                window.CurrentScanReportExportRowCount == window.DisplayedRows.Count,
+                "Scan Report Export row count should honor the active size threshold for the fixture.");
+            Assert(
+                window.CurrentScanReportExportFileName.Contains("-size-1mb-plus", StringComparison.OrdinalIgnoreCase),
+                "Scan Report Export filename should include active size threshold filter.");
+
+            window.ApplySizeThresholdFilter(StorageSizeThresholdFilter.All);
+            Assert(window.CurrentSizeThresholdFilterLabel.Contains("All sizes", StringComparison.OrdinalIgnoreCase), "Size threshold filter should return to All sizes.");
+
             window.ApplyStorageReviewFilter(StorageReviewFilter.QuarantineCandidates);
             Assert(window.FilterSummaryTextValue.Contains("Quarantine candidates:", StringComparison.OrdinalIgnoreCase), "Quarantine candidate filter should update the filter summary.");
             Assert(window.DisplayedRows.Count > 0, "Quarantine candidate filter should show fixture rows.");
@@ -463,12 +482,14 @@ internal sealed class MainWindowSmokeTests
                 "Shortlisted row should be marked in the WPF grid.");
 
             window.ApplyEntryTypeFilter(StorageEntryTypeFilter.Files);
+            window.ApplySizeThresholdFilter(StorageSizeThresholdFilter.AtLeast1Mb);
             window.ApplyStorageReviewSearch("old-installer");
             Assert(window.CanResetReviewView, "Reset view should be enabled when multiple review lenses are active.");
             window.ResetReviewView();
             Assert(!window.CanResetReviewView, "Reset view should disable after returning to the default review lens.");
             Assert(window.CurrentSearchText == "", "Reset view should clear Storage Review Search.");
             Assert(window.CurrentEntryTypeFilterLabel.Contains("All types", StringComparison.OrdinalIgnoreCase), "Reset view should restore All types.");
+            Assert(window.CurrentSizeThresholdFilterLabel.Contains("All sizes", StringComparison.OrdinalIgnoreCase), "Reset view should restore All sizes.");
             Assert(window.FilterSummaryTextValue.StartsWith("All:", StringComparison.OrdinalIgnoreCase), "Reset view should restore the All review filter.");
             Assert(window.ReviewShortlistCount == 1, "Reset view should keep Review Shortlist entries.");
             Assert(
@@ -638,7 +659,7 @@ internal sealed class SmokeFixture : IDisposable
         var fixture = new SmokeFixture(root, Path.Combine(root, "Unknown", "notes.txt"));
         var now = DateTimeOffset.UtcNow;
 
-        fixture.WriteFile(@"Downloads\old-installer.msi", "Synthetic old installer.", now.AddDays(-120));
+        fixture.WriteFile(@"Downloads\old-installer.msi", new string('I', 1024 * 1024), now.AddDays(-120));
         fixture.WriteFile(@"AppData\Local\Temp\scratch.tmp", "Synthetic temp file.", now.AddDays(-5));
         fixture.WriteFile(@"AppData\Local\pip\Cache\http-v2\response.body", "Synthetic Python cache.", now.AddDays(-40));
         fixture.WriteFile(@"Documents\important.txt", "Synthetic protected document.", now);

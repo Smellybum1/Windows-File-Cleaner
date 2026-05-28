@@ -27,7 +27,7 @@ The app shows scan results, filters, child breakdowns, and selected-path inspect
 
 - Export CSV is available after a Storage Scan completes.
 - Export uses the active Storage Review Filter.
-- Later packets also apply the selected Bloat Category Filter, Storage Entry Type Filter, and Storage Review Search.
+- Later packets also apply the selected Bloat Category Filter, Storage Entry Type Filter, Storage Size Threshold Filter, and Storage Review Search.
 - Export includes full path, cleanup-scope-relative path, parent path, depth, name, type, size, importance, recommendation, categories, modified time, evidence, and access issue.
 - Export uses user-facing labels such as `Likely safe` and `Quarantine candidate`.
 - Export does not modify scanned files.
@@ -79,9 +79,10 @@ What changed:
 - Later packets included the selected Bloat Category Filter in the exported row set and generated filename, aligned the export row set with active Storage Review Search, and added a sanitized search segment to suggested export filenames.
 - Later hierarchy-context packet added parent path and depth columns so recursive rows remain understandable in spreadsheets.
 - Later type-filter packet included the active Storage Entry Type Filter in exported row selection and generated filenames.
+- Later size-threshold packet included the active Storage Size Threshold Filter in exported row selection and generated filenames.
 - Later contents-context packet added contained file and folder count columns for recursive row comparison.
 - Later access-status packet added an `Access status` column separate from access issue error text.
-- Later Storage Review Display Window packet added WPF coverage proving Scan Report Export uses the full active type-filtered review lens rather than only the visible row window.
+- Later Storage Review Display Window packet added WPF coverage proving Scan Report Export uses the full active review lens rather than only the visible row window.
 - Later relative-path packet added a `Relative path` column derived from the completed Cleanup Scope for easier spreadsheet review.
 
 Files changed:
