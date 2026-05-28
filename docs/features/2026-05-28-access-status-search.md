@@ -25,6 +25,7 @@ As the project owner, I want searches such as `access:readable` and `access:acce
 - `access:readable` matches rows with `Readable` Access Status.
 - `access:access issue` matches rows with `Access issue` Access Status.
 - `issue:<error text>` and `access:<error text>` still match scanner access issue messages.
+- The WPF search tooltip shows access examples such as `access:readable`, `access:access issue`, and `issue:denied`.
 - WPF filter summaries and suggested export filenames preserve the typed search term.
 - All behavior remains in-memory and read-only.
 
@@ -50,8 +51,9 @@ What changed:
 
 - Included Access Status in broad search matching.
 - Included Access Status in `access:` / `issue:` field-prefix matching.
+- Updated the WPF search tooltip with access-prefix examples.
 - Added core coverage for `access:readable`, `access:access issue`, and access issue message search.
-- Added WPF fixture coverage for `access:readable` search and searched export filename hints.
+- Added WPF fixture coverage for `access:readable` search, searched export filename hints, and access-prefix tooltip guidance.
 
 ADRs added or skipped:
 

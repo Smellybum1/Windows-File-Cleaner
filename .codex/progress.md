@@ -2595,8 +2595,9 @@ Implementation:
 - Added Access Status matching to broad Storage Review Search.
 - Added Access Status matching to `access:` and `issue:` field-prefix search.
 - Preserved access issue message search for `access:<error text>` and `issue:<error text>`.
+- Updated the WPF search tooltip to include `access:readable`, `access:access issue`, and `issue:denied` examples.
 - Added core coverage for `access:readable`, `access:access issue`, and access issue message searches.
-- Added WPF fixture coverage for `access:readable` search and searched export filename hints.
+- Added WPF fixture coverage for `access:readable` search, searched export filename hints, and access-prefix tooltip guidance.
 - No access retry, permission change, cleanup execution, Quarantine execution, Undo Quarantine, manifest writing, scanner traversal, real-profile automation, or real user file access was added.
 
 Verification:

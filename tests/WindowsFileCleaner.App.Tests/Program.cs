@@ -81,6 +81,8 @@ internal sealed class MainWindowSmokeTests
             Assert(!window.CanResetReviewView, "MainWindow should not allow review view reset before a scan.");
             Assert(window.SearchHelpToolTipValue.Contains("path:", StringComparison.OrdinalIgnoreCase), "Search tooltip should show field-prefix examples.");
             Assert(window.SearchHelpToolTipValue.Contains("category:", StringComparison.OrdinalIgnoreCase), "Search tooltip should include category-prefix guidance.");
+            Assert(window.SearchHelpToolTipValue.Contains("access:readable", StringComparison.OrdinalIgnoreCase), "Search tooltip should include readable access-prefix guidance.");
+            Assert(window.SearchHelpToolTipValue.Contains("issue:denied", StringComparison.OrdinalIgnoreCase), "Search tooltip should include access issue message-prefix guidance.");
         }
         finally
         {

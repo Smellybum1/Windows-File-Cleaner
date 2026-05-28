@@ -233,7 +233,7 @@
                                  Height="30"
                                  VerticalContentAlignment="Center"
                                  IsEnabled="False"
-                                 ToolTip="Examples: pip, path:pip, category:Python package cache, rating:High risk, recommendation:Quarantine candidate"
+                                 ToolTip="Examples: pip, path:pip, category:Python package cache, rating:High risk, recommendation:Quarantine candidate, access:readable, access:access issue, issue:denied"
                                  TextChanged="SearchBox_TextChanged" />
                     </StackPanel>
                     <Button x:Name="ClearSearchButton"

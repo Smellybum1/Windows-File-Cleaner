@@ -32,7 +32,7 @@ As the project owner, I want searches like `path:pip` and `category:Python packa
   - `evidence:`
   - `issue:` / `access:`
 - A later Access Status Search packet made `access:` match both Access Status values such as `Readable` and `Access issue`, and scan access issue text.
-- The WPF search box tooltip shows examples.
+- The WPF search box tooltip shows examples, including access-prefix examples after the Access Status Search packet.
 - Filter summary and report filenames preserve the typed query, including the prefix.
 - All behavior remains in-memory and read-only.
 
