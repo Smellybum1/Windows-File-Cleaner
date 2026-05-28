@@ -2023,6 +2023,57 @@ It writes `restore-manifest.json` under the Quarantine Action root by first writ
 - Validate that the filename is `restore-manifest.json`.
 - Do not create action item folders or move scanned files from this component.
 
+### Quarantine Executor
+
+Status: draft
+Last reviewed: 2026-05-29
+
+#### Definition
+
+Quarantine Executor is the narrow core component that moves Restore Manifest entries from their original paths to action-scoped quarantine paths.
+
+It is fixture-tested but not wired to the WPF app yet.
+
+#### Examples
+
+- Move a fixture file from `...\Downloads\old-installer.msi` to `...\actions\quarantine-action-...\items\Downloads\old-installer.msi`.
+- Record a destination collision as a failed Restore Manifest entry without overwriting the destination.
+- Stop before any move when the planned Restore Manifest cannot be written.
+
+#### Non-examples
+
+- Quarantine Preview.
+- Quarantine Action Draft.
+- Restore Manifest File Store.
+- Undo Quarantine.
+- Permanent deletion.
+- WPF execution wiring.
+
+#### Lifecycle
+
+- Receives a planned Restore Manifest.
+- Writes the planned Restore Manifest before the first move.
+- Writes each entry as Moving before a move attempt.
+- Revalidates source existence, destination availability, and reparse-point status before moving.
+- Moves the file or folder when checks pass.
+- Writes each entry as Moved or Failed after the move attempt.
+- Returns a Quarantine Execution Result summarizing moved entries, failed entries, blockers, and recovery-review need.
+
+#### Relationships
+
+- Depends on Restore Manifest and Restore Manifest File Store.
+- Uses the action-scoped layout from Quarantine Action Draft.
+- Implements the fixture-first boundary accepted in ADR 0007.
+- Precedes WPF execution wiring and Undo Quarantine.
+
+#### Code implications
+
+- Use `QuarantineExecutor`, `QuarantineExecutionResult`, and `QuarantineExecutionEntryResult`.
+- Keep filesystem move APIs allowlisted only in this component.
+- Keep WPF `Execute quarantine` disabled until a separate UI wiring packet.
+- Do not overwrite existing destination paths.
+- Do not implement rollback or Undo Quarantine inside the executor.
+
 ### Quarantine Confirmation Draft
 
 Status: draft

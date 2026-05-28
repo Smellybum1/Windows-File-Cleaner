@@ -18,6 +18,7 @@ Current readiness evidence is tracked in `docs/features/2026-05-28-mvp-readiness
 - Quarantine Action Draft shows future action-scoped item and manifest paths without creating them.
 - Write-ahead Restore Manifest modeling shows future manifest status/write order without writing a file.
 - Restore Manifest File Store is fixture-tested but is not wired to the WPF app; it writes only action-scoped manifest JSON when called directly by tests.
+- Quarantine Executor is fixture-tested in the core library but is not wired to the WPF app; the visible `Execute quarantine` button remains disabled.
 - Fixture tests include a source-level guard against accidental cleanup-execution filesystem calls.
 - Real-profile scans require an explicit acknowledgement that MVP preflight and fixture review were run.
 
@@ -137,12 +138,12 @@ The intended review flow is:
 9. Use Selected Path Hierarchy Context, Selected File Content Preview, Selected Path Review Guidance, Child Breakdown, and Open in Explorer for manual inspection.
 10. Add interesting rows to Review Shortlist; use `Shortlist shown` and `Remove shown` only for the currently displayed review window.
 11. Check or browse the Quarantine root and generate Quarantine Preview for read-only readiness review.
-12. Optionally type `QUARANTINE` into the Quarantine Execution Gate and confirm it still says execution is not implemented.
+12. Optionally type `QUARANTINE` into the Quarantine Execution Gate and confirm it still says execution is not implemented in WPF.
 13. Stop before cleanup execution.
 
 ## Not Implemented Yet
 
-- Actual Quarantine execution.
+- WPF Quarantine execution.
 - Undo Quarantine.
 - Permanent deletion.
 - Persisted cleanup history.

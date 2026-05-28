@@ -3705,3 +3705,58 @@ Rejected ideas buffer:
 - Do not write manifests directly to the final path.
 - Do not loosen the filesystem-call guard globally.
 - Do not wire WPF execution in the same packet as the first manifest writer.
+
+### 2026-05-29: Add Fixture-First Quarantine Executor
+
+Status: completed
+
+Evidence:
+
+- Restore Manifest File Store is fixture-tested and can write action-scoped manifests.
+- Sidecar safety review recommended a separate executor component, a narrow allowlist, and keeping WPF execution closed.
+- MVP needs actual Quarantine movement eventually, but synthetic fixture execution should prove move semantics first.
+
+Implementation:
+
+- Added ADR 0007 for the fixture-first Quarantine Executor boundary.
+- Added `QuarantineExecutor`, `QuarantineExecutionResult`, and `QuarantineExecutionEntryResult`.
+- The executor writes the planned Restore Manifest before any move, writes Moving before each move attempt, revalidates source/destination/reparse status, moves the file or folder, then writes Moved or Failed.
+- The executor continues after per-entry move failures so partial-failure manifests can be produced.
+- The executor stops before later moves when a manifest write fails.
+- Extended the source-level filesystem-call regression to allow `Directory.CreateDirectory`, `Directory.Move`, and `File.Move` only in `QuarantineExecutor`.
+- Kept WPF execution unavailable; `Execute quarantine` remains disabled/status-only.
+
+Verification:
+
+- `dotnet build WindowsFileCleaner.sln --no-restore` passed with 0 warnings and 0 errors.
+- `dotnet run --project tests\WindowsFileCleaner.Tests\WindowsFileCleaner.Tests.csproj --no-build` passed.
+- `dotnet run --project tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj --no-build` passed.
+- `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\Invoke-MvpPreflight.ps1` passed.
+
+Docs updated:
+
+- `README.md`
+- `docs/domain/context.md`
+- `docs/domain/glossary.md`
+- `docs/decisions/0005-use-write-ahead-restore-manifest.md`
+- `docs/decisions/0006-use-temp-replace-restore-manifest-writes.md`
+- `docs/decisions/0007-use-fixture-first-quarantine-executor.md`
+- `docs/features/2026-05-29-quarantine-executor-fixture-first.md`
+- `docs/features/2026-05-29-restore-manifest-file-store.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- Added `docs/decisions/0007-use-fixture-first-quarantine-executor.md`.
+
+Open questions:
+
+- What exact WPF stale-state checks are required before calling the executor?
+- What recovery UI should handle Moving entries after interruption?
+- How should the app surface leftover temp manifest files after a hard crash?
+
+Rejected ideas buffer:
+
+- Do not wire WPF execution in the same packet as the first executor.
+- Do not implement rollback inside Quarantine Executor; Undo Quarantine needs a separate design.
+- Do not overwrite existing quarantine destinations.

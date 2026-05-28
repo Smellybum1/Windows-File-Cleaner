@@ -103,7 +103,7 @@ Low before actual Quarantine execution is wired. Moderate after executed manifes
 ## Follow-up work
 
 - Add fixture-backed tests for manifest write failure and temp-file cleanup.
-- Add actual file/folder moving only after the manifest writer is proven and the execution allowlist remains narrow.
+- Core fixture-first file/folder moving is covered by ADR 0007.
 - Add Undo Quarantine after moved-entry manifests are produced by execution.
 
 ## Supersedes

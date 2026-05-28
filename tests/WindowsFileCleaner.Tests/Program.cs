@@ -31,6 +31,11 @@ tests.RestoreManifestBuildsWriteAheadActionRecordFromActionDraft();
 tests.RestoreManifestTracksPartialFailureStatusForFutureExecution();
 tests.RestoreManifestFileStoreWritesAndReplacesManifestWithoutMovingSources();
 tests.RestoreManifestFileStoreRejectsPathsOutsideActionRoot();
+tests.QuarantineExecutorMovesFixtureFilesWithWriteAheadManifest();
+tests.QuarantineExecutorRecordsPartialFailureWithoutOverwritingDestination();
+tests.QuarantineExecutorFailsMissingSourceWithoutCreatingDestination();
+tests.QuarantineExecutorStopsBeforeMovesWhenInitialManifestWriteFails();
+tests.QuarantineExecutorStopsAfterPostMoveManifestWriteFails();
 tests.ChildSummaryShowsLargestImmediateChildren();
 tests.SelectedPathReviewGuidanceExplainsReviewNextSteps();
 tests.PathInspectionPlanBuildsExplorerArguments();
@@ -1505,6 +1510,159 @@ internal sealed class StorageScanTests
         Assert(File.Exists(installer.Entry.FullPath), "Rejected manifest writes should not move or delete source files.");
     }
 
+    public void QuarantineExecutorMovesFixtureFilesWithWriteAheadManifest()
+    {
+        using var fixture = TestFixture.Create();
+
+        fixture.WriteFile(@"Downloads\old-one.msi", 1024 * 1024, DateTimeOffset.UtcNow.AddDays(-120));
+        fixture.WriteFile(@"Downloads\old-two.msi", 1024 * 1024 * 2, DateTimeOffset.UtcNow.AddDays(-130));
+        var plan = BuildPlannedRestoreManifest(
+            fixture,
+            [@"Downloads\old-one.msi", @"Downloads\old-two.msi"],
+            "executor-success");
+        var writes = new List<RestoreManifest>();
+
+        var result = QuarantineExecutor.Execute(plan.Manifest, manifest =>
+        {
+            writes.Add(manifest);
+            return RestoreManifestFileStore.Write(manifest);
+        });
+
+        var firstEntry = plan.Manifest.Entries.Single(entry => entry.RelativePath == @"Downloads\old-one.msi");
+        var secondEntry = plan.Manifest.Entries.Single(entry => entry.RelativePath == @"Downloads\old-two.msi");
+        var manifestJson = File.ReadAllText(plan.Manifest.ManifestPath);
+
+        Assert(result.Succeeded, "Quarantine Executor should complete when all fixture moves succeed.");
+        Assert(result.RestoreManifest.ActionStatus == RestoreManifestActionStatus.Completed, "Successful execution should complete the Restore Manifest action.");
+        Assert(result.MovedCount == 2, "Successful execution should report moved entries.");
+        Assert(result.FailedCount == 0, "Successful execution should have no failed entries.");
+        Assert(writes.First().ActionStatus == RestoreManifestActionStatus.Planned, "First manifest write should be planned before any move.");
+        Assert(
+            writes.Any(write => write.Entries.Any(entry => entry.Status == RestoreManifestEntryStatus.Moving)),
+            "Executor should write Moving status before move attempts.");
+        Assert(writes.Last().ActionStatus == RestoreManifestActionStatus.Completed, "Final manifest write should be completed.");
+        Assert(!File.Exists(firstEntry.OriginalPath), "Moved source file should leave its original path.");
+        Assert(!File.Exists(secondEntry.OriginalPath), "Moved source file should leave its original path.");
+        Assert(File.Exists(firstEntry.QuarantinePath), "Moved file should exist at its action-scoped quarantine path.");
+        Assert(File.Exists(secondEntry.QuarantinePath), "Moved file should exist at its action-scoped quarantine path.");
+        Assert(manifestJson.Contains("\"actionStatus\": \"Completed\"", StringComparison.Ordinal), "Persisted manifest should record completed action status.");
+        Assert(manifestJson.Contains("\"status\": \"Moved\"", StringComparison.Ordinal), "Persisted manifest should record moved entry status.");
+    }
+
+    public void QuarantineExecutorRecordsPartialFailureWithoutOverwritingDestination()
+    {
+        using var fixture = TestFixture.Create();
+
+        fixture.WriteFile(@"Downloads\old-one.msi", 1024 * 1024, DateTimeOffset.UtcNow.AddDays(-120));
+        fixture.WriteFile(@"Downloads\old-two.msi", 1024 * 1024 * 2, DateTimeOffset.UtcNow.AddDays(-130));
+        var plan = BuildPlannedRestoreManifest(
+            fixture,
+            [@"Downloads\old-one.msi", @"Downloads\old-two.msi"],
+            "executor-partial");
+        var firstEntry = plan.Manifest.Entries.Single(entry => entry.RelativePath == @"Downloads\old-one.msi");
+        var secondEntry = plan.Manifest.Entries.Single(entry => entry.RelativePath == @"Downloads\old-two.msi");
+        var existingDestinationParent = Path.GetDirectoryName(secondEntry.QuarantinePath)!;
+        Directory.CreateDirectory(existingDestinationParent);
+        File.WriteAllText(secondEntry.QuarantinePath, "existing destination");
+
+        var result = QuarantineExecutor.Execute(plan.Manifest);
+        var manifestJson = File.ReadAllText(plan.Manifest.ManifestPath);
+
+        Assert(!result.Succeeded, "Destination collision should prevent full success.");
+        Assert(result.RestoreManifest.ActionStatus == RestoreManifestActionStatus.PartialFailure, "One moved and one failed entry should be partial failure.");
+        Assert(result.MovedCount == 1, "Partial failure should report moved entries.");
+        Assert(result.FailedCount == 1, "Partial failure should report failed entries.");
+        Assert(result.RequiresRecoveryReview, "Partial failure should require recovery review.");
+        Assert(!File.Exists(firstEntry.OriginalPath), "Successful entry should move away from source.");
+        Assert(File.Exists(firstEntry.QuarantinePath), "Successful entry should move to quarantine.");
+        Assert(File.Exists(secondEntry.OriginalPath), "Failed destination-collision source should remain in place.");
+        Assert(File.ReadAllText(secondEntry.QuarantinePath) == "existing destination", "Executor must not overwrite existing destination files.");
+        Assert(
+            result.Entries.Single(entry => entry.OriginalPath == secondEntry.OriginalPath).ErrorMessage?.Contains("Destination already exists", StringComparison.OrdinalIgnoreCase) == true,
+            "Destination collision should be recorded as entry error evidence.");
+        Assert(manifestJson.Contains("\"actionStatus\": \"PartialFailure\"", StringComparison.Ordinal), "Persisted manifest should record partial failure status.");
+        Assert(manifestJson.Contains("Destination already exists", StringComparison.Ordinal), "Persisted manifest should record destination collision evidence.");
+    }
+
+    public void QuarantineExecutorFailsMissingSourceWithoutCreatingDestination()
+    {
+        using var fixture = TestFixture.Create();
+
+        fixture.WriteFile(@"Downloads\old-installer.msi", 1024 * 1024, DateTimeOffset.UtcNow.AddDays(-120));
+        var plan = BuildPlannedRestoreManifest(fixture, [@"Downloads\old-installer.msi"], "executor-missing-source");
+        var entry = plan.Manifest.Entries.Single();
+        File.Delete(entry.OriginalPath);
+
+        var result = QuarantineExecutor.Execute(plan.Manifest);
+        var manifestJson = File.ReadAllText(plan.Manifest.ManifestPath);
+
+        Assert(!result.Succeeded, "Missing source should prevent execution success.");
+        Assert(result.RestoreManifest.ActionStatus == RestoreManifestActionStatus.Failed, "Missing source before any move should fail the action.");
+        Assert(result.FailedCount == 1, "Missing source should produce a failed entry.");
+        Assert(!File.Exists(entry.QuarantinePath), "Missing source should not create a destination file.");
+        Assert(!Directory.Exists(plan.ActionDraft.ItemsRootPath), "Missing source should not create the action items folder.");
+        Assert(
+            result.Entries.Single().ErrorMessage?.Contains("Source no longer exists", StringComparison.OrdinalIgnoreCase) == true,
+            "Missing source should be recorded as entry error evidence.");
+        Assert(manifestJson.Contains("\"actionStatus\": \"Failed\"", StringComparison.Ordinal), "Persisted manifest should record failed action status.");
+        Assert(manifestJson.Contains("Source no longer exists", StringComparison.Ordinal), "Persisted manifest should record missing source evidence.");
+    }
+
+    public void QuarantineExecutorStopsBeforeMovesWhenInitialManifestWriteFails()
+    {
+        using var fixture = TestFixture.Create();
+
+        fixture.WriteFile(@"Downloads\old-installer.msi", 1024 * 1024, DateTimeOffset.UtcNow.AddDays(-120));
+        var plan = BuildPlannedRestoreManifest(fixture, [@"Downloads\old-installer.msi"], "executor-initial-write-failure");
+        var entry = plan.Manifest.Entries.Single();
+
+        var result = QuarantineExecutor.Execute(
+            plan.Manifest,
+            _ => throw new IOException("simulated manifest write failure"));
+
+        Assert(!result.Succeeded, "Initial manifest write failure should prevent execution success.");
+        Assert(result.RestoreManifest.ActionStatus == RestoreManifestActionStatus.Failed, "Initial manifest write failure should fail the action before moving.");
+        Assert(result.HasBlockers, "Initial manifest write failure should be returned as a blocker.");
+        Assert(result.MovedCount == 0, "Initial manifest write failure must not move entries.");
+        Assert(File.Exists(entry.OriginalPath), "Source should remain when planned manifest cannot be written.");
+        Assert(!File.Exists(entry.QuarantinePath), "Destination should not be created when planned manifest cannot be written.");
+        Assert(!Directory.Exists(plan.ActionDraft.ActionRootPath), "Initial manifest write failure should not create action folders.");
+    }
+
+    public void QuarantineExecutorStopsAfterPostMoveManifestWriteFails()
+    {
+        using var fixture = TestFixture.Create();
+
+        fixture.WriteFile(@"Downloads\old-installer.msi", 1024 * 1024, DateTimeOffset.UtcNow.AddDays(-120));
+        var plan = BuildPlannedRestoreManifest(fixture, [@"Downloads\old-installer.msi"], "executor-post-move-write-failure");
+        var entry = plan.Manifest.Entries.Single();
+        var writeCount = 0;
+
+        var result = QuarantineExecutor.Execute(
+            plan.Manifest,
+            manifest =>
+            {
+                writeCount++;
+                if (writeCount == 3)
+                {
+                    throw new IOException("simulated post-move manifest write failure");
+                }
+
+                return RestoreManifestFileStore.Write(manifest);
+            });
+        var persistedManifestJson = File.ReadAllText(plan.Manifest.ManifestPath);
+
+        Assert(!result.Succeeded, "Post-move manifest write failure should prevent clean success.");
+        Assert(result.HasBlockers, "Post-move manifest write failure should be returned as a blocker.");
+        Assert(result.MovedCount == 1, "The source can be moved before the post-move write failure is observed.");
+        Assert(File.Exists(entry.QuarantinePath), "Moved file should remain in quarantine after post-move manifest write failure.");
+        Assert(!File.Exists(entry.OriginalPath), "Moved file should no longer be at the source path.");
+        Assert(
+            persistedManifestJson.Contains("\"status\": \"Moving\"", StringComparison.Ordinal),
+            "Persisted manifest should retain the last durable recovery evidence when post-move update fails.");
+        Assert(result.RequiresRecoveryReview, "Post-move manifest write failure should require recovery review.");
+    }
+
     public void ChildSummaryShowsLargestImmediateChildren()
     {
         using var fixture = TestFixture.Create();
@@ -1853,19 +2011,28 @@ internal sealed class StorageScanTests
             .ToArray();
         var reportWriteMatches = writeTextMatches.Where(match => IsAllowedReportExportWrite(match, "File.WriteAllText(")).ToArray();
         var manifestWriteMatches = writeTextMatches.Where(match => IsAllowedRestoreManifestFileStoreWrite(match, "File.WriteAllText(")).ToArray();
+        var executorWriteMatches = sourceFiles
+            .SelectMany(file => File.ReadLines(file)
+                .Select((line, index) => new SourceLine(file, index + 1, line))
+                .Where(sourceLine => new[] { "Directory.CreateDirectory(", "Directory.Move(", "File.Move(" }
+                    .Any(token => sourceLine.Text.Contains(token, StringComparison.Ordinal)
+                        && IsAllowedQuarantineExecutorWrite(sourceLine, token))))
+            .ToArray();
 
         Assert(reportWriteMatches.Length == 3, "Only the three user-selected CSV report writes should use File.WriteAllText.");
         Assert(
             reportWriteMatches.All(match => match.Text.Contains("dialog.FileName", StringComparison.Ordinal)),
             "File.WriteAllText should only write user-selected report exports.");
         Assert(manifestWriteMatches.Length == 1, "Only RestoreManifestFileStore should write Restore Manifest JSON.");
+        Assert(executorWriteMatches.Length == 3, "Only QuarantineExecutor should create destination parents and move files or folders.");
         Assert(writeTextMatches.Length == reportWriteMatches.Length + manifestWriteMatches.Length, "Every File.WriteAllText production use should be explicitly allowlisted.");
     }
 
     private static bool IsAllowedProductionFilesystemWrite(SourceLine sourceLine, string token)
     {
         return IsAllowedReportExportWrite(sourceLine, token)
-            || IsAllowedRestoreManifestFileStoreWrite(sourceLine, token);
+            || IsAllowedRestoreManifestFileStoreWrite(sourceLine, token)
+            || IsAllowedQuarantineExecutorWrite(sourceLine, token);
     }
 
     private static bool IsAllowedReportExportWrite(SourceLine sourceLine, string token)
@@ -1888,6 +2055,56 @@ internal sealed class StorageScanTests
 
         return sourceLine.FilePath.EndsWith(@"src\WindowsFileCleaner.Core\RestoreManifestFileStore.cs", StringComparison.OrdinalIgnoreCase)
             && allowedTokens.Contains(token);
+    }
+
+    private static bool IsAllowedQuarantineExecutorWrite(SourceLine sourceLine, string token)
+    {
+        var allowedTokens = new[]
+        {
+            "Directory.CreateDirectory(",
+            "Directory.Move(",
+            "File.Move("
+        };
+
+        return sourceLine.FilePath.EndsWith(@"src\WindowsFileCleaner.Core\QuarantineExecutor.cs", StringComparison.OrdinalIgnoreCase)
+            && allowedTokens.Contains(token);
+    }
+
+    private static PlannedQuarantineExecution BuildPlannedRestoreManifest(
+        TestFixture fixture,
+        IReadOnlyList<string> relativePaths,
+        string idSuffix)
+    {
+        var scanner = new StorageScanner();
+        var result = scanner.Scan(new StorageScanOptions(fixture.RootPath));
+        var review = StorageScanReviewBuilder.Build(result);
+        var selectedRows = relativePaths
+            .Select(relativePath => SingleReviewEntry(review.Entries, relativePath))
+            .ToArray();
+        var quarantineRoot = Path.Combine(fixture.RootPath, "quarantine-root");
+        var preview = QuarantinePreviewBuilder.Build(selectedRows, fixture.RootPath, quarantineRoot);
+        var manifestDraft = RestoreManifestDraftBuilder.Build(
+            preview,
+            new DateTimeOffset(2026, 5, 29, 1, 2, 3, TimeSpan.Zero),
+            $"manifest-draft-{idSuffix}");
+        var confirmation = QuarantineConfirmationDraftBuilder.Build(
+            preview,
+            manifestDraft,
+            new DateTimeOffset(2026, 5, 29, 2, 3, 4, TimeSpan.Zero),
+            $"confirmation-draft-{idSuffix}");
+        var actionDraft = QuarantineActionDraftBuilder.Build(
+            preview,
+            manifestDraft,
+            confirmation,
+            new DateTimeOffset(2026, 5, 29, 3, 4, 5, TimeSpan.Zero),
+            $"quarantine-action-{idSuffix}");
+        var manifest = RestoreManifestBuilder.BuildPlanned(
+            actionDraft,
+            manifestDraft,
+            new DateTimeOffset(2026, 5, 29, 4, 5, 6, TimeSpan.Zero),
+            $"restore-manifest-{idSuffix}");
+
+        return new PlannedQuarantineExecution(actionDraft, manifest);
     }
 
     private static StorageEntry Single(IEnumerable<StorageEntry> entries, string name)
@@ -1954,6 +2171,10 @@ internal sealed class StorageScanTests
     }
 
     private sealed record SourceLine(string FilePath, int LineNumber, string Text);
+
+    private sealed record PlannedQuarantineExecution(
+        QuarantineActionDraft ActionDraft,
+        RestoreManifest Manifest);
 }
 
 internal sealed class TestFixture : IDisposable

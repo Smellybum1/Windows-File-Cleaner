@@ -196,7 +196,7 @@ ADRs added or skipped:
 
 Follow-up work:
 
-- Add actual file/folder moving only after the manifest writer remains green under fixture tests.
+- Core fixture-first file/folder moving is covered by `docs/features/2026-05-29-quarantine-executor-fixture-first.md` and ADR 0007.
 - Add failure-injection coverage for manifest write failures.
 - Add Undo Quarantine after moved-entry manifests are produced by execution.
 

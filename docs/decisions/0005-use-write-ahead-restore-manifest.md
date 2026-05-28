@@ -131,9 +131,9 @@ Moderate after the first executed manifest is written. Reversing later would req
 
 ## Follow-up work
 
-- Implement manifest file writing in a narrow execution component with fixture-backed tests.
-- Update the source-level filesystem-call regression test to allow file/folder writes only in that execution component.
-- Implement file-moving only after manifest writes are proven against fixtures.
+- Manifest file writing is covered by ADR 0006.
+- Core fixture-first file-moving is covered by ADR 0007.
+- Wire WPF execution only after stale-state and confirmation checks are explicit.
 - Implement Undo Quarantine for Moved entries, with recovery review for Moving and Failed entries.
 
 ## Supersedes
