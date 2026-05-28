@@ -166,6 +166,16 @@ internal sealed class MainWindowSmokeTests
                 rows.Any(row => row.Categories.Contains("Python package cache", StringComparison.OrdinalIgnoreCase)),
                 "Fixture scan should surface Python package cache category evidence.");
 
+            Assert(window.SelectDisplayedPath(fixture.MarkerPath), "Fixture note file should be selectable for preview.");
+            Assert(window.CanPreviewSelectedFile, "Selected file preview should be enabled for a selected file.");
+            window.PreviewSelectedFileContent();
+            Assert(
+                window.FilePreviewTextValue.Contains("Synthetic uncategorized note.", StringComparison.OrdinalIgnoreCase),
+                "Selected file preview should show bounded text content for a fixture text file.");
+            Assert(
+                window.CurrentStatusText.Contains("No files were modified", StringComparison.OrdinalIgnoreCase),
+                "Selected file preview status should preserve the read-only boundary.");
+
             window.ApplyStorageReviewSearch("pip");
             Assert(window.CanResetReviewView, "Reset view should be enabled after search narrows review rows.");
             Assert(window.CurrentSearchText == "pip", "Applying Storage Review Search should update WPF search text.");

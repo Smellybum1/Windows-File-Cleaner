@@ -368,7 +368,7 @@ Recognized field prefixes restrict search to one field:
 
 - Uses Storage Scan results.
 - Combines with Storage Review Filters and Bloat Category Filters.
-- Supports Selected Path Hierarchy Context, Selected Path Review Guidance, Child Breakdown, Selected Path Inspection, and Review Shortlist.
+- Supports Selected Path Hierarchy Context, Selected File Content Preview, Selected Path Review Guidance, Child Breakdown, Selected Path Inspection, and Review Shortlist.
 
 #### Code implications
 
@@ -853,6 +853,50 @@ It helps explain short or hashed names in deep cache folders without changing th
 - Use `StorageEntryRow.ParentLocation` for the WPF review grid.
 - Keep parent/depth display derived from scan results.
 - Do not use parent/depth context as cleanup approval.
+
+### Selected File Content Preview
+
+Status: draft
+Last reviewed: 2026-05-28
+
+#### Definition
+
+Selected File Content Preview is an explicit read-only action that shows a bounded text sample from the currently selected file.
+
+It exists to help the user understand unfamiliar file rows before deciding whether to inspect, ignore, or shortlist them.
+
+#### Examples
+
+- Preview a small `.txt`, `.json`, `.log`, `.csv`, or config-like file.
+- Show that a selected file is binary or unsupported instead of rendering unreadable bytes.
+- Explain that folders use Child Breakdown rather than file content preview.
+
+#### Non-examples
+
+- A Cleanup Action.
+- Cleanup approval.
+- A full file viewer or editor.
+- A binary, archive, database, browser profile, credential, or installer extractor.
+
+#### Lifecycle
+
+- Available after a Storage Scan row for a file is selected.
+- Runs only when the user invokes `Preview file`.
+- Reads a bounded sample and stores no preview history.
+- Does not modify files.
+
+#### Relationships
+
+- Supports manual inspection of Storage Scan rows.
+- Complements Selected Path Hierarchy Context, Selected Path Review Guidance, Child Breakdown, and Selected Path Inspection.
+- Does not affect Bloat Categories, Importance Ratings, Deletion Recommendations, Review Shortlist, or Quarantine Preview.
+
+#### Code implications
+
+- Use `SelectedFileContentPreview` and `SelectedFileContentPreviewBuilder`.
+- Keep default reads bounded to a small text sample.
+- Do not render binary-looking content as text.
+- Keep status wording explicit that no files were modified.
 
 ### Selected Path Review Guidance
 
@@ -1442,6 +1486,7 @@ Implementation implications:
 
 - The scan should show folder contents, size contributors, modified dates, and category evidence where feasible.
 - Deep rows should show parent/depth hierarchy context so short cache names are not reviewed in isolation.
+- File content preview should be bounded, text-only, and explicit rather than automatic.
 - The selected row should explain the safest next review step through Selected Path Review Guidance.
 - The review should support Storage Review Search so large scans can find specific apps, caches, tools, and categories without scrolling.
 - The review should distinguish displayed rows from matched rows when the Storage Review Display Limit is reached.

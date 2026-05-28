@@ -377,6 +377,11 @@
                                 Content="Copy path"
                                 IsEnabled="False"
                                 Click="CopyPathButton_Click" />
+                        <Button x:Name="PreviewFileButton"
+                                Content="Preview file"
+                                MinWidth="110"
+                                IsEnabled="False"
+                                Click="PreviewFileButton_Click" />
                         <Button x:Name="OpenInExplorerButton"
                                 Content="Open in Explorer"
                                 MinWidth="130"
@@ -402,6 +407,14 @@
                                        Margin="0,18,0,4" />
                             <TextBlock x:Name="DetailChildrenText"
                                        Text=""
+                                       FontFamily="Consolas"
+                                       FontSize="12"
+                                       TextWrapping="Wrap" />
+                            <TextBlock Text="File preview"
+                                       FontWeight="SemiBold"
+                                       Margin="0,18,0,4" />
+                            <TextBlock x:Name="FilePreviewText"
+                                       Text="Preview appears after selecting a file and using Preview file."
                                        FontFamily="Consolas"
                                        FontSize="12"
                                        TextWrapping="Wrap" />

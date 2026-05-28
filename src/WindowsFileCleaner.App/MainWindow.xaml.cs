@@ -100,6 +100,8 @@ public partial class MainWindow : Window
 
     public string DetailPathContextTextValue => DetailPathContextText.Text;
 
+    public string FilePreviewTextValue => FilePreviewText.Text;
+
     public string QuarantinePreviewTextValue => QuarantinePreviewText.Text;
 
     public string? SelectedRowFullPath => _selectedRow?.FullPath;
@@ -109,6 +111,8 @@ public partial class MainWindow : Window
     public bool CanAddSelectedRowToReviewShortlist => AddToShortlistButton.IsEnabled;
 
     public bool CanRemoveSelectedRowFromReviewShortlist => RemoveFromShortlistButton.IsEnabled;
+
+    public bool CanPreviewSelectedFile => PreviewFileButton.IsEnabled;
 
     public bool CanAddShownRowsToReviewShortlist => AddShownToShortlistButton.IsEnabled;
 
@@ -619,7 +623,9 @@ public partial class MainWindow : Window
             DetailEvidenceText.Text = "";
             DetailGuidanceText.Text = "";
             DetailChildrenText.Text = "";
+            FilePreviewText.Text = "Preview appears after selecting a file and using Preview file.";
             CopyPathButton.IsEnabled = false;
+            PreviewFileButton.IsEnabled = false;
             OpenInExplorerButton.IsEnabled = false;
             UpdateShortlistControls();
             return;
@@ -635,8 +641,9 @@ public partial class MainWindow : Window
             : $"{row.Evidence}\n\nAccess issue: {row.Error}";
         DetailGuidanceText.Text = FormatSelectedPathReviewGuidance(row.Entry);
         DetailChildrenText.Text = FormatChildSummary(row.Entry);
-        CopyPathButton.IsEnabled = true;
-        OpenInExplorerButton.IsEnabled = true;
+        FilePreviewText.Text = row.Entry.IsDirectory
+            ? "Folders do not have file content previews. Review Largest immediate children instead."
+            : "Preview is loaded only when you use Preview file. No files were modified.";
         UpdateShortlistControls();
     }
 
@@ -650,6 +657,25 @@ public partial class MainWindow : Window
         var plan = PathInspectionPlanBuilder.Build(_selectedRow.Entry);
         Clipboard.SetText(plan.PathToCopy);
         StatusText.Text = "Selected path copied. No files were modified.";
+    }
+
+    private void PreviewFileButton_Click(object sender, RoutedEventArgs e)
+    {
+        PreviewSelectedFileContent();
+    }
+
+    public void PreviewSelectedFileContent()
+    {
+        if (_selectedRow is null || _selectedRow.Entry.IsDirectory)
+        {
+            return;
+        }
+
+        var preview = SelectedFileContentPreviewBuilder.Build(_selectedRow.Entry);
+        FilePreviewText.Text = FormatSelectedFileContentPreview(preview);
+        StatusText.Text = preview.IsContentShown
+            ? "Selected file preview loaded. No files were modified."
+            : "Selected file preview unavailable. No files were modified.";
     }
 
     private void OpenInExplorerButton_Click(object sender, RoutedEventArgs e)
@@ -1014,6 +1040,9 @@ public partial class MainWindow : Window
         var isShortlisted = hasSelectedRow && _shortlist.Contains(_selectedRow!.Entry);
         AddToShortlistButton.IsEnabled = hasSelectedRow && !isShortlisted && ScanButton.IsEnabled;
         RemoveFromShortlistButton.IsEnabled = hasSelectedRow && isShortlisted && ScanButton.IsEnabled;
+        CopyPathButton.IsEnabled = hasSelectedRow && ScanButton.IsEnabled;
+        OpenInExplorerButton.IsEnabled = hasSelectedRow && ScanButton.IsEnabled;
+        PreviewFileButton.IsEnabled = hasSelectedRow && !_selectedRow!.Entry.IsDirectory && ScanButton.IsEnabled;
 
         var hasShortlist = _shortlist.Count > 0;
         var hasUnshortlistedDisplayedRows = DisplayedRows.Any(row => !_shortlist.Contains(row.Entry));
@@ -1338,6 +1367,14 @@ public partial class MainWindow : Window
     {
         var guidance = SelectedPathReviewGuidanceBuilder.Build(entry);
         return $"{guidance.ActionLabel}: {string.Join(" ", guidance.Notes)}";
+    }
+
+    private static string FormatSelectedFileContentPreview(SelectedFileContentPreview preview)
+    {
+        var content = string.IsNullOrWhiteSpace(preview.Content)
+            ? ""
+            : $"{Environment.NewLine}{Environment.NewLine}{preview.Content}";
+        return $"{preview.Label}: {preview.Message}{content}";
     }
 
     private static string FormatImportance(ImportanceRating rating)

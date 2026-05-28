@@ -22,6 +22,7 @@ tests.QuarantineConfirmationDraftReportsPreviewAndManifestBlockers();
 tests.ChildSummaryShowsLargestImmediateChildren();
 tests.SelectedPathReviewGuidanceExplainsReviewNextSteps();
 tests.PathInspectionPlanBuildsExplorerArguments();
+tests.SelectedFileContentPreviewReadsBoundedTextOnly();
 tests.CsvExporterWritesEscapedReviewRows();
 tests.ByteSizeFormatterUsesReadableUnits();
 tests.ProductionCodeDoesNotContainCleanupExecutionCalls();
@@ -936,6 +937,37 @@ internal sealed class StorageScanTests
         Assert(filePlan.ExplorerArguments == $"/select,\"{installer.FullPath}\"", "File plan should ask Explorer to select the file.");
     }
 
+    public void SelectedFileContentPreviewReadsBoundedTextOnly()
+    {
+        using var fixture = TestFixture.Create();
+        var now = DateTimeOffset.UtcNow;
+
+        fixture.WriteText(@"Unknown\notes.txt", "first line\nsecond line\nthird line", now);
+        fixture.WriteBytes(@"Unknown\binary.bin", [0, 1, 2, 3, 4, 5], now);
+
+        var scanner = new StorageScanner();
+        var result = scanner.Scan(new StorageScanOptions(fixture.RootPath));
+        var rows = Flatten(result.Root).ToArray();
+
+        var notes = Single(rows, "notes.txt");
+        var textPreview = SelectedFileContentPreviewBuilder.Build(notes, maxBytes: 128, maxLines: 2);
+        Assert(textPreview.IsContentShown, "Text file preview should show bounded text content.");
+        Assert(textPreview.Content.Contains("first line", StringComparison.Ordinal), "Text preview should include the selected file content.");
+        Assert(!textPreview.Content.Contains("third line", StringComparison.Ordinal), "Text preview should respect the line limit.");
+        Assert(textPreview.IsTruncated, "Text preview should report truncation when byte or line limits are reached.");
+        Assert(textPreview.Message.Contains("No files were modified", StringComparison.OrdinalIgnoreCase), "Text preview should preserve read-only wording.");
+
+        var binary = Single(rows, "binary.bin");
+        var binaryPreview = SelectedFileContentPreviewBuilder.Build(binary);
+        Assert(!binaryPreview.IsContentShown, "Binary content should not be rendered as text.");
+        Assert(binaryPreview.Label.Contains("Binary", StringComparison.OrdinalIgnoreCase), "Binary preview should explain why content is hidden.");
+        Assert(binaryPreview.Message.Contains("No files were modified", StringComparison.OrdinalIgnoreCase), "Binary preview should preserve read-only wording.");
+
+        var rootPreview = SelectedFileContentPreviewBuilder.Build(result.Root);
+        Assert(!rootPreview.IsContentShown, "Folder preview should not try to read folder content as a file.");
+        Assert(rootPreview.Label.Contains("Folder", StringComparison.OrdinalIgnoreCase), "Folder preview should explain that only files can be previewed.");
+    }
+
     public void CsvExporterWritesEscapedReviewRows()
     {
         var entry = new StorageEntry(
@@ -1107,6 +1139,32 @@ internal sealed class TestFixture : IDisposable
         }
 
         File.WriteAllBytes(fullPath, Enumerable.Repeat((byte)'x', byteCount).ToArray());
+        File.SetLastWriteTimeUtc(fullPath, lastModifiedUtc.UtcDateTime);
+    }
+
+    public void WriteText(string relativePath, string content, DateTimeOffset lastModifiedUtc)
+    {
+        var fullPath = Path.Combine(RootPath, relativePath);
+        var directory = Path.GetDirectoryName(fullPath);
+        if (!string.IsNullOrWhiteSpace(directory))
+        {
+            Directory.CreateDirectory(directory);
+        }
+
+        File.WriteAllText(fullPath, content);
+        File.SetLastWriteTimeUtc(fullPath, lastModifiedUtc.UtcDateTime);
+    }
+
+    public void WriteBytes(string relativePath, byte[] content, DateTimeOffset lastModifiedUtc)
+    {
+        var fullPath = Path.Combine(RootPath, relativePath);
+        var directory = Path.GetDirectoryName(fullPath);
+        if (!string.IsNullOrWhiteSpace(directory))
+        {
+            Directory.CreateDirectory(directory);
+        }
+
+        File.WriteAllBytes(fullPath, content);
         File.SetLastWriteTimeUtc(fullPath, lastModifiedUtc.UtcDateTime);
     }
 
