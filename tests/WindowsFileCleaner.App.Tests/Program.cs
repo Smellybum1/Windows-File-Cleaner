@@ -161,6 +161,9 @@ internal sealed class MainWindowSmokeTests
             Assert(window.FilterSummaryTextValue.Contains("All:", StringComparison.OrdinalIgnoreCase), "Filter summary should start on the All filter.");
             Assert(window.ReviewSizeNoteTextValue.Contains("parent and child rows can overlap", StringComparison.OrdinalIgnoreCase), "Review size note should explain recursive row overlap.");
             Assert(window.ReviewSizeNoteTextValue.Contains("not storage savings", StringComparison.OrdinalIgnoreCase), "Review size note should avoid treating row sizes as savings.");
+            Assert(
+                window.ContentsColumnSortMemberPath == "ContainedTotalCount",
+                "Contents column should sort by numeric contained item count rather than formatted display text.");
 
             var rows = window.DisplayedRows;
             var rootRow = rows.Single(row =>
@@ -196,6 +199,7 @@ internal sealed class MainWindowSmokeTests
                 downloads.Contents.Contains("1 file", StringComparison.OrdinalIgnoreCase)
                 && downloads.Contents.Contains("0 folders", StringComparison.OrdinalIgnoreCase),
                 "Fixture Downloads folder should expose contents counts in the grid row.");
+            Assert(downloads.ContainedTotalCount == 1, "Fixture Downloads contents sort value should total contained files and folders.");
             Assert(window.SelectDisplayedPath(downloads.FullPath), "Fixture Downloads folder should be selectable for contents context.");
             Assert(downloads.Contents.Contains("1 file", StringComparison.OrdinalIgnoreCase), "Folder row should expose contained file count.");
             Assert(

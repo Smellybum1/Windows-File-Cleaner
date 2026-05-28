@@ -2760,3 +2760,45 @@ Open questions:
 Rejected ideas buffer:
 
 - Do not treat contents counts as storage savings or cleanup approval.
+
+### 2026-05-28: Sort Contents Column by Contained Count
+
+Status: completed
+
+Evidence:
+
+- The WPF grid `Contents` column displays formatted text, which is useful to read but weak as a sort value.
+- The user-tested real scan surfaced many large containers, so comparing rows by total contained items is useful review context before selecting a row.
+
+Implementation:
+
+- Added `StorageEntryRow.ContainedTotalCount` as the numeric sort value for contained files plus descendant folders.
+- Set the WPF grid `Contents` column `SortMemberPath` to `ContainedTotalCount`.
+- Added WPF fixture coverage for the column sort contract and a folder row's numeric contained-item total.
+- Kept the change read-only; no scanner traversal, cleanup execution, Quarantine execution, Undo Quarantine, manifest writing, real-profile automation, or real user file access was added.
+
+Verification:
+
+- `dotnet build WindowsFileCleaner.sln --no-restore` passed with 0 warnings and 0 errors.
+- `dotnet run --project tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj --no-build` passed.
+- `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\Invoke-MvpPreflight.ps1` passed.
+
+Docs updated:
+
+- `README.md`
+- `docs/domain/context.md`
+- `docs/domain/glossary.md`
+- `docs/features/2026-05-28-selected-row-contents-context.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No new ADR. This is reversible WPF review behavior for an existing read-only context signal.
+
+Open questions:
+
+- In the next real scan, does sorting by `Contents` help separate broad buckets from focused cleanup candidates?
+
+Rejected ideas buffer:
+
+- Do not rank cleanup safety by contained-item count alone.

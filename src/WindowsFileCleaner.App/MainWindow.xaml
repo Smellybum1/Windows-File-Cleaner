@@ -343,7 +343,7 @@
                     <DataGridTextColumn Header="Parent" Binding="{Binding ParentLocation}" Width="1.6*" />
                     <DataGridTextColumn Header="Type" Binding="{Binding Type}" Width="90" />
                     <DataGridTextColumn Header="Size" Binding="{Binding Size}" SortMemberPath="SizeBytes" Width="100" />
-                    <DataGridTextColumn Header="Contents" Binding="{Binding Contents}" Width="155" />
+                    <DataGridTextColumn Header="Contents" Binding="{Binding Contents}" SortMemberPath="ContainedTotalCount" Width="155" />
                     <DataGridTextColumn Header="Importance" Binding="{Binding Importance}" Width="120" />
                     <DataGridTextColumn Header="Recommendation" Binding="{Binding Recommendation}" Width="155" />
                     <DataGridTextColumn Header="Categories" Binding="{Binding Categories}" Width="220" />

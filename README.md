@@ -105,7 +105,7 @@ After the app opens:
 8. Treat row sizes as triage clues, not storage savings; folder rows include children and can overlap with child rows.
 9. Use Review Mix and Safety Summary to inspect the cleanup scope root, high-risk, protected, access issue, reparse point, quarantine candidate, and no-category rows.
 10. Use Storage Review Search for specific names such as `pip`, `NVIDIA`, `Codex`, app names, or game folders; use prefixes such as `path:pip`, `category:Python package cache`, `rating:High risk`, `recommendation:Quarantine candidate`, `access:readable`, or `access:access issue` when you want one field.
-11. Use the `Parent`, `Contents`, and `Access` columns for short, hashed, container, or unreadable row names, then select large folders and inspect parent/depth context, Evidence, cache-specific Review guidance, and Largest immediate children.
+11. Use the `Parent`, `Contents`, and `Access` columns for short, hashed, container, or unreadable row names; sort `Contents` when you want to compare rows by total contained items, then select large folders and inspect parent/depth context, Evidence, cache-specific Review guidance, and Largest immediate children.
 12. Use the Type filter to switch between all rows, files only, and folders only.
 13. Select small text files and use `Preview file` only when you intentionally want a bounded read-only text snippet; binary and unsupported files should not render as text.
 14. Try category filters such as Cleanup scope root, App cache, Python package cache, GPU shader cache, Large old file, Windows app data, Installed application, Game data, Protected location, and No category.

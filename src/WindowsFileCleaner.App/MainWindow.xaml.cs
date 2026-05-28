@@ -88,6 +88,11 @@ public partial class MainWindow : Window
         ? rows.ToArray()
         : [];
 
+    public string? ContentsColumnSortMemberPath => ResultsGrid.Columns
+        .OfType<DataGridTextColumn>()
+        .FirstOrDefault(column => string.Equals(column.Header?.ToString(), "Contents", StringComparison.OrdinalIgnoreCase))
+        ?.SortMemberPath;
+
     public string TotalSizeTextValue => TotalSizeText.Text;
 
     public string FolderCountTextValue => FolderCountText.Text;

@@ -29,6 +29,7 @@ public sealed class StorageEntryRow
     public long SizeBytes => Entry.SizeBytes;
     public int ContainedFileCount => Entry.FileCount;
     public int ContainedFolderCount => Entry.IsDirectory ? Math.Max(0, Entry.FolderCount - 1) : 0;
+    public int ContainedTotalCount => ContainedFileCount + ContainedFolderCount;
     public string Contents => Entry.IsDirectory
         ? $"{FormatCount(ContainedFileCount, "file")} | {FormatCount(ContainedFolderCount, "folder")} inside"
         : "Single file";

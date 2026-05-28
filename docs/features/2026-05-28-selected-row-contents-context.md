@@ -23,6 +23,7 @@ As the project owner, I want selected folder rows to show contained file and fol
 
 - Selected folder detail context shows contained file count and descendant folder count.
 - WPF grid rows show a compact Contents column for quick comparison before selecting a row.
+- The WPF grid Contents column sorts by total contained items instead of formatted display text.
 - Selected file detail context identifies the row as a single file.
 - Scan Report CSV includes contained file and folder counts for offline review.
 - Counts remain triage context only.
@@ -38,6 +39,7 @@ As the project owner, I want selected folder rows to show contained file and fol
 - For folder rows, folder count means descendant folders, excluding the selected folder itself.
 - For file rows, the detail pane says `Single file`.
 - CSV exports include numeric counts so filtered/offline review can compare recursive rows.
+- The WPF grid uses `ContainedTotalCount` as the sort member for the display-only `Contents` text.
 
 ## Verification
 
@@ -53,6 +55,7 @@ Completed on: 2026-05-28
 What changed:
 
 - Added contained file/folder count properties to `StorageEntryRow`.
+- Added `ContainedTotalCount` as the numeric WPF sort key for the `Contents` column.
 - Added a WPF grid `Contents` column.
 - Added contents context to the selected-row detail pane.
 - Added `Contained files` and `Contained folders` columns to Scan Report CSV export.

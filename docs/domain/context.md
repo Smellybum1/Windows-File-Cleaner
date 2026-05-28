@@ -1076,6 +1076,7 @@ For folder rows, it shows contained files and descendant folders. For file rows,
 #### Code implications
 
 - Use `StorageEntryRow.Contents`, `ContainedFileCount`, and `ContainedFolderCount` for WPF display.
+- Use `StorageEntryRow.ContainedTotalCount` as the WPF grid sort key for the `Contents` column.
 - Keep the grid Contents column compact so it helps triage without replacing selected-row detail.
 - In CSV exports, use numeric contained counts for offline comparison.
 - For folders, descendant folder count should exclude the selected folder itself.
