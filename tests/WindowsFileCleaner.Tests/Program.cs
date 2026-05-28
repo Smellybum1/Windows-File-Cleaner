@@ -69,6 +69,9 @@ internal sealed class StorageScanTests
         fixture.WriteFile(@"AppData\Local\pip\Cache\http-v2\response.body", 1024, DateTimeOffset.UtcNow.AddDays(-30));
         fixture.WriteFile(@"AppData\Local\NVIDIA\DXCache\shader.bin", 2048, DateTimeOffset.UtcNow.AddDays(-5));
         fixture.WriteFile(@"AppData\Local\Google\Chrome\User Data\Default\Preferences", 1024, DateTimeOffset.UtcNow);
+        fixture.WriteFile(@"AppData\Local\Packages\Microsoft.WindowsStore_8wekyb3d8bbwe\Settings\settings.dat", 1024, DateTimeOffset.UtcNow);
+        fixture.WriteFile(@"AppData\Local\Programs\SomeApp\app.exe", 1024, DateTimeOffset.UtcNow);
+        fixture.WriteFile(@"AppData\Local\Larian Studios\Baldur's Gate 3\PlayerProfiles\profile.dat", 1024, DateTimeOffset.UtcNow);
 
         var scanner = new StorageScanner();
         var result = scanner.Scan(new StorageScanOptions(fixture.RootPath));
@@ -87,6 +90,22 @@ internal sealed class StorageScanTests
         Assert(userData.BloatCategories.Contains(BloatCategory.BrowserData), "Browser User Data should be marked as browser data.");
         Assert(userData.ImportanceRating == ImportanceRating.HighRisk, "Browser User Data should be high risk.");
         Assert(userData.DeletionRecommendation == DeletionRecommendation.Keep, "Browser User Data should be kept.");
+
+        var packages = Single(rows, "Packages");
+        Assert(packages.BloatCategories.Contains(BloatCategory.WindowsAppData), "Packages should be marked as Windows app data.");
+        Assert(packages.BloatCategories.Contains(BloatCategory.ProtectedLocation), "Windows app package data should be protected.");
+        Assert(packages.ImportanceRating == ImportanceRating.HighRisk, "Windows app package data should be high risk.");
+        Assert(packages.DeletionRecommendation == DeletionRecommendation.Keep, "Windows app package data should be kept.");
+
+        var programs = Single(rows, "Programs");
+        Assert(programs.BloatCategories.Contains(BloatCategory.InstalledApplication), "AppData Local Programs should be marked as installed application data.");
+        Assert(programs.ImportanceRating == ImportanceRating.HighRisk, "Installed application folders should be high risk.");
+        Assert(programs.DeletionRecommendation == DeletionRecommendation.Keep, "Installed application folders should be kept.");
+
+        var baldursGate = Single(rows, "Baldur's Gate 3");
+        Assert(baldursGate.BloatCategories.Contains(BloatCategory.GameData), "Known game folders should be marked as game data.");
+        Assert(baldursGate.ImportanceRating == ImportanceRating.HighRisk, "Game data should be high risk.");
+        Assert(baldursGate.DeletionRecommendation == DeletionRecommendation.Keep, "Game data should be kept.");
     }
 
     public void ReviewBuilderSummarizesAndFiltersResults()

@@ -15,7 +15,10 @@ public enum BloatCategory
     OldGameFile,
     NodePackageCache,
     PythonPackageCache,
+    WindowsAppData,
     WindowsAppLeftover,
+    InstalledApplication,
+    GameData,
     ProtectedLocation,
     ReparsePoint,
     AccessIssue

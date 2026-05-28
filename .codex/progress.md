@@ -6,12 +6,12 @@ Use it to preserve what was completed, what was verified, what was rejected, and
 
 ## Current status
 
-Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. Review filters, selected-folder child breakdown, selected-path inspection actions, CSV export, Review Mix, Storage Scan Safety Summary, Safety Summary review shortcuts, Access issues filtering, Bloat Category Filter, No category filtering, Review Shortlist, Quarantine Preview, Quarantine Preview CSV export, Restore Manifest Draft, Quarantine Confirmation Draft, and Quarantine Readiness UI are implemented and verified. Quarantine remains preview-only; no cleanup execution, manifest writing, or Undo Quarantine execution exists.
+Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. Review filters, selected-folder child breakdown, selected-path inspection actions, CSV export, Review Mix, Storage Scan Safety Summary, Safety Summary review shortcuts, Access issues filtering, Bloat Category Filter, No category filtering, Review Shortlist, Quarantine Preview, Quarantine Preview CSV export, Restore Manifest Draft, Quarantine Confirmation Draft, Quarantine Readiness UI, and conservative app data classification are implemented and verified. Quarantine remains preview-only; no cleanup execution, manifest writing, or Undo Quarantine execution exists.
 
 ## Next recommended work
 
 1. Ask the user to rerun the WPF app and confirm Safety Summary shortcuts, Review Shortlist, Quarantine Preview, Export preview, Review Mix, Access issues filter, category filter, No category filter, and filter wording are useful.
-2. Use review feedback to refine Protected Locations and category grouping.
+2. Rerun the real scan and check whether Windows app data, installed applications, and game data labels make the large app/game rows easier to triage.
 3. Retest the new Quarantine Readiness UI with a real scan and confirm the draft/readiness wording is understandable.
 4. Defer actual Quarantine and Undo Quarantine execution until scan review, preview semantics, confirmation semantics, and restore rules are trustworthy.
 5. Revisit .NET 10 before packaging or long-term distribution.
@@ -963,3 +963,48 @@ Rejected ideas buffer:
 - Do not add an execute button beside preview controls.
 - Do not auto-save Restore Manifest Draft JSON from the UI.
 - Do not hide readiness blockers behind a single pass/fail label.
+
+### 2026-05-28: Add conservative app data classification
+
+Status: completed
+
+Evidence:
+
+- Real scan evidence included large app/game rows that needed clearer but conservative labels.
+- The app must avoid breaking current apps, game saves, app settings, and installed tools.
+
+Implementation:
+
+- Added `WindowsAppData`, `InstalledApplication`, and `GameData` Bloat Category values.
+- Added classifier hints for `AppData\Local\Packages`, `AppData\Local\Programs`, Larian/Baldur's Gate, Stellaris, Paradox, and IronyMod-style paths.
+- These categories are treated as Protected Location / High risk / Keep by default.
+- Added display labels in WPF and CSV exporters.
+- Added fixture coverage for Windows app package data, per-user installed app folders, and known game data.
+- No cleanup execution, manifest writing, file move, deletion, or Quarantine behavior was added.
+
+Verification:
+
+- `dotnet build WindowsFileCleaner.sln --no-restore` passed.
+- `dotnet run --project tests\WindowsFileCleaner.Tests\WindowsFileCleaner.Tests.csproj --no-build` passed.
+
+Docs updated:
+
+- `docs/domain/context.md`
+- `docs/domain/glossary.md`
+- `docs/features/2026-05-28-conservative-app-data-classification.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No new ADR. This is an incremental conservative classifier refinement.
+
+Open questions:
+
+- Which specific app or game folders should get cleanup exceptions later?
+- Should some Windows app package subfolders be downgraded after manual review?
+
+Rejected ideas buffer:
+
+- Do not mark Windows app package data as likely safe by default.
+- Do not classify game folders as removable just because they look old.
+- Do not make `AppData\Local\Programs` a cleanup candidate.

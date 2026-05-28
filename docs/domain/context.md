@@ -190,7 +190,7 @@ Last reviewed: 2026-05-28
 
 A Bloat Category is a human-readable reason a Cleanup Candidate may be unwanted or removable.
 
-Initial candidate categories include profile containers, AppData areas, browser data, old downloads, temporary folders, installer caches, app caches, GPU shader caches, duplicate files, old game files, Node or Python package caches, and Windows app leftovers.
+Initial candidate categories include profile containers, AppData areas, browser data, old downloads, temporary folders, installer caches, app caches, GPU shader caches, duplicate files, old game files, game data, Node or Python package caches, Windows app data, Windows app leftovers, and installed applications.
 
 #### Examples
 
@@ -204,9 +204,12 @@ Initial candidate categories include profile containers, AppData areas, browser 
 - GPU shader caches.
 - Duplicate files.
 - Old game files.
+- Game data.
 - Node package caches.
 - Python package caches.
+- Windows app data.
 - Windows app leftovers.
+- Installed applications.
 
 #### Non-examples
 
@@ -810,8 +813,10 @@ Protected Locations may still be scanned for size and shown for inspection, but 
 - Documents, Desktop, Pictures, Videos, Music.
 - Browser profiles and credentials.
 - Application settings under `AppData`.
+- Windows app package data under `AppData\Local\Packages`.
+- Per-user installed applications under `AppData\Local\Programs`.
 - Source code folders.
-- Game saves.
+- Game saves, game profiles, game mods, and game configuration.
 
 #### Non-examples
 

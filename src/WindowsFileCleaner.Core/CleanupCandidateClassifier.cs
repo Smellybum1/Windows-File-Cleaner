@@ -55,6 +55,28 @@ public sealed class CleanupCandidateClassifier
         @"\dev"
     ];
 
+    private static readonly string[] WindowsAppDataHints =
+    [
+        @"\AppData\Local\Packages"
+    ];
+
+    private static readonly string[] InstalledApplicationHints =
+    [
+        @"\AppData\Local\Programs"
+    ];
+
+    private static readonly string[] GameDataHints =
+    [
+        @"\AppData\Local\Larian Studios",
+        @"\AppData\LocalLow\Larian Studios",
+        @"\AppData\Local\Paradox Interactive",
+        @"\AppData\Roaming\Paradox Interactive",
+        "Baldur's Gate 3",
+        "Stellaris",
+        "IronyMod",
+        "IronyModManager"
+    ];
+
     public ClassifiedPath Classify(PathSnapshot path)
     {
         var categories = new HashSet<BloatCategory>();
@@ -76,7 +98,7 @@ public sealed class CleanupCandidateClassifier
 
         AddCategoryHints(path, categories, evidence);
 
-        if (IsProtected(path))
+        if (IsProtected(path, categories))
         {
             categories.Add(BloatCategory.ProtectedLocation);
             evidence.Add("This path overlaps a protected location such as profile data, browser data, source code, game saves, or Codex-related files.");
@@ -179,11 +201,29 @@ public sealed class CleanupCandidateClassifier
             evidence.Add("The path looks game-related and has not changed recently.");
         }
 
-        if (fullPath.Contains(@"\AppData\Local\Packages\", StringComparison.OrdinalIgnoreCase)
+        if (LooksLikeGameData(fullPath))
+        {
+            categories.Add(BloatCategory.GameData);
+            evidence.Add("The path looks like game saves, mods, profiles, or game configuration. Treat it as active user data unless reviewed manually.");
+        }
+
+        if (LooksLikeWindowsAppData(fullPath))
+        {
+            categories.Add(BloatCategory.WindowsAppData);
+            evidence.Add("The path is under the Windows app package data area, which can contain active app settings and local state.");
+        }
+
+        if (LooksLikeWindowsAppData(fullPath)
             && IsOld(path.LastModifiedUtc, TimeSpan.FromDays(180)))
         {
             categories.Add(BloatCategory.WindowsAppLeftover);
             evidence.Add("The path looks like a stale Windows app package area.");
+        }
+
+        if (LooksLikeInstalledApplication(fullPath))
+        {
+            categories.Add(BloatCategory.InstalledApplication);
+            evidence.Add("The path is under the per-user installed applications area and removing it could break an installed app.");
         }
     }
 
@@ -205,7 +245,10 @@ public sealed class CleanupCandidateClassifier
         if (categories.Contains(BloatCategory.NodePackageCache)
             || categories.Contains(BloatCategory.PythonPackageCache)
             || categories.Contains(BloatCategory.OldGameFile)
+            || categories.Contains(BloatCategory.WindowsAppData)
             || categories.Contains(BloatCategory.WindowsAppLeftover)
+            || categories.Contains(BloatCategory.InstalledApplication)
+            || categories.Contains(BloatCategory.GameData)
             || categories.Contains(BloatCategory.ApplicationDataArea)
             || categories.Contains(BloatCategory.GpuShaderCache))
         {
@@ -216,9 +259,12 @@ public sealed class CleanupCandidateClassifier
             && !categories.Contains(BloatCategory.TemporaryFolder);
     }
 
-    private static bool IsProtected(PathSnapshot path)
+    private static bool IsProtected(PathSnapshot path, HashSet<BloatCategory> categories)
     {
-        return ProtectedFolderNames.Any(name => ContainsSegment(path.FullPath, name))
+        return categories.Contains(BloatCategory.WindowsAppData)
+            || categories.Contains(BloatCategory.InstalledApplication)
+            || categories.Contains(BloatCategory.GameData)
+            || ProtectedFolderNames.Any(name => ContainsSegment(path.FullPath, name))
             || BrowserProfileHints.Any(hint => path.FullPath.Contains(hint, StringComparison.OrdinalIgnoreCase))
             || CodexHints.Any(hint => path.FullPath.Contains(hint, StringComparison.OrdinalIgnoreCase))
             || SourceCodeHints.Any(hint => path.FullPath.Contains(hint, StringComparison.OrdinalIgnoreCase));
@@ -274,6 +320,21 @@ public sealed class CleanupCandidateClassifier
             || ContainsSegment(fullPath, "D3DSCache")
             || name.Contains("shadercache", StringComparison.OrdinalIgnoreCase)
             || fullPath.Contains(@"\NVIDIA\", StringComparison.OrdinalIgnoreCase) && LooksLikeAppCache(fullPath, name);
+    }
+
+    private static bool LooksLikeWindowsAppData(string fullPath)
+    {
+        return WindowsAppDataHints.Any(hint => fullPath.Contains(hint, StringComparison.OrdinalIgnoreCase));
+    }
+
+    private static bool LooksLikeInstalledApplication(string fullPath)
+    {
+        return InstalledApplicationHints.Any(hint => fullPath.Contains(hint, StringComparison.OrdinalIgnoreCase));
+    }
+
+    private static bool LooksLikeGameData(string fullPath)
+    {
+        return GameDataHints.Any(hint => fullPath.Contains(hint, StringComparison.OrdinalIgnoreCase));
     }
 
     private static bool ContainsSegment(string fullPath, string segment)
