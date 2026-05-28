@@ -20,11 +20,13 @@ public static class StorageScanReviewBuilder
             entries.Count(row => row.Entry.ImportanceRating == ImportanceRating.Caution),
             entries.Count(row => row.Entry.ImportanceRating == ImportanceRating.HighRisk),
             entries.Count(row => row.Entry.DeletionRecommendation == DeletionRecommendation.QuarantineCandidate),
+            entries.Count(row => IsAccessIssue(row.Entry)),
             Largest(entries),
             Largest(entries.Where(row => row.Entry.ImportanceRating == ImportanceRating.LikelySafe)),
             Largest(entries.Where(row => row.Entry.ImportanceRating == ImportanceRating.Caution)),
             Largest(entries.Where(row => row.Entry.ImportanceRating == ImportanceRating.HighRisk)),
-            Largest(entries.Where(row => row.Entry.DeletionRecommendation == DeletionRecommendation.QuarantineCandidate)));
+            Largest(entries.Where(row => row.Entry.DeletionRecommendation == DeletionRecommendation.QuarantineCandidate)),
+            Largest(entries.Where(row => IsAccessIssue(row.Entry))));
     }
 
     private static long Largest(IEnumerable<StorageReviewEntry> entries)
@@ -38,6 +40,11 @@ public static class StorageScanReviewBuilder
     private static IEnumerable<StorageReviewEntry> Flatten(StorageEntry root)
     {
         return Flatten(root, depth: 0);
+    }
+
+    private static bool IsAccessIssue(StorageEntry entry)
+    {
+        return !entry.IsAccessible || entry.BloatCategories.Contains(BloatCategory.AccessIssue);
     }
 
     private static IEnumerable<StorageReviewEntry> Flatten(StorageEntry entry, int depth)

@@ -5,6 +5,7 @@ tests.ScannerTotalsFilesAndClassifiesCandidates();
 tests.ScannerRefusesToLeaveCleanupScope();
 tests.ClassifierLabelsRealScanContainerPatterns();
 tests.ReviewBuilderSummarizesAndFiltersResults();
+tests.ReviewBuilderFiltersAccessIssues();
 tests.ChildSummaryShowsLargestImmediateChildren();
 tests.PathInspectionPlanBuildsExplorerArguments();
 tests.CsvExporterWritesEscapedReviewRows();
@@ -98,6 +99,7 @@ internal sealed class StorageScanTests
         Assert(review.Summary.CautionCount > 0, "Review should count caution entries.");
         Assert(review.Summary.HighRiskCount > 0, "Review should count high-risk entries.");
         Assert(review.Summary.QuarantineCandidateCount > 0, "Review should count quarantine candidates.");
+        Assert(review.Summary.AccessIssueCount == 0, "Fixture review should count zero access issues.");
         Assert(review.Summary.LargestEntryBytes >= 1024 * 1024, "Review should record the largest row size.");
         Assert(review.Summary.QuarantineCandidateLargestEntryBytes == 1024 * 1024, "Review should record the largest quarantine candidate row without summing recursive rows.");
 
@@ -106,6 +108,62 @@ internal sealed class StorageScanTests
 
         var quarantineRows = review.ApplyFilter(StorageReviewFilter.QuarantineCandidates);
         Assert(quarantineRows.All(row => row.Entry.DeletionRecommendation == DeletionRecommendation.QuarantineCandidate), "Quarantine filter should only return quarantine candidates.");
+    }
+
+    public void ReviewBuilderFiltersAccessIssues()
+    {
+        var now = DateTimeOffset.UtcNow;
+        var inaccessible = new StorageEntry(
+            @"C:\Users\moxhe\Locked",
+            "Locked",
+            IsDirectory: true,
+            SizeBytes: 0,
+            LastModifiedUtc: null,
+            IsAccessible: false,
+            IsReparsePoint: false,
+            ErrorMessage: "Access denied.",
+            BloatCategories: [BloatCategory.AccessIssue],
+            ImportanceRating: ImportanceRating.Caution,
+            DeletionRecommendation: DeletionRecommendation.Inspect,
+            Evidence: "The path could not be fully read.",
+            Children: []);
+        var readable = new StorageEntry(
+            @"C:\Users\moxhe\Downloads\setup.msi",
+            "setup.msi",
+            IsDirectory: false,
+            SizeBytes: 1024,
+            LastModifiedUtc: now,
+            IsAccessible: true,
+            IsReparsePoint: false,
+            ErrorMessage: null,
+            BloatCategories: [BloatCategory.InstallerCache],
+            ImportanceRating: ImportanceRating.LikelySafe,
+            DeletionRecommendation: DeletionRecommendation.QuarantineCandidate,
+            Evidence: "Installer.",
+            Children: []);
+        var root = new StorageEntry(
+            @"C:\Users\moxhe",
+            "moxhe",
+            IsDirectory: true,
+            SizeBytes: readable.SizeBytes,
+            LastModifiedUtc: now,
+            IsAccessible: true,
+            IsReparsePoint: false,
+            ErrorMessage: null,
+            BloatCategories: [],
+            ImportanceRating: ImportanceRating.Caution,
+            DeletionRecommendation: DeletionRecommendation.Inspect,
+            Evidence: "Root.",
+            Children: [readable, inaccessible]);
+        var result = new StorageScanResult(@"C:\Users\moxhe", now, now, root);
+
+        var review = StorageScanReviewBuilder.Build(result);
+        var accessRows = review.ApplyFilter(StorageReviewFilter.AccessIssues);
+
+        Assert(review.Summary.AccessIssueCount == 1, "Review should count access issue rows.");
+        Assert(review.Summary.AccessIssueLargestEntryBytes == 0, "Access issue largest row should reflect the unreadable row size.");
+        Assert(accessRows.Count == 1, "Access issue filter should only return inaccessible rows.");
+        Assert(accessRows[0].Entry.FullPath.EndsWith(@"\Locked", StringComparison.OrdinalIgnoreCase), "Access issue filter should return the inaccessible path.");
     }
 
     public void ChildSummaryShowsLargestImmediateChildren()

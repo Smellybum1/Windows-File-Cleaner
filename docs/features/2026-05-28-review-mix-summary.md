@@ -29,6 +29,7 @@ The app shows filter counts and a filtered row-size summary. Summing flattened r
 
 - Show Review Mix after Storage Scan.
 - Show count and largest-row size for Likely safe, Caution, High risk, and Quarantine candidates.
+- Later packet adds Access issues count to the Review Mix so incomplete scan coverage is visible.
 - Filter summary should show displayed row count and largest displayed row, not a summed row size.
 - Keep all behavior read-only.
 

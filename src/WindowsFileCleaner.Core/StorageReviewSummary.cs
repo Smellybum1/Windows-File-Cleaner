@@ -6,8 +6,10 @@ public sealed record StorageReviewSummary(
     int CautionCount,
     int HighRiskCount,
     int QuarantineCandidateCount,
+    int AccessIssueCount,
     long LargestEntryBytes,
     long LikelySafeLargestEntryBytes,
     long CautionLargestEntryBytes,
     long HighRiskLargestEntryBytes,
-    long QuarantineCandidateLargestEntryBytes);
+    long QuarantineCandidateLargestEntryBytes,
+    long AccessIssueLargestEntryBytes);

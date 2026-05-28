@@ -107,6 +107,11 @@ public partial class MainWindow : Window
         SetFilter(StorageReviewFilter.QuarantineCandidates);
     }
 
+    private void AccessIssuesFilterButton_Click(object sender, RoutedEventArgs e)
+    {
+        SetFilter(StorageReviewFilter.AccessIssues);
+    }
+
     private void ExportCsvButton_Click(object sender, RoutedEventArgs e)
     {
         if (_currentReview is null)
@@ -245,6 +250,7 @@ public partial class MainWindow : Window
             CautionFilterButton.Content = "Caution";
             HighRiskFilterButton.Content = "High risk";
             QuarantineCandidateFilterButton.Content = "Quarantine candidates";
+            AccessIssuesFilterButton.Content = "Access issues";
             return;
         }
 
@@ -254,6 +260,7 @@ public partial class MainWindow : Window
         CautionFilterButton.Content = $"Caution ({summary.CautionCount:N0})";
         HighRiskFilterButton.Content = $"High risk ({summary.HighRiskCount:N0})";
         QuarantineCandidateFilterButton.Content = $"Quarantine candidates ({summary.QuarantineCandidateCount:N0})";
+        AccessIssuesFilterButton.Content = $"Access issues ({summary.AccessIssueCount:N0})";
         ExportCsvButton.IsEnabled = true;
     }
 
@@ -298,7 +305,8 @@ public partial class MainWindow : Window
             $"Likely safe {summary.LikelySafeCount:N0} (largest {ByteSizeFormatter.Format(summary.LikelySafeLargestEntryBytes)}) | " +
             $"Caution {summary.CautionCount:N0} (largest {ByteSizeFormatter.Format(summary.CautionLargestEntryBytes)}) | " +
             $"High risk {summary.HighRiskCount:N0} (largest {ByteSizeFormatter.Format(summary.HighRiskLargestEntryBytes)}) | " +
-            $"Quarantine candidates {summary.QuarantineCandidateCount:N0} (largest {ByteSizeFormatter.Format(summary.QuarantineCandidateLargestEntryBytes)})";
+            $"Quarantine candidates {summary.QuarantineCandidateCount:N0} (largest {ByteSizeFormatter.Format(summary.QuarantineCandidateLargestEntryBytes)}) | " +
+            $"Access issues {summary.AccessIssueCount:N0}";
     }
 
     private static string FormatFilter(StorageReviewFilter filter)
@@ -309,6 +317,7 @@ public partial class MainWindow : Window
             StorageReviewFilter.Caution => "Caution",
             StorageReviewFilter.HighRisk => "High risk",
             StorageReviewFilter.QuarantineCandidates => "Quarantine candidates",
+            StorageReviewFilter.AccessIssues => "Access issues",
             _ => "All"
         };
     }
@@ -321,6 +330,7 @@ public partial class MainWindow : Window
             StorageReviewFilter.Caution => "caution",
             StorageReviewFilter.HighRisk => "high-risk",
             StorageReviewFilter.QuarantineCandidates => "quarantine-candidates",
+            StorageReviewFilter.AccessIssues => "access-issues",
             _ => "all"
         };
     }

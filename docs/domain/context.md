@@ -241,13 +241,14 @@ Last reviewed: 2026-05-28
 
 A Storage Review Filter narrows Storage Scan results so the user can inspect a focused set of paths.
 
-Initial filters are All, Likely safe, Caution, High risk, and Quarantine candidates.
+Initial filters are All, Likely safe, Caution, High risk, Quarantine candidates, and Access issues.
 
 #### Examples
 
 - Filter to High risk rows to review protected paths.
 - Filter to Quarantine candidates to inspect likely cleanup opportunities.
 - Filter to Caution rows to review cache and package-cache areas.
+- Filter to Access issues to inspect paths the scan could not fully read.
 
 #### Non-examples
 
@@ -264,6 +265,7 @@ Initial filters are All, Likely safe, Caution, High risk, and Quarantine candida
 #### Relationships
 
 - Uses Importance Ratings and Deletion Recommendations.
+- Uses scanner access status for Access issues.
 - Helps review Cleanup Candidates.
 
 #### Code implications
@@ -271,6 +273,7 @@ Initial filters are All, Likely safe, Caution, High risk, and Quarantine candida
 - Use `StorageReviewFilter` for filter values.
 - Keep filters read-only.
 - Show counts so the user can understand scan composition.
+- Access issues are informational and must not trigger permission changes or cleanup actions.
 
 ### Review Mix
 
@@ -279,9 +282,9 @@ Last reviewed: 2026-05-28
 
 #### Definition
 
-Review Mix is a read-only summary of how Storage Scan results are distributed across Importance Ratings and Deletion Recommendations.
+Review Mix is a read-only summary of how Storage Scan results are distributed across Importance Ratings, Deletion Recommendations, and scanner access status.
 
-It shows counts and largest-row sizes for Likely safe, Caution, High risk, and Quarantine candidates.
+It shows counts and largest-row sizes for Likely safe, Caution, High risk, and Quarantine candidates. It also shows the Access issues count so incomplete scan coverage is visible.
 
 #### Examples
 
@@ -289,6 +292,7 @@ It shows counts and largest-row sizes for Likely safe, Caution, High risk, and Q
 - Caution count and largest caution row.
 - High risk count and largest high-risk row.
 - Quarantine candidate count and largest quarantine-candidate row.
+- Access issues count.
 
 #### Non-examples
 
@@ -306,6 +310,7 @@ It shows counts and largest-row sizes for Likely safe, Caution, High risk, and Q
 
 - Uses Storage Review Filters.
 - Uses Importance Ratings and Deletion Recommendations.
+- Uses scanner access status.
 - Helps the user decide where to inspect next.
 
 #### Code implications
@@ -313,6 +318,7 @@ It shows counts and largest-row sizes for Likely safe, Caution, High risk, and Q
 - Use `StorageReviewSummary` for Review Mix data.
 - Do not sum recursive row sizes across flattened scan results; folders and their children overlap.
 - Use largest-row sizes for triage until the app has an explicit non-overlapping selection model.
+- Show Access issues as a count because unreadable rows may not have meaningful size data.
 
 ### Child Breakdown
 

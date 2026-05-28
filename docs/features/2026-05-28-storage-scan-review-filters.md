@@ -37,6 +37,7 @@ The first user scan showed:
 ## Desired behavior
 
 - Add filters for All, Likely safe, Caution, High risk, and Quarantine candidates.
+- Later packet expands filters to include Access issues from scanner access status.
 - Show counts on filter buttons after a scan.
 - Show a compact filter summary with number of displayed rows and the largest displayed row.
 - Keep scan review read-only.

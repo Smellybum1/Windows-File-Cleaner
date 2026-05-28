@@ -6,6 +6,6 @@ public enum StorageReviewFilter
     LikelySafe,
     Caution,
     HighRisk,
-    QuarantineCandidates
+    QuarantineCandidates,
+    AccessIssues
 }
-

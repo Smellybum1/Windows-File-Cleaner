@@ -6,11 +6,11 @@ Use it to preserve what was completed, what was verified, what was rejected, and
 
 ## Current status
 
-Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. Review filters, selected-folder child breakdown, selected-path inspection actions, and CSV export are pushed. Review Mix summary is implemented and awaiting user retest after push.
+Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. Review filters, selected-folder child breakdown, selected-path inspection actions, CSV export, and Review Mix are pushed. Access issues review filter is implemented and awaiting user retest after push.
 
 ## Next recommended work
 
-1. Ask the user to rerun the WPF app and confirm Review Mix/filter wording is useful.
+1. Ask the user to rerun the WPF app and confirm Review Mix, Access issues filter, and filter wording are useful.
 2. Use review feedback to refine Protected Locations and category grouping.
 3. Add a safer Quarantine preview only after review categories feel trustworthy.
 4. Defer actual Quarantine and Undo Quarantine execution until scan review is trustworthy.
@@ -462,3 +462,48 @@ Rejected ideas buffer:
 
 - Do not report summed bytes for flattened recursive rows.
 - Do not call filtered row totals Storage Savings until selections are non-overlapping.
+
+### 2026-05-28: Add Access issues review filter
+
+Status: completed
+
+Evidence:
+
+- The first real scan reported 3 access issues.
+- The app showed the count but did not provide a direct way to filter to those paths.
+
+Implementation:
+
+- Added `AccessIssues` to `StorageReviewFilter`.
+- Added access issue count and largest-row summary fields to `StorageReviewSummary`.
+- Added Access issues filter behavior in `StorageScanReview`.
+- Added Access issues button and Review Mix count in WPF.
+- Added fixture-style coverage with a synthetic inaccessible row.
+- No elevated scan, permission change, cleanup execution, or retry workflow was added.
+
+Verification:
+
+- `dotnet build WindowsFileCleaner.sln --no-restore` passed.
+- `dotnet run --project tests\WindowsFileCleaner.Tests\WindowsFileCleaner.Tests.csproj --no-build` passed.
+
+Docs updated:
+
+- `docs/domain/context.md`
+- `docs/domain/glossary.md`
+- `docs/features/2026-05-28-access-issues-review-filter.md`
+- `docs/features/2026-05-28-storage-scan-review-filters.md`
+- `docs/features/2026-05-28-review-mix-summary.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No new ADR. This is an incremental read-only review filter.
+
+Open questions:
+
+- Should access issues remain informational only, or should a future separate workflow retry scanning as administrator?
+
+Rejected ideas buffer:
+
+- Do not request elevation automatically.
+- Do not change permissions to resolve access issues.
