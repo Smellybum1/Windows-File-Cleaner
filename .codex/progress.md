@@ -6,7 +6,7 @@ Use it to preserve what was completed, what was verified, what was rejected, and
 
 ## Current status
 
-Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. Cleanup Scope Safety Note, Cleanup Scope Scan Gate, Cleanup Scope Root classification, review filters, Review View Reset, Storage Review Search with field prefixes, Storage Entry Type Filter, Storage Review Display Limit wording, Storage Review Display Window navigation, Storage Review Size Note, selected-folder child breakdown, selected-path inspection actions, Selected Path Hierarchy Context, Selected Row Contents Context including a grid Contents column, explicit Access Status, Access Status Search, Selected File Content Preview, Selected Path Review Guidance including cache-specific guidance and scope-root guidance, CSV export including active search, searched filenames, hierarchy/contents/access context and type-filtered rows, Review Mix, Storage Scan Safety Summary, Safety Summary review shortcuts, Access issues filtering, Bloat Category Filter, Large old file classification, No category filtering, Review Shortlist, Shortlist shown, Remove shown, Quarantine Preview with protected-descendant blocking, Quarantine Preview CSV export, Restore Manifest Draft, Quarantine Confirmation Draft, Quarantine Readiness UI, conservative app data classification, read-only safety regression checks, the MVP runbook, the MVP readiness audit, fixture-driven WPF launch support, WPF shell smoke testing, WPF fixture scan smoke testing, WPF display-limit smoke testing, WPF review interaction smoke testing, WPF review toolbar layout polish, the MVP preflight script, and the MVP fixture review launcher are implemented and verified. Quarantine remains preview-only; no cleanup execution, manifest writing, or Undo Quarantine execution exists.
+Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. Cleanup Scope Safety Note, Cleanup Scope Scan Gate, Cleanup Scope Root classification, review filters, Review View Reset, Storage Review Search with field prefixes, Storage Entry Type Filter, Storage Review Display Limit wording, Storage Review Display Window navigation, Storage Review Size Note, selected-folder child breakdown, selected-path inspection actions, Selected Path Hierarchy Context, Selected Row Contents Context including a grid Contents column, explicit Access Status, Access Status Search, Selected File Content Preview, Selected Path Review Guidance including cache-specific guidance and scope-root guidance, CSV export including active search, searched filenames, hierarchy/contents/access/relative-path context and type-filtered rows, Review Mix, Storage Scan Safety Summary with bounded access issue examples, Safety Summary review shortcuts, Access issues filtering, Bloat Category Filter, Large old file classification, No category filtering, Review Shortlist, Shortlist shown, Remove shown, Quarantine Preview with protected-descendant blocking, Quarantine Preview CSV export, Restore Manifest Draft, Quarantine Confirmation Draft, Quarantine Readiness UI, conservative app data classification, read-only safety regression checks, the MVP runbook, the MVP readiness audit, fixture-driven WPF launch support, WPF shell smoke testing, WPF fixture scan smoke testing, WPF display-limit smoke testing, WPF review interaction smoke testing, WPF review toolbar layout polish, the MVP preflight script, and the MVP fixture review launcher are implemented and verified. Quarantine remains preview-only; no cleanup execution, manifest writing, or Undo Quarantine execution exists.
 
 ## Next recommended work
 
@@ -2846,3 +2846,47 @@ Open questions:
 Rejected ideas buffer:
 
 - Do not replace full paths in exports; relative paths are additional review context.
+
+### 2026-05-28: Show Access Issue Examples in Safety Summary
+
+Status: completed
+
+Evidence:
+
+- The first real scan reported 3 access issues.
+- The app already counted and filtered access issues, but the top safety summary did not show any concrete example paths before the user clicked into the filtered review.
+
+Implementation:
+
+- Added bounded access issue examples to `StorageScanSafetySummary`.
+- Derived up to three cleanup-scope-relative examples from completed scan rows, including scanner error text when available.
+- Updated WPF Safety Summary text to show access examples when incomplete scan coverage exists.
+- Added core coverage for relative access issue examples and scanner error text.
+- Kept this read-only; no scanner retry, permission change, cleanup execution, Quarantine execution, Undo Quarantine, manifest writing, real-profile automation, or real user file access was added.
+
+Verification:
+
+- `dotnet build WindowsFileCleaner.sln --no-restore` passed with 0 warnings and 0 errors.
+- `dotnet run --project tests\WindowsFileCleaner.Tests\WindowsFileCleaner.Tests.csproj --no-build` passed.
+- `dotnet run --project tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj --no-build` passed.
+- `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\Invoke-MvpPreflight.ps1` passed.
+
+Docs updated:
+
+- `README.md`
+- `docs/domain/context.md`
+- `docs/domain/glossary.md`
+- `docs/features/2026-05-28-storage-scan-safety-summary.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No new ADR. This is a reversible read-only summary display improvement.
+
+Open questions:
+
+- In the next real scan, are the three access issue examples enough context before using the Access issues filter?
+
+Rejected ideas buffer:
+
+- Do not add automatic elevated retries or permission changes for access issues.

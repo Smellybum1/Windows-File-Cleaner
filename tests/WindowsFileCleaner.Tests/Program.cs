@@ -592,6 +592,11 @@ internal sealed class StorageScanTests
         Assert(summary.HighRiskCount == 1, "Safety summary should count high-risk rows.");
         Assert(summary.ProtectedLocationCount == 1, "Safety summary should count protected locations.");
         Assert(summary.AccessIssueCount == 1, "Safety summary should count access issues.");
+        Assert(summary.AccessIssueExamples.Count == 1, "Safety summary should expose bounded access issue examples.");
+        Assert(
+            summary.AccessIssueExamples[0].Contains("Locked", StringComparison.OrdinalIgnoreCase)
+            && summary.AccessIssueExamples[0].Contains("Access denied", StringComparison.OrdinalIgnoreCase),
+            "Safety summary access issue examples should include relative path and scanner error text.");
         Assert(summary.ReparsePointCount == 1, "Safety summary should count reparse points.");
         Assert(summary.QuarantineCandidateCount == 1, "Safety summary should count quarantine candidates.");
         Assert(summary.UncategorizedCount == 1, "Safety summary should count uncategorized rows.");

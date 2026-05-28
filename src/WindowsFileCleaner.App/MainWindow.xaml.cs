@@ -1352,8 +1352,16 @@ public partial class MainWindow : Window
             $"Reparse points {summary.ReparsePointCount:N0} | " +
             $"Quarantine candidates {summary.QuarantineCandidateCount:N0} | " +
             $"No category {summary.UncategorizedCount:N0}. " +
+            FormatAccessIssueExamples(summary) +
             string.Join(" ", summary.Notes);
         UpdateSafetyShortcutButtons();
+    }
+
+    private static string FormatAccessIssueExamples(StorageScanSafetySummary summary)
+    {
+        return summary.AccessIssueExamples.Count == 0
+            ? ""
+            : $"Access examples: {string.Join("; ", summary.AccessIssueExamples)}. ";
     }
 
     private void UpdateSafetyShortcutButtons()

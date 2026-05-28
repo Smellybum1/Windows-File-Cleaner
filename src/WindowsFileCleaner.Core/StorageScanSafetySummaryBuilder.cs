@@ -2,6 +2,8 @@ namespace WindowsFileCleaner.Core;
 
 public static class StorageScanSafetySummaryBuilder
 {
+    private const int MaxAccessIssueExamples = 3;
+
     public static StorageScanSafetySummary Build(StorageScanResult result, StorageScanReview review)
     {
         var highRiskCount = review.Entries.Count(row => row.Entry.ImportanceRating == ImportanceRating.HighRisk);
@@ -20,6 +22,7 @@ public static class StorageScanSafetySummaryBuilder
             reparsePointCount,
             quarantineCandidateCount,
             uncategorizedCount,
+            BuildAccessIssueExamples(result.CleanupScopePath, review.Entries),
             BuildNotes(
                 result.CleanupScopePath,
                 highRiskCount,
@@ -70,6 +73,42 @@ public static class StorageScanSafetySummaryBuilder
         }
 
         return notes;
+    }
+
+    private static IReadOnlyList<string> BuildAccessIssueExamples(string cleanupScopePath, IReadOnlyList<StorageReviewEntry> entries)
+    {
+        return entries
+            .Where(row => IsAccessIssue(row.Entry))
+            .OrderBy(row => row.Entry.FullPath, StringComparer.OrdinalIgnoreCase)
+            .Take(MaxAccessIssueExamples)
+            .Select(row => FormatAccessIssueExample(cleanupScopePath, row.Entry))
+            .ToArray();
+    }
+
+    private static string FormatAccessIssueExample(string cleanupScopePath, StorageEntry entry)
+    {
+        var path = FormatScopeRelativePath(cleanupScopePath, entry.FullPath);
+        return string.IsNullOrWhiteSpace(entry.ErrorMessage)
+            ? path
+            : $"{path} ({entry.ErrorMessage})";
+    }
+
+    private static string FormatScopeRelativePath(string cleanupScopePath, string fullPath)
+    {
+        try
+        {
+            return PathSafety.IsWithinScope(cleanupScopePath, fullPath)
+                ? Path.GetRelativePath(PathSafety.GetFullPath(cleanupScopePath), fullPath)
+                : fullPath;
+        }
+        catch (ArgumentException)
+        {
+            return fullPath;
+        }
+        catch (NotSupportedException)
+        {
+            return fullPath;
+        }
     }
 
     private static bool IsAccessIssue(StorageEntry entry)

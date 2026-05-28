@@ -25,7 +25,7 @@ The app shows Review Mix, filters, row evidence, Review Shortlist, and Quarantin
 
 ## Desired behavior
 
-After a Storage Scan, the app shows a Storage Scan Safety Summary with the Cleanup Scope, read-only status, high-risk count, Protected Location count, access issue count, reparse point count, Quarantine candidate count, Uncategorized Result count, and short safety notes.
+After a Storage Scan, the app shows a Storage Scan Safety Summary with the Cleanup Scope, read-only status, high-risk count, Protected Location count, access issue count, bounded access issue examples, reparse point count, Quarantine candidate count, Uncategorized Result count, and short safety notes.
 
 ## Domain language changes
 
@@ -54,6 +54,7 @@ Questions that can be deferred:
 ### Edge cases
 
 - Access issues should be informational only.
+- Access issue examples should be bounded and should not trigger permission changes or retries.
 - Reparse points should remain skipped and visible.
 - Quarantine candidates should be described as preview-only until explicit approval exists.
 - Uncategorized rows should not be treated as safe or unsafe.
@@ -90,6 +91,7 @@ Small feature-level decisions:
 - Keep the summary in memory with the current scan.
 - Show a compact text summary in the existing Review Mix area.
 - Derive notes from existing row categories, ratings, recommendations, and access status.
+- Show up to three access issue examples in the summary when incomplete scan coverage exists.
 
 ADR-worthy decisions:
 
@@ -130,6 +132,7 @@ Automated tests:
 
 - Verify summary counts high-risk, Protected Location, access issue, reparse point, Quarantine candidate, and Uncategorized Result rows.
 - Verify notes keep cleanup/read-only boundaries explicit.
+- Later access-example packet verified bounded access issue examples include the relative path and scanner error text.
 
 ## Risks and assumptions
 
@@ -150,6 +153,7 @@ What changed:
 - Added a core Storage Scan Safety Summary model and builder.
 - Added WPF safety summary text below Review Mix.
 - Summarized Cleanup Scope, read-only status, high-risk rows, Protected Locations, access issues, reparse points, Quarantine candidates, Uncategorized Results, and safety notes.
+- Later access-example packet added up to three relative access issue examples to the summary text.
 - Cleared the previous safety summary when a new scan starts.
 
 Files changed:

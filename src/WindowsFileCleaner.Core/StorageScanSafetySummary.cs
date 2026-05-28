@@ -9,6 +9,7 @@ public sealed record StorageScanSafetySummary(
     int ReparsePointCount,
     int QuarantineCandidateCount,
     int UncategorizedCount,
+    IReadOnlyList<string> AccessIssueExamples,
     IReadOnlyList<string> Notes)
 {
     public bool HasReviewWarnings => HighRiskCount > 0
