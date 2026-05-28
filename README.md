@@ -104,9 +104,10 @@ After the app opens:
 10. Select large folders and inspect Evidence, Review guidance, and Largest immediate children.
 11. Use the Type filter to switch between all rows, files only, and folders only.
 12. Try category filters such as App cache, Python package cache, GPU shader cache, Large old file, Windows app data, Installed application, Game data, Protected location, and No category.
-13. Add a likely-safe cleanup candidate to the Review Shortlist, or use `Shortlist shown` / `Remove shown` only after narrowing the grid to rows you intentionally want to review.
-14. Click `Preview quarantine` and confirm the preview, Restore Manifest Draft, and Quarantine Confirmation Draft all say no files were modified and execution is not implemented.
-15. Export CSV reports only when you intentionally choose an output file; the main report export follows the active filters/search, includes parent/depth context for recursive rows, and the suggested filename includes the search term when one is active.
+13. Use `Reset view` after stacking filters/search; it clears the review lens but keeps Review Shortlist.
+14. Add a likely-safe cleanup candidate to the Review Shortlist, or use `Shortlist shown` / `Remove shown` only after narrowing the grid to rows you intentionally want to review.
+15. Click `Preview quarantine` and confirm the preview, Restore Manifest Draft, and Quarantine Confirmation Draft all say no files were modified and execution is not implemented.
+16. Export CSV reports only when you intentionally choose an output file; the main report export follows the active filters/search, includes parent/depth context for recursive rows, and the suggested filename includes the search term when one is active.
 
 ## Current Workflow
 
@@ -119,10 +120,11 @@ The intended review flow is:
 5. Inspect high-risk and protected rows first.
 6. Check whether the grid is showing all matched rows or the first 2,000 matched rows.
 7. Use Storage Review Search, Type filter, and category filters to understand large buckets and specific app/tool paths.
-8. Use Selected Path Review Guidance, Child Breakdown, and Open in Explorer for manual inspection.
-9. Add interesting rows to Review Shortlist; use `Shortlist shown` and `Remove shown` only for the currently displayed review window.
-10. Generate Quarantine Preview for read-only readiness review.
-11. Stop before cleanup execution.
+8. Use `Reset view` when the active review lens becomes too narrow; it does not clear Review Shortlist.
+9. Use Selected Path Review Guidance, Child Breakdown, and Open in Explorer for manual inspection.
+10. Add interesting rows to Review Shortlist; use `Shortlist shown` and `Remove shown` only for the currently displayed review window.
+11. Generate Quarantine Preview for read-only readiness review.
+12. Stop before cleanup execution.
 
 ## Not Implemented Yet
 

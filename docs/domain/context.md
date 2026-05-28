@@ -422,6 +422,55 @@ It helps the user separate actual files from container folders in a recursive sc
 - Keep type filtering read-only and in-memory.
 - Do not use type filters as cleanup approval.
 
+### Review View Reset
+
+Status: draft
+Last reviewed: 2026-05-28
+
+#### Definition
+
+Review View Reset is a read-only action that clears the active Storage Scan review lens and returns the grid to the default view.
+
+It restores:
+
+- Storage Review Filter: `All`
+- Bloat Category Filter: `All categories`
+- Storage Entry Type Filter: `All types`
+- Storage Review Search: empty
+
+It does not clear Review Shortlist and does not modify files.
+
+#### Examples
+
+- Reset after combining `Files`, `Large old file`, and `path:` search.
+- Reset after using Safety Summary shortcuts.
+- Reset after inspecting a category-filtered review window.
+
+#### Non-examples
+
+- Clearing Review Shortlist.
+- Clearing Quarantine Preview.
+- A Cleanup Action.
+- A rescan.
+
+#### Lifecycle
+
+- Available after a Storage Scan completes and the active review lens is filtered.
+- Disabled when the review view is already at the default lens.
+- Resets to disabled after Review View Reset succeeds.
+
+#### Relationships
+
+- Uses Storage Review Filter, Bloat Category Filter, Storage Entry Type Filter, and Storage Review Search.
+- Keeps Review Shortlist separate from the active review lens.
+- Helps recover from stacked filters during manual review.
+
+#### Code implications
+
+- Use `ResetReviewView` in WPF.
+- Preserve `StorageReviewShortlist`.
+- Keep reset status wording explicit that no files were modified and the shortlist was kept.
+
 ### Storage Review Display Limit
 
 Status: draft

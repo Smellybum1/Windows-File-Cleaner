@@ -66,6 +66,7 @@ internal sealed class MainWindowSmokeTests
             Assert(window.CanStartStorageScan, "MainWindow should allow a user-triggered Storage Scan.");
             Assert(!window.CanExportScanCsv, "MainWindow should not allow CSV export before a scan.");
             Assert(!window.CanUseEntryTypeFilter, "MainWindow should not allow type filtering before a scan.");
+            Assert(!window.CanResetReviewView, "MainWindow should not allow review view reset before a scan.");
             Assert(window.SearchHelpToolTipValue.Contains("path:", StringComparison.OrdinalIgnoreCase), "Search tooltip should show field-prefix examples.");
             Assert(window.SearchHelpToolTipValue.Contains("category:", StringComparison.OrdinalIgnoreCase), "Search tooltip should include category-prefix guidance.");
         }
@@ -134,6 +135,7 @@ internal sealed class MainWindowSmokeTests
             Assert(window.CanExportScanCsv, "CSV export should be enabled after a completed scan.");
             Assert(window.CanUseCategoryFilter, "Category filter should be enabled after a categorized fixture scan.");
             Assert(window.CanUseEntryTypeFilter, "Type filter should be enabled after a completed scan.");
+            Assert(!window.CanResetReviewView, "Reset view should be disabled while the review view is unfiltered.");
             Assert(window.CurrentEntryTypeFilterLabel.Contains("All types", StringComparison.OrdinalIgnoreCase), "Type filter should start on All types.");
             Assert(window.TotalSizeTextValue != "-", "Total size card should be populated after scan.");
             Assert(window.FolderCountTextValue != "-", "Folder count card should be populated after scan.");
@@ -165,6 +167,7 @@ internal sealed class MainWindowSmokeTests
                 "Fixture scan should surface Python package cache category evidence.");
 
             window.ApplyStorageReviewSearch("pip");
+            Assert(window.CanResetReviewView, "Reset view should be enabled after search narrows review rows.");
             Assert(window.CurrentSearchText == "pip", "Applying Storage Review Search should update WPF search text.");
             Assert(window.FilterSummaryTextValue.Contains("Search \"pip\"", StringComparison.OrdinalIgnoreCase), "Search should update the filter summary.");
             Assert(window.DisplayedRows.Count > 0, "Search should show matching fixture rows.");
@@ -252,6 +255,7 @@ internal sealed class MainWindowSmokeTests
             Assert(window.DisplayedRows.Count > 0, "File type filter should show fixture files.");
             Assert(window.DisplayedRows.All(row => row.Type == "File"), "File type filter should only show files.");
             Assert(window.CurrentScanReportExportFileName.Contains("-files", StringComparison.OrdinalIgnoreCase), "Scan Report Export filename should include active file type filter.");
+            Assert(window.CanResetReviewView, "Reset view should be enabled after type filtering.");
 
             window.ApplyEntryTypeFilter(StorageEntryTypeFilter.Folders);
             Assert(window.FilterSummaryTextValue.Contains("Folders", StringComparison.OrdinalIgnoreCase), "Folder type filter should update the filter summary.");
@@ -316,6 +320,21 @@ internal sealed class MainWindowSmokeTests
             Assert(
                 window.DisplayedRows.Any(row => row.FullPath == installer.FullPath && row.Shortlist == "Yes"),
                 "Shortlisted row should be marked in the WPF grid.");
+
+            window.ApplyEntryTypeFilter(StorageEntryTypeFilter.Files);
+            window.ApplyStorageReviewSearch("old-installer");
+            Assert(window.CanResetReviewView, "Reset view should be enabled when multiple review lenses are active.");
+            window.ResetReviewView();
+            Assert(!window.CanResetReviewView, "Reset view should disable after returning to the default review lens.");
+            Assert(window.CurrentSearchText == "", "Reset view should clear Storage Review Search.");
+            Assert(window.CurrentEntryTypeFilterLabel.Contains("All types", StringComparison.OrdinalIgnoreCase), "Reset view should restore All types.");
+            Assert(window.FilterSummaryTextValue.StartsWith("All:", StringComparison.OrdinalIgnoreCase), "Reset view should restore the All review filter.");
+            Assert(window.ReviewShortlistCount == 1, "Reset view should keep Review Shortlist entries.");
+            Assert(
+                window.CurrentStatusText.Contains("Review Shortlist was kept", StringComparison.OrdinalIgnoreCase),
+                "Reset view status should explain that shortlist entries were preserved.");
+            window.ApplySafetyReviewShortcut(StorageScanSafetyShortcut.QuarantineCandidates);
+            Assert(window.SelectDisplayedPath(installer.FullPath), "Shortlisted fixture installer should be selectable after resetting and restoring the candidate view.");
 
             window.RemoveShownRowsFromReviewShortlist();
             Assert(window.ReviewShortlistCount == 0, "Removing shown rows should update Review Shortlist count.");

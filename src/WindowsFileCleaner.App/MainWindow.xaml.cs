@@ -64,6 +64,8 @@ public partial class MainWindow : Window
 
     public bool CanUseEntryTypeFilter => EntryTypeFilterBox.IsEnabled;
 
+    public bool CanResetReviewView => ResetViewButton.IsEnabled;
+
     public string CurrentEntryTypeFilterLabel => EntryTypeFilterBox.SelectedItem is EntryTypeFilterOption option
         ? option.Label
         : "";
@@ -525,6 +527,11 @@ public partial class MainWindow : Window
         ApplyStorageReviewSearch("");
     }
 
+    private void ResetViewButton_Click(object sender, RoutedEventArgs e)
+    {
+        ResetReviewView();
+    }
+
     private void ExportCsvButton_Click(object sender, RoutedEventArgs e)
     {
         if (_currentReview is null)
@@ -681,6 +688,7 @@ public partial class MainWindow : Window
         EntryTypeFilterBox.IsEnabled = !isScanning && _currentReview is not null;
         SearchBox.IsEnabled = !isScanning && _currentReview is not null;
         ClearSearchButton.IsEnabled = !isScanning && _currentReview is not null && _currentSearch.IsActive;
+        ResetViewButton.IsEnabled = !isScanning && _currentReview is not null && IsReviewViewFiltered();
         UpdateShortlistControls();
         UpdateSafetyShortcutButtons();
     }
@@ -741,6 +749,24 @@ public partial class MainWindow : Window
         _currentSearch = StorageReviewSearch.FromText(searchText);
         SetSearchTextSilently(_currentSearch.Query);
         RefreshResults();
+    }
+
+    public void ResetReviewView()
+    {
+        if (_currentReview is null)
+        {
+            return;
+        }
+
+        _currentFilter = StorageReviewFilter.All;
+        _currentCategoryFilter = StorageCategoryFilter.All;
+        _currentEntryTypeFilter = StorageEntryTypeFilter.All;
+        _currentSearch = StorageReviewSearch.Empty;
+        SelectCategoryFilterOption(_currentCategoryFilter);
+        SelectEntryTypeFilterOption(_currentEntryTypeFilter);
+        SetSearchTextSilently("");
+        RefreshResults();
+        StatusText.Text = "Review view reset. Review Shortlist was kept. No files were modified.";
     }
 
     public void ApplySafetyReviewShortcut(StorageScanSafetyShortcut shortcut)
@@ -817,6 +843,7 @@ public partial class MainWindow : Window
             RemoveShownFromShortlistButton.IsEnabled = false;
             SearchBox.IsEnabled = false;
             EntryTypeFilterBox.IsEnabled = false;
+            ResetViewButton.IsEnabled = false;
             ClearSearchButton.IsEnabled = false;
             return;
         }
@@ -835,6 +862,15 @@ public partial class MainWindow : Window
         ExportQuarantinePreviewButton.IsEnabled = _currentQuarantinePreview is not null;
         SearchBox.IsEnabled = true;
         ClearSearchButton.IsEnabled = _currentSearch.IsActive;
+        ResetViewButton.IsEnabled = IsReviewViewFiltered();
+    }
+
+    private bool IsReviewViewFiltered()
+    {
+        return _currentFilter != StorageReviewFilter.All
+            || _currentCategoryFilter.Kind != StorageCategoryFilterKind.All
+            || _currentEntryTypeFilter != StorageEntryTypeFilter.All
+            || _currentSearch.IsActive;
     }
 
     private StorageEntryRow[] ApplyCurrentFilter()
@@ -986,6 +1022,7 @@ public partial class MainWindow : Window
         ExportQuarantinePreviewButton.IsEnabled = _currentQuarantinePreview is not null && ScanButton.IsEnabled;
         SearchBox.IsEnabled = _currentReview is not null && ScanButton.IsEnabled;
         ClearSearchButton.IsEnabled = _currentReview is not null && _currentSearch.IsActive && ScanButton.IsEnabled;
+        ResetViewButton.IsEnabled = _currentReview is not null && IsReviewViewFiltered() && ScanButton.IsEnabled;
     }
 
     private void SetSearchTextSilently(string text)

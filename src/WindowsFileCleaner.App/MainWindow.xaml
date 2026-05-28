@@ -230,6 +230,11 @@
                             MinWidth="110"
                             IsEnabled="False"
                             Click="ClearSearchButton_Click" />
+                    <Button x:Name="ResetViewButton"
+                            Content="Reset view"
+                            MinWidth="100"
+                            IsEnabled="False"
+                            Click="ResetViewButton_Click" />
                     <StackPanel Orientation="Horizontal"
                                 Margin="6,0,0,0"
                                 VerticalAlignment="Center">
