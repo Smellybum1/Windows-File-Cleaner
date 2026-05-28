@@ -6,11 +6,11 @@ Use it to preserve what was completed, what was verified, what was rejected, and
 
 ## Current status
 
-Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. Review filters, selected-folder child breakdown, selected-path inspection actions, CSV export, Review Mix, Storage Scan Safety Summary, Safety Summary review shortcuts, Access issues filtering, Bloat Category Filter, No category filtering, Review Shortlist, Quarantine Preview, Quarantine Preview CSV export, Restore Manifest Draft, Quarantine Confirmation Draft, Quarantine Readiness UI, conservative app data classification, and read-only safety regression checks are implemented and verified. Quarantine remains preview-only; no cleanup execution, manifest writing, or Undo Quarantine execution exists.
+Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. Review filters, selected-folder child breakdown, selected-path inspection actions, CSV export, Review Mix, Storage Scan Safety Summary, Safety Summary review shortcuts, Access issues filtering, Bloat Category Filter, No category filtering, Review Shortlist, Quarantine Preview, Quarantine Preview CSV export, Restore Manifest Draft, Quarantine Confirmation Draft, Quarantine Readiness UI, conservative app data classification, read-only safety regression checks, and the MVP runbook are implemented and verified. Quarantine remains preview-only; no cleanup execution, manifest writing, or Undo Quarantine execution exists.
 
 ## Next recommended work
 
-1. Ask the user to rerun the WPF app and confirm Safety Summary shortcuts, Review Shortlist, Quarantine Preview, Export preview, Review Mix, Access issues filter, category filter, No category filter, and filter wording are useful.
+1. Use `README.md` to rerun the WPF app and confirm Safety Summary shortcuts, Review Shortlist, Quarantine Preview, Export preview, Review Mix, Access issues filter, category filter, No category filter, and filter wording are useful.
 2. Rerun the real scan and check whether Windows app data, installed applications, and game data labels make the large app/game rows easier to triage.
 3. Retest the new Quarantine Readiness UI with a real scan and confirm the draft/readiness wording is understandable.
 4. Defer actual Quarantine and Undo Quarantine execution until scan review, preview semantics, confirmation semantics, and restore rules are trustworthy.
@@ -1049,3 +1049,43 @@ Rejected ideas buffer:
 - Do not block user-selected CSV report writes.
 - Do not scan docs or tests for banned APIs; fixtures are allowed to create/delete test files.
 - Do not treat this guard as a substitute for execution design if cleanup actions are added later.
+
+### 2026-05-28: Add MVP runbook
+
+Status: completed
+
+Evidence:
+
+- The repo had detailed Grill with Docs files but no app-focused root `README.md`.
+- Next work requires a safe manual WPF rerun against `C:\Users\moxhe`.
+
+Implementation:
+
+- Added `README.md` for the current Windows File Cleaner MVP.
+- Documented safety status, requirements, verification commands, WPF run command, default Cleanup Scope, manual MVP checklist, current workflow, and not-yet-implemented cleanup workflows.
+- Kept the existing `README-codex-grill-with-docs.md` scaffold README.
+
+Verification:
+
+- `dotnet build WindowsFileCleaner.sln --no-restore` passed.
+- `dotnet run --project tests\WindowsFileCleaner.Tests\WindowsFileCleaner.Tests.csproj --no-build` passed.
+
+Docs updated:
+
+- `README.md`
+- `docs/features/2026-05-28-mvp-runbook.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No new ADR. This is a documentation runbook for the current MVP.
+
+Open questions:
+
+- Should packaging instructions be added after a release build exists?
+
+Rejected ideas buffer:
+
+- Do not document cleanup execution commands before they exist.
+- Do not replace the Grill with Docs scaffold docs.
+- Do not claim the app is safe to delete files.
