@@ -6,6 +6,7 @@ tests.ScannerRefusesToLeaveCleanupScope();
 tests.ClassifierLabelsRealScanContainerPatterns();
 tests.ReviewBuilderSummarizesAndFiltersResults();
 tests.ReviewBuilderFiltersAccessIssues();
+tests.StorageScanSafetySummaryHighlightsReviewBoundaries();
 tests.ReviewShortlistTracksSelectedRowsWithoutModifyingReview();
 tests.QuarantinePreviewBuildsReadOnlyPlanFromShortlist();
 tests.QuarantinePreviewCsvExporterWritesReviewReport();
@@ -189,6 +190,111 @@ internal sealed class StorageScanTests
         Assert(review.Summary.AccessIssueLargestEntryBytes == 0, "Access issue largest row should reflect the unreadable row size.");
         Assert(accessRows.Count == 1, "Access issue filter should only return inaccessible rows.");
         Assert(accessRows[0].Entry.FullPath.EndsWith(@"\Locked", StringComparison.OrdinalIgnoreCase), "Access issue filter should return the inaccessible path.");
+    }
+
+    public void StorageScanSafetySummaryHighlightsReviewBoundaries()
+    {
+        var now = DateTimeOffset.UtcNow;
+        var protectedEntry = new StorageEntry(
+            @"C:\Users\moxhe\Documents",
+            "Documents",
+            IsDirectory: true,
+            SizeBytes: 4096,
+            LastModifiedUtc: now,
+            IsAccessible: true,
+            IsReparsePoint: false,
+            ErrorMessage: null,
+            BloatCategories: [BloatCategory.ProtectedLocation],
+            ImportanceRating: ImportanceRating.HighRisk,
+            DeletionRecommendation: DeletionRecommendation.Keep,
+            Evidence: "Protected location.",
+            Children: []);
+        var inaccessible = new StorageEntry(
+            @"C:\Users\moxhe\Locked",
+            "Locked",
+            IsDirectory: true,
+            SizeBytes: 0,
+            LastModifiedUtc: null,
+            IsAccessible: false,
+            IsReparsePoint: false,
+            ErrorMessage: "Access denied.",
+            BloatCategories: [BloatCategory.AccessIssue],
+            ImportanceRating: ImportanceRating.Caution,
+            DeletionRecommendation: DeletionRecommendation.Inspect,
+            Evidence: "The path could not be fully read.",
+            Children: []);
+        var reparsePoint = new StorageEntry(
+            @"C:\Users\moxhe\Linked",
+            "Linked",
+            IsDirectory: true,
+            SizeBytes: 0,
+            LastModifiedUtc: now,
+            IsAccessible: true,
+            IsReparsePoint: true,
+            ErrorMessage: null,
+            BloatCategories: [BloatCategory.ReparsePoint],
+            ImportanceRating: ImportanceRating.Caution,
+            DeletionRecommendation: DeletionRecommendation.Inspect,
+            Evidence: "Reparse point.",
+            Children: []);
+        var quarantineCandidate = new StorageEntry(
+            @"C:\Users\moxhe\Downloads\setup.msi",
+            "setup.msi",
+            IsDirectory: false,
+            SizeBytes: 1024,
+            LastModifiedUtc: now.AddDays(-120),
+            IsAccessible: true,
+            IsReparsePoint: false,
+            ErrorMessage: null,
+            BloatCategories: [BloatCategory.InstallerCache],
+            ImportanceRating: ImportanceRating.LikelySafe,
+            DeletionRecommendation: DeletionRecommendation.QuarantineCandidate,
+            Evidence: "Installer.",
+            Children: []);
+        var uncategorized = new StorageEntry(
+            @"C:\Users\moxhe\Unknown\notes.txt",
+            "notes.txt",
+            IsDirectory: false,
+            SizeBytes: 512,
+            LastModifiedUtc: now,
+            IsAccessible: true,
+            IsReparsePoint: false,
+            ErrorMessage: null,
+            BloatCategories: [],
+            ImportanceRating: ImportanceRating.Caution,
+            DeletionRecommendation: DeletionRecommendation.Inspect,
+            Evidence: "No cleanup-specific category matched this file.",
+            Children: []);
+        var root = new StorageEntry(
+            @"C:\Users\moxhe",
+            "moxhe",
+            IsDirectory: true,
+            SizeBytes: 5632,
+            LastModifiedUtc: now,
+            IsAccessible: true,
+            IsReparsePoint: false,
+            ErrorMessage: null,
+            BloatCategories: [BloatCategory.ProfileContainer],
+            ImportanceRating: ImportanceRating.Caution,
+            DeletionRecommendation: DeletionRecommendation.Inspect,
+            Evidence: "Root.",
+            Children: [protectedEntry, inaccessible, reparsePoint, quarantineCandidate, uncategorized]);
+        var result = new StorageScanResult(@"C:\Users\moxhe", now, now, root);
+        var review = StorageScanReviewBuilder.Build(result);
+
+        var summary = StorageScanSafetySummaryBuilder.Build(result, review);
+
+        Assert(summary.TotalEntries == 6, "Safety summary should count flattened scan rows.");
+        Assert(summary.HighRiskCount == 1, "Safety summary should count high-risk rows.");
+        Assert(summary.ProtectedLocationCount == 1, "Safety summary should count protected locations.");
+        Assert(summary.AccessIssueCount == 1, "Safety summary should count access issues.");
+        Assert(summary.ReparsePointCount == 1, "Safety summary should count reparse points.");
+        Assert(summary.QuarantineCandidateCount == 1, "Safety summary should count quarantine candidates.");
+        Assert(summary.UncategorizedCount == 1, "Safety summary should count uncategorized rows.");
+        Assert(summary.StatusLabel == "Review needed", "Safety summary should require review when warning signals exist.");
+        Assert(summary.Notes.Any(note => note.Contains("No files were modified", StringComparison.OrdinalIgnoreCase)), "Safety notes should preserve the read-only boundary.");
+        Assert(summary.Notes.Any(note => note.Contains("no permissions were changed", StringComparison.OrdinalIgnoreCase)), "Safety notes should not imply permission changes.");
+        Assert(summary.Notes.Any(note => note.Contains("review candidates only", StringComparison.OrdinalIgnoreCase)), "Safety notes should not treat quarantine candidates as approval.");
     }
 
     public void ReviewShortlistTracksSelectedRowsWithoutModifyingReview()

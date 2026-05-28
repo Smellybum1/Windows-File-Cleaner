@@ -13,6 +13,7 @@ public partial class MainWindow : Window
     private readonly StorageReviewShortlist _shortlist = new();
     private CancellationTokenSource? _scanCancellation;
     private StorageScanReview? _currentReview;
+    private StorageScanSafetySummary? _currentSafetySummary;
     private QuarantinePreview? _currentQuarantinePreview;
     private string? _currentCleanupScopePath;
     private StorageReviewFilter _currentFilter = StorageReviewFilter.All;
@@ -39,6 +40,8 @@ public partial class MainWindow : Window
         SetScanningState(isScanning: true);
         _scanCancellation = new CancellationTokenSource();
         var cancellationToken = _scanCancellation.Token;
+        _currentSafetySummary = null;
+        UpdateSafetySummary();
 
         try
         {
@@ -48,6 +51,7 @@ public partial class MainWindow : Window
 
             var result = await Task.Run(() => scanner.Scan(options, cancellationToken), cancellationToken);
             _currentReview = StorageScanReviewBuilder.Build(result);
+            _currentSafetySummary = StorageScanSafetySummaryBuilder.Build(result, _currentReview);
             _currentCleanupScopePath = result.CleanupScopePath;
             _currentFilter = StorageReviewFilter.All;
             _currentCategoryFilter = StorageCategoryFilter.All;
@@ -65,6 +69,7 @@ public partial class MainWindow : Window
             UpdateFilterButtons();
             UpdateFilterSummary();
             UpdateReviewMix();
+            UpdateSafetySummary();
             UpdateShortlistControls();
 
             if (rows.Length > 0)
@@ -589,6 +594,26 @@ public partial class MainWindow : Window
             $"High risk {summary.HighRiskCount:N0} (largest {ByteSizeFormatter.Format(summary.HighRiskLargestEntryBytes)}) | " +
             $"Quarantine candidates {summary.QuarantineCandidateCount:N0} (largest {ByteSizeFormatter.Format(summary.QuarantineCandidateLargestEntryBytes)}) | " +
             $"Access issues {summary.AccessIssueCount:N0}";
+    }
+
+    private void UpdateSafetySummary()
+    {
+        if (_currentSafetySummary is null)
+        {
+            SafetySummaryText.Text = "Safety summary appears after a scan.";
+            return;
+        }
+
+        var summary = _currentSafetySummary;
+        SafetySummaryText.Text =
+            $"Safety summary: {summary.StatusLabel} | " +
+            $"High risk {summary.HighRiskCount:N0} | " +
+            $"Protected {summary.ProtectedLocationCount:N0} | " +
+            $"Access issues {summary.AccessIssueCount:N0} | " +
+            $"Reparse points {summary.ReparsePointCount:N0} | " +
+            $"Quarantine candidates {summary.QuarantineCandidateCount:N0} | " +
+            $"No category {summary.UncategorizedCount:N0}. " +
+            string.Join(" ", summary.Notes);
     }
 
     private static string FormatFilter(StorageReviewFilter filter)

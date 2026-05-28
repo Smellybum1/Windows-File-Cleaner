@@ -407,6 +407,50 @@ It shows counts and largest-row sizes for Likely safe, Caution, High risk, and Q
 - Use largest-row sizes for triage until the app has an explicit non-overlapping selection model.
 - Show Access issues as a count because unreadable rows may not have meaningful size data.
 
+### Storage Scan Safety Summary
+
+Status: draft
+Last reviewed: 2026-05-28
+
+#### Definition
+
+A Storage Scan Safety Summary is a read-only health readout for the current Storage Scan.
+
+It summarizes safety-relevant scan signals such as high-risk rows, Protected Locations, access issues, reparse points, Quarantine candidates, and Uncategorized Results.
+
+#### Examples
+
+- Show that the scan was read-only and no files were modified.
+- Show that access issues mean scan coverage is incomplete.
+- Show that Protected Locations and high-risk rows require manual review.
+- Show that Quarantine candidates are only preview candidates, not approved cleanup.
+
+#### Non-examples
+
+- A Cleanup Action.
+- A safety guarantee.
+- A deletion approval.
+- A replacement for inspecting rows.
+
+#### Lifecycle
+
+- Generated after a Storage Scan completes.
+- Updates with the current scan result.
+- Remains read-only.
+- Is cleared by a new scan until the next result is available.
+
+#### Relationships
+
+- Uses Storage Scan results and Review Mix counts.
+- Uses Bloat Categories, Importance Ratings, Deletion Recommendations, and scanner access status.
+- Supports Review Shortlist and Quarantine Preview by reminding the user which boundaries remain unresolved.
+
+#### Code implications
+
+- Use `StorageScanSafetySummary` and `StorageScanSafetySummaryBuilder`.
+- Keep summary notes derived from scan results only.
+- Do not trigger permission changes, cleanup actions, quarantine actions, or rescans from the summary.
+
 ### Child Breakdown
 
 Status: draft  

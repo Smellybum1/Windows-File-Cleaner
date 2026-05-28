@@ -6,11 +6,11 @@ Use it to preserve what was completed, what was verified, what was rejected, and
 
 ## Current status
 
-Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. Review filters, selected-folder child breakdown, selected-path inspection actions, CSV export, Review Mix, Access issues filtering, Bloat Category Filter, No category filtering, Review Shortlist, Quarantine Preview, and Quarantine Preview CSV export are implemented and verified. Quarantine Preview export is awaiting user retest after push.
+Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. Review filters, selected-folder child breakdown, selected-path inspection actions, CSV export, Review Mix, Storage Scan Safety Summary, Access issues filtering, Bloat Category Filter, No category filtering, Review Shortlist, Quarantine Preview, and Quarantine Preview CSV export are implemented and verified. Safety Summary is awaiting user retest after push.
 
 ## Next recommended work
 
-1. Ask the user to rerun the WPF app and confirm Review Shortlist, Quarantine Preview, Export preview, Review Mix, Access issues filter, category filter, No category filter, and filter wording are useful.
+1. Ask the user to rerun the WPF app and confirm Safety Summary, Review Shortlist, Quarantine Preview, Export preview, Review Mix, Access issues filter, category filter, No category filter, and filter wording are useful.
 2. Use review feedback to refine Protected Locations and category grouping.
 3. Design Restore Manifest and explicit confirmation semantics before any actual Quarantine execution.
 4. Defer actual Quarantine and Undo Quarantine execution until scan review, preview semantics, and restore rules are trustworthy.
@@ -730,3 +730,48 @@ Rejected ideas buffer:
 - Do not call the preview export a manifest.
 - Do not export an executable cleanup script.
 - Do not auto-save the preview without a user-selected report path.
+
+### 2026-05-28: Add Storage Scan Safety Summary
+
+Status: completed
+
+Evidence:
+
+- The first real scan surfaced access issues, high-risk/protected rows, and many rows requiring review.
+- Future cleanup work needs the read-only safety boundary to stay visible.
+
+Implementation:
+
+- Added `StorageScanSafetySummary`.
+- Added `StorageScanSafetySummaryBuilder`.
+- Added WPF Safety Summary text under Review Mix.
+- Summary displays Cleanup Scope/read-only notes, high-risk count, Protected Location count, access issue count, reparse point count, Quarantine candidate count, and Uncategorized Result count.
+- Starting a new scan clears the previous safety summary.
+- No permission change, cleanup execution, quarantine execution, manifest write, or rescan behavior was added.
+
+Verification:
+
+- `dotnet build WindowsFileCleaner.sln --no-restore` passed.
+- `dotnet run --project tests\WindowsFileCleaner.Tests\WindowsFileCleaner.Tests.csproj --no-build` passed.
+
+Docs updated:
+
+- `docs/domain/context.md`
+- `docs/domain/glossary.md`
+- `docs/features/2026-05-28-storage-scan-safety-summary.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No new ADR. This is an incremental read-only reporting feature.
+
+Open questions:
+
+- Should the summary be exportable as part of a future scan report bundle?
+- Should summary notes become clickable filters later?
+
+Rejected ideas buffer:
+
+- Do not use the summary as a Cleanup Action gate yet.
+- Do not make the summary a safety score.
+- Do not hide access issues or protected rows from review.

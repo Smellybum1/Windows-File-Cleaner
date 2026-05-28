@@ -106,10 +106,17 @@
                 BorderThickness="1"
                 Padding="12"
                 Margin="0,0,0,12">
-            <TextBlock x:Name="ReviewMixText"
-                       Text="Review mix appears after a scan."
-                       Foreground="#526171"
-                       TextWrapping="Wrap" />
+            <StackPanel>
+                <TextBlock x:Name="ReviewMixText"
+                           Text="Review mix appears after a scan."
+                           Foreground="#526171"
+                           TextWrapping="Wrap" />
+                <TextBlock x:Name="SafetySummaryText"
+                           Text="Safety summary appears after a scan."
+                           Foreground="#526171"
+                           Margin="0,8,0,0"
+                           TextWrapping="Wrap" />
+            </StackPanel>
         </Border>
 
         <Grid Grid.Row="3">
