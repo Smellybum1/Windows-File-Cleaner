@@ -6,14 +6,14 @@ Use it to preserve what was completed, what was verified, what was rejected, and
 
 ## Current status
 
-Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. Review filters, selected-folder child breakdown, selected-path inspection actions, CSV export, Review Mix, Access issues filtering, Bloat Category Filter, No category filtering, and Review Shortlist are implemented and verified. Review Shortlist is awaiting user retest after push.
+Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. Review filters, selected-folder child breakdown, selected-path inspection actions, CSV export, Review Mix, Access issues filtering, Bloat Category Filter, No category filtering, Review Shortlist, and Quarantine Preview are implemented and verified. Quarantine Preview is awaiting user retest after push.
 
 ## Next recommended work
 
-1. Ask the user to rerun the WPF app and confirm Review Shortlist, Review Mix, Access issues filter, category filter, No category filter, and filter wording are useful.
+1. Ask the user to rerun the WPF app and confirm Review Shortlist, Quarantine Preview, Review Mix, Access issues filter, category filter, No category filter, and filter wording are useful.
 2. Use review feedback to refine Protected Locations and category grouping.
-3. Add a safer Quarantine preview only after review categories and Review Shortlist behavior feel trustworthy.
-4. Defer actual Quarantine and Undo Quarantine execution until scan review and preview semantics are trustworthy.
+3. Design Restore Manifest and explicit confirmation semantics before any actual Quarantine execution.
+4. Defer actual Quarantine and Undo Quarantine execution until scan review, preview semantics, and restore rules are trustworthy.
 5. Revisit .NET 10 before packaging or long-term distribution.
 
 ## Completed packets
@@ -639,3 +639,50 @@ Rejected ideas buffer:
 
 - Do not treat Review Shortlist as Quarantine approval.
 - Do not persist shortlisted paths until restore-manifest and cleanup-preview semantics are defined.
+
+### 2026-05-28: Add Quarantine Preview
+
+Status: completed
+
+Evidence:
+
+- The user requested a quarantine folder preferably on `D:` with easy undo.
+- Review Shortlist now provides a smaller user-selected set to preview before any cleanup action.
+- Safety docs require dry-run or preview behavior before file-moving code.
+
+Implementation:
+
+- Added `QuarantinePreview`, `QuarantinePreviewEntry`, `QuarantinePreviewDisposition`, and `QuarantinePreviewBuilder`.
+- Added default preview root `D:\WindowsFileCleanerQuarantine`.
+- Added WPF Preview quarantine control and preview summary display.
+- Preview output shows included, blocked, and redundant rows, non-overlapping previewed bytes, and destination paths for included rows.
+- Preview blocks high-risk, protected, inaccessible, reparse-point, outside-scope, and non-quarantine-candidate rows.
+- Preview marks child rows redundant when a selected parent is already included.
+- No folder creation, file move, deletion, manifest write, or cleanup execution was added.
+
+Verification:
+
+- `dotnet build WindowsFileCleaner.sln --no-restore` passed.
+- `dotnet run --project tests\WindowsFileCleaner.Tests\WindowsFileCleaner.Tests.csproj --no-build` passed.
+
+Docs updated:
+
+- `docs/domain/context.md`
+- `docs/domain/glossary.md`
+- `docs/features/2026-05-28-quarantine-preview.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No new ADR. This is an incremental read-only preview feature. Actual Quarantine execution and Restore Manifest design may need ADR coverage later.
+
+Open questions:
+
+- Should actual Quarantine execution use `D:\WindowsFileCleanerQuarantine` by default, or ask the user to choose a path?
+- Should a later preview export a restore-manifest-shaped draft?
+
+Rejected ideas buffer:
+
+- Do not add an Execute, Move, Delete, or Quarantine button in this packet.
+- Do not write a Restore Manifest during preview.
+- Do not count overlapping parent/child rows as separate Storage Savings.

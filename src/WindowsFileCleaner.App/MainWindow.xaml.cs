@@ -13,6 +13,8 @@ public partial class MainWindow : Window
     private readonly StorageReviewShortlist _shortlist = new();
     private CancellationTokenSource? _scanCancellation;
     private StorageScanReview? _currentReview;
+    private QuarantinePreview? _currentQuarantinePreview;
+    private string? _currentCleanupScopePath;
     private StorageReviewFilter _currentFilter = StorageReviewFilter.All;
     private StorageCategoryFilter _currentCategoryFilter = StorageCategoryFilter.All;
     private StorageEntryRow? _selectedRow;
@@ -46,9 +48,11 @@ public partial class MainWindow : Window
 
             var result = await Task.Run(() => scanner.Scan(options, cancellationToken), cancellationToken);
             _currentReview = StorageScanReviewBuilder.Build(result);
+            _currentCleanupScopePath = result.CleanupScopePath;
             _currentFilter = StorageReviewFilter.All;
             _currentCategoryFilter = StorageCategoryFilter.All;
             _shortlist.Clear();
+            ClearQuarantinePreview();
             UpdateCategoryFilterOptions();
             var rows = ApplyCurrentFilter();
 
@@ -128,6 +132,7 @@ public partial class MainWindow : Window
         }
 
         _shortlist.Add(_selectedRow.Entry);
+        ClearQuarantinePreview();
         var selectedPath = _selectedRow.FullPath;
         RefreshResults(selectedPath);
         StatusText.Text = $"Added selected path to review shortlist ({_shortlist.Count:N0}). No files were modified.";
@@ -141,6 +146,7 @@ public partial class MainWindow : Window
         }
 
         _shortlist.Remove(_selectedRow.Entry);
+        ClearQuarantinePreview();
         var selectedPath = _selectedRow.FullPath;
         RefreshResults(selectedPath);
         StatusText.Text = $"Removed selected path from review shortlist ({_shortlist.Count:N0}). No files were modified.";
@@ -149,8 +155,26 @@ public partial class MainWindow : Window
     private void ClearShortlistButton_Click(object sender, RoutedEventArgs e)
     {
         _shortlist.Clear();
+        ClearQuarantinePreview();
         RefreshResults();
         StatusText.Text = "Review shortlist cleared. No files were modified.";
+    }
+
+    private void PreviewQuarantineButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (_currentReview is null || _currentCleanupScopePath is null || _shortlist.Count == 0)
+        {
+            return;
+        }
+
+        var shortlistedRows = _shortlist.ApplyTo(_currentReview.Entries);
+        _currentQuarantinePreview = QuarantinePreviewBuilder.Build(shortlistedRows, _currentCleanupScopePath);
+        QuarantinePreviewText.Text = FormatQuarantinePreview(_currentQuarantinePreview);
+        StatusText.Text =
+            $"Quarantine Preview created: {_currentQuarantinePreview.IncludedCount:N0} included, " +
+            $"{_currentQuarantinePreview.BlockedCount:N0} blocked, " +
+            $"{_currentQuarantinePreview.RedundantCount:N0} redundant, " +
+            $"{_currentQuarantinePreview.IncludedSizeDisplay} previewed. No files were modified.";
     }
 
     private void CategoryFilterBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -306,6 +330,7 @@ public partial class MainWindow : Window
         ExportCsvButton.IsEnabled = !isScanning && _currentReview is not null;
         ExportShortlistCsvButton.IsEnabled = !isScanning && _currentReview is not null && _shortlist.Count > 0;
         ClearShortlistButton.IsEnabled = !isScanning && _shortlist.Count > 0;
+        PreviewQuarantineButton.IsEnabled = !isScanning && _currentReview is not null && _shortlist.Count > 0;
         CategoryFilterBox.IsEnabled = !isScanning && _currentReview is not null && CategoryFilterBox.Items.Count > 1;
         UpdateShortlistControls();
     }
@@ -357,6 +382,10 @@ public partial class MainWindow : Window
             HighRiskFilterButton.Content = "High risk";
             QuarantineCandidateFilterButton.Content = "Quarantine candidates";
             AccessIssuesFilterButton.Content = "Access issues";
+            ExportCsvButton.IsEnabled = false;
+            ExportShortlistCsvButton.IsEnabled = false;
+            ClearShortlistButton.IsEnabled = false;
+            PreviewQuarantineButton.IsEnabled = false;
             return;
         }
 
@@ -370,6 +399,7 @@ public partial class MainWindow : Window
         ExportCsvButton.IsEnabled = true;
         ExportShortlistCsvButton.IsEnabled = _shortlist.Count > 0;
         ClearShortlistButton.IsEnabled = _shortlist.Count > 0;
+        PreviewQuarantineButton.IsEnabled = _shortlist.Count > 0;
     }
 
     private StorageEntryRow[] ApplyCurrentFilter()
@@ -457,6 +487,51 @@ public partial class MainWindow : Window
         var hasShortlist = _shortlist.Count > 0;
         ExportShortlistCsvButton.IsEnabled = _currentReview is not null && hasShortlist && ScanButton.IsEnabled;
         ClearShortlistButton.IsEnabled = hasShortlist && ScanButton.IsEnabled;
+        PreviewQuarantineButton.IsEnabled = _currentReview is not null && hasShortlist && ScanButton.IsEnabled;
+    }
+
+    private void ClearQuarantinePreview()
+    {
+        _currentQuarantinePreview = null;
+        QuarantinePreviewText.Text = "Preview appears after using Preview quarantine.";
+    }
+
+    private static string FormatQuarantinePreview(QuarantinePreview preview)
+    {
+        const int maxRows = 12;
+        var lines = new List<string>
+        {
+            $"Default root: {preview.QuarantineRootPath}",
+            $"Included: {preview.IncludedCount:N0} | Blocked: {preview.BlockedCount:N0} | Redundant: {preview.RedundantCount:N0}",
+            $"Previewed size: {preview.IncludedSizeDisplay}",
+            "No files were modified."
+        };
+
+        foreach (var entry in preview.Entries.Take(maxRows))
+        {
+            var details = entry.Disposition == QuarantinePreviewDisposition.Included
+                ? $"{entry.SourcePath} -> {entry.DestinationPath}"
+                : $"{entry.SourcePath} | {string.Join("; ", entry.Reasons)}";
+            lines.Add($"{FormatPreviewDisposition(entry.Disposition)} | {entry.SizeDisplay} | {details}");
+        }
+
+        if (preview.Entries.Count > maxRows)
+        {
+            lines.Add($"... {preview.Entries.Count - maxRows:N0} more shortlisted rows not shown in this pane.");
+        }
+
+        return string.Join(Environment.NewLine, lines);
+    }
+
+    private static string FormatPreviewDisposition(QuarantinePreviewDisposition disposition)
+    {
+        return disposition switch
+        {
+            QuarantinePreviewDisposition.Included => "Included",
+            QuarantinePreviewDisposition.Blocked => "Blocked",
+            QuarantinePreviewDisposition.Redundant => "Redundant",
+            _ => disposition.ToString()
+        };
     }
 
     private void UpdateReviewMix()

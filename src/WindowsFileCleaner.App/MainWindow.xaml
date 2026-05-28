@@ -201,6 +201,11 @@
                                 MinWidth="120"
                                 IsEnabled="False"
                                 Click="ClearShortlistButton_Click" />
+                        <Button x:Name="PreviewQuarantineButton"
+                                Content="Preview quarantine"
+                                MinWidth="145"
+                                IsEnabled="False"
+                                Click="PreviewQuarantineButton_Click" />
                         <TextBlock Text="Category"
                                    VerticalAlignment="Center"
                                    Foreground="#526171"
@@ -307,6 +312,14 @@
                                        Margin="0,18,0,4" />
                             <TextBlock x:Name="DetailChildrenText"
                                        Text=""
+                                       FontFamily="Consolas"
+                                       FontSize="12"
+                                       TextWrapping="Wrap" />
+                            <TextBlock Text="Quarantine preview"
+                                       FontWeight="SemiBold"
+                                       Margin="0,18,0,4" />
+                            <TextBlock x:Name="QuarantinePreviewText"
+                                       Text="Preview appears after using Preview quarantine."
                                        FontFamily="Consolas"
                                        FontSize="12"
                                        TextWrapping="Wrap" />

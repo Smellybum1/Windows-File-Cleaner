@@ -524,13 +524,59 @@ It is not a cleanup approval and does not modify files.
 
 - Uses Storage Scan results.
 - Supports Selected Path Inspection, Storage Review Filters, Bloat Category Filters, and Scan Report Export.
-- May inform a future Quarantine preview, but only after a separate explicit confirmation step is designed.
+- May inform a Quarantine Preview, but only after a separate explicit confirmation step is designed.
 
 #### Code implications
 
 - Use `StorageReviewShortlist` for the in-memory selection model.
 - Keep shortlisted paths separate from Cleanup Actions and Quarantine manifests.
 - Do not persist or execute the Review Shortlist as an action without a future explicit approval workflow.
+
+### Quarantine Preview
+
+Status: draft
+Last reviewed: 2026-05-28
+
+#### Definition
+
+A Quarantine Preview is a read-only dry run showing which shortlisted Storage Scan rows would be eligible for a future Quarantine action, where they would go, what size they represent, and which rows are blocked or redundant.
+
+It does not create folders, write manifests, move files, delete files, or approve cleanup.
+
+#### Examples
+
+- Preview a Review Shortlist and show that `old-installer.msi` would move under `D:\WindowsFileCleanerQuarantine`.
+- Block a high-risk browser profile row from the preview.
+- Mark a child row as redundant when its selected parent is already included.
+
+#### Non-examples
+
+- A Cleanup Action.
+- A Restore Manifest.
+- A persisted cleanup job.
+- Confirmation that files should be moved.
+
+#### Lifecycle
+
+- Generated from the current Review Shortlist on user request.
+- Uses the current Cleanup Scope and default Quarantine root.
+- Shows included, blocked, and redundant rows.
+- Is discarded when scan results or the Review Shortlist change.
+
+#### Relationships
+
+- Depends on Review Shortlist.
+- Precedes any future Quarantine Cleanup Action.
+- Helps validate Storage Savings without double-counting selected parent/child paths.
+- Uses Quarantine as the future destination concept but does not perform Quarantine.
+
+#### Code implications
+
+- Use `QuarantinePreview`, `QuarantinePreviewEntry`, and `QuarantinePreviewBuilder`.
+- Keep preview generation read-only.
+- Do not create the quarantine folder or restore manifest during preview.
+- Compute previewed bytes from non-overlapping included rows only.
+- Block high-risk, inaccessible, reparse-point, outside-scope, protected-location, and non-quarantine-candidate rows.
 
 ### Scan Report Export
 
@@ -569,6 +615,7 @@ The initial export format is CSV for the currently active Storage Review Filter 
 - Uses Storage Scan results.
 - Uses Storage Review Filters.
 - Uses Bloat Category Filters.
+- May export a Review Shortlist, but that export remains a report rather than a Cleanup Action.
 - Supports manual review before Quarantine or any future cleanup action.
 
 #### Code implications
@@ -781,7 +828,7 @@ Last reviewed: 2026-05-28
 
 Quarantine is a reversible holding area for Cleanup Candidates that the user has approved for removal from the original location but may want to restore.
 
-The preferred quarantine location is on `D:`. A likely default folder name is `D:\WindowsFileCleanerQuarantine`, but the exact path is still open.
+The preferred quarantine location is on `D:`. The current preview default is `D:\WindowsFileCleanerQuarantine`; actual cleanup execution can revisit whether that should remain configurable.
 
 #### Examples
 
@@ -954,5 +1001,5 @@ Default policy for now:
 
 Keep this short. Move feature-specific questions to `docs/features/`.
 
-- What exact `D:` quarantine path should be used?
+- Should the default preview root `D:\WindowsFileCleanerQuarantine` remain the default for actual Quarantine execution?
 - Which locations should be protected from cleanup but still shown in the report?

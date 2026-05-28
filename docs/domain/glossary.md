@@ -50,8 +50,9 @@ If a term needs to change, update this glossary first, then update code and docs
 | Child Breakdown | Read-only summary of the largest immediate children inside a selected folder. | `StorageChildSummary`, `StorageChildSummaryBuilder` | Helps inspect large containers without marking the container safe. |
 | Selected Path Inspection | Read-only action for inspecting a selected scan result. | `PathInspectionPlan`, `PathInspectionPlanBuilder` | Initial actions: copy path, open in File Explorer. Not a Cleanup Action. |
 | Review Shortlist | Temporary in-memory set of Storage Scan rows marked for follow-up review. | `StorageReviewShortlist` | Not a Cleanup Action, Quarantine approval, or persisted history. |
+| Quarantine Preview | Read-only dry run showing eligible, blocked, and redundant shortlisted rows before any quarantine action. | `QuarantinePreview`, `QuarantinePreviewEntry`, `QuarantinePreviewBuilder` | Does not create folders, write manifests, move files, delete files, or approve cleanup. |
 | Scan Report Export | Read-only report generated from Storage Scan results. | `StorageScanCsvExporter` | Initial format is CSV for the active Storage Review Filter. |
-| Quarantine | A reversible holding location for selected files or folders before deletion. | `Quarantine`, `quarantinePath` | Preferred on `D:`. Exact path is still open. |
+| Quarantine | A reversible holding location for selected files or folders before deletion. | `Quarantine`, `quarantinePath` | Preferred on `D:`. Current preview default is `D:\WindowsFileCleanerQuarantine`. |
 | Undo Quarantine | Restore a quarantined file or folder to its original path. | `UndoQuarantine`, `undoQuarantine` | Requires a restore manifest. |
 | Restore Manifest | Metadata needed to undo a quarantine action. | `RestoreManifest`, `restoreManifestPath` | Should include original path, quarantine path, size, timestamps, and action time. |
 | Desktop App | The preferred app shape for this project. | `DesktopApp` only if needed | Implement with C# and WPF. |
@@ -76,6 +77,7 @@ If a term needs to change, update this glossary first, then update code and docs
 | Bloat | Cleanup Candidate, unwanted bloat | User-facing shorthand only; define concrete categories before code relies on it. |
 | Score | Importance Rating or Deletion Recommendation | Too vague unless the specific rating is named. |
 | Restore Log | Restore Manifest | Use manifest when it is required for undo behavior. |
+| Cleanup Plan | Quarantine Preview | Use the more precise preview term until actual Cleanup Actions exist. |
 
 ## Term template
 
@@ -124,4 +126,4 @@ Use this section when renaming language.
 ## Open naming questions
 
 - Should user-facing copy say "cleanup candidate", "review candidate", or something friendlier?
-- What exact `D:` quarantine path should be used?
+- Should the default preview root `D:\WindowsFileCleanerQuarantine` remain the default for actual Quarantine execution?

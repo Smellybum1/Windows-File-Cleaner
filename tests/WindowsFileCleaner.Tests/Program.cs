@@ -7,6 +7,7 @@ tests.ClassifierLabelsRealScanContainerPatterns();
 tests.ReviewBuilderSummarizesAndFiltersResults();
 tests.ReviewBuilderFiltersAccessIssues();
 tests.ReviewShortlistTracksSelectedRowsWithoutModifyingReview();
+tests.QuarantinePreviewBuildsReadOnlyPlanFromShortlist();
 tests.ChildSummaryShowsLargestImmediateChildren();
 tests.PathInspectionPlanBuildsExplorerArguments();
 tests.CsvExporterWritesEscapedReviewRows();
@@ -222,6 +223,52 @@ internal sealed class StorageScanTests
         Assert(shortlist.Count == 0, "Clear should remove every shortlisted path.");
     }
 
+    public void QuarantinePreviewBuildsReadOnlyPlanFromShortlist()
+    {
+        using var fixture = TestFixture.Create();
+
+        fixture.WriteFile(@"Downloads\OldInstallers\setup.msi", 1024 * 1024 * 2, DateTimeOffset.UtcNow.AddDays(-120));
+        fixture.WriteFile(@"Documents\important.txt", 1024, DateTimeOffset.UtcNow);
+        fixture.WriteFile(@"Unknown\notes.txt", 1024, DateTimeOffset.UtcNow);
+
+        var scanner = new StorageScanner();
+        var result = scanner.Scan(new StorageScanOptions(fixture.RootPath));
+        var review = StorageScanReviewBuilder.Build(result);
+        var parent = SingleReviewEntry(review.Entries, @"Downloads\OldInstallers");
+        var child = SingleReviewEntry(review.Entries, @"Downloads\OldInstallers\setup.msi");
+        var protectedRow = SingleReviewEntry(review.Entries, @"Documents");
+        var nonCandidate = SingleReviewEntry(review.Entries, @"Unknown\notes.txt");
+        var quarantineRoot = Path.Combine(fixture.RootPath, "quarantine-root");
+
+        var preview = QuarantinePreviewBuilder.Build(
+            [child, parent, protectedRow, nonCandidate],
+            fixture.RootPath,
+            quarantineRoot);
+
+        Assert(preview.IncludedCount == 1, "Preview should include only one non-overlapping eligible row.");
+        Assert(preview.BlockedCount == 2, "Preview should block protected and non-candidate rows.");
+        Assert(preview.RedundantCount == 1, "Preview should mark selected children as redundant when a parent is included.");
+        Assert(preview.IncludedBytes == parent.Entry.SizeBytes, "Preview should not double-count a child covered by an included parent.");
+
+        var parentPreview = preview.Entries.Single(entry => entry.SourcePath == parent.Entry.FullPath);
+        Assert(parentPreview.Disposition == QuarantinePreviewDisposition.Included, "Eligible parent should be included.");
+        Assert(
+            parentPreview.DestinationPath == Path.GetFullPath(Path.Combine(quarantineRoot, "preview", "Downloads", "OldInstallers")),
+            "Included entry should map under the quarantine preview root.");
+
+        var childPreview = preview.Entries.Single(entry => entry.SourcePath == child.Entry.FullPath);
+        Assert(childPreview.Disposition == QuarantinePreviewDisposition.Redundant, "Child should be redundant because parent is included.");
+
+        var protectedPreview = preview.Entries.Single(entry => entry.SourcePath == protectedRow.Entry.FullPath);
+        Assert(protectedPreview.Disposition == QuarantinePreviewDisposition.Blocked, "Protected row should be blocked.");
+        Assert(protectedPreview.Reasons.Any(reason => reason.Contains("High-risk", StringComparison.OrdinalIgnoreCase)), "Protected row should explain high-risk blocking.");
+
+        var nonCandidatePreview = preview.Entries.Single(entry => entry.SourcePath == nonCandidate.Entry.FullPath);
+        Assert(nonCandidatePreview.Disposition == QuarantinePreviewDisposition.Blocked, "Non-candidate row should be blocked.");
+        Assert(nonCandidatePreview.Reasons.Any(reason => reason.Contains("Quarantine candidate", StringComparison.OrdinalIgnoreCase)), "Non-candidate row should explain recommendation blocking.");
+        Assert(!Directory.Exists(quarantineRoot), "Preview should not create the quarantine root folder.");
+    }
+
     public void ChildSummaryShowsLargestImmediateChildren()
     {
         using var fixture = TestFixture.Create();
@@ -303,6 +350,11 @@ internal sealed class StorageScanTests
     private static StorageEntry Single(IEnumerable<StorageEntry> entries, string name)
     {
         return entries.Single(entry => entry.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+    }
+
+    private static StorageReviewEntry SingleReviewEntry(IEnumerable<StorageReviewEntry> entries, string relativePath)
+    {
+        return entries.Single(entry => entry.Entry.FullPath.EndsWith(relativePath, StringComparison.OrdinalIgnoreCase));
     }
 
     private static IEnumerable<StorageEntry> Flatten(StorageEntry entry)
