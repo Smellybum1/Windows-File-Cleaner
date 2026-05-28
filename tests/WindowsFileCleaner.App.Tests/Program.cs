@@ -24,6 +24,7 @@ internal static class Program
                 tests.MainWindowUsesLaunchCleanupScopeWithoutStartingScan();
                 tests.MainWindowUsesWrappingReviewToolbarLayout();
                 tests.MainWindowRunsFixtureStorageScanThroughWpfShell();
+                tests.MainWindowShowsDisplayLimitForLargeFixtureScan();
                 tests.MainWindowRunsFixtureReviewInteractionsThroughWpfShell();
             }
             finally
@@ -172,6 +173,37 @@ internal sealed class MainWindowSmokeTests
             Assert(!window.FilterSummaryTextValue.Contains("Search \"", StringComparison.OrdinalIgnoreCase), "Cleared search should be removed from the filter summary.");
 
             Assert(File.Exists(fixture.MarkerPath), "Fixture marker file should still exist after the read-only scan.");
+        }
+        finally
+        {
+            window.Close();
+        }
+    }
+
+    public void MainWindowShowsDisplayLimitForLargeFixtureScan()
+    {
+        using var fixture = SmokeFixture.CreateLargeResultSet();
+        var window = new MainWindow(fixture.RootPath);
+        try
+        {
+            RunDispatcherTask(() => window.RunStorageScanForCurrentScopeAsync());
+
+            Assert(
+                window.DisplayedRowCount == 2000,
+                "Large fixture scan should cap the WPF grid at the display limit.");
+            Assert(
+                window.CurrentStatusText.Contains("Showing 2,000 of", StringComparison.OrdinalIgnoreCase),
+                "Large fixture status should distinguish displayed rows from matched paths.");
+            Assert(
+                window.FilterSummaryTextValue.Contains("2,000 shown of", StringComparison.OrdinalIgnoreCase),
+                "Filter summary should distinguish displayed rows from matched rows.");
+            Assert(
+                window.FilterSummaryTextValue.Contains("Display limit 2,000", StringComparison.OrdinalIgnoreCase),
+                "Filter summary should explain the display limit when more matches exist.");
+            Assert(
+                window.FilterSummaryTextValue.Contains("largest matched row", StringComparison.OrdinalIgnoreCase),
+                "Filter summary should label largest-row size as matched-row triage.");
+            Assert(File.Exists(fixture.MarkerPath), "Large fixture marker file should still exist after the read-only scan.");
         }
         finally
         {
@@ -334,6 +366,33 @@ internal sealed class SmokeFixture : IDisposable
         fixture.WriteFile(@"Documents\important.txt", "Synthetic protected document.", now);
         fixture.WriteFile(@".codex\config.json", "{ \"synthetic\": true }", now);
         fixture.WriteFile(@"Unknown\notes.txt", "Synthetic uncategorized note.", now);
+
+        return fixture;
+    }
+
+    public static SmokeFixture CreateLargeResultSet()
+    {
+        const int bulkFileCount = 2050;
+        var root = Path.Combine(
+            Environment.CurrentDirectory,
+            "test-fixtures",
+            "app",
+            "large",
+            Guid.NewGuid().ToString("N"));
+
+        Directory.CreateDirectory(root);
+        var fixture = new SmokeFixture(root, Path.Combine(root, "Unknown", "large-fixture-marker.txt"));
+        var now = DateTimeOffset.UtcNow;
+
+        fixture.WriteFile(@"Unknown\large-fixture-marker.txt", "Synthetic marker for capped display smoke test.", now);
+
+        for (var index = 0; index < bulkFileCount; index++)
+        {
+            fixture.WriteFile(
+                $@"Bulk\bulk-file-{index:D4}.tmp",
+                "Synthetic bulk row.",
+                now.AddMinutes(-index));
+        }
 
         return fixture;
     }

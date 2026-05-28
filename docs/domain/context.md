@@ -362,6 +362,48 @@ It matches path, name, category, Importance Rating, Deletion Recommendation, evi
 - Keep search in-memory and read-only.
 - Do not use search text to change Bloat Categories, Importance Ratings, Deletion Recommendations, or cleanup eligibility.
 
+### Storage Review Display Limit
+
+Status: draft
+Last reviewed: 2026-05-28
+
+#### Definition
+
+The Storage Review Display Limit is the maximum number of matched Storage Scan review rows shown in the WPF results grid at one time.
+
+The current display limit is 2,000 rows. It is a UI review boundary, not a scanner boundary.
+
+#### Examples
+
+- A real scan may contain 188,580 files and still show only the largest 2,000 matched review rows in the grid.
+- The filter summary can say `2,000 shown of 12,345 matched` when the active filter/search still matches more rows than the grid displays.
+- Narrowing by Storage Review Search or Bloat Category Filter can reduce the matched set and reveal rows outside the first display window.
+
+#### Non-examples
+
+- A Cleanup Action.
+- A scan failure.
+- A sign that the scanner skipped the rest of the Cleanup Scope.
+- A storage-savings estimate.
+
+#### Lifecycle
+
+- Applies after a Storage Scan completes and review rows are available.
+- Recomputed when the active Storage Review Filter, Bloat Category Filter, Storage Review Search, or Review Shortlist changes.
+- Does not modify files.
+
+#### Relationships
+
+- Uses Storage Scan review results.
+- Combines with Storage Review Filter, Bloat Category Filter, and Storage Review Search.
+- Helps keep very large scans reviewable without hiding that additional matched rows exist.
+
+#### Code implications
+
+- Keep the limit in the WPF review layer.
+- Show displayed count and matched count when the limit is reached.
+- Do not treat displayed rows as the complete scan result when exporting, previewing, or documenting review behavior.
+
 ### Bloat Category Filter
 
 Status: draft
@@ -1201,6 +1243,7 @@ Implementation implications:
 - The scan should show folder contents, size contributors, modified dates, and category evidence where feasible.
 - The selected row should explain the safest next review step through Selected Path Review Guidance.
 - The review should support Storage Review Search so large scans can find specific apps, caches, tools, and categories without scrolling.
+- The review should distinguish displayed rows from matched rows when the Storage Review Display Limit is reached.
 - Protected Locations can be shown for awareness but should default to high importance.
 - Recommendations should be explainable, not just a score.
 

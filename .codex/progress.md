@@ -6,11 +6,11 @@ Use it to preserve what was completed, what was verified, what was rejected, and
 
 ## Current status
 
-Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. Cleanup Scope Safety Note, review filters, Storage Review Search, selected-folder child breakdown, selected-path inspection actions, Selected Path Review Guidance, CSV export, Review Mix, Storage Scan Safety Summary, Safety Summary review shortcuts, Access issues filtering, Bloat Category Filter, No category filtering, Review Shortlist, Quarantine Preview, Quarantine Preview CSV export, Restore Manifest Draft, Quarantine Confirmation Draft, Quarantine Readiness UI, conservative app data classification, read-only safety regression checks, the MVP runbook, the MVP readiness audit, fixture-driven WPF launch support, WPF shell smoke testing, WPF fixture scan smoke testing, WPF review interaction smoke testing, WPF review toolbar layout polish, the MVP preflight script, and the MVP fixture review launcher are implemented and verified. Quarantine remains preview-only; no cleanup execution, manifest writing, or Undo Quarantine execution exists.
+Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. Cleanup Scope Safety Note, review filters, Storage Review Search, Storage Review Display Limit wording, selected-folder child breakdown, selected-path inspection actions, Selected Path Review Guidance, CSV export, Review Mix, Storage Scan Safety Summary, Safety Summary review shortcuts, Access issues filtering, Bloat Category Filter, No category filtering, Review Shortlist, Quarantine Preview, Quarantine Preview CSV export, Restore Manifest Draft, Quarantine Confirmation Draft, Quarantine Readiness UI, conservative app data classification, read-only safety regression checks, the MVP runbook, the MVP readiness audit, fixture-driven WPF launch support, WPF shell smoke testing, WPF fixture scan smoke testing, WPF display-limit smoke testing, WPF review interaction smoke testing, WPF review toolbar layout polish, the MVP preflight script, and the MVP fixture review launcher are implemented and verified. Quarantine remains preview-only; no cleanup execution, manifest writing, or Undo Quarantine execution exists.
 
 ## Next recommended work
 
-1. Run `.\tools\Start-MvpFixtureReview.ps1`, confirm the launched app shows Fixture Cleanup Scope, click `Scan`, and manually inspect layout, visible wording, Storage Review Search, Selected Path Review Guidance, export dialogs, Safety Summary shortcuts, Review Shortlist, Quarantine Preview, Review Mix, Access issues filter, category filter, No category filter, and filter wording.
+1. Run `.\tools\Start-MvpFixtureReview.ps1`, confirm the launched app shows Fixture Cleanup Scope, click `Scan`, and manually inspect layout, visible wording, Storage Review Search, Storage Review Display Limit wording, Selected Path Review Guidance, export dialogs, Safety Summary shortcuts, Review Shortlist, Quarantine Preview, Review Mix, Access issues filter, category filter, No category filter, and filter wording.
 2. Use `README.md` and `docs/features/2026-05-28-mvp-readiness-audit.md` to rerun the WPF app against `C:\Users\moxhe`.
 3. Run `.\tools\Invoke-MvpPreflight.ps1` before any later real-profile scan if the worktree changes.
 4. Rerun the real scan and check whether Windows app data, installed applications, and game data labels make the large app/game rows easier to triage.
@@ -1602,3 +1602,53 @@ Rejected ideas buffer:
 - Do not make search rescan, watch the filesystem, or search outside completed scan results.
 - Do not persist search history.
 - Do not use search results as cleanup approval.
+
+### 2026-05-28: Add Storage Review Display Limit wording
+
+Status: completed
+
+Evidence:
+
+- The user reran the WPF app against `C:\Users\moxhe` and provided a screenshot showing the scan completed.
+- The real scan contained 188,580 files, 37,740 folders, and 3 access issues.
+- The WPF grid caps visible rows at 2,000, but prior wording did not clearly distinguish displayed rows from matched review rows.
+
+Implementation:
+
+- Split active matched review rows from WPF displayed rows.
+- Updated completed-scan status to say `Showing 2,000 of ... paths` when the display cap is reached.
+- Updated Filter Summary to say `2,000 shown of ... matched`, label largest-row triage as the largest matched row, and suggest narrowing with filters/search.
+- Added a WPF smoke test with a large synthetic fixture that exceeds the 2,000-row display limit.
+- No scanner traversal, classification, export, cleanup execution, Quarantine execution, Undo Quarantine, or manifest-writing behavior was changed.
+
+Verification:
+
+- `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\Invoke-MvpPreflight.ps1` passed.
+- `dotnet build WindowsFileCleaner.sln --no-restore` passed.
+- `dotnet run --project tests\WindowsFileCleaner.Tests\WindowsFileCleaner.Tests.csproj --no-build` passed.
+- `dotnet run --project tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj --no-build` passed.
+- `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\New-StorageScanSmokeFixture.ps1 -WhatIf` passed.
+- `git -c safe.directory='D:/Codex/Windows File Cleaner' diff --check` passed with line-ending normalization warnings only.
+
+Docs updated:
+
+- `README.md`
+- `docs/domain/context.md`
+- `docs/domain/glossary.md`
+- `docs/features/2026-05-28-mvp-readiness-audit.md`
+- `docs/features/2026-05-28-storage-review-display-limit.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No new ADR. This is reversible WPF review wording and smoke coverage; it does not change architecture, persistence, security, deployment, or cleanup execution.
+
+Open questions:
+
+- Should a future UI add paging or a virtualized tree/grid for all matched rows?
+
+Rejected ideas buffer:
+
+- Do not lower scan depth or skip files to fit the grid.
+- Do not call displayed rows the complete scan result.
+- Do not add cleanup execution while improving review wording.

@@ -173,14 +173,15 @@ public partial class MainWindow : Window
         ClearQuarantinePreview();
         SetSearchTextSilently("");
         UpdateCategoryFilterOptions();
-        var rows = ApplyCurrentFilter();
+        var matchedEntries = ApplyCurrentReviewFilters();
+        var rows = BuildDisplayedRows(matchedEntries);
 
         ResultsGrid.ItemsSource = rows;
         TotalSizeText.Text = result.TotalSizeDisplay;
         FolderCountText.Text = result.FolderCount.ToString("N0");
         FileCountText.Text = result.FileCount.ToString("N0");
         AccessIssueCountText.Text = result.InaccessibleCount.ToString("N0");
-        StatusText.Text = $"Storage Scan completed. Showing {rows.Length:N0} paths. No files were modified.";
+        StatusText.Text = FormatScanCompletedStatus(rows.Length, matchedEntries.Count);
         UpdateFilterButtons();
         UpdateFilterSummary();
         UpdateReviewMix();
@@ -711,13 +712,17 @@ public partial class MainWindow : Window
 
     private StorageEntryRow[] ApplyCurrentFilter()
     {
-        if (_currentReview is null)
-        {
-            return [];
-        }
+        return BuildDisplayedRows(ApplyCurrentReviewFilters());
+    }
 
-        return _currentReview
-            .ApplyFilter(_currentFilter, _currentCategoryFilter, _currentSearch)
+    private IReadOnlyList<StorageReviewEntry> ApplyCurrentReviewFilters()
+    {
+        return _currentReview?.ApplyFilter(_currentFilter, _currentCategoryFilter, _currentSearch) ?? [];
+    }
+
+    private StorageEntryRow[] BuildDisplayedRows(IReadOnlyList<StorageReviewEntry> entries)
+    {
+        return entries
             .Take(MaxDisplayedRows)
             .Select(entry => new StorageEntryRow(entry, _shortlist.Contains(entry.Entry)))
             .ToArray();
@@ -778,11 +783,28 @@ public partial class MainWindow : Window
             return;
         }
 
-        var rows = ApplyCurrentFilter();
-        var largestShownBytes = rows.Select(row => row.SizeBytes).DefaultIfEmpty(0).Max();
+        var matchedEntries = ApplyCurrentReviewFilters();
+        var displayedCount = Math.Min(matchedEntries.Count, MaxDisplayedRows);
+        var largestMatchedBytes = matchedEntries.Select(row => row.Entry.SizeBytes).DefaultIfEmpty(0).Max();
         var categoryLabel = _currentCategoryFilter.Kind == StorageCategoryFilterKind.All ? "" : $" + {FormatCategoryFilter(_currentCategoryFilter)}";
         var searchLabel = _currentSearch.IsActive ? $" + Search \"{_currentSearch.Query}\"" : "";
-        FilterSummaryText.Text = $"{FormatFilter(_currentFilter)}{categoryLabel}{searchLabel}: {rows.Length:N0} shown, largest row {ByteSizeFormatter.Format(largestShownBytes)}, shortlist {_shortlist.Count:N0}";
+        var matchLabel = matchedEntries.Count > displayedCount
+            ? $"{displayedCount:N0} shown of {matchedEntries.Count:N0} matched"
+            : $"{displayedCount:N0} shown";
+        var limitLabel = matchedEntries.Count > displayedCount
+            ? $" Display limit {MaxDisplayedRows:N0}; narrow filters/search to inspect more matches."
+            : "";
+        FilterSummaryText.Text =
+            $"{FormatFilter(_currentFilter)}{categoryLabel}{searchLabel}: {matchLabel}, " +
+            $"largest matched row {ByteSizeFormatter.Format(largestMatchedBytes)}, " +
+            $"shortlist {_shortlist.Count:N0}.{limitLabel}";
+    }
+
+    private static string FormatScanCompletedStatus(int displayedCount, int matchedCount)
+    {
+        return matchedCount > displayedCount
+            ? $"Storage Scan completed. Showing {displayedCount:N0} of {matchedCount:N0} paths. No files were modified."
+            : $"Storage Scan completed. Showing {displayedCount:N0} paths. No files were modified.";
     }
 
     private void UpdateShortlistControls()

@@ -91,7 +91,7 @@ Rejected ideas buffer:
 | Cleanup candidate categories | `BloatCategory` usage in core, WPF labels, CSV exporters, docs | Verified in current repo | Categories include caches, package caches, app data, protected locations, access issues, and conservative app/game labels. |
 | Importance ratings | `ImportanceRating`, WPF grid labels, fixture tests, glossary | Verified in current repo | User-facing labels are `Likely safe`, `Caution`, and `High risk`. |
 | Deletion recommendations | `DeletionRecommendation`, classifier rules, WPF grid labels, glossary | Verified in current repo | Recommendations remain conservative: `Keep`, `Inspect`, or `Quarantine candidate`. |
-| Fixture-based verification before real scan | `tools/Invoke-MvpPreflight.ps1`, `tools/Start-MvpFixtureReview.ps1`, `tests/WindowsFileCleaner.Tests/Program.cs`, `tests/WindowsFileCleaner.App.Tests/Program.cs`, WPF fixture smoke launch docs, progress log | Verified in current repo | The preflight script runs restore, build, core tests, WPF app tests, fixture `-WhatIf`, and `git diff --check`. Test harnesses cover scanner, classifier, summaries, preview, drafts, CSV, safety guard behavior, WPF shell startup state, WPF fixture scan state, and WPF review interaction state. The fixture review launcher runs preflight, creates the synthetic Cleanup Scope, and launches WPF with that scope without auto-scanning. |
+| Fixture-based verification before real scan | `tools/Invoke-MvpPreflight.ps1`, `tools/Start-MvpFixtureReview.ps1`, `tests/WindowsFileCleaner.Tests/Program.cs`, `tests/WindowsFileCleaner.App.Tests/Program.cs`, WPF fixture smoke launch docs, progress log | Verified in current repo | The preflight script runs restore, build, core tests, WPF app tests, fixture `-WhatIf`, and `git diff --check`. Test harnesses cover scanner, classifier, summaries, preview, drafts, CSV, safety guard behavior, WPF shell startup state, WPF fixture scan state, display-limit wording, and WPF review interaction state. The fixture review launcher runs preflight, creates the synthetic Cleanup Scope, and launches WPF with that scope without auto-scanning. |
 | No cleanup execution in MVP | `ProductionCodeDoesNotContainCleanupExecutionCalls`, README Safety Status | Verified in current repo | Source-level guard blocks obvious production move/delete/write execution APIs except user-selected CSV report writes. |
 | Quarantine on `D:` with undo path explored safely | Quarantine Preview, Restore Manifest Draft, Quarantine Confirmation Draft, ADR 0003 | Preview-only verified | The app proves destination/readiness shape without writing manifests or moving files. |
 | Docs kept current | README, domain docs, ADRs, feature briefs, `.codex/progress.md` | Verified in current repo | Docs use the Grill with Docs control layer requested for the project. |
@@ -135,12 +135,13 @@ Use `README.md` as the current manual MVP checklist. The highest-value retest is
 4. Run the app with `dotnet run --project src\WindowsFileCleaner.App`.
 5. Scan `C:\Users\moxhe`.
 6. Confirm the status still says no files were modified.
-7. Test Safety Summary shortcuts.
-8. Test Access issues, Bloat Category, and No category filters.
-9. Add one likely-safe row to Review Shortlist.
-10. Create a Quarantine Preview.
-11. Confirm Restore Manifest Draft and Quarantine Confirmation Draft wording is understandable.
-12. Export the Quarantine Preview CSV only to a user-selected report path.
+7. Confirm whether the status/filter summary shows all matched rows or `2,000 shown of ... matched`.
+8. Test Safety Summary shortcuts.
+9. Test Access issues, Bloat Category, and No category filters.
+10. Add one likely-safe row to Review Shortlist.
+11. Create a Quarantine Preview.
+12. Confirm Restore Manifest Draft and Quarantine Confirmation Draft wording is understandable.
+13. Export the Quarantine Preview CSV only to a user-selected report path.
 
 ## Decisions made
 
