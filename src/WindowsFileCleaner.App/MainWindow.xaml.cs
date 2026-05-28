@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using WindowsFileCleaner.Core;
@@ -10,6 +11,7 @@ public partial class MainWindow : Window
     private CancellationTokenSource? _scanCancellation;
     private StorageScanReview? _currentReview;
     private StorageReviewFilter _currentFilter = StorageReviewFilter.All;
+    private StorageEntryRow? _selectedRow;
 
     public MainWindow()
     {
@@ -106,14 +108,18 @@ public partial class MainWindow : Window
     {
         if (ResultsGrid.SelectedItem is not StorageEntryRow row)
         {
+            _selectedRow = null;
             DetailTitleText.Text = "Select a result";
             DetailPathText.Text = "";
             DetailMetaText.Text = "";
             DetailEvidenceText.Text = "";
             DetailChildrenText.Text = "";
+            CopyPathButton.IsEnabled = false;
+            OpenInExplorerButton.IsEnabled = false;
             return;
         }
 
+        _selectedRow = row;
         DetailTitleText.Text = row.Entry.Name;
         DetailPathText.Text = row.FullPath;
         DetailMetaText.Text = $"{row.Size} | {row.Type} | {row.Importance} | {row.Recommendation}";
@@ -121,6 +127,45 @@ public partial class MainWindow : Window
             ? row.Evidence
             : $"{row.Evidence}\n\nAccess issue: {row.Error}";
         DetailChildrenText.Text = FormatChildSummary(row.Entry);
+        CopyPathButton.IsEnabled = true;
+        OpenInExplorerButton.IsEnabled = true;
+    }
+
+    private void CopyPathButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (_selectedRow is null)
+        {
+            return;
+        }
+
+        var plan = PathInspectionPlanBuilder.Build(_selectedRow.Entry);
+        Clipboard.SetText(plan.PathToCopy);
+        StatusText.Text = "Selected path copied. No files were modified.";
+    }
+
+    private void OpenInExplorerButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (_selectedRow is null)
+        {
+            return;
+        }
+
+        try
+        {
+            var plan = PathInspectionPlanBuilder.Build(_selectedRow.Entry);
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = plan.ExplorerFileName,
+                Arguments = plan.ExplorerArguments,
+                UseShellExecute = true
+            });
+            StatusText.Text = "Opened selected path in File Explorer. No files were modified.";
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(this, ex.Message, "Open in Explorer failed", MessageBoxButton.OK, MessageBoxImage.Error);
+            StatusText.Text = "Could not open selected path. No files were modified.";
+        }
     }
 
     private void SetScanningState(bool isScanning)

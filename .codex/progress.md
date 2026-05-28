@@ -6,13 +6,13 @@ Use it to preserve what was completed, what was verified, what was rejected, and
 
 ## Current status
 
-Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. Review filters are pushed. Selected-folder child breakdown has been implemented locally and is ready to commit/push.
+Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. Review filters and selected-folder child breakdown are pushed. Selected-path inspection actions have been implemented locally and are ready to commit/push.
 
 ## Next recommended work
 
-1. Commit and push the selected-folder child breakdown checkpoint.
-2. Ask the user to rerun the WPF app and select big folders such as `AppData`, `Local`, `pip`, and `DXCache`.
-3. Use the user's child-breakdown feedback to refine Protected Locations and category grouping.
+1. Commit and push selected-path inspection actions.
+2. Ask the user to rerun the WPF app and try Copy path and Open in Explorer on selected results.
+3. Use inspection feedback to refine Protected Locations and category grouping.
 4. Defer Quarantine and Undo Quarantine implementation until scan review is trustworthy.
 5. Revisit .NET 10 before packaging or long-term distribution.
 
@@ -335,3 +335,45 @@ Open questions:
 Rejected ideas buffer:
 
 - Do not replace the main flat table with a tree view until the detail-pane approach is tested.
+
+### 2026-05-28: Add selected-path inspection actions
+
+Status: completed
+
+Evidence:
+
+- Storage Scan now shows enough data that the user needs to inspect selected paths manually.
+- Copying and opening selected paths supports review without cleanup execution.
+
+Implementation:
+
+- Added `PathInspectionPlan`.
+- Added `PathInspectionPlanBuilder`.
+- Added Copy path and Open in Explorer buttons to the selected-row detail pane.
+- Folder paths open directly in Explorer.
+- File paths ask Explorer to select the file.
+- Status messages state that no files were modified.
+
+Verification:
+
+- `dotnet build WindowsFileCleaner.sln --no-restore` passed.
+- `dotnet run --project tests\WindowsFileCleaner.Tests\WindowsFileCleaner.Tests.csproj --no-build` passed.
+
+Docs updated:
+
+- `docs/domain/context.md`
+- `docs/domain/glossary.md`
+- `docs/features/2026-05-28-selected-path-inspection-actions.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No new ADR. This is a read-only inspection UI improvement.
+
+Open questions:
+
+- User should verify Copy path and Open in Explorer on real scan results.
+
+Rejected ideas buffer:
+
+- Do not add destructive selected-row actions next to read-only inspection actions yet.

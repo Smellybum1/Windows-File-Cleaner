@@ -6,6 +6,7 @@ tests.ScannerRefusesToLeaveCleanupScope();
 tests.ClassifierLabelsRealScanContainerPatterns();
 tests.ReviewBuilderSummarizesAndFiltersResults();
 tests.ChildSummaryShowsLargestImmediateChildren();
+tests.PathInspectionPlanBuildsExplorerArguments();
 tests.ByteSizeFormatterUsesReadableUnits();
 
 Console.WriteLine("All WindowsFileCleaner.Tests checks passed.");
@@ -126,6 +127,27 @@ internal sealed class StorageScanTests
 
         var file = Flatten(result.Root).Single(entry => entry.Name.Equals("outside.bin", StringComparison.OrdinalIgnoreCase));
         Assert(StorageChildSummaryBuilder.Build(file).Count == 0, "Files should not have child summaries.");
+    }
+
+    public void PathInspectionPlanBuildsExplorerArguments()
+    {
+        using var fixture = TestFixture.Create();
+
+        fixture.WriteFile(@"Downloads\old-installer.msi", 1024, DateTimeOffset.UtcNow.AddDays(-120));
+
+        var scanner = new StorageScanner();
+        var result = scanner.Scan(new StorageScanOptions(fixture.RootPath));
+        var downloads = Flatten(result.Root).Single(entry => entry.Name.Equals("Downloads", StringComparison.OrdinalIgnoreCase));
+        var installer = Flatten(result.Root).Single(entry => entry.Name.Equals("old-installer.msi", StringComparison.OrdinalIgnoreCase));
+
+        var folderPlan = PathInspectionPlanBuilder.Build(downloads);
+        Assert(folderPlan.PathToCopy == downloads.FullPath, "Folder path should be copied exactly.");
+        Assert(folderPlan.ExplorerFileName == "explorer.exe", "Explorer executable should be explorer.exe.");
+        Assert(folderPlan.ExplorerArguments == $"\"{downloads.FullPath}\"", "Folder plan should open the folder directly.");
+
+        var filePlan = PathInspectionPlanBuilder.Build(installer);
+        Assert(filePlan.PathToCopy == installer.FullPath, "File path should be copied exactly.");
+        Assert(filePlan.ExplorerArguments == $"/select,\"{installer.FullPath}\"", "File plan should ask Explorer to select the file.");
     }
 
     public void ByteSizeFormatterUsesReadableUnits()

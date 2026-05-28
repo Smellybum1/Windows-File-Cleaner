@@ -313,6 +313,47 @@ It helps the user understand what is inside large container folders such as `App
 - Sort children by size descending.
 - Keep the number of displayed children bounded.
 
+### Selected Path Inspection
+
+Status: draft  
+Last reviewed: 2026-05-28
+
+#### Definition
+
+Selected Path Inspection is a read-only action that helps the user inspect a selected Storage Scan result outside the table.
+
+Initial actions are copying the selected path and opening the selected path in File Explorer.
+
+#### Examples
+
+- Copy the selected path so it can be pasted into another tool.
+- Open a selected folder in File Explorer.
+- Select a file in File Explorer.
+
+#### Non-examples
+
+- Deleting a file.
+- Moving a file.
+- Quarantining a file.
+- Editing a file.
+
+#### Lifecycle
+
+- Available only after a row is selected.
+- Uses the selected Storage Scan result.
+- Does not change files or recommendations.
+
+#### Relationships
+
+- Supports manual review of Cleanup Candidates.
+- Complements Child Breakdown and Storage Review Filters.
+
+#### Code implications
+
+- Use `PathInspectionPlanBuilder` for Explorer launch details.
+- Keep inspection actions separate from Cleanup Actions.
+- Status messages should state that no files were modified.
+
 ### Importance Rating
 
 Status: draft  
