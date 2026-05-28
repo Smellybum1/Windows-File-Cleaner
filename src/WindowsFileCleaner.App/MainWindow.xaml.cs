@@ -23,6 +23,7 @@ public partial class MainWindow : Window
     private StorageEntryTypeFilter _currentEntryTypeFilter = StorageEntryTypeFilter.All;
     private StorageReviewSearch _currentSearch = StorageReviewSearch.Empty;
     private StorageEntryRow? _selectedRow;
+    private bool _isScanning;
     private bool _isUpdatingCategoryFilterOptions;
     private bool _isUpdatingEntryTypeFilterOptions;
     private bool _isUpdatingSearchBox;
@@ -49,6 +50,12 @@ public partial class MainWindow : Window
     public string CurrentStatusText => StatusText.Text;
 
     public bool CanStartStorageScan => ScanButton.IsEnabled;
+
+    public bool IsRealProfilePreflightConfirmationVisible => RealProfilePreflightCheckBox.Visibility == Visibility.Visible;
+
+    public bool IsRealProfilePreflightConfirmed => RealProfilePreflightCheckBox.IsChecked == true;
+
+    public string ScanGateTextValue => ScanGateText.Text;
 
     public bool CanExportScanCsv => ExportCsvButton.IsEnabled;
 
@@ -134,6 +141,13 @@ public partial class MainWindow : Window
             return;
         }
 
+        var scanGate = CleanupScopeScanGateBuilder.Build(scopePath, RealProfilePreflightCheckBox.IsChecked == true);
+        if (!scanGate.CanScan)
+        {
+            MessageBox.Show(this, scanGate.Message, "Storage Scan", MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
+        }
+
         SetScanningState(isScanning: true);
         _scanCancellation = new CancellationTokenSource();
         var cancellationToken = _scanCancellation.Token;
@@ -163,6 +177,12 @@ public partial class MainWindow : Window
         if (string.IsNullOrWhiteSpace(scopePath))
         {
             throw new InvalidOperationException("Choose a Cleanup Scope before scanning.");
+        }
+
+        var scanGate = CleanupScopeScanGateBuilder.Build(scopePath, RealProfilePreflightCheckBox.IsChecked == true);
+        if (!scanGate.CanScan)
+        {
+            throw new InvalidOperationException(scanGate.Message);
         }
 
         SetScanningState(isScanning: true);
@@ -241,6 +261,18 @@ public partial class MainWindow : Window
             return;
         }
 
+        RealProfilePreflightCheckBox.IsChecked = false;
+        UpdateCleanupScopeSafetyNote();
+    }
+
+    private void RealProfilePreflightCheckBox_Changed(object sender, RoutedEventArgs e)
+    {
+        UpdateCleanupScopeSafetyNote();
+    }
+
+    public void ConfirmRealProfilePreflightForRealProfileScan()
+    {
+        RealProfilePreflightCheckBox.IsChecked = true;
         UpdateCleanupScopeSafetyNote();
     }
 
@@ -705,7 +737,7 @@ public partial class MainWindow : Window
 
     private void SetScanningState(bool isScanning)
     {
-        ScanButton.IsEnabled = !isScanning;
+        _isScanning = isScanning;
         CancelButton.IsEnabled = isScanning;
         ScopePathBox.IsEnabled = !isScanning;
         UpdateCleanupScopeSafetyNote();
@@ -731,7 +763,12 @@ public partial class MainWindow : Window
         }
 
         var note = CleanupScopeSafetyNoteBuilder.Build(ScopePathBox.Text);
+        var scanGate = CleanupScopeScanGateBuilder.Build(ScopePathBox.Text, RealProfilePreflightCheckBox.IsChecked == true);
         ScopeSafetyNoteText.Text = $"{note.Label}: {note.Message}";
+        ScanGateText.Text = scanGate.Message;
+        RealProfilePreflightCheckBox.Visibility = note.IsRealUserProfileScope ? Visibility.Visible : Visibility.Collapsed;
+        RealProfilePreflightCheckBox.IsEnabled = !_isScanning && note.IsRealUserProfileScope;
+        ScanButton.IsEnabled = !_isScanning && scanGate.CanScan;
     }
 
     public void ApplyStorageReviewFilter(StorageReviewFilter filter)

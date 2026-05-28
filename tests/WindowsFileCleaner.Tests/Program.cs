@@ -5,6 +5,7 @@ tests.ScannerTotalsFilesAndClassifiesCandidates();
 tests.ScannerRefusesToLeaveCleanupScope();
 tests.LaunchOptionsDefaultAndScopeArgument();
 tests.CleanupScopeSafetyNoteDistinguishesFixtureAndRealProfile();
+tests.CleanupScopeScanGateRequiresRealProfileAcknowledgement();
 tests.ClassifierLabelsRealScanContainerPatterns();
 tests.ClassifierLabelsLargeOldUnknownFilesConservatively();
 tests.ReviewBuilderSummarizesAndFiltersResults();
@@ -123,6 +124,24 @@ internal sealed class StorageScanTests
 
         var empty = CleanupScopeSafetyNoteBuilder.Build(" ");
         Assert(empty.Label == "Choose Cleanup Scope", "Blank paths should ask for a Cleanup Scope.");
+    }
+
+    public void CleanupScopeScanGateRequiresRealProfileAcknowledgement()
+    {
+        var realProfile = CleanupScopeScanGateBuilder.Build(@"C:\Users\moxhe", realProfilePreflightAcknowledged: false);
+        Assert(!realProfile.CanScan, "Real profile scans should require explicit preflight and fixture-review acknowledgement.");
+        Assert(realProfile.RequiresPreflightAcknowledgement, "Real profile scan gate should report the acknowledgement requirement.");
+
+        var confirmedRealProfile = CleanupScopeScanGateBuilder.Build(@"C:\Users\moxhe", realProfilePreflightAcknowledged: true);
+        Assert(confirmedRealProfile.CanScan, "Real profile scans should be allowed after explicit acknowledgement.");
+        Assert(confirmedRealProfile.Message.Contains("read-only", StringComparison.OrdinalIgnoreCase), "Confirmed real-profile gate should keep read-only wording.");
+
+        var fixture = CleanupScopeScanGateBuilder.Build(@"D:\Codex\Windows File Cleaner\.local\storage-scan-smoke-fixture", realProfilePreflightAcknowledged: false);
+        Assert(fixture.CanScan, "Fixture scans should not require real-profile acknowledgement.");
+        Assert(!fixture.RequiresPreflightAcknowledgement, "Fixture scan gate should not ask for real-profile acknowledgement.");
+
+        var blank = CleanupScopeScanGateBuilder.Build(" ", realProfilePreflightAcknowledged: true);
+        Assert(!blank.CanScan, "Blank Cleanup Scope should not be scannable.");
     }
 
     public void ClassifierLabelsRealScanContainerPatterns()

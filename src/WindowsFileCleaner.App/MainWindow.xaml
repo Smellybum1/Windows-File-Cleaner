@@ -75,6 +75,17 @@
                            Margin="0,6,0,0"
                            Width="680"
                            TextWrapping="Wrap" />
+                <CheckBox x:Name="RealProfilePreflightCheckBox"
+                          Content="I ran MVP preflight and fixture review before scanning this real profile."
+                          Margin="0,8,0,0"
+                          Visibility="Collapsed"
+                          Checked="RealProfilePreflightCheckBox_Changed"
+                          Unchecked="RealProfilePreflightCheckBox_Changed" />
+                <TextBlock x:Name="ScanGateText"
+                           Foreground="#526171"
+                           Margin="0,4,0,0"
+                           Width="680"
+                           TextWrapping="Wrap" />
             </StackPanel>
         </Grid>
 

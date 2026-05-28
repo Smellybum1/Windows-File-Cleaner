@@ -6,12 +6,12 @@ Use it to preserve what was completed, what was verified, what was rejected, and
 
 ## Current status
 
-Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. Cleanup Scope Safety Note, review filters, Review View Reset, Storage Review Search with field prefixes, Storage Entry Type Filter, Storage Review Display Limit wording, Storage Review Size Note, selected-folder child breakdown, selected-path inspection actions, Selected Path Hierarchy Context, Selected File Content Preview, Selected Path Review Guidance including cache-specific guidance, CSV export including active search, searched filenames, and hierarchy context, Review Mix, Storage Scan Safety Summary, Safety Summary review shortcuts, Access issues filtering, Bloat Category Filter, Large old file classification, No category filtering, Review Shortlist, Shortlist shown, Remove shown, Quarantine Preview, Quarantine Preview CSV export, Restore Manifest Draft, Quarantine Confirmation Draft, Quarantine Readiness UI, conservative app data classification, read-only safety regression checks, the MVP runbook, the MVP readiness audit, fixture-driven WPF launch support, WPF shell smoke testing, WPF fixture scan smoke testing, WPF display-limit smoke testing, WPF review interaction smoke testing, WPF review toolbar layout polish, the MVP preflight script, and the MVP fixture review launcher are implemented and verified. Quarantine remains preview-only; no cleanup execution, manifest writing, or Undo Quarantine execution exists.
+Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. Cleanup Scope Safety Note, Cleanup Scope Scan Gate, review filters, Review View Reset, Storage Review Search with field prefixes, Storage Entry Type Filter, Storage Review Display Limit wording, Storage Review Size Note, selected-folder child breakdown, selected-path inspection actions, Selected Path Hierarchy Context, Selected File Content Preview, Selected Path Review Guidance including cache-specific guidance, CSV export including active search, searched filenames, and hierarchy context, Review Mix, Storage Scan Safety Summary, Safety Summary review shortcuts, Access issues filtering, Bloat Category Filter, Large old file classification, No category filtering, Review Shortlist, Shortlist shown, Remove shown, Quarantine Preview, Quarantine Preview CSV export, Restore Manifest Draft, Quarantine Confirmation Draft, Quarantine Readiness UI, conservative app data classification, read-only safety regression checks, the MVP runbook, the MVP readiness audit, fixture-driven WPF launch support, WPF shell smoke testing, WPF fixture scan smoke testing, WPF display-limit smoke testing, WPF review interaction smoke testing, WPF review toolbar layout polish, the MVP preflight script, and the MVP fixture review launcher are implemented and verified. Quarantine remains preview-only; no cleanup execution, manifest writing, or Undo Quarantine execution exists.
 
 ## Next recommended work
 
 1. Run `.\tools\Start-MvpFixtureReview.ps1`, confirm the launched app shows Fixture Cleanup Scope, click `Scan`, and manually inspect layout, visible wording, Storage Review Search, Storage Review Display Limit wording, the `Parent` column, Selected Path Hierarchy Context, Selected File Content Preview, Selected Path Review Guidance, export dialogs, Safety Summary shortcuts, Review Shortlist, Shortlist shown, Remove shown, Quarantine Preview, Review Mix, Access issues filter, category filter, No category filter, and filter wording.
-2. Use `README.md` and `docs/features/2026-05-28-mvp-readiness-audit.md` to rerun the WPF app against `C:\Users\moxhe`.
+2. Use `README.md` and `docs/features/2026-05-28-mvp-readiness-audit.md` to rerun the WPF app against `C:\Users\moxhe`; confirm `Scan` is disabled until the real-profile preflight acknowledgement is checked.
 3. Run `.\tools\Invoke-MvpPreflight.ps1` before any later real-profile scan if the worktree changes.
 4. Rerun the real scan and check whether the `Parent` column, selected-row parent/depth context, cache-specific Review guidance, and `Preview file` action make unfamiliar rows easier to triage.
 5. Retest the Quarantine Readiness UI with a real scan and confirm the draft/readiness wording is understandable.
@@ -2255,3 +2255,52 @@ Open questions:
 Rejected ideas buffer:
 
 - Do not promote GPU shader caches or package caches to likely-safe cleanup candidates solely because they are cache-like.
+
+### 2026-05-28: Add Real Profile Scan Gate
+
+Status: completed
+
+Evidence:
+
+- The project requires fixture-based verification before scanning real user files.
+- The previous Cleanup Scope Safety Note reminded the user to run preflight and fixture review, but docs explicitly noted that the reminder was not proof and did not block scanning.
+
+Implementation:
+
+- Added `CleanupScopeScanGate` and `CleanupScopeScanGateBuilder`.
+- Added a WPF acknowledgement checkbox for real-profile Cleanup Scopes.
+- Disabled `Scan` for `C:\Users\moxhe` and child scopes until the acknowledgement is checked.
+- Kept fixture Cleanup Scopes scan-ready without the real-profile acknowledgement.
+- Enforced the gate in `RunStorageScanForCurrentScopeAsync`, not only through button state.
+- Reset acknowledgement when the Cleanup Scope changes.
+- No cleanup execution, Quarantine execution, Undo Quarantine, manifest writing, preflight execution from WPF, fixture creation from WPF, or real-profile automation was added.
+
+Verification:
+
+- `dotnet build WindowsFileCleaner.sln --no-restore` passed with 0 warnings and 0 errors.
+- `dotnet run --project tests\WindowsFileCleaner.Tests\WindowsFileCleaner.Tests.csproj --no-build` passed.
+- `dotnet run --project tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj --no-build` passed.
+- `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\Invoke-MvpPreflight.ps1` passed.
+
+Docs updated:
+
+- `README.md`
+- `docs/domain/context.md`
+- `docs/domain/glossary.md`
+- `docs/features/2026-05-28-cleanup-scope-safety-note.md`
+- `docs/features/2026-05-28-mvp-readiness-audit.md`
+- `docs/features/2026-05-28-real-profile-scan-gate.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No new ADR. This is a reversible local scan-start gate and does not change architecture, persistence, security, deployment, or cleanup execution.
+
+Open questions:
+
+- Should a future app version display the last successful preflight time if a trustworthy local marker exists?
+
+Rejected ideas buffer:
+
+- Do not run preflight or create fixture files from WPF.
+- Do not persist real-profile scan acknowledgement yet.

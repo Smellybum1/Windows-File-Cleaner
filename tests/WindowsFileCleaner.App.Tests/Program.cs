@@ -63,7 +63,18 @@ internal sealed class MainWindowSmokeTests
                 window.CleanupScopeSafetyNoteTextValue.Contains("preflight", StringComparison.OrdinalIgnoreCase),
                 "Default Cleanup Scope safety note should remind the user to run preflight.");
             Assert(window.CurrentStatusText == "Ready", "MainWindow should not start scanning when constructed.");
-            Assert(window.CanStartStorageScan, "MainWindow should allow a user-triggered Storage Scan.");
+            Assert(!window.CanStartStorageScan, "MainWindow should require preflight acknowledgement before scanning the real profile.");
+            Assert(window.IsRealProfilePreflightConfirmationVisible, "MainWindow should show the real-profile preflight acknowledgement.");
+            Assert(!window.IsRealProfilePreflightConfirmed, "Real-profile preflight acknowledgement should start unchecked.");
+            Assert(
+                window.ScanGateTextValue.Contains("Confirm MVP preflight", StringComparison.OrdinalIgnoreCase),
+                "Real-profile scan gate should explain why Scan is disabled.");
+            window.ConfirmRealProfilePreflightForRealProfileScan();
+            Assert(window.IsRealProfilePreflightConfirmed, "Real-profile preflight acknowledgement should be settable by the user.");
+            Assert(window.CanStartStorageScan, "Real profile Scan should be enabled after acknowledgement.");
+            Assert(
+                window.ScanGateTextValue.Contains("read-only", StringComparison.OrdinalIgnoreCase),
+                "Confirmed real-profile scan gate should preserve read-only wording.");
             Assert(!window.CanExportScanCsv, "MainWindow should not allow CSV export before a scan.");
             Assert(!window.CanUseEntryTypeFilter, "MainWindow should not allow type filtering before a scan.");
             Assert(!window.CanResetReviewView, "MainWindow should not allow review view reset before a scan.");
@@ -97,6 +108,7 @@ internal sealed class MainWindowSmokeTests
                 "Fixture safety note should preserve the user-triggered scan boundary.");
             Assert(window.CurrentStatusText == "Ready", "Launch Cleanup Scope should not trigger a scan.");
             Assert(window.CanStartStorageScan, "Launch Cleanup Scope should still require a user-triggered scan.");
+            Assert(!window.IsRealProfilePreflightConfirmationVisible, "Fixture Cleanup Scope should not show real-profile acknowledgement.");
             Assert(!window.CanExportScanCsv, "Launch Cleanup Scope should not create exportable scan data.");
         }
         finally

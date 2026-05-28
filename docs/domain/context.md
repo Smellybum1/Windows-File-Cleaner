@@ -172,12 +172,58 @@ Initial scope note kinds are Fixture Cleanup Scope, Real Profile Cleanup Scope, 
 #### Relationships
 
 - Supports Cleanup Scope, Storage Scan, fixture-based verification, and the read-only before cleanup rule.
-- Does not modify Storage Scan behavior or cleanup eligibility.
+- Feeds Cleanup Scope Scan Gate, which controls whether Scan can start for the current scope.
+- Does not modify cleanup eligibility.
 
 #### Code implications
 
 - Use `CleanupScopeSafetyNote` and `CleanupScopeSafetyNoteBuilder`.
-- Keep the note informational; do not scan, create fixtures, run preflight, or block user action from the note builder.
+- Keep the note informational; do not scan, create fixtures, or run preflight from the note builder.
+
+### Cleanup Scope Scan Gate
+
+Status: draft
+Last reviewed: 2026-05-28
+
+#### Definition
+
+Cleanup Scope Scan Gate is the read-only decision that controls whether the WPF `Scan` action can start for the current Cleanup Scope.
+
+For real-profile scopes under `C:\Users\moxhe`, the gate requires explicit acknowledgement that MVP preflight and fixture review were run before enabling `Scan`.
+
+#### Examples
+
+- Fixture Cleanup Scope: `Scan` can start without real-profile acknowledgement.
+- Real Profile Cleanup Scope: `Scan` stays disabled until the user ticks the preflight and fixture-review acknowledgement.
+- Blank or invalid Cleanup Scope: `Scan` stays disabled.
+
+#### Non-examples
+
+- Running MVP preflight from the WPF app.
+- Creating fixture files.
+- A Cleanup Action.
+- Cleanup approval.
+- Proof that preflight was actually run.
+
+#### Lifecycle
+
+- Generated when the WPF app starts.
+- Updates when the Cleanup Scope text changes or acknowledgement changes.
+- Is not persisted.
+- Does not modify files.
+
+#### Relationships
+
+- Uses Cleanup Scope Safety Note.
+- Supports fixture-based verification before real-profile scans.
+- Does not affect Storage Scan classification, recommendations, Review Shortlist, Quarantine Preview, or cleanup eligibility.
+
+#### Code implications
+
+- Use `CleanupScopeScanGate` and `CleanupScopeScanGateBuilder`.
+- Keep the gate local and read-only.
+- Reset the acknowledgement when the Cleanup Scope changes.
+- Continue to enforce the gate in the scan-start method, not only through button state.
 
 ### Cleanup Candidate
 

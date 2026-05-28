@@ -15,6 +15,7 @@ Current readiness evidence is tracked in `docs/features/2026-05-28-mvp-readiness
 - Quarantine Preview is a dry run only.
 - Restore Manifest Draft and Quarantine Confirmation Draft are in-memory readiness evidence only.
 - Fixture tests include a source-level guard against accidental cleanup-execution filesystem calls.
+- Real-profile scans require an explicit acknowledgement that MVP preflight and fixture review were run.
 
 ## Requirements
 
@@ -88,27 +89,30 @@ Default Cleanup Scope:
 C:\Users\moxhe
 ```
 
+When the app is opened against the default real-profile Cleanup Scope, `Scan` stays disabled until you tick the preflight and fixture-review acknowledgement in the header.
+
 ## Manual MVP Check
 
 After the app opens:
 
 1. Confirm the scope box shows the intended Cleanup Scope.
 2. Confirm the Cleanup Scope Safety Note matches the path: fixture first for smoke testing, real profile only after preflight.
-3. Click `Scan`.
-4. Confirm the status says no files were modified.
-5. Review the summary cards for total size, folders, files, and access issues.
-6. If the status or filter summary says `2,000 shown of ... matched`, treat the grid as the first review window and narrow with search or filters.
-7. Treat row sizes as triage clues, not storage savings; folder rows include children and can overlap with child rows.
-8. Use Review Mix and Safety Summary to inspect high-risk, protected, access issue, reparse point, quarantine candidate, and no-category rows.
-9. Use Storage Review Search for specific names such as `pip`, `NVIDIA`, `Codex`, app names, or game folders; use prefixes such as `path:pip`, `category:Python package cache`, `rating:High risk`, or `recommendation:Quarantine candidate` when you want one field.
-10. Use the `Parent` column for short or hashed row names, then select large folders and inspect parent/depth context, Evidence, cache-specific Review guidance, and Largest immediate children.
-11. Use the Type filter to switch between all rows, files only, and folders only.
-12. Select small text files and use `Preview file` only when you intentionally want a bounded read-only text snippet; binary and unsupported files should not render as text.
-13. Try category filters such as App cache, Python package cache, GPU shader cache, Large old file, Windows app data, Installed application, Game data, Protected location, and No category.
-14. Use `Reset view` after stacking filters/search; it clears the review lens but keeps Review Shortlist.
-15. Add a likely-safe cleanup candidate to the Review Shortlist, or use `Shortlist shown` / `Remove shown` only after narrowing the grid to rows you intentionally want to review.
-16. Click `Preview quarantine` and confirm the preview, Restore Manifest Draft, and Quarantine Confirmation Draft all say no files were modified and execution is not implemented.
-17. Export CSV reports only when you intentionally choose an output file; the main report export follows the active filters/search, includes parent/depth context for recursive rows, and the suggested filename includes the search term when one is active.
+3. For the real profile, tick the acknowledgement that MVP preflight and fixture review were run; fixture scopes do not require this real-profile acknowledgement.
+4. Click `Scan`.
+5. Confirm the status says no files were modified.
+6. Review the summary cards for total size, folders, files, and access issues.
+7. If the status or filter summary says `2,000 shown of ... matched`, treat the grid as the first review window and narrow with search or filters.
+8. Treat row sizes as triage clues, not storage savings; folder rows include children and can overlap with child rows.
+9. Use Review Mix and Safety Summary to inspect high-risk, protected, access issue, reparse point, quarantine candidate, and no-category rows.
+10. Use Storage Review Search for specific names such as `pip`, `NVIDIA`, `Codex`, app names, or game folders; use prefixes such as `path:pip`, `category:Python package cache`, `rating:High risk`, or `recommendation:Quarantine candidate` when you want one field.
+11. Use the `Parent` column for short or hashed row names, then select large folders and inspect parent/depth context, Evidence, cache-specific Review guidance, and Largest immediate children.
+12. Use the Type filter to switch between all rows, files only, and folders only.
+13. Select small text files and use `Preview file` only when you intentionally want a bounded read-only text snippet; binary and unsupported files should not render as text.
+14. Try category filters such as App cache, Python package cache, GPU shader cache, Large old file, Windows app data, Installed application, Game data, Protected location, and No category.
+15. Use `Reset view` after stacking filters/search; it clears the review lens but keeps Review Shortlist.
+16. Add a likely-safe cleanup candidate to the Review Shortlist, or use `Shortlist shown` / `Remove shown` only after narrowing the grid to rows you intentionally want to review.
+17. Click `Preview quarantine` and confirm the preview, Restore Manifest Draft, and Quarantine Confirmation Draft all say no files were modified and execution is not implemented.
+18. Export CSV reports only when you intentionally choose an output file; the main report export follows the active filters/search, includes parent/depth context for recursive rows, and the suggested filename includes the search term when one is active.
 
 ## Current Workflow
 

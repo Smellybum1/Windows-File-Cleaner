@@ -166,6 +166,7 @@ What changed:
 - Added Cleanup Scope Safety Note classification in core.
 - Added a WPF scope note below the Cleanup Scope controls.
 - Added tests for real-profile, fixture, custom, blank, and WPF startup notes.
+- Later added Cleanup Scope Scan Gate so real-profile scans require explicit preflight and fixture-review acknowledgement before `Scan` is enabled.
 
 Files changed:
 
@@ -210,4 +211,4 @@ Open questions:
 
 Risky assumptions:
 
-- The note is sufficient as a reminder for now; it does not prove preflight happened.
+- The note alone is not sufficient as proof that preflight happened; the later scan gate adds explicit acknowledgement but still does not run preflight from WPF.
