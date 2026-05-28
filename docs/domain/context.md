@@ -418,7 +418,7 @@ Last reviewed: 2026-05-28
 
 Storage Review Search is a read-only text search applied to the current Storage Scan review results.
 
-By default, it matches path, name, category, Importance Rating, Deletion Recommendation, evidence, and access issue text. It combines with the active Storage Review Filter and Bloat Category Filter.
+By default, it matches path, name, category, Importance Rating, Deletion Recommendation, evidence, Access Status, and access issue text. It combines with the active Storage Review Filter and Bloat Category Filter.
 
 Recognized field prefixes restrict search to one field:
 
@@ -438,6 +438,8 @@ Recognized field prefixes restrict search to one field:
 - Search for `path:pip` to search only full paths.
 - Search for `category:Python package cache` to search only Bloat Category labels.
 - Search for `recommendation:Quarantine candidate` to search only Deletion Recommendation labels.
+- Search for `access:readable` to search only rows that were readable during scan.
+- Search for `access:access issue` or `issue:denied` to search scan access status or access issue text.
 - Search for a game, app, or folder name before deciding whether to inspect it in Explorer.
 
 #### Non-examples
@@ -499,12 +501,14 @@ Initial user-facing values are `Readable` and `Access issue`.
 #### Relationships
 
 - Supports Storage Review Filter, Storage Review Search, Review Mix, Storage Scan Safety Summary, Scan Report Export, and Quarantine Preview CSV Export.
+- Can be searched with Storage Review Search through `access:` and `issue:` field prefixes.
 - Access issue rows should be reviewed before trusting cleanup recommendations for nearby or parent paths.
 
 #### Code implications
 
 - Use `StorageEntryRow.AccessStatus` for WPF display.
 - Use `Readable` and `Access issue` consistently in UI/tests/docs.
+- Include Access Status in broad search and `access:` / `issue:` field-prefix search.
 - Export Access Status separately from access issue error text.
 - Do not retry, elevate, or change permissions based on Access Status.
 

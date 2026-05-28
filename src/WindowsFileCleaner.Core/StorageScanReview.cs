@@ -100,8 +100,14 @@ public sealed record StorageScanReview(
 
     private static bool MatchesAccessIssueSearch(StorageEntry entry, string query, string normalizedQuery)
     {
-        return ContainsSearchText(entry.ErrorMessage, query, normalizedQuery)
+        return ContainsSearchText(FormatAccessStatus(entry), query, normalizedQuery)
+            || ContainsSearchText(entry.ErrorMessage, query, normalizedQuery)
             || (IsAccessIssue(entry) && ContainsSearchText("Access issue", query, normalizedQuery));
+    }
+
+    private static string FormatAccessStatus(StorageEntry entry)
+    {
+        return entry.IsAccessible ? "Readable" : "Access issue";
     }
 
     private static bool ContainsSearchText(string? value, string query, string normalizedQuery)

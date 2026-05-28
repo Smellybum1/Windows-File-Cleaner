@@ -31,6 +31,7 @@ As the project owner, I want searches like `path:pip` and `category:Python packa
   - `recommendation:` / `rec:`
   - `evidence:`
   - `issue:` / `access:`
+- A later Access Status Search packet made `access:` match both Access Status values such as `Readable` and `Access issue`, and scan access issue text.
 - The WPF search box tooltip shows examples.
 - Filter summary and report filenames preserve the typed query, including the prefix.
 - All behavior remains in-memory and read-only.
@@ -75,3 +76,4 @@ ADRs added or skipped:
 Follow-up work:
 
 - Try `path:`, `category:`, `rating:`, and `recommendation:` in the next manual fixture/real scan UI pass.
+- Try `access:readable` and `access:access issue` in the next manual fixture/real scan UI pass.

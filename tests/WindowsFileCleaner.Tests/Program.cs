@@ -368,11 +368,28 @@ internal sealed class StorageScanTests
 
         var review = StorageScanReviewBuilder.Build(result);
         var accessRows = review.ApplyFilter(StorageReviewFilter.AccessIssues);
+        var accessStatusRows = review.ApplyFilter(
+            StorageReviewFilter.All,
+            StorageCategoryFilter.All,
+            StorageReviewSearch.FromText("access:access issue"));
+        var accessMessageRows = review.ApplyFilter(
+            StorageReviewFilter.All,
+            StorageCategoryFilter.All,
+            StorageReviewSearch.FromText("issue:denied"));
+        var readableRows = review.ApplyFilter(
+            StorageReviewFilter.All,
+            StorageCategoryFilter.All,
+            StorageReviewSearch.FromText("access:readable"));
 
         Assert(review.Summary.AccessIssueCount == 1, "Review should count access issue rows.");
         Assert(review.Summary.AccessIssueLargestEntryBytes == 0, "Access issue largest row should reflect the unreadable row size.");
         Assert(accessRows.Count == 1, "Access issue filter should only return inaccessible rows.");
         Assert(accessRows[0].Entry.FullPath.EndsWith(@"\Locked", StringComparison.OrdinalIgnoreCase), "Access issue filter should return the inaccessible path.");
+        Assert(accessStatusRows.Count == 1, "Access-prefixed search should match access issue status.");
+        Assert(accessStatusRows[0].Entry.FullPath.EndsWith(@"\Locked", StringComparison.OrdinalIgnoreCase), "Access status search should return the inaccessible path.");
+        Assert(accessMessageRows.Count == 1, "Issue-prefixed search should match access issue messages.");
+        Assert(readableRows.Count > 0, "Access-prefixed search should match readable status.");
+        Assert(readableRows.All(row => row.Entry.IsAccessible), "Readable access search should only return readable rows.");
     }
 
     public void ReviewSearchCombinesWithReviewAndCategoryFilters()

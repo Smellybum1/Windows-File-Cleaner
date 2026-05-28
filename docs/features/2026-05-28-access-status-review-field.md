@@ -26,6 +26,7 @@ As the project owner, I want each row to say whether it was readable or had an a
 - Scan Report CSV includes `Access status` and `Access issue` columns.
 - Quarantine Preview CSV includes `Access status` and `Access issue` columns.
 - Access issues remain informational and read-only.
+- A later Access Status Search packet makes `Readable` and `Access issue` searchable through broad search and `access:` / `issue:` prefixes.
 
 ## Domain language changes
 
@@ -51,6 +52,7 @@ What changed:
 - Added selected-row access status metadata.
 - Added `Access status` columns to Scan Report CSV and Quarantine Preview CSV exports.
 - Added core CSV and WPF fixture coverage.
+- Later Access Status Search packet added core and WPF fixture coverage for `access:readable` and `access:access issue`.
 
 ADRs added or skipped:
 
@@ -59,3 +61,4 @@ ADRs added or skipped:
 Follow-up work:
 
 - In the next real scan, confirm the three access issue rows are easy to find and understand.
+- Try `access:readable`, `access:access issue`, and `issue:<error text>` in the next manual fixture or real-profile scan.

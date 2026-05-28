@@ -238,6 +238,16 @@ internal sealed class MainWindowSmokeTests
                 window.CurrentScanReportExportFileName.Contains("-search-category-python-package-cache.csv", StringComparison.OrdinalIgnoreCase),
                 "Scan Report Export filename should include a sanitized prefixed search segment.");
 
+            window.ApplyStorageReviewSearch("access:readable");
+            Assert(window.FilterSummaryTextValue.Contains("Search \"access:readable\"", StringComparison.OrdinalIgnoreCase), "Access-prefixed search should update the filter summary.");
+            Assert(window.DisplayedRows.Count > 0, "Readable access search should show fixture rows.");
+            Assert(
+                window.DisplayedRows.All(row => row.AccessStatus == "Readable"),
+                "Readable access search should show only readable rows in the fixture.");
+            Assert(
+                window.CurrentScanReportExportFileName.Contains("-search-access-readable.csv", StringComparison.OrdinalIgnoreCase),
+                "Scan Report Export filename should include a sanitized access-status search segment.");
+
             window.ApplyStorageReviewSearch("");
             Assert(window.CurrentSearchText == "", "Clearing Storage Review Search should clear WPF search text.");
             Assert(!window.FilterSummaryTextValue.Contains("Search \"", StringComparison.OrdinalIgnoreCase), "Cleared search should be removed from the filter summary.");
