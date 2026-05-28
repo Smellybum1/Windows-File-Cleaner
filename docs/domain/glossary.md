@@ -55,7 +55,8 @@ If a term needs to change, update this glossary first, then update code and docs
 | Scan Report Export | Read-only report generated from Storage Scan results. | `StorageScanCsvExporter` | Initial format is CSV for the active Storage Review Filter. |
 | Quarantine | A reversible holding location for selected files or folders before deletion. | `Quarantine`, `quarantinePath` | Preferred on `D:`. Current preview default is `D:\WindowsFileCleanerQuarantine`. |
 | Undo Quarantine | Restore a quarantined file or folder to its original path. | `UndoQuarantine`, `undoQuarantine` | Requires a restore manifest. |
-| Restore Manifest | Metadata needed to undo a quarantine action. | `RestoreManifest`, `restoreManifestPath` | Should include original path, quarantine path, size, timestamps, and action time. |
+| Restore Manifest | Versioned JSON metadata needed to undo an executed quarantine action. | `RestoreManifest`, `restoreManifestPath` | Schema version `restore-manifest.v1`; should include original path, quarantine path, size, timestamps, and action time. |
+| Restore Manifest Draft | In-memory draft of future Restore Manifest metadata generated from included Quarantine Preview rows. | `RestoreManifestDraft`, `RestoreManifestEntryDraft`, `RestoreManifestDraftBuilder`, `RestoreManifestDraftJsonSerializer` | Not an executed manifest, not proof that files moved, and must not be written by preview code. |
 | Desktop App | The preferred app shape for this project. | `DesktopApp` only if needed | Implement with C# and WPF. |
 | WPF | Windows Presentation Foundation, the selected desktop UI framework. | Avoid domain-model names unless framework-specific. | Use for Windows-only desktop UI. |
 
@@ -78,6 +79,7 @@ If a term needs to change, update this glossary first, then update code and docs
 | Bloat | Cleanup Candidate, unwanted bloat | User-facing shorthand only; define concrete categories before code relies on it. |
 | Score | Importance Rating or Deletion Recommendation | Too vague unless the specific rating is named. |
 | Restore Log | Restore Manifest | Use manifest when it is required for undo behavior. |
+| Manifest Preview | Restore Manifest Draft | Use draft when no cleanup action has executed. |
 | Cleanup Plan | Quarantine Preview | Use the more precise preview term until actual Cleanup Actions exist. |
 
 ## Term template

@@ -6,13 +6,13 @@ Use it to preserve what was completed, what was verified, what was rejected, and
 
 ## Current status
 
-Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. Review filters, selected-folder child breakdown, selected-path inspection actions, CSV export, Review Mix, Storage Scan Safety Summary, Safety Summary review shortcuts, Access issues filtering, Bloat Category Filter, No category filtering, Review Shortlist, Quarantine Preview, and Quarantine Preview CSV export are implemented and verified. Safety Summary shortcuts are awaiting user retest after push.
+Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. Review filters, selected-folder child breakdown, selected-path inspection actions, CSV export, Review Mix, Storage Scan Safety Summary, Safety Summary review shortcuts, Access issues filtering, Bloat Category Filter, No category filtering, Review Shortlist, Quarantine Preview, Quarantine Preview CSV export, and Restore Manifest Draft are implemented and verified. Restore Manifest Draft is core-only and awaits future confirmation-flow work.
 
 ## Next recommended work
 
 1. Ask the user to rerun the WPF app and confirm Safety Summary shortcuts, Review Shortlist, Quarantine Preview, Export preview, Review Mix, Access issues filter, category filter, No category filter, and filter wording are useful.
 2. Use review feedback to refine Protected Locations and category grouping.
-3. Design Restore Manifest and explicit confirmation semantics before any actual Quarantine execution.
+3. Design explicit Quarantine confirmation semantics before any actual Quarantine execution.
 4. Defer actual Quarantine and Undo Quarantine execution until scan review, preview semantics, and restore rules are trustworthy.
 5. Revisit .NET 10 before packaging or long-term distribution.
 
@@ -821,3 +821,56 @@ Rejected ideas buffer:
 - Do not create cleanup-specific shortcut actions.
 - Do not treat shortcuts as approvals.
 - Do not add new category synonyms for Uncategorized Results.
+
+### 2026-05-28: Add Restore Manifest Draft
+
+Status: completed
+
+Evidence:
+
+- The user wants quarantine on `D:` with easy undo.
+- Quarantine Preview now proves eligible destination paths, but future Undo Quarantine needs a versioned metadata contract before file-moving code exists.
+
+Decision:
+
+- Added ADR 0003: use JSON Restore Manifest with schema version `restore-manifest.v1`.
+
+Implementation:
+
+- Added `RestoreManifestDraft`.
+- Added `RestoreManifestEntryDraft`.
+- Added `RestoreManifestDraftBuilder`.
+- Added `RestoreManifestDraftJsonSerializer`.
+- Drafts include only included Quarantine Preview rows.
+- Drafts exclude blocked and redundant preview rows.
+- Draft JSON clearly identifies `isExecutedManifest` as false.
+- No folder creation, file move, deletion, manifest file write, quarantine execution, or undo execution was added.
+
+Verification:
+
+- `dotnet build WindowsFileCleaner.sln --no-restore` passed.
+- `dotnet run --project tests\WindowsFileCleaner.Tests\WindowsFileCleaner.Tests.csproj --no-build` passed.
+
+Docs updated:
+
+- `docs/decisions/0003-use-json-restore-manifest.md`
+- `docs/domain/context.md`
+- `docs/domain/glossary.md`
+- `docs/features/2026-05-28-restore-manifest-draft.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- Added `docs/decisions/0003-use-json-restore-manifest.md`.
+
+Open questions:
+
+- What exact manifest file path should future Quarantine execution use?
+- Should future executed manifests include hashes for files, and if so which hash algorithm?
+- Should future Undo Quarantine restore timestamps and attributes?
+
+Rejected ideas buffer:
+
+- Do not write a draft file automatically.
+- Do not use CSV as the executed restore manifest format.
+- Do not include blocked or redundant preview rows as draft entries.

@@ -909,6 +909,51 @@ The preferred quarantine location is on `D:`. The current preview default is `D:
 - Use `quarantinePath` for the destination path.
 - Persist a restore manifest before moving files.
 
+### Restore Manifest
+
+Status: draft
+Last reviewed: 2026-05-28
+
+#### Definition
+
+A Restore Manifest is versioned metadata that records enough information to undo a completed Quarantine action.
+
+The selected durable format is JSON with schema version `restore-manifest.v1`.
+
+#### Examples
+
+- Original path for each quarantined file or folder.
+- Quarantine path for each moved entry.
+- Size, last modified time, Importance Rating, Deletion Recommendation, Bloat Categories, and evidence captured at action time.
+- Cleanup Scope and Quarantine root used for the action.
+
+#### Non-examples
+
+- A Quarantine Preview CSV export.
+- A Restore Manifest Draft.
+- A scan report.
+- A backup of file contents.
+
+#### Lifecycle
+
+- A Restore Manifest Draft may be generated in memory from included Quarantine Preview rows.
+- An executed Restore Manifest should be written only after explicit user confirmation and after Quarantine execution is attempted.
+- Undo Quarantine uses the executed manifest to restore files when feasible.
+- Schema changes require versioning and migration consideration.
+
+#### Relationships
+
+- Depends on Quarantine Preview for draft shape.
+- Depends on Quarantine execution for actual manifest writing.
+- Required by Undo Quarantine.
+
+#### Code implications
+
+- Use `RestoreManifestDraft`, `RestoreManifestEntryDraft`, `RestoreManifestDraftBuilder`, and `RestoreManifestDraftJsonSerializer` for draft-only proof.
+- Do not write Restore Manifest files in preview or draft code.
+- Use a versioned JSON schema for future executed manifests.
+- Keep preview CSV exports separate from Restore Manifest drafts and executed manifests.
+
 ### Undo Quarantine
 
 Status: draft  

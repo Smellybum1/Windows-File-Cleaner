@@ -11,6 +11,7 @@ tests.StorageScanSafetyShortcutsMapToReadOnlyFilters();
 tests.ReviewShortlistTracksSelectedRowsWithoutModifyingReview();
 tests.QuarantinePreviewBuildsReadOnlyPlanFromShortlist();
 tests.QuarantinePreviewCsvExporterWritesReviewReport();
+tests.RestoreManifestDraftBuildsJsonUndoMetadataFromIncludedPreviewRows();
 tests.ChildSummaryShowsLargestImmediateChildren();
 tests.PathInspectionPlanBuildsExplorerArguments();
 tests.CsvExporterWritesEscapedReviewRows();
@@ -436,6 +437,47 @@ internal sealed class StorageScanTests
         Assert(csv.Contains("High-risk rows require manual review and are blocked from this preview.", StringComparison.Ordinal), "Preview CSV should export blocked reasons.");
         Assert(csv.Contains(Path.GetFullPath(Path.Combine(quarantineRoot, "preview", "Downloads", "OldInstallers", "setup, old.msi")), StringComparison.Ordinal), "Preview CSV should include destination paths for included rows.");
         Assert(!Directory.Exists(quarantineRoot), "Exporting a preview should not create the quarantine root folder.");
+    }
+
+    public void RestoreManifestDraftBuildsJsonUndoMetadataFromIncludedPreviewRows()
+    {
+        using var fixture = TestFixture.Create();
+
+        fixture.WriteFile(@"Downloads\OldInstallers\setup.msi", 1024 * 1024 * 2, DateTimeOffset.UtcNow.AddDays(-120));
+        fixture.WriteFile(@"Documents\important.txt", 1024, DateTimeOffset.UtcNow);
+        var scanner = new StorageScanner();
+        var result = scanner.Scan(new StorageScanOptions(fixture.RootPath));
+        var review = StorageScanReviewBuilder.Build(result);
+        var parent = SingleReviewEntry(review.Entries, @"Downloads\OldInstallers");
+        var child = SingleReviewEntry(review.Entries, @"Downloads\OldInstallers\setup.msi");
+        var protectedRow = SingleReviewEntry(review.Entries, @"Documents");
+        var quarantineRoot = Path.Combine(fixture.RootPath, "quarantine-root");
+        var preview = QuarantinePreviewBuilder.Build(
+            [child, parent, protectedRow],
+            fixture.RootPath,
+            quarantineRoot);
+        var draftedAtUtc = new DateTimeOffset(2026, 5, 28, 1, 2, 3, TimeSpan.Zero);
+
+        var draft = RestoreManifestDraftBuilder.Build(preview, draftedAtUtc, "draft-test-1");
+        var json = RestoreManifestDraftJsonSerializer.Serialize(draft);
+
+        Assert(draft.SchemaVersion == RestoreManifestDraft.CurrentSchemaVersion, "Draft should use the current Restore Manifest schema version.");
+        Assert(draft.DraftId == "draft-test-1", "Draft should preserve the provided draft id.");
+        Assert(draft.DraftedAtUtc == draftedAtUtc, "Draft should preserve the drafted timestamp as UTC.");
+        Assert(draft.EntryCount == 1, "Draft should include only included preview rows.");
+        Assert(draft.TotalBytes == parent.Entry.SizeBytes, "Draft total bytes should reflect included rows only.");
+        Assert(!draft.IsExecutedManifest, "Draft must not identify as an executed manifest.");
+
+        var entry = draft.Entries.Single();
+        Assert(entry.OriginalPath == parent.Entry.FullPath, "Draft entry should preserve the original path.");
+        Assert(entry.QuarantinePath == Path.GetFullPath(Path.Combine(quarantineRoot, "preview", "Downloads", "OldInstallers")), "Draft entry should preserve the quarantine path.");
+        Assert(entry.BloatCategories.Contains(BloatCategory.InstallerCache), "Draft entry should preserve category evidence.");
+        Assert(!draft.Entries.Any(row => row.OriginalPath == child.Entry.FullPath), "Draft should exclude redundant preview rows.");
+        Assert(!draft.Entries.Any(row => row.OriginalPath == protectedRow.Entry.FullPath), "Draft should exclude blocked preview rows.");
+        Assert(json.Contains("\"schemaVersion\": \"restore-manifest.v1\"", StringComparison.Ordinal), "JSON should include the schema version.");
+        Assert(json.Contains("\"isExecutedManifest\": false", StringComparison.Ordinal), "JSON should clearly identify the draft as not executed.");
+        Assert(json.Contains("\"quarantinePath\"", StringComparison.Ordinal), "JSON should include quarantine paths for undo.");
+        Assert(!Directory.Exists(quarantineRoot), "Building and serializing a Restore Manifest Draft should not create the quarantine root folder.");
     }
 
     public void ChildSummaryShowsLargestImmediateChildren()
