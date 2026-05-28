@@ -20,8 +20,10 @@ public partial class MainWindow : Window
     private string? _currentCleanupScopePath;
     private StorageReviewFilter _currentFilter = StorageReviewFilter.All;
     private StorageCategoryFilter _currentCategoryFilter = StorageCategoryFilter.All;
+    private StorageReviewSearch _currentSearch = StorageReviewSearch.Empty;
     private StorageEntryRow? _selectedRow;
     private bool _isUpdatingCategoryFilterOptions;
+    private bool _isUpdatingSearchBox;
 
     public MainWindow()
         : this(StorageScanOptions.DefaultForCurrentUser().CleanupScopePath)
@@ -68,6 +70,8 @@ public partial class MainWindow : Window
     public string SafetySummaryTextValue => SafetySummaryText.Text;
 
     public string FilterSummaryTextValue => FilterSummaryText.Text;
+
+    public string CurrentSearchText => SearchBox.Text;
 
     public string DetailGuidanceTextValue => DetailGuidanceText.Text;
 
@@ -164,8 +168,10 @@ public partial class MainWindow : Window
         _currentCleanupScopePath = result.CleanupScopePath;
         _currentFilter = StorageReviewFilter.All;
         _currentCategoryFilter = StorageCategoryFilter.All;
+        _currentSearch = StorageReviewSearch.Empty;
         _shortlist.Clear();
         ClearQuarantinePreview();
+        SetSearchTextSilently("");
         UpdateCategoryFilterOptions();
         var rows = ApplyCurrentFilter();
 
@@ -396,6 +402,22 @@ public partial class MainWindow : Window
         RefreshResults();
     }
 
+    private void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
+    {
+        if (_isUpdatingSearchBox || _currentReview is null)
+        {
+            return;
+        }
+
+        _currentSearch = StorageReviewSearch.FromText(SearchBox.Text);
+        RefreshResults();
+    }
+
+    private void ClearSearchButton_Click(object sender, RoutedEventArgs e)
+    {
+        ApplyStorageReviewSearch("");
+    }
+
     private void ExportCsvButton_Click(object sender, RoutedEventArgs e)
     {
         if (_currentReview is null)
@@ -544,6 +566,8 @@ public partial class MainWindow : Window
         PreviewQuarantineButton.IsEnabled = !isScanning && _currentReview is not null && _shortlist.Count > 0;
         ExportQuarantinePreviewButton.IsEnabled = !isScanning && _currentQuarantinePreview is not null;
         CategoryFilterBox.IsEnabled = !isScanning && _currentReview is not null && CategoryFilterBox.Items.Count > 1;
+        SearchBox.IsEnabled = !isScanning && _currentReview is not null;
+        ClearSearchButton.IsEnabled = !isScanning && _currentReview is not null && _currentSearch.IsActive;
         UpdateShortlistControls();
         UpdateSafetyShortcutButtons();
     }
@@ -579,6 +603,18 @@ public partial class MainWindow : Window
 
         _currentCategoryFilter = filter;
         SelectCategoryFilterOption(_currentCategoryFilter);
+        RefreshResults();
+    }
+
+    public void ApplyStorageReviewSearch(string searchText)
+    {
+        if (_currentReview is null)
+        {
+            return;
+        }
+
+        _currentSearch = StorageReviewSearch.FromText(searchText);
+        SetSearchTextSilently(_currentSearch.Query);
         RefreshResults();
     }
 
@@ -652,6 +688,8 @@ public partial class MainWindow : Window
             ClearShortlistButton.IsEnabled = false;
             PreviewQuarantineButton.IsEnabled = false;
             ExportQuarantinePreviewButton.IsEnabled = false;
+            SearchBox.IsEnabled = false;
+            ClearSearchButton.IsEnabled = false;
             return;
         }
 
@@ -667,6 +705,8 @@ public partial class MainWindow : Window
         ClearShortlistButton.IsEnabled = _shortlist.Count > 0;
         PreviewQuarantineButton.IsEnabled = _shortlist.Count > 0;
         ExportQuarantinePreviewButton.IsEnabled = _currentQuarantinePreview is not null;
+        SearchBox.IsEnabled = true;
+        ClearSearchButton.IsEnabled = _currentSearch.IsActive;
     }
 
     private StorageEntryRow[] ApplyCurrentFilter()
@@ -677,7 +717,7 @@ public partial class MainWindow : Window
         }
 
         return _currentReview
-            .ApplyFilter(_currentFilter, _currentCategoryFilter)
+            .ApplyFilter(_currentFilter, _currentCategoryFilter, _currentSearch)
             .Take(MaxDisplayedRows)
             .Select(entry => new StorageEntryRow(entry, _shortlist.Contains(entry.Entry)))
             .ToArray();
@@ -741,7 +781,8 @@ public partial class MainWindow : Window
         var rows = ApplyCurrentFilter();
         var largestShownBytes = rows.Select(row => row.SizeBytes).DefaultIfEmpty(0).Max();
         var categoryLabel = _currentCategoryFilter.Kind == StorageCategoryFilterKind.All ? "" : $" + {FormatCategoryFilter(_currentCategoryFilter)}";
-        FilterSummaryText.Text = $"{FormatFilter(_currentFilter)}{categoryLabel}: {rows.Length:N0} shown, largest row {ByteSizeFormatter.Format(largestShownBytes)}, shortlist {_shortlist.Count:N0}";
+        var searchLabel = _currentSearch.IsActive ? $" + Search \"{_currentSearch.Query}\"" : "";
+        FilterSummaryText.Text = $"{FormatFilter(_currentFilter)}{categoryLabel}{searchLabel}: {rows.Length:N0} shown, largest row {ByteSizeFormatter.Format(largestShownBytes)}, shortlist {_shortlist.Count:N0}";
     }
 
     private void UpdateShortlistControls()
@@ -756,6 +797,21 @@ public partial class MainWindow : Window
         ClearShortlistButton.IsEnabled = hasShortlist && ScanButton.IsEnabled;
         PreviewQuarantineButton.IsEnabled = _currentReview is not null && hasShortlist && ScanButton.IsEnabled;
         ExportQuarantinePreviewButton.IsEnabled = _currentQuarantinePreview is not null && ScanButton.IsEnabled;
+        SearchBox.IsEnabled = _currentReview is not null && ScanButton.IsEnabled;
+        ClearSearchButton.IsEnabled = _currentReview is not null && _currentSearch.IsActive && ScanButton.IsEnabled;
+    }
+
+    private void SetSearchTextSilently(string text)
+    {
+        _isUpdatingSearchBox = true;
+        try
+        {
+            SearchBox.Text = text;
+        }
+        finally
+        {
+            _isUpdatingSearchBox = false;
+        }
     }
 
     private void ClearQuarantinePreview()

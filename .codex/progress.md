@@ -6,11 +6,11 @@ Use it to preserve what was completed, what was verified, what was rejected, and
 
 ## Current status
 
-Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. Cleanup Scope Safety Note, review filters, selected-folder child breakdown, selected-path inspection actions, Selected Path Review Guidance, CSV export, Review Mix, Storage Scan Safety Summary, Safety Summary review shortcuts, Access issues filtering, Bloat Category Filter, No category filtering, Review Shortlist, Quarantine Preview, Quarantine Preview CSV export, Restore Manifest Draft, Quarantine Confirmation Draft, Quarantine Readiness UI, conservative app data classification, read-only safety regression checks, the MVP runbook, the MVP readiness audit, fixture-driven WPF launch support, WPF shell smoke testing, WPF fixture scan smoke testing, WPF review interaction smoke testing, WPF review toolbar layout polish, the MVP preflight script, and the MVP fixture review launcher are implemented and verified. Quarantine remains preview-only; no cleanup execution, manifest writing, or Undo Quarantine execution exists.
+Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. Cleanup Scope Safety Note, review filters, Storage Review Search, selected-folder child breakdown, selected-path inspection actions, Selected Path Review Guidance, CSV export, Review Mix, Storage Scan Safety Summary, Safety Summary review shortcuts, Access issues filtering, Bloat Category Filter, No category filtering, Review Shortlist, Quarantine Preview, Quarantine Preview CSV export, Restore Manifest Draft, Quarantine Confirmation Draft, Quarantine Readiness UI, conservative app data classification, read-only safety regression checks, the MVP runbook, the MVP readiness audit, fixture-driven WPF launch support, WPF shell smoke testing, WPF fixture scan smoke testing, WPF review interaction smoke testing, WPF review toolbar layout polish, the MVP preflight script, and the MVP fixture review launcher are implemented and verified. Quarantine remains preview-only; no cleanup execution, manifest writing, or Undo Quarantine execution exists.
 
 ## Next recommended work
 
-1. Run `.\tools\Start-MvpFixtureReview.ps1`, confirm the launched app shows Fixture Cleanup Scope, click `Scan`, and manually inspect layout, visible wording, Selected Path Review Guidance, export dialogs, Safety Summary shortcuts, Review Shortlist, Quarantine Preview, Review Mix, Access issues filter, category filter, No category filter, and filter wording.
+1. Run `.\tools\Start-MvpFixtureReview.ps1`, confirm the launched app shows Fixture Cleanup Scope, click `Scan`, and manually inspect layout, visible wording, Storage Review Search, Selected Path Review Guidance, export dialogs, Safety Summary shortcuts, Review Shortlist, Quarantine Preview, Review Mix, Access issues filter, category filter, No category filter, and filter wording.
 2. Use `README.md` and `docs/features/2026-05-28-mvp-readiness-audit.md` to rerun the WPF app against `C:\Users\moxhe`.
 3. Run `.\tools\Invoke-MvpPreflight.ps1` before any later real-profile scan if the worktree changes.
 4. Rerun the real scan and check whether Windows app data, installed applications, and game data labels make the large app/game rows easier to triage.
@@ -1529,6 +1529,7 @@ Implementation:
 
 Verification:
 
+- `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\Invoke-MvpPreflight.ps1` passed.
 - `dotnet build WindowsFileCleaner.sln --no-restore` passed.
 - `dotnet run --project tests\WindowsFileCleaner.Tests\WindowsFileCleaner.Tests.csproj --no-build` passed.
 - `dotnet run --project tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj --no-build` passed.
@@ -1554,3 +1555,50 @@ Rejected ideas buffer:
 - Do not treat the note as proof that preflight ran.
 - Do not make the note run shell commands, create fixtures, or block scanning.
 - Do not add a modal pre-scan gate before the visible fixture workflow is manually tested.
+
+### 2026-05-28: Add Storage Review Search
+
+Status: completed
+
+Evidence:
+
+- The real scan scale was 188,580 files and 37,740 folders.
+- Existing filters helped broad triage, but finding a specific app, tool, cache, or game path still required scrolling or CSV export.
+
+Implementation:
+
+- Added `StorageReviewSearch`.
+- Extended `StorageScanReview` filtering to combine Storage Review Filter, Bloat Category Filter, and Storage Review Search.
+- Added a WPF Search field and Clear search action.
+- Search matches path, name, category, Importance Rating, Deletion Recommendation, evidence, and access issue text.
+- Search normalizes whitespace, hyphens, and underscores so spaced search terms can match enum-style labels such as `HighRisk` and `PythonPackageCache`.
+- Search resets after each new Storage Scan.
+- No filesystem rescan, persistence, cleanup execution, Quarantine execution, Undo Quarantine, or manifest writing was added.
+
+Verification:
+
+- `dotnet build WindowsFileCleaner.sln --no-restore` passed.
+- `dotnet run --project tests\WindowsFileCleaner.Tests\WindowsFileCleaner.Tests.csproj --no-build` passed.
+- `dotnet run --project tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj --no-build` passed.
+
+Docs updated:
+
+- `README.md`
+- `docs/domain/context.md`
+- `docs/domain/glossary.md`
+- `docs/features/2026-05-28-storage-review-search.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No new ADR. This is a reversible in-memory review feature and does not change architecture, persistence, security, deployment, or cleanup execution.
+
+Open questions:
+
+- Should search later support explicit field prefixes such as `path:`, `category:`, or `rating:`?
+
+Rejected ideas buffer:
+
+- Do not make search rescan, watch the filesystem, or search outside completed scan results.
+- Do not persist search history.
+- Do not use search results as cleanup approval.

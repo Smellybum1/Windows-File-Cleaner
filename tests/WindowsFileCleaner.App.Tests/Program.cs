@@ -155,6 +155,22 @@ internal sealed class MainWindowSmokeTests
             Assert(
                 rows.Any(row => row.Categories.Contains("Python package cache", StringComparison.OrdinalIgnoreCase)),
                 "Fixture scan should surface Python package cache category evidence.");
+
+            window.ApplyStorageReviewSearch("pip");
+            Assert(window.CurrentSearchText == "pip", "Applying Storage Review Search should update WPF search text.");
+            Assert(window.FilterSummaryTextValue.Contains("Search \"pip\"", StringComparison.OrdinalIgnoreCase), "Search should update the filter summary.");
+            Assert(window.DisplayedRows.Count > 0, "Search should show matching fixture rows.");
+            Assert(
+                window.DisplayedRows.All(row =>
+                    row.FullPath.Contains("pip", StringComparison.OrdinalIgnoreCase)
+                    || row.Categories.Contains("Python package cache", StringComparison.OrdinalIgnoreCase)
+                    || row.Evidence.Contains("Python", StringComparison.OrdinalIgnoreCase)),
+                "Search should only show rows matching path, category, or evidence text.");
+
+            window.ApplyStorageReviewSearch("");
+            Assert(window.CurrentSearchText == "", "Clearing Storage Review Search should clear WPF search text.");
+            Assert(!window.FilterSummaryTextValue.Contains("Search \"", StringComparison.OrdinalIgnoreCase), "Cleared search should be removed from the filter summary.");
+
             Assert(File.Exists(fixture.MarkerPath), "Fixture marker file should still exist after the read-only scan.");
         }
         finally

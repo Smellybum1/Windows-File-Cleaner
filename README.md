@@ -98,11 +98,12 @@ After the app opens:
 4. Confirm the status says no files were modified.
 5. Review the summary cards for total size, folders, files, and access issues.
 6. Use Review Mix and Safety Summary to inspect high-risk, protected, access issue, reparse point, quarantine candidate, and no-category rows.
-7. Select large folders and inspect Evidence, Review guidance, and Largest immediate children.
-8. Try category filters such as App cache, Python package cache, GPU shader cache, Windows app data, Installed application, Game data, Protected location, and No category.
-9. Add a likely-safe cleanup candidate to the Review Shortlist.
-10. Click `Preview quarantine` and confirm the preview, Restore Manifest Draft, and Quarantine Confirmation Draft all say no files were modified and execution is not implemented.
-11. Export CSV reports only when you intentionally choose an output file.
+7. Use Storage Review Search for specific names such as `pip`, `NVIDIA`, `Codex`, app names, or game folders.
+8. Select large folders and inspect Evidence, Review guidance, and Largest immediate children.
+9. Try category filters such as App cache, Python package cache, GPU shader cache, Windows app data, Installed application, Game data, Protected location, and No category.
+10. Add a likely-safe cleanup candidate to the Review Shortlist.
+11. Click `Preview quarantine` and confirm the preview, Restore Manifest Draft, and Quarantine Confirmation Draft all say no files were modified and execution is not implemented.
+12. Export CSV reports only when you intentionally choose an output file.
 
 ## Current Workflow
 
@@ -113,7 +114,7 @@ The intended review flow is:
 3. Confirm the Cleanup Scope Safety Note before scanning.
 4. Run Storage Scan.
 5. Inspect high-risk and protected rows first.
-6. Use category filters to understand large buckets.
+6. Use Storage Review Search and category filters to understand large buckets and specific app/tool paths.
 7. Use Selected Path Review Guidance, Child Breakdown, and Open in Explorer for manual inspection.
 8. Add interesting rows to Review Shortlist.
 9. Generate Quarantine Preview for read-only readiness review.

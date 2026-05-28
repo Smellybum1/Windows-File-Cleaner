@@ -8,6 +8,7 @@ tests.CleanupScopeSafetyNoteDistinguishesFixtureAndRealProfile();
 tests.ClassifierLabelsRealScanContainerPatterns();
 tests.ReviewBuilderSummarizesAndFiltersResults();
 tests.ReviewBuilderFiltersAccessIssues();
+tests.ReviewSearchCombinesWithReviewAndCategoryFilters();
 tests.StorageScanSafetySummaryHighlightsReviewBoundaries();
 tests.StorageScanSafetyShortcutsMapToReadOnlyFilters();
 tests.ReviewShortlistTracksSelectedRowsWithoutModifyingReview();
@@ -272,6 +273,48 @@ internal sealed class StorageScanTests
         Assert(review.Summary.AccessIssueLargestEntryBytes == 0, "Access issue largest row should reflect the unreadable row size.");
         Assert(accessRows.Count == 1, "Access issue filter should only return inaccessible rows.");
         Assert(accessRows[0].Entry.FullPath.EndsWith(@"\Locked", StringComparison.OrdinalIgnoreCase), "Access issue filter should return the inaccessible path.");
+    }
+
+    public void ReviewSearchCombinesWithReviewAndCategoryFilters()
+    {
+        using var fixture = TestFixture.Create();
+
+        fixture.WriteFile(@"AppData\Local\pip\Cache\http-v2\response.body", 1024, DateTimeOffset.UtcNow.AddDays(-30));
+        fixture.WriteFile(@"Downloads\setup.msi", 1024, DateTimeOffset.UtcNow.AddDays(-120));
+        fixture.WriteFile(@"Documents\budget.xlsx", 1024, DateTimeOffset.UtcNow);
+        fixture.WriteFile(@"Unknown\notes.txt", 1024, DateTimeOffset.UtcNow);
+
+        var scanner = new StorageScanner();
+        var result = scanner.Scan(new StorageScanOptions(fixture.RootPath));
+        var review = StorageScanReviewBuilder.Build(result);
+
+        var pipRows = review.ApplyFilter(
+            StorageReviewFilter.Caution,
+            StorageCategoryFilter.All,
+            StorageReviewSearch.FromText("python package cache"));
+        Assert(pipRows.Count > 0, "Search should find Python package cache rows by user-facing spaced category text.");
+        Assert(
+            pipRows.All(row => row.Entry.BloatCategories.Contains(BloatCategory.PythonPackageCache)),
+            "Python package cache search within Caution should only return matching cache rows in this fixture.");
+
+        var installerRows = review.ApplyFilter(
+            StorageReviewFilter.QuarantineCandidates,
+            StorageCategoryFilter.ForCategory(BloatCategory.InstallerCache),
+            StorageReviewSearch.FromText("setup"));
+        Assert(installerRows.Count > 0, "Search should combine with Quarantine candidates and category filters.");
+        Assert(
+            installerRows.All(row =>
+                row.Entry.DeletionRecommendation == DeletionRecommendation.QuarantineCandidate
+                && row.Entry.BloatCategories.Contains(BloatCategory.InstallerCache)
+                && row.Entry.FullPath.Contains("setup", StringComparison.OrdinalIgnoreCase)),
+            "Combined search results should preserve recommendation, category, and search filters.");
+
+        var highRiskRows = review.ApplyFilter(
+            StorageReviewFilter.All,
+            StorageCategoryFilter.All,
+            StorageReviewSearch.FromText("high risk"));
+        Assert(highRiskRows.Count > 0, "Search should match spaced Importance Rating text.");
+        Assert(highRiskRows.All(row => row.Entry.ImportanceRating == ImportanceRating.HighRisk), "High risk search should find high-risk rows in this fixture.");
     }
 
     public void StorageScanSafetySummaryHighlightsReviewBoundaries()

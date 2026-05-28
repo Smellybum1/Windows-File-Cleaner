@@ -205,6 +205,25 @@
                            TextWrapping="Wrap" />
 
                 <WrapPanel x:Name="ReviewActionToolbar">
+                    <StackPanel Orientation="Horizontal"
+                                Margin="6,0,0,0"
+                                VerticalAlignment="Center">
+                        <TextBlock Text="Search"
+                                   VerticalAlignment="Center"
+                                   Foreground="#526171"
+                                   Margin="0,0,8,0" />
+                        <TextBox x:Name="SearchBox"
+                                 Width="220"
+                                 Height="30"
+                                 VerticalContentAlignment="Center"
+                                 IsEnabled="False"
+                                 TextChanged="SearchBox_TextChanged" />
+                    </StackPanel>
+                    <Button x:Name="ClearSearchButton"
+                            Content="Clear search"
+                            MinWidth="110"
+                            IsEnabled="False"
+                            Click="ClearSearchButton_Click" />
                     <Button x:Name="ExportShortlistCsvButton"
                             Content="Export shortlist"
                             MinWidth="125"

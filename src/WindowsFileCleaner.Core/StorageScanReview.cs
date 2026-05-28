@@ -12,8 +12,16 @@ public sealed record StorageScanReview(
 
     public IReadOnlyList<StorageReviewEntry> ApplyFilter(StorageReviewFilter filter, StorageCategoryFilter categoryFilter)
     {
+        return ApplyFilter(filter, categoryFilter, StorageReviewSearch.Empty);
+    }
+
+    public IReadOnlyList<StorageReviewEntry> ApplyFilter(
+        StorageReviewFilter filter,
+        StorageCategoryFilter categoryFilter,
+        StorageReviewSearch search)
+    {
         var filtered = ApplyReviewFilter(filter);
-        return categoryFilter.Kind switch
+        filtered = categoryFilter.Kind switch
         {
             StorageCategoryFilterKind.Category when categoryFilter.Category is not null =>
                 filtered.Where(row => row.Entry.BloatCategories.Contains(categoryFilter.Category.Value)).ToArray(),
@@ -21,6 +29,10 @@ public sealed record StorageScanReview(
                 filtered.Where(row => row.Entry.BloatCategories.Count == 0).ToArray(),
             _ => filtered
         };
+
+        return search.IsActive
+            ? filtered.Where(row => MatchesSearch(row.Entry, search.Query)).ToArray()
+            : filtered;
     }
 
     private IReadOnlyList<StorageReviewEntry> ApplyReviewFilter(StorageReviewFilter filter)
@@ -39,5 +51,36 @@ public sealed record StorageScanReview(
     private static bool IsAccessIssue(StorageEntry entry)
     {
         return !entry.IsAccessible || entry.BloatCategories.Contains(BloatCategory.AccessIssue);
+    }
+
+    private static bool MatchesSearch(StorageEntry entry, string query)
+    {
+        var normalizedQuery = NormalizeForSearch(query);
+        return ContainsSearchText(entry.Name, query, normalizedQuery)
+            || ContainsSearchText(entry.FullPath, query, normalizedQuery)
+            || ContainsSearchText(entry.Evidence, query, normalizedQuery)
+            || ContainsSearchText(entry.ErrorMessage, query, normalizedQuery)
+            || ContainsSearchText(entry.ImportanceRating.ToString(), query, normalizedQuery)
+            || ContainsSearchText(entry.DeletionRecommendation.ToString(), query, normalizedQuery)
+            || entry.BloatCategories.Any(category => ContainsSearchText(category.ToString(), query, normalizedQuery));
+    }
+
+    private static bool ContainsSearchText(string? value, string query, string normalizedQuery)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return false;
+        }
+
+        return value.Contains(query, StringComparison.OrdinalIgnoreCase)
+            || NormalizeForSearch(value).Contains(normalizedQuery, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static string NormalizeForSearch(string value)
+    {
+        return new string(value.Where(character =>
+            !char.IsWhiteSpace(character)
+            && character != '-'
+            && character != '_').ToArray());
     }
 }

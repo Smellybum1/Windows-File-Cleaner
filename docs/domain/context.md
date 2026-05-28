@@ -319,6 +319,49 @@ Initial filters are All, Likely safe, Caution, High risk, Quarantine candidates,
 - Show counts so the user can understand scan composition.
 - Access issues are informational and must not trigger permission changes or cleanup actions.
 
+### Storage Review Search
+
+Status: draft
+Last reviewed: 2026-05-28
+
+#### Definition
+
+Storage Review Search is a read-only text search applied to the current Storage Scan review results.
+
+It matches path, name, category, Importance Rating, Deletion Recommendation, evidence, and access issue text. It combines with the active Storage Review Filter and Bloat Category Filter.
+
+#### Examples
+
+- Search for `pip` to find Python package cache paths.
+- Search for `NVIDIA` to find GPU shader cache paths.
+- Search for `high risk` to find rows with the High risk Importance Rating.
+- Search for a game, app, or folder name before deciding whether to inspect it in Explorer.
+
+#### Non-examples
+
+- A Cleanup Action.
+- A scan rescan.
+- A filesystem search outside the completed Storage Scan result.
+- A persisted rule or user decision.
+
+#### Lifecycle
+
+- Available after a Storage Scan completes.
+- Resets when a new Storage Scan completes.
+- Does not modify files.
+
+#### Relationships
+
+- Uses Storage Scan results.
+- Combines with Storage Review Filters and Bloat Category Filters.
+- Supports Selected Path Review Guidance, Child Breakdown, Selected Path Inspection, and Review Shortlist.
+
+#### Code implications
+
+- Use `StorageReviewSearch` for the search query.
+- Keep search in-memory and read-only.
+- Do not use search text to change Bloat Categories, Importance Ratings, Deletion Recommendations, or cleanup eligibility.
+
 ### Bloat Category Filter
 
 Status: draft
@@ -1157,6 +1200,7 @@ Implementation implications:
 
 - The scan should show folder contents, size contributors, modified dates, and category evidence where feasible.
 - The selected row should explain the safest next review step through Selected Path Review Guidance.
+- The review should support Storage Review Search so large scans can find specific apps, caches, tools, and categories without scrolling.
 - Protected Locations can be shown for awareness but should default to high importance.
 - Recommendations should be explainable, not just a score.
 
