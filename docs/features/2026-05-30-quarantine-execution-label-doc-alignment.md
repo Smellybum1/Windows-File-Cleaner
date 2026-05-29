@@ -44,11 +44,13 @@ What changed:
 
 - Updated current-facing README, progress, handoff, domain, and feature-note wording to use `Quarantine included shortlist`.
 - Left historical feature notes alone where they explain the earlier label that was replaced.
+- Later packet aligned `Start-MvpFixtureReview.ps1 -ChecklistOnly` step 7 with the same visible button label after full preflight output exposed the remaining generic checklist wording.
 
 Tests run:
 
 - `rg -n --fixed-strings "Execute quarantine" README.md docs\codex\thread-handoff.md docs\domain\context.md docs\features\2026-05-29-execution-control-tooltip-clarity.md docs\features\2026-05-29-execution-readiness-automation-help-text.md`
 - `git diff --check`
+- Later checklist packet: `.\tools\Start-MvpFixtureReview.cmd -ChecklistOnly` passed and printed `Quarantine included shortlist` in step 7.
 
 ADRs added or skipped:
 

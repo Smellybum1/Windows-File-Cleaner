@@ -20,6 +20,45 @@ Storage Scan MVP packet implemented and tested by the user against `C:\Users\mox
 
 ## Completed packets
 
+### 2026-05-30: Fixture Checklist Quarantine Button Label
+
+Status: completed
+
+Evidence:
+
+- Full preflight checklist output still said `execute quarantine` generically in step 7.
+- The visible WPF button, README, progress prompt, handoff, domain, glossary, and smoke-tested user-facing label are `Quarantine included shortlist`.
+
+Implementation:
+
+- Updated `Start-MvpFixtureReview.ps1 -ChecklistOnly` step 7 to say `click Quarantine included shortlist`.
+- Updated the Quarantine execution label docs-alignment feature note with the later checklist evidence.
+- No app behavior, scan behavior, Quarantine Preview, fixture execution, undo, selected restore, real-profile availability, permanent deletion, or cleanup history changed.
+
+Verification:
+
+- `.\tools\Start-MvpFixtureReview.cmd -ChecklistOnly` passed and printed `Quarantine included shortlist` in step 7 without preflight, fixture creation, WPF launch, scan, or file modification.
+- `rg -n "execute quarantine" tools README.md docs\codex\thread-handoff.md docs\domain\context.md docs\features\2026-05-30-quarantine-execution-label-doc-alignment.md` returned no current-facing matches.
+- `git diff --check` passed with line-ending normalization warnings only.
+
+Docs updated:
+
+- `docs/features/2026-05-30-quarantine-execution-label-doc-alignment.md`
+- `docs/codex/thread-handoff.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No ADR added. This is manual checklist wording alignment only and does not change architecture, persistence, cleanup execution, restore rules, data model, or security.
+
+Open questions:
+
+- None.
+
+Rejected ideas buffer:
+
+- Do not rename code symbols or historical feature notes solely for this checklist alignment.
+
 ### 2026-05-30: Run Full Local MVP Preflight After Quarantine Gate Wording
 
 Status: completed
