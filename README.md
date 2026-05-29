@@ -104,7 +104,7 @@ Use the fixture review launcher for the manual fixture UI pass:
 ```
 
 The launcher runs preflight, creates a small synthetic Cleanup Scope inside the repo, and launches the WPF app with that scope. The app does not auto-scan; click `Scan` yourself after it opens.
-Before launching, the script prints a compact fixture review checklist with the main safety, search, collapsible Safety Summary and Quarantine shortlist panels, inline Quarantine Preview readiness, Review Grid Mode Status, Review Shortlist labels/tooltips, preview/report tooltips, preview approval-boundary, fixture execution, undo, `Quarantined` / `Back to scan rows`, manifest-review, all-manifest restore boundary, and selected-restore scope-status checks.
+Before launching, the script prints a compact fixture review checklist with the main safety, search, collapsible Safety Summary and Quarantine shortlist panels, styled inline Quarantine Preview readiness, Review Grid Mode Status, Review Shortlist labels/tooltips, preview/report tooltips, preview approval-boundary, fixture execution, undo, `Quarantined` / `Back to scan rows`, manifest-review, all-manifest restore boundary, and selected-restore scope-status checks.
 
 To print only that checklist without running preflight, creating fixture files, or launching WPF:
 

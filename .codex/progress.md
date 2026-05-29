@@ -6968,3 +6968,45 @@ Open questions:
 Rejected ideas buffer:
 
 - Do not add a modal popup for Quarantine Preview success unless a future manual visual pass proves styled inline status is still too easy to miss.
+
+### 2026-05-29: Align Fixture Checklist With Preview Status Styling
+
+Status: completed
+
+Evidence:
+
+- Quarantine Preview Status Styling added neutral/success/warning/error inline status styling.
+- `Start-MvpFixtureReview.ps1` checklist item 6 still mentioned generic inline preview readiness and did not prompt the next manual pass to inspect the new semantic states.
+
+Implementation:
+
+- Updated fixture checklist item 6 to prompt styled inline preview readiness review with neutral/success/warning/error states.
+- Updated README launcher wording from inline preview readiness to styled inline Quarantine Preview readiness.
+- Updated the fixture checklist and status-styling feature briefs to record this follow-up alignment.
+- Kept checklist-only and dry-run launcher paths read-only: no preflight, fixture creation, WPF launch, scan, move, restore, delete, or cleanup history.
+
+Verification:
+
+- `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\Start-MvpFixtureReview.ps1 -ChecklistOnly` passed and printed the updated checklist without preflight, fixture creation, or WPF launch.
+- `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\Start-MvpFixtureReview.ps1 -WhatIf -SkipPreflight -SkipLaunch` passed and preserved the updated checklist in dry-run launcher output.
+- `git -c safe.directory='D:/Codex/Windows File Cleaner' diff --check` passed with line-ending normalization warnings only.
+
+Docs updated:
+
+- `README.md`
+- `docs/features/2026-05-29-fixture-review-checklist-output.md`
+- `docs/features/2026-05-29-quarantine-preview-status-styling.md`
+- `docs/codex/thread-handoff.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No ADR added. This is local manual-review checklist wording with no persistence, cleanup execution, restore rule, data-model, or security change.
+
+Open questions:
+
+- Does the next visible fixture pass show that the styled inline preview status is noticeable enough without a popup?
+
+Rejected ideas buffer:
+
+- Do not make checklist-only mode perform visual verification or launch WPF; it stays terminal-output-only.
