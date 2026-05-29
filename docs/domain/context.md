@@ -2411,6 +2411,95 @@ Restore Manifest Summary is a compact read-only status view of one discovered Re
 - Use `RestoreManifestSummary`.
 - Keep it read-only and derived from manifest metadata.
 
+### Restore Readiness Preview
+
+Status: draft
+Last reviewed: 2026-05-29
+
+#### Definition
+
+Restore Readiness Preview is the read-only workflow that evaluates whether discovered Restore Manifests appear ready for a future Undo Quarantine action.
+
+It is not approval to restore and does not restore files.
+
+#### Examples
+
+- Show that a Moved entry has an existing quarantine path and no original-path collision.
+- Show that a restore would be blocked because the original path already exists.
+- Show that a restore would be blocked because the quarantine path is missing.
+- Show that a Restored entry has no restore work left.
+
+#### Non-examples
+
+- Broad WPF Undo Quarantine execution.
+- Manifest selection for restore.
+- Writing an updated Restore Manifest.
+- Creating original parent folders.
+- Moving files out of quarantine.
+- Cleaning up empty action folders.
+
+#### Lifecycle
+
+- Uses Quarantine Manifest Discovery for the current Quarantine Root Selection.
+- Reads valid action-scoped Restore Manifests.
+- Checks entry state and path readiness.
+- Produces manifest-level and entry-level readiness output.
+- Is discarded when the Quarantine Root changes or preview is rerun.
+- Does not create, move, delete, restore, write, or clean up files or folders.
+
+#### Relationships
+
+- Depends on Quarantine Manifest Discovery.
+- Depends on Restore Manifest.
+- Precedes broad WPF Undo Quarantine.
+- Complements Undo Quarantine Executor by previewing likely blockers before execution exists.
+
+#### Code implications
+
+- Use `RestoreReadinessPreview`, `RestoreReadinessPreviewBuilder`, `RestoreReadinessManifestPreview`, and `RestoreReadinessEntryPreview`.
+- Keep it read-only. Do not call `UndoQuarantineExecutor.Undo`.
+- Recompute readiness immediately before any future restore execution because filesystem state can change.
+
+### Restore Readiness Entry
+
+Status: draft
+Last reviewed: 2026-05-29
+
+#### Definition
+
+Restore Readiness Entry is a read-only preview row for one Restore Manifest entry.
+
+#### Examples
+
+- Restorable.
+- Blocked by original-path collision.
+- Blocked by missing quarantine path.
+- Already restored.
+- Needs recovery review.
+- Not moved.
+
+#### Non-examples
+
+- An Undo Quarantine Entry Result.
+- Proof that a future restore will succeed.
+- Approval to restore.
+
+#### Lifecycle
+
+- Created during Restore Readiness Preview.
+- Discarded with the preview.
+- Does not modify the filesystem or manifest.
+
+#### Relationships
+
+- Belongs to Restore Readiness Preview.
+- Summarizes one Restore Manifest entry.
+
+#### Code implications
+
+- Use `RestoreReadinessEntryPreview` and `RestoreReadinessDisposition`.
+- Keep blocker text explicit and path-specific.
+
 ### Quarantine Action Draft
 
 Status: draft
@@ -2493,6 +2582,7 @@ The current core implementation is fixture-tested through Undo Quarantine Execut
 - Depends on Undo Quarantine Executor for the fixture-tested core restore behavior.
 - Has a current-fixture WPF path for the immediately executed fixture action.
 - Has read-only Quarantine Manifest Discovery for older action-scoped manifests.
+- Has read-only Restore Readiness Preview for discovered manifest blockers.
 - Reverses a quarantine Cleanup Action.
 
 #### Code implications

@@ -72,6 +72,7 @@ internal sealed class MainWindowSmokeTests
             Assert(window.CanEditQuarantineRoot, "MainWindow should allow editing the read-only Quarantine Preview root before scanning.");
             Assert(window.CanBrowseQuarantineRoot, "MainWindow should allow browsing for the read-only Quarantine Preview root before scanning.");
             Assert(window.CanDiscoverQuarantineManifests, "MainWindow should allow read-only Quarantine Manifest Discovery before scanning.");
+            Assert(window.CanPreviewRestoreReadiness, "MainWindow should allow read-only Restore Readiness Preview before scanning.");
             Assert(window.BrowseQuarantineRootButtonText.Contains("Browse", StringComparison.OrdinalIgnoreCase), "Quarantine root browse action should be visible in the review toolbar.");
             Assert(
                 window.CurrentQuarantineRootPath == QuarantinePreviewBuilder.DefaultQuarantineRootPath,
@@ -83,6 +84,9 @@ internal sealed class MainWindowSmokeTests
             Assert(
                 window.QuarantineManifestDiscoveryTextValue.Contains("Read-only manifest discovery", StringComparison.OrdinalIgnoreCase),
                 "Quarantine Manifest Discovery pane should start in a read-only placeholder state.");
+            Assert(
+                window.RestoreReadinessPreviewTextValue.Contains("Read-only restore readiness", StringComparison.OrdinalIgnoreCase),
+                "Restore Readiness Preview pane should start in a read-only placeholder state.");
             Assert(window.BrowseCleanupScopeButtonText.Contains("Browse", StringComparison.OrdinalIgnoreCase), "Cleanup Scope browse action should be visible in the header.");
             Assert(window.IsRealProfilePreflightConfirmationVisible, "MainWindow should show the real-profile preflight acknowledgement.");
             Assert(!window.IsRealProfilePreflightConfirmed, "Real-profile preflight acknowledgement should start unchecked.");
@@ -764,6 +768,25 @@ internal sealed class MainWindowSmokeTests
                 "Discovery pane should not imply old-manifest restore is available.");
             Assert(File.Exists(quarantinePath), "Discovery should not move quarantined files.");
             Assert(!File.Exists(originalPath), "Discovery should not restore original paths.");
+
+            discoveryWindow.PreviewRestoreReadinessForCurrentRoot();
+            var readinessText = discoveryWindow.RestoreReadinessPreviewTextValue;
+
+            Assert(
+                discoveryWindow.CurrentStatusText.Contains("Restore Readiness Preview completed", StringComparison.OrdinalIgnoreCase)
+                && discoveryWindow.CurrentStatusText.Contains("No files were modified", StringComparison.OrdinalIgnoreCase),
+                "Restore readiness status should report a read-only result.");
+            Assert(
+                readinessText.Contains("Restore Readiness Preview: read-only", StringComparison.OrdinalIgnoreCase)
+                && readinessText.Contains("Restorable entries: 1", StringComparison.OrdinalIgnoreCase)
+                && readinessText.Contains("Restore readiness row | Restorable", StringComparison.OrdinalIgnoreCase)
+                && readinessText.Contains(manifestPath, StringComparison.OrdinalIgnoreCase),
+                "Restore readiness pane should show restorable old-manifest evidence. Text: " + readinessText);
+            Assert(
+                readinessText.Contains("No restore action is available", StringComparison.OrdinalIgnoreCase),
+                "Restore readiness pane should not imply old-manifest restore is available.");
+            Assert(File.Exists(quarantinePath), "Restore readiness preview should not move quarantined files.");
+            Assert(!File.Exists(originalPath), "Restore readiness preview should not restore original paths.");
         }
         finally
         {

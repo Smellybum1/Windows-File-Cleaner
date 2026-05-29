@@ -542,9 +542,19 @@
                                         Content="Discover manifests"
                                         MinWidth="145"
                                         Click="DiscoverQuarantineManifestsButton_Click" />
+                                <Button x:Name="PreviewRestoreReadinessButton"
+                                        Content="Preview restore readiness"
+                                        MinWidth="185"
+                                        Click="PreviewRestoreReadinessButton_Click" />
                             </WrapPanel>
                             <TextBlock x:Name="QuarantineManifestDiscoveryText"
                                        Text="Read-only manifest discovery appears after using Discover manifests."
+                                       FontFamily="Consolas"
+                                       FontSize="12"
+                                       Margin="0,6,0,0"
+                                       TextWrapping="Wrap" />
+                            <TextBlock x:Name="RestoreReadinessPreviewText"
+                                       Text="Read-only restore readiness appears after using Preview restore readiness."
                                        FontFamily="Consolas"
                                        FontSize="12"
                                        Margin="0,6,0,0"

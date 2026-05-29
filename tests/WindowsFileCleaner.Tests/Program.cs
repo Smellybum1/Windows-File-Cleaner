@@ -34,6 +34,9 @@ tests.RestoreManifestFileStoreRejectsPathsOutsideActionRoot();
 tests.QuarantineManifestDiscoverySummarizesActionManifestsReadOnly();
 tests.QuarantineManifestDiscoveryReportsMissingAndInvalidManifests();
 tests.QuarantineManifestDiscoveryRejectsManifestPathMismatch();
+tests.RestoreReadinessPreviewReportsRestorableDiscoveredManifest();
+tests.RestoreReadinessPreviewReportsCollisionAndMissingQuarantinePath();
+tests.RestoreReadinessPreviewReportsAlreadyRestoredManifestWithoutRestoring();
 tests.QuarantineExecutorMovesFixtureFilesWithWriteAheadManifest();
 tests.QuarantineExecutorRecordsPartialFailureWithoutOverwritingDestination();
 tests.QuarantineExecutorFailsMissingSourceWithoutCreatingDestination();
@@ -1612,6 +1615,79 @@ internal sealed class StorageScanTests
         Assert(
             discovery.Issues.Any(issue => issue.Message.Contains("does not match its discovered file path", StringComparison.OrdinalIgnoreCase)),
             "Manifest path mismatches should be reported.");
+    }
+
+    public void RestoreReadinessPreviewReportsRestorableDiscoveredManifest()
+    {
+        using var fixture = TestFixture.Create();
+        fixture.WriteFile(@"Downloads\old-installer.msi", 1024 * 1024, DateTimeOffset.UtcNow.AddDays(-120));
+        var plan = BuildPlannedRestoreManifest(fixture, [@"Downloads\old-installer.msi"], "readiness-restorable");
+        var entry = plan.Manifest.Entries.Single();
+
+        var execution = QuarantineExecutor.Execute(plan.Manifest);
+        var preview = RestoreReadinessPreviewBuilder.BuildForQuarantineRoot(plan.Manifest.QuarantineRootPath);
+
+        Assert(execution.Succeeded, "Fixture setup should move the file before restore readiness preview.");
+        Assert(preview.ManifestCount == 1, "Restore readiness should include the discovered manifest.");
+        Assert(preview.RestorableManifestCount == 1, "Moved manifests should be restorable when no blockers exist.");
+        Assert(preview.RestorableEntryCount == 1, "Moved entry should be restorable.");
+        Assert(preview.BlockedEntryCount == 0, "Restorable preview should have no blocked entries.");
+        var manifestPreview = preview.Manifests.Single();
+        var entryPreview = manifestPreview.Entries.Single();
+        Assert(entryPreview.CanRestore, "Moved entry should be marked restorable.");
+        Assert(entryPreview.Disposition == RestoreReadinessDisposition.Restorable, "Moved entry disposition should be Restorable.");
+        Assert(File.Exists(entry.QuarantinePath), "Readiness preview should leave the quarantined file in place.");
+        Assert(!File.Exists(entry.OriginalPath), "Readiness preview should not restore the original file.");
+    }
+
+    public void RestoreReadinessPreviewReportsCollisionAndMissingQuarantinePath()
+    {
+        using var fixture = TestFixture.Create();
+        fixture.WriteFile(@"Downloads\old-one.msi", 1024 * 1024, DateTimeOffset.UtcNow.AddDays(-120));
+        fixture.WriteFile(@"Downloads\old-two.msi", 1024 * 1024, DateTimeOffset.UtcNow.AddDays(-130));
+        var plan = BuildPlannedRestoreManifest(
+            fixture,
+            [@"Downloads\old-one.msi", @"Downloads\old-two.msi"],
+            "readiness-blockers");
+        var execution = QuarantineExecutor.Execute(plan.Manifest);
+        var collisionEntry = execution.RestoreManifest.Entries.Single(entry => entry.RelativePath == @"Downloads\old-one.msi");
+        var missingEntry = execution.RestoreManifest.Entries.Single(entry => entry.RelativePath == @"Downloads\old-two.msi");
+        File.WriteAllText(collisionEntry.OriginalPath, "new file at original path");
+        File.Delete(missingEntry.QuarantinePath);
+
+        var preview = RestoreReadinessPreviewBuilder.BuildForQuarantineRoot(plan.Manifest.QuarantineRootPath);
+
+        Assert(execution.Succeeded, "Fixture setup should move both files before blocker preview.");
+        Assert(preview.RestorableEntryCount == 0, "Blocked entries should not be restorable.");
+        Assert(preview.BlockedEntryCount == 2, "Collision and missing quarantine paths should both block restore.");
+        var entries = preview.Manifests.Single().Entries;
+        Assert(
+            entries.Single(entry => entry.OriginalPath == collisionEntry.OriginalPath).Blockers.Any(blocker => blocker.Contains("Original path already exists", StringComparison.OrdinalIgnoreCase)),
+            "Original path collision should be reported.");
+        Assert(
+            entries.Single(entry => entry.OriginalPath == missingEntry.OriginalPath).Blockers.Any(blocker => blocker.Contains("Quarantine path no longer exists", StringComparison.OrdinalIgnoreCase)),
+            "Missing quarantine path should be reported.");
+        Assert(File.Exists(collisionEntry.OriginalPath), "Readiness preview should not overwrite original-path collisions.");
+        Assert(!File.Exists(missingEntry.OriginalPath), "Readiness preview should not recreate original paths.");
+    }
+
+    public void RestoreReadinessPreviewReportsAlreadyRestoredManifestWithoutRestoring()
+    {
+        using var fixture = TestFixture.Create();
+        fixture.WriteFile(@"Downloads\old-installer.msi", 1024 * 1024, DateTimeOffset.UtcNow.AddDays(-120));
+        var plan = BuildPlannedRestoreManifest(fixture, [@"Downloads\old-installer.msi"], "readiness-restored");
+        var execution = QuarantineExecutor.Execute(plan.Manifest);
+        var undo = UndoQuarantineExecutor.Undo(execution.RestoreManifest);
+        var entry = undo.RestoreManifest.Entries.Single();
+
+        var preview = RestoreReadinessPreviewBuilder.BuildForQuarantineRoot(plan.Manifest.QuarantineRootPath);
+
+        Assert(undo.Succeeded, "Fixture setup should restore the manifest before already-restored preview.");
+        Assert(preview.RestorableEntryCount == 0, "Already restored entries should not be restorable.");
+        Assert(preview.Manifests.Single().AlreadyRestoredCount == 1, "Already restored entry should be summarized.");
+        Assert(preview.Manifests.Single().Entries.Single().Disposition == RestoreReadinessDisposition.AlreadyRestored, "Entry disposition should show already restored.");
+        Assert(File.Exists(entry.OriginalPath), "Readiness preview should leave restored original file in place.");
+        Assert(!File.Exists(entry.QuarantinePath), "Readiness preview should not recreate quarantine files.");
     }
 
     public void QuarantineExecutorMovesFixtureFilesWithWriteAheadManifest()

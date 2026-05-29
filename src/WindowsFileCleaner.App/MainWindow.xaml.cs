@@ -23,6 +23,7 @@ public partial class MainWindow : Window
     private QuarantineExecutionResult? _currentQuarantineExecutionResult;
     private UndoQuarantineResult? _currentUndoQuarantineResult;
     private QuarantineManifestDiscovery? _currentQuarantineManifestDiscovery;
+    private RestoreReadinessPreview? _currentRestoreReadinessPreview;
     private string? _currentCleanupScopePath;
     private StorageReviewFilter _currentFilter = StorageReviewFilter.All;
     private StorageCategoryFilter _currentCategoryFilter = StorageCategoryFilter.All;
@@ -165,6 +166,8 @@ public partial class MainWindow : Window
 
     public string QuarantineManifestDiscoveryTextValue => QuarantineManifestDiscoveryText.Text;
 
+    public string RestoreReadinessPreviewTextValue => RestoreReadinessPreviewText.Text;
+
     public string CurrentQuarantineRootPath => QuarantineRootBox.Text;
 
     public string QuarantineRootSafetyNoteTextValue => QuarantineRootSafetyNoteText.Text;
@@ -180,6 +183,8 @@ public partial class MainWindow : Window
     public bool CanUndoQuarantine => UndoQuarantineButton.IsEnabled;
 
     public bool CanDiscoverQuarantineManifests => DiscoverQuarantineManifestsButton.IsEnabled;
+
+    public bool CanPreviewRestoreReadiness => PreviewRestoreReadinessButton.IsEnabled;
 
     public string? SelectedRowFullPath => _selectedRow?.FullPath;
 
@@ -295,6 +300,11 @@ public partial class MainWindow : Window
     private void DiscoverQuarantineManifestsButton_Click(object sender, RoutedEventArgs e)
     {
         DiscoverQuarantineManifestsForCurrentRoot();
+    }
+
+    private void PreviewRestoreReadinessButton_Click(object sender, RoutedEventArgs e)
+    {
+        PreviewRestoreReadinessForCurrentRoot();
     }
 
     public async Task RunStorageScanForCurrentScopeAsync(CancellationToken cancellationToken = default)
@@ -1164,6 +1174,15 @@ public partial class MainWindow : Window
         StatusText.Text = $"Quarantine Manifest Discovery completed: {_currentQuarantineManifestDiscovery.ManifestCount:N0} manifest(s), {_currentQuarantineManifestDiscovery.Issues.Count:N0} issue(s). No files were modified.";
     }
 
+    public void PreviewRestoreReadinessForCurrentRoot()
+    {
+        _currentRestoreReadinessPreview = RestoreReadinessPreviewBuilder.BuildForQuarantineRoot(QuarantineRootBox.Text);
+        RestoreReadinessPreviewText.Text = FormatRestoreReadinessPreview(_currentRestoreReadinessPreview);
+        UpdateQuarantineManifestDiscoveryControls();
+
+        StatusText.Text = $"Restore Readiness Preview completed: {_currentRestoreReadinessPreview.ManifestCount:N0} manifest(s), {_currentRestoreReadinessPreview.RestorableEntryCount:N0} restorable entries, {_currentRestoreReadinessPreview.BlockedEntryCount:N0} blocked. No files were modified.";
+    }
+
     public void ApplyStorageReviewSearch(string searchText)
     {
         if (_currentReview is null)
@@ -1592,6 +1611,7 @@ public partial class MainWindow : Window
         }
 
         DiscoverQuarantineManifestsButton.IsEnabled = !_isScanning;
+        PreviewRestoreReadinessButton.IsEnabled = !_isScanning;
     }
 
     private void SetSearchTextSilently(string text)
@@ -1662,7 +1682,9 @@ public partial class MainWindow : Window
         }
 
         _currentQuarantineManifestDiscovery = null;
+        _currentRestoreReadinessPreview = null;
         QuarantineManifestDiscoveryText.Text = "Read-only manifest discovery appears after using Discover manifests.";
+        RestoreReadinessPreviewText.Text = "Read-only restore readiness appears after using Preview restore readiness.";
     }
 
     private void SetQuarantineConfirmationTextSilently(string text)
@@ -1973,6 +1995,59 @@ public partial class MainWindow : Window
         return string.Join(Environment.NewLine, lines);
     }
 
+    private static string FormatRestoreReadinessPreview(RestoreReadinessPreview preview)
+    {
+        var lines = new List<string>
+        {
+            "Restore Readiness Preview: read-only",
+            $"Quarantine root: {preview.QuarantineRootPath}",
+            $"Actions root: {preview.ActionsRootPath}",
+            $"Manifests: {preview.ManifestCount:N0} | Restorable manifests: {preview.RestorableManifestCount:N0} | Restorable entries: {preview.RestorableEntryCount:N0} | Blocked entries: {preview.BlockedEntryCount:N0} | Recovery review entries: {preview.RecoveryReviewEntryCount:N0}",
+            $"Discovery issues: {preview.DiscoveryIssues.Count:N0}",
+            "No restore action is available from this readiness preview."
+        };
+
+        foreach (var manifest in preview.Manifests.Take(6))
+        {
+            lines.Add($"Manifest readiness | {FormatRestoreManifestActionStatus(manifest.ActionStatus)} | Entries {manifest.EntryCount:N0} | Restorable {manifest.RestorableCount:N0} | Blocked {manifest.BlockedCount:N0} | Already restored {manifest.AlreadyRestoredCount:N0} | Recovery review {manifest.RecoveryReviewCount:N0} | {manifest.ManifestPath}");
+
+            foreach (var blocker in manifest.Blockers.Take(3))
+            {
+                lines.Add($"Manifest blocker | {blocker}");
+            }
+
+            foreach (var entry in manifest.Entries.Take(4))
+            {
+                var blockers = entry.Blockers.Count == 0
+                    ? ""
+                    : $" | Blockers: {string.Join(" ; ", entry.Blockers.Take(2))}";
+                lines.Add($"Restore readiness row | {FormatRestoreReadinessDisposition(entry.Disposition)} | {entry.SizeDisplay} | {entry.QuarantinePath} -> {entry.OriginalPath}{blockers}");
+            }
+
+            if (manifest.Entries.Count > 4)
+            {
+                lines.Add($"... {manifest.Entries.Count - 4:N0} more restore readiness row(s) not shown for this manifest.");
+            }
+        }
+
+        if (preview.Manifests.Count > 6)
+        {
+            lines.Add($"... {preview.Manifests.Count - 6:N0} more manifest readiness result(s) not shown in this pane.");
+        }
+
+        foreach (var issue in preview.DiscoveryIssues.Take(6))
+        {
+            lines.Add($"Discovery issue | {issue.Path} | {issue.Message}");
+        }
+
+        if (preview.DiscoveryIssues.Count > 6)
+        {
+            lines.Add($"... {preview.DiscoveryIssues.Count - 6:N0} more discovery issue(s) not shown in this pane.");
+        }
+
+        return string.Join(Environment.NewLine, lines);
+    }
+
     private static string BuildDraftId(string prefix)
     {
         var suffix = Guid.NewGuid().ToString("N")[..8];
@@ -2009,6 +2084,19 @@ public partial class MainWindow : Window
             RestoreManifestActionStatus.RestorePartialFailure => "Restore partial failure",
             RestoreManifestActionStatus.RestoreFailed => "Restore failed",
             _ => status.ToString()
+        };
+    }
+
+    private static string FormatRestoreReadinessDisposition(RestoreReadinessDisposition disposition)
+    {
+        return disposition switch
+        {
+            RestoreReadinessDisposition.Restorable => "Restorable",
+            RestoreReadinessDisposition.Blocked => "Blocked",
+            RestoreReadinessDisposition.AlreadyRestored => "Already restored",
+            RestoreReadinessDisposition.NeedsRecoveryReview => "Needs recovery review",
+            RestoreReadinessDisposition.NotMoved => "Not moved",
+            _ => disposition.ToString()
         };
     }
 

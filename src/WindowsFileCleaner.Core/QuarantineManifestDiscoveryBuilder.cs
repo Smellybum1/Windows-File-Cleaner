@@ -12,6 +12,7 @@ public static class QuarantineManifestDiscoveryBuilder
             ? Path.Combine(rootPath, "actions")
             : "";
         var summaries = new List<RestoreManifestSummary>();
+        var manifests = new List<RestoreManifest>();
         var issues = new List<QuarantineManifestDiscoveryIssue>();
 
         if (!note.CanPreview)
@@ -19,7 +20,7 @@ public static class QuarantineManifestDiscoveryBuilder
             issues.Add(new QuarantineManifestDiscoveryIssue(
                 rootPath,
                 note.Message));
-            return new QuarantineManifestDiscovery(rootPath, actionsRootPath, summaries, issues);
+            return new QuarantineManifestDiscovery(rootPath, actionsRootPath, summaries, manifests, issues);
         }
 
         if (!Directory.Exists(actionsRootPath))
@@ -27,7 +28,7 @@ public static class QuarantineManifestDiscoveryBuilder
             issues.Add(new QuarantineManifestDiscoveryIssue(
                 actionsRootPath,
                 "No quarantine actions folder exists under the selected Quarantine Root."));
-            return new QuarantineManifestDiscovery(rootPath, actionsRootPath, summaries, issues);
+            return new QuarantineManifestDiscovery(rootPath, actionsRootPath, summaries, manifests, issues);
         }
 
         string[] actionFolders;
@@ -40,7 +41,7 @@ public static class QuarantineManifestDiscoveryBuilder
             issues.Add(new QuarantineManifestDiscoveryIssue(
                 actionsRootPath,
                 $"Could not read quarantine actions folder: {ex.Message}"));
-            return new QuarantineManifestDiscovery(rootPath, actionsRootPath, summaries, issues);
+            return new QuarantineManifestDiscovery(rootPath, actionsRootPath, summaries, manifests, issues);
         }
 
         foreach (var actionFolder in actionFolders)
@@ -65,6 +66,7 @@ public static class QuarantineManifestDiscoveryBuilder
                     continue;
                 }
 
+                manifests.Add(manifest);
                 summaries.Add(BuildSummary(manifest));
             }
             catch (Exception ex) when (ex is UnauthorizedAccessException or IOException)
@@ -87,6 +89,10 @@ public static class QuarantineManifestDiscoveryBuilder
             summaries
                 .OrderByDescending(summary => summary.UpdatedAtUtc)
                 .ThenBy(summary => summary.ActionId, StringComparer.OrdinalIgnoreCase)
+                .ToArray(),
+            manifests
+                .OrderByDescending(manifest => manifest.UpdatedAtUtc)
+                .ThenBy(manifest => manifest.ActionId, StringComparer.OrdinalIgnoreCase)
                 .ToArray(),
             issues);
     }
