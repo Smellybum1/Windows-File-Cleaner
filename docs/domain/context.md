@@ -283,6 +283,7 @@ For real-profile scopes under `C:\Users\moxhe`, the gate requires explicit ackno
 - Fixture Cleanup Scope: `Scan` can start without real-profile acknowledgement.
 - Fixture Cleanup Scope: the WPF header explains that the Storage Scan is read-only first and fixture cleanup actions remain gated later.
 - Real Profile Cleanup Scope: `Scan` stays disabled until the user ticks the preflight and fixture-review acknowledgement.
+- Real Profile Cleanup Scope: the acknowledgement has a visible hoverable `?` help cue that mirrors its tooltip/help text.
 - Real Profile Cleanup Scope with no acknowledgement: the WPF header shows a locked scan-gate summary and the disabled `Scan` button tooltip explains the lock.
 - Real Profile Cleanup Scope with acknowledgement: the WPF header shows a ready read-only Storage Scan summary and keeps real-profile cleanup execution unavailable.
 - Custom Cleanup Scope: the WPF header shows a ready read-only Storage Scan summary and keeps real-profile/custom cleanup execution unavailable.
@@ -315,7 +316,7 @@ For real-profile scopes under `C:\Users\moxhe`, the gate requires explicit ackno
 - Keep the gate local and read-only.
 - Reset the acknowledgement when the Cleanup Scope changes.
 - Continue to enforce the gate in the scan-start method, not only through button state.
-- Keep the gate discoverable through visible summary text, acknowledgement tooltip/help text, the `Scan` button tooltip, and `Scan` button automation help text, especially when controls are disabled.
+- Keep the gate discoverable through visible summary text, the acknowledgement `?` help cue plus tooltip/help text, the `Scan` button tooltip, and `Scan` button automation help text, especially when controls are disabled.
 - Acknowledgement tooltip and automation help text should say checking it only records local acknowledgement that MVP preflight and fixture review were already run; it does not run preflight, create fixtures, start scanning by itself, persist approval, or approve cleanup.
 - Keep ready-state wording scope-specific: fixture scopes may later use fixture-only gated cleanup actions, while real-profile and custom scopes remain preview-only.
 

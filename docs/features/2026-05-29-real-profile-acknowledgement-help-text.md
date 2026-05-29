@@ -94,6 +94,7 @@ What changed:
 
 - Added tooltip and automation help text to the real-profile preflight/fixture-review acknowledgement checkbox.
 - Added WPF smoke assertions for MVP preflight, fixture review, no-preflight-run, no-auto-scan, and no-cleanup-approval wording.
+- Later packet `2026-05-30-real-profile-acknowledgement-help-cue.md` added a visible circular `?` help cue beside the checkbox and mirrored the same tooltip/help text there.
 
 Files changed:
 
@@ -118,7 +119,7 @@ ADRs added or skipped:
 
 Follow-up work:
 
-- Confirm during visible real-profile review whether the header needs shorter text or always-visible help.
+- Confirm during visible real-profile review whether the new cue is noticeable and whether the header still needs shorter text.
 
 Open questions:
 
@@ -126,4 +127,4 @@ Open questions:
 
 Risky assumptions:
 
-- Checkbox tooltip/help text is enough to explain the acknowledgement boundary for now.
+- Checkbox tooltip/help text plus a visible cue are enough to explain the acknowledgement boundary for now.

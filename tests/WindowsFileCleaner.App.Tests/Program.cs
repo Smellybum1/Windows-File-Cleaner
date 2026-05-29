@@ -614,6 +614,16 @@ internal sealed class MainWindowSmokeTests
                 && window.RealProfilePreflightCheckBoxAutomationHelpTextValue.Contains("start scanning", StringComparison.OrdinalIgnoreCase)
                 && window.RealProfilePreflightCheckBoxAutomationHelpTextValue.Contains("approve cleanup", StringComparison.OrdinalIgnoreCase),
                 "Real-profile acknowledgement automation help text should explain local acknowledgement boundaries.");
+            Assert(window.IsRealProfilePreflightHelpCueVisible, "Real-profile acknowledgement should show a visible help cue.");
+            Assert(
+                window.RealProfilePreflightHelpCueAutomationNameValue.Contains("Real-profile preflight acknowledgement help cue", StringComparison.OrdinalIgnoreCase),
+                "Real-profile acknowledgement help cue should have a specific automation name.");
+            Assert(
+                string.Equals(window.RealProfilePreflightHelpCueToolTipValue, window.RealProfilePreflightCheckBoxToolTipValue, StringComparison.Ordinal),
+                "Real-profile acknowledgement help cue tooltip should mirror the checkbox tooltip.");
+            Assert(
+                string.Equals(window.RealProfilePreflightHelpCueAutomationHelpTextValue, window.RealProfilePreflightCheckBoxAutomationHelpTextValue, StringComparison.Ordinal),
+                "Real-profile acknowledgement help cue automation help text should mirror the checkbox help text.");
             Assert(
                 window.ScanGateSummaryTextValue.Contains("Scan locked for real profile", StringComparison.OrdinalIgnoreCase)
                 && window.ScanGateSummaryTextValue.Contains("run MVP preflight", StringComparison.OrdinalIgnoreCase)
@@ -784,6 +794,7 @@ internal sealed class MainWindowSmokeTests
                 "Fixture Scan button automation help text should preserve the read-only boundary and later cleanup gates.");
             Assert(window.CanBrowseCleanupScope, "Launch Cleanup Scope should still allow choosing a different Cleanup Scope before scanning.");
             Assert(!window.IsRealProfilePreflightConfirmationVisible, "Fixture Cleanup Scope should not show real-profile acknowledgement.");
+            Assert(!window.IsRealProfilePreflightHelpCueVisible, "Fixture Cleanup Scope should not show the real-profile acknowledgement help cue.");
             Assert(!window.CanExportScanCsv, "Launch Cleanup Scope should not create exportable scan data.");
         }
         finally
@@ -822,6 +833,7 @@ internal sealed class MainWindowSmokeTests
                 && window.ScanButtonAutomationHelpTextValue.Contains("cleanup execution remains unavailable", StringComparison.OrdinalIgnoreCase),
                 "Custom Scan button automation help text should keep the read-only and unavailable-execution boundary visible.");
             Assert(!window.IsRealProfilePreflightConfirmationVisible, "Custom Cleanup Scope should not show real-profile acknowledgement.");
+            Assert(!window.IsRealProfilePreflightHelpCueVisible, "Custom Cleanup Scope should not show the real-profile acknowledgement help cue.");
         }
         finally
         {
@@ -2228,7 +2240,7 @@ internal sealed class MainWindowSmokeTests
     private static void AssertHoverableHelpCueAffordances(MainWindow window, string message)
     {
         var affordances = window.HoverableHelpCueAffordances;
-        Assert(affordances.Count == 7, message + " Expected all seven circular help cues to be tracked.");
+        Assert(affordances.Count == 8, message + " Expected all eight circular help cues to be tracked.");
 
         foreach (var affordance in affordances)
         {

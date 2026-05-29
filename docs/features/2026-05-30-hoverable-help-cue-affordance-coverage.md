@@ -16,7 +16,7 @@ Add focused automated coverage for the existing hoverable circular `?` help-cue 
 
 ## Desired behavior
 
-- The seven existing circular `?` help cues remain tracked by the WPF smoke harness.
+- The circular `?` help cues remain tracked by the WPF smoke harness.
 - Each tracked cue uses the Windows Help cursor.
 - Each tracked cue keeps the prompt tooltip initial delay used by the current UI.
 
@@ -29,6 +29,7 @@ What changed:
 - Exposed a small test-facing snapshot of the seven hoverable help-cue affordance settings from `MainWindow`.
 - Added a WPF smoke assertion that all seven circular `?` cues use the Help cursor and `250` ms tooltip initial delay.
 - Kept existing tooltip/help-text assertions and all runtime behavior unchanged.
+- Later packet `2026-05-30-real-profile-acknowledgement-help-cue.md` expanded the tracked cue list to eight by adding the real-profile acknowledgement cue.
 
 Tests run:
 

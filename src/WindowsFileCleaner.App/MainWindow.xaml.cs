@@ -100,13 +100,22 @@ public partial class MainWindow : Window
 
     public string BrowseCleanupScopeButtonAutomationHelpTextValue => AutomationProperties.GetHelpText(BrowseScopeButton);
 
-    public bool IsRealProfilePreflightConfirmationVisible => RealProfilePreflightCheckBox.Visibility == Visibility.Visible;
+    public bool IsRealProfilePreflightConfirmationVisible => RealProfilePreflightPanel.Visibility == Visibility.Visible;
 
     public bool IsRealProfilePreflightConfirmed => RealProfilePreflightCheckBox.IsChecked == true;
 
     public string RealProfilePreflightCheckBoxToolTipValue => RealProfilePreflightCheckBox.ToolTip?.ToString() ?? "";
 
     public string RealProfilePreflightCheckBoxAutomationHelpTextValue => AutomationProperties.GetHelpText(RealProfilePreflightCheckBox);
+
+    public bool IsRealProfilePreflightHelpCueVisible => RealProfilePreflightHelpCue.Visibility == Visibility.Visible
+        && RealProfilePreflightPanel.Visibility == Visibility.Visible;
+
+    public string RealProfilePreflightHelpCueToolTipValue => RealProfilePreflightHelpCue.ToolTip?.ToString() ?? "";
+
+    public string RealProfilePreflightHelpCueAutomationNameValue => AutomationProperties.GetName(RealProfilePreflightHelpCue);
+
+    public string RealProfilePreflightHelpCueAutomationHelpTextValue => AutomationProperties.GetHelpText(RealProfilePreflightHelpCue);
 
     public string ScanGateTextValue => ScanGateText.Text;
 
@@ -247,7 +256,8 @@ public partial class MainWindow : Window
         GetHelpCueAffordance("Review Shortlist Safety Mix", ShortlistSafetyMixHelpCue),
         GetHelpCueAffordance("Quarantine Shortlist header", QuarantineShortlistHeaderHelpCue),
         GetHelpCueAffordance("Inline Quarantine Preview status", QuarantinePreviewStatusHelpCue),
-        GetHelpCueAffordance("Review Grid Mode Status", ReviewGridModeHelpCue)
+        GetHelpCueAffordance("Review Grid Mode Status", ReviewGridModeHelpCue),
+        GetHelpCueAffordance("Real-profile preflight acknowledgement", RealProfilePreflightHelpCue)
     ];
 
     public string? ContentsColumnSortMemberPath => ResultsGrid.Columns
@@ -1640,7 +1650,7 @@ public partial class MainWindow : Window
         var scanButtonHelpText = FormatScanButtonToolTip(note, scanGate);
         ScanButton.ToolTip = scanButtonHelpText;
         AutomationProperties.SetHelpText(ScanButton, scanButtonHelpText);
-        RealProfilePreflightCheckBox.Visibility = note.IsRealUserProfileScope ? Visibility.Visible : Visibility.Collapsed;
+        RealProfilePreflightPanel.Visibility = note.IsRealUserProfileScope ? Visibility.Visible : Visibility.Collapsed;
         RealProfilePreflightCheckBox.IsEnabled = !_isScanning && note.IsRealUserProfileScope;
         ScanButton.IsEnabled = !_isScanning && scanGate.CanScan;
     }

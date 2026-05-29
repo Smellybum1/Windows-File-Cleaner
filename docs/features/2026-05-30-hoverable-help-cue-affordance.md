@@ -30,6 +30,7 @@ What changed:
 - Preserved the existing dynamic tooltip/help-text wiring and all safety wording.
 - Later packet `2026-05-30-fixture-checklist-hoverable-help-cues.md` aligned the manual fixture checklist wording with the hoverable cue behavior.
 - Later packet `2026-05-30-hoverable-help-cue-affordance-coverage.md` added WPF smoke coverage for the Help cursor and prompt tooltip delay on all seven circular `?` cues.
+- Later packet `2026-05-30-real-profile-acknowledgement-help-cue.md` added an eighth tracked circular `?` cue for the real-profile acknowledgement.
 
 Tests run:
 
