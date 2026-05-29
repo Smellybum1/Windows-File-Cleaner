@@ -21,7 +21,7 @@ Make every human-facing PowerShell tool in `tools\` runnable through a matching 
 - `tools\New-StorageScanSmokeFixture.cmd` invokes `New-StorageScanSmokeFixture.ps1` with `powershell.exe -NoProfile -ExecutionPolicy Bypass`.
 - All arguments pass through unchanged.
 - Each wrapper exits with the wrapped PowerShell script's exit code.
-- Docs prefer `.cmd` for user-facing commands while keeping explicit `.ps1` / `powershell.exe -ExecutionPolicy Bypass -File ...` examples for diagnostics and CI.
+- Docs prefer `.cmd` for user-facing commands and CI while keeping explicit `.ps1` / `powershell.exe -ExecutionPolicy Bypass -File ...` examples for diagnostics.
 
 ## Domain language changes
 
@@ -68,6 +68,7 @@ What changed:
 
 - Added `.cmd` wrappers for preflight and synthetic fixture generation.
 - Updated user-facing docs to prefer `.cmd` commands for preflight, fixture generation, and fixture review.
+- Later packet `2026-05-30-ci-preflight-cmd-wrapper.md` updated GitHub Actions to invoke `tools\Invoke-MvpPreflight.cmd` directly.
 
 Tests run:
 

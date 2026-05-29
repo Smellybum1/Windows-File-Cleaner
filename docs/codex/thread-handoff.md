@@ -9,7 +9,7 @@ Use this when starting a fresh Codex thread for this repository.
 - Repo: `D:\Codex\Windows File Cleaner`
 - GitHub: `Smellybum1/Windows-File-Cleaner`
 - Branch: `main`
-- Latest completed packet: Run Full Local MVP Preflight After Checklist Step
+- Latest completed packet: CI Preflight CMD Wrapper Alignment
 - Current app stack: C# / WPF / .NET 8
 - Desktop shortcut target: `D:\Codex\Windows File Cleaner\src\WindowsFileCleaner.App\bin\Debug\net8.0-windows\WindowsFileCleaner.App.exe`
 
@@ -47,6 +47,7 @@ Fixture-only cleanup execution exists for synthetic Cleanup Scopes. Real-profile
 - Full Local MVP Preflight After Cleanup Scope Cue passed `cmd.exe /c tools\Invoke-MvpPreflight.cmd`; restore, build, core tests, WPF app tests, fixture `-WhatIf`, and whitespace diff check all passed without scanning or modifying real user files. The first sandboxed attempt failed on user-level NuGet config access, then the same command passed with approved access.
 - Preflight Fixture Checklist Step added `Start-MvpFixtureReview.ps1 -ChecklistOnly` to the full MVP preflight path, with `-SkipFixtureChecklist` for focused loops; `cmd.exe /c tools\Invoke-MvpPreflight.cmd -SkipRestore` passed and printed the checklist without creating fixture files, launching WPF, or scanning real user files.
 - Full Local MVP Preflight After Checklist Step passed `cmd.exe /c tools\Invoke-MvpPreflight.cmd`; restore, build, core tests, WPF app tests, fixture `-WhatIf`, fixture checklist-only output, and whitespace diff check all passed without scanning or modifying real user files.
+- CI Preflight CMD Wrapper Alignment updated GitHub Actions to run `tools\Invoke-MvpPreflight.cmd` under `cmd`, matching the preferred local wrapper path; `cmd.exe /c tools\Invoke-MvpPreflight.cmd -SkipRestore` passed locally without scanning or modifying real user files.
 - Quarantine Execution Scope Status added plain-language fixture-only versus preview-only scope wording to Quarantine Preview and Quarantine Execution Gate output.
 - Fixture Review Checklist Output added a compact terminal checklist to `Start-MvpFixtureReview.ps1`.
 - Fixture Review Checklist-Only Mode added `Start-MvpFixtureReview.ps1 -ChecklistOnly`, which prints the same checklist without preflight, fixture creation, or WPF launch.

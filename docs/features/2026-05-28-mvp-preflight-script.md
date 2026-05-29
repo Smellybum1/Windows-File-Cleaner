@@ -144,6 +144,7 @@ What changed:
 - Preflight prints the next fixture review launcher command.
 - Kept the workflow read-only with respect to real user files.
 - Later packet `2026-05-30-preflight-fixture-checklist-step.md` added a checklist-only fixture review step to the full preflight so manual checklist regressions fail preflight before visible review.
+- Later packet `2026-05-30-ci-preflight-cmd-wrapper.md` made GitHub Actions call the preferred `.cmd` wrapper so CI verifies the same entry point as local user instructions.
 
 Files changed:
 

@@ -31,6 +31,7 @@ What changed:
 - Added a `Fixture checklist` step to `tools/Invoke-MvpPreflight.ps1`.
 - Added `-SkipFixtureChecklist` for focused preflight runs.
 - Updated README and readiness/preflight docs to include checklist-only coverage.
+- Later packet `2026-05-30-ci-preflight-cmd-wrapper.md` made GitHub Actions run that full preflight through `tools\Invoke-MvpPreflight.cmd`.
 
 Tests run:
 

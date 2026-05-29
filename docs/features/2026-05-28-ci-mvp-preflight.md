@@ -24,7 +24,7 @@ As the project owner, I want pushes to run the same read-only preflight as local
 - Pushes to `main` run on a Windows GitHub Actions runner.
 - Pull requests to `main` run the same check.
 - CI installs .NET 8 SDK version `8.0.421`.
-- CI runs `.\tools\Invoke-MvpPreflight.ps1`.
+- CI runs `tools\Invoke-MvpPreflight.cmd`, which invokes the existing PowerShell preflight script with process-scoped `-ExecutionPolicy Bypass`.
 - CI output preserves the no-real-user-files boundary from the preflight script.
 
 ## Domain language changes
@@ -56,6 +56,7 @@ What changed:
 - Added `.github/workflows/mvp-preflight.yml`.
 - Documented CI preflight behavior in `README.md`.
 - Recorded the packet in `.codex/progress.md`.
+- Later packet `2026-05-30-ci-preflight-cmd-wrapper.md` aligned CI with the preferred execution-policy-friendly `.cmd` wrapper while keeping the same preflight steps.
 
 ADRs added or skipped:
 

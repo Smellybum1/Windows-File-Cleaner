@@ -31,5 +31,5 @@ jobs:
         run: dotnet --info
 
       - name: Run MVP preflight
-        shell: pwsh
-        run: .\tools\Invoke-MvpPreflight.ps1
+        shell: cmd
+        run: tools\Invoke-MvpPreflight.cmd
