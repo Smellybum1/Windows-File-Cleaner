@@ -2289,6 +2289,7 @@ public partial class MainWindow : Window
             $"Previewed size: {preview.IncludedSizeDisplay}",
             $"Restore Manifest Draft: {restoreManifestDraft.DraftId} | Entries: {restoreManifestDraft.EntryCount:N0} | Bytes: {restoreManifestDraft.TotalSizeDisplay} | Executed manifest: {FormatYesNo(restoreManifestDraft.IsExecutedManifest)}",
             $"Quarantine Confirmation Draft: {confirmationDraft.ConfirmationId} | Required future text: {confirmationDraft.RequiredConfirmationText} | Execution implemented: {FormatYesNo(confirmationDraft.IsExecutionImplemented)}",
+            $"Execution scope status: {FormatQuarantineExecutionScopeStatus(confirmationDraft.IsExecutionImplemented)}",
             confirmationDraft.HasDataBlockers
                 ? $"Confirmation readiness blockers: {confirmationDraft.Blockers.Count:N0}"
                 : "Confirmation readiness blockers: 0",
@@ -2334,6 +2335,7 @@ public partial class MainWindow : Window
             $"Required confirmation text: {gate.RequiredConfirmationText}",
             $"Entered confirmation matches: {FormatYesNo(gate.IsConfirmationTextMatched)}",
             $"Execution implemented: {FormatYesNo(gate.IsExecutionImplemented)}",
+            $"Execution scope status: {FormatQuarantineExecutionScopeStatus(gate.IsExecutionImplemented)}",
             $"Can execute: {FormatYesNo(gate.CanExecute)}",
             undoResult is not null
                 ? "Fixture Undo Quarantine has restored synthetic files where possible. Current scan results are stale."
@@ -2406,6 +2408,13 @@ public partial class MainWindow : Window
         }
 
         return string.Join(Environment.NewLine, lines);
+    }
+
+    private static string FormatQuarantineExecutionScopeStatus(bool isExecutionImplemented)
+    {
+        return isExecutionImplemented
+            ? "Fixture-only execution is available only after preview readiness and exact QUARANTINE confirmation."
+            : "Preview only for this Cleanup Scope; real-profile and custom execution remain unavailable.";
     }
 
     private static string FormatQuarantineExecutionResult(QuarantineExecutionResult result)

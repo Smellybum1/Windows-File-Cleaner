@@ -200,6 +200,7 @@ Follow-up work:
 
 - Action-scoped quarantine layout is now captured in ADR 0004 and `2026-05-29-quarantine-action-draft.md`.
 - Implement manifest file writing and file-moving only after ADR 0005's write-ahead model is proven against fixtures.
+- Later packet `2026-05-29-quarantine-execution-scope-status.md` added plain-language fixture-only versus preview-only scope wording to the WPF gate output.
 
 Open questions:
 

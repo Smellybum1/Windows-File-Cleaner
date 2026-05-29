@@ -184,6 +184,7 @@ Follow-up work:
 
 - Retest the WPF app with a real scan and review whether the readiness text is clear enough.
 - Design actual Quarantine execution only after preview, confirmation, restore, and undo semantics are reviewed.
+- Later packet `2026-05-29-quarantine-execution-scope-status.md` added plain-language execution scope status to preview and gate output.
 
 Open questions:
 

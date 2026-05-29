@@ -1703,6 +1703,7 @@ It does not create folders, write manifests, move files, delete files, or approv
 - Block a broad `.cache` parent row when its scanned subtree contains protected Codex runtime data.
 - Show blocked descendant examples as cleanup-scope-relative paths so broad-parent blockers stay readable.
 - Mark a child row as redundant when its selected parent is already included.
+- Show Quarantine Execution Scope Status so fixture-only availability and real-profile/custom preview-only status are clear before confirmation.
 
 #### Non-examples
 
@@ -1740,6 +1741,7 @@ It does not create folders, write manifests, move files, delete files, or approv
 - Format blocked descendant examples as cleanup-scope-relative paths when possible.
 - Build destination paths from the current Quarantine Root Selection.
 - Clear stale preview and draft readiness output when the Quarantine Root Selection changes.
+- Include Quarantine Execution Scope Status in the WPF preview pane.
 
 ### Quarantine Root Selection
 
@@ -2437,6 +2439,7 @@ It lists data blockers, records the exact preview counts and bytes to review, ex
 - Show that a Quarantine Preview has 1 included row, 0 blocked rows, 0 redundant rows, and matching Restore Manifest Draft metadata.
 - Block confirmation when the preview still contains blocked or redundant rows.
 - Block confirmation when the Restore Manifest Draft does not match the preview Cleanup Scope, Quarantine root, entry count, destination paths, or bytes.
+- Show fixture-only execution availability or preview-only real-profile/custom status as Quarantine Execution Scope Status.
 
 #### Non-examples
 
@@ -2465,6 +2468,7 @@ It lists data blockers, records the exact preview counts and bytes to review, ex
 - Use `QuarantineConfirmationDraft` and `QuarantineConfirmationDraftBuilder`.
 - Use `HasDataBlockers` only as readiness evidence, not as permission to execute.
 - Keep `IsExecutionImplemented` true only for recognized fixture Cleanup Scopes in the current build.
+- Surface `IsExecutionImplemented` as plain-language Quarantine Execution Scope Status in WPF.
 - Do not create folders, move files, delete files, write manifests, or persist cleanup jobs from confirmation draft code.
 
 ### Quarantine Execution Gate
@@ -2485,6 +2489,7 @@ In the current build the gate can open only for recognized fixture Cleanup Scope
 - After `QUARANTINE` is typed for a clean fixture preview, allow fixture-only WPF execution.
 - After `QUARANTINE` is typed for a real-profile or custom non-fixture scope, keep the gate closed.
 - Carry forward blocked preview row or manifest mismatch blockers from Quarantine Confirmation Draft.
+- Show Quarantine Execution Scope Status before `Can execute` so the scope boundary is plain even when exact confirmation text matches.
 
 #### Non-examples
 
@@ -2511,7 +2516,49 @@ In the current build the gate can open only for recognized fixture Cleanup Scope
 - Use `QuarantineExecutionGate` and `QuarantineExecutionGateBuilder`.
 - `CanExecute` must require no blockers, exact confirmation text, and implemented execution support.
 - Keep `CanExecute` false for real-profile and custom non-fixture Cleanup Scopes.
+- Keep Quarantine Execution Scope Status visible in the gate readout.
 - Do not create folders, move files, delete files, write manifests, or persist cleanup jobs from gate builder code.
+
+### Quarantine Execution Scope Status
+
+Status: draft
+Last reviewed: 2026-05-29
+
+#### Definition
+
+Quarantine Execution Scope Status is read-only WPF wording that explains whether the current Cleanup Scope has fixture-only execution available or is preview-only.
+
+It is shown in Quarantine Preview and Quarantine Execution Gate output so real-profile and custom Cleanup Scopes stay visibly blocked even if the preview is clean and the confirmation text matches.
+
+#### Examples
+
+- Fixture Cleanup Scope: state that fixture-only execution is available only after preview readiness and exact `QUARANTINE` confirmation.
+- Real-profile or custom Cleanup Scope: state that the workflow is preview-only and real-profile/custom execution remains unavailable.
+
+#### Non-examples
+
+- Cleanup approval.
+- A Cleanup Action.
+- A replacement for Quarantine Preview blockers.
+- A reason to enable real-profile execution.
+
+#### Lifecycle
+
+- Generated from the current execution-availability flag when Quarantine Preview or Quarantine Execution Gate text is formatted.
+- Updates when a new preview is created for a different Cleanup Scope.
+- Does not persist state or modify files.
+
+#### Relationships
+
+- Depends on Quarantine Confirmation Draft and Quarantine Execution Gate implementation availability.
+- Supports fixture-only WPF Quarantine Execution by making the scope boundary explicit.
+- Reinforces the rule that real-profile WPF Quarantine execution remains unavailable.
+
+#### Code implications
+
+- Use `FormatQuarantineExecutionScopeStatus` for WPF output.
+- Keep wording explicit about `fixture-only`, `preview only`, `real-profile`, and `custom` scopes.
+- Do not use this status as permission to move files.
 
 ### Fixture-only WPF Quarantine Execution
 

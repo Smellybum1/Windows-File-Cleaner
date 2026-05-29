@@ -9,7 +9,7 @@ Use this when starting a fresh Codex thread for this repository.
 - Repo: `D:\Codex\Windows File Cleaner`
 - GitHub: `Smellybum1/Windows-File-Cleaner`
 - Branch: `main`
-- Latest completed packet: Scan Gate Discoverability Polish (after Review Shortlist Safety Mix)
+- Latest completed packet: Quarantine Execution Scope Status (after Scan Gate Discoverability Polish)
 - Current app stack: C# / WPF / .NET 8
 - Desktop shortcut target: `D:\Codex\Windows File Cleaner\src\WindowsFileCleaner.App\bin\Debug\net8.0-windows\WindowsFileCleaner.App.exe`
 
@@ -17,7 +17,7 @@ Use this when starting a fresh Codex thread for this repository.
 
 Windows File Cleaner is a local Windows-only desktop app for reviewing storage under `C:\Users\moxhe`.
 
-The current MVP has a read-only Storage Scan that can inspect large real-profile scans with filters, debounced search, visible Cleanup Scope Scan Gate status/tooltip wording, Review Mix, Matched Review Mix, Review Shortlist Safety Mix, selected-folder child/descendant focus, selected-folder summaries, hotspot trail, file preview, CSV export, Review Shortlist, Quarantine Preview, Restore Manifest Draft, Quarantine Confirmation Draft, Quarantine Action Draft, manifest discovery, selected manifest review, selected restore gate, and restore-readiness preview.
+The current MVP has a read-only Storage Scan that can inspect large real-profile scans with filters, debounced search, visible Cleanup Scope Scan Gate status/tooltip wording, Review Mix, Matched Review Mix, Review Shortlist Safety Mix, selected-folder child/descendant focus, selected-folder summaries, hotspot trail, file preview, CSV export, Review Shortlist, Quarantine Preview, Quarantine Execution Scope Status, Restore Manifest Draft, Quarantine Confirmation Draft, Quarantine Action Draft, manifest discovery, selected manifest review, selected restore gate, and restore-readiness preview.
 
 Fixture-only cleanup execution exists for synthetic Cleanup Scopes. Real-profile cleanup execution remains intentionally unavailable.
 
@@ -41,6 +41,7 @@ Fixture-only cleanup execution exists for synthetic Cleanup Scopes. Real-profile
 - GitHub Actions MVP Preflight passed for `ce7c1db`: `https://github.com/Smellybum1/Windows-File-Cleaner/actions/runs/26616156540`
 - Review Shortlist Safety Mix was added after the fresh-thread handoff docs so shortlist composition is visible before Quarantine Preview. It is read-only and not cleanup approval.
 - Scan Gate Discoverability Polish added a visible locked/ready scan-gate summary and Scan button tooltip without changing the acknowledgement requirement.
+- Quarantine Execution Scope Status added plain-language fixture-only versus preview-only scope wording to Quarantine Preview and Quarantine Execution Gate output.
 
 ## Best next work
 
@@ -48,7 +49,7 @@ Prefer a small packet. Good candidates:
 
 1. Manual fixture visual polish pass using `.\tools\Start-MvpFixtureReview.ps1`, then update docs with any findings.
 2. Real-profile Quarantine Preview/readiness wording pass, still without enabling real-profile execution.
-3. Retest Review Shortlist Safety Mix in the visible app during fixture or real-profile review.
+3. Retest Review Shortlist Safety Mix and Quarantine Execution Scope Status in the visible app during fixture or real-profile review.
 4. During the next visible fixture/real-profile pass, confirm the scan-gate summary line fits comfortably and makes locked/ready state obvious.
 5. Start real-profile Quarantine execution design only after the user explicitly wants to move beyond preview and the safety/undo story is reviewed again.
 
