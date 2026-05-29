@@ -20,6 +20,39 @@ Storage Scan MVP packet implemented and tested by the user against `C:\Users\mox
 
 ## Completed packets
 
+### 2026-05-30: Help Cue Affordance Feature Brief Alignment
+
+Status: completed
+
+Evidence:
+
+- Confirmation Field Help Cues expanded WPF smoke affordance coverage to fifteen circular `?` cues.
+- The original hoverable help-cue affordance feature briefs still stopped their later-packet trail at eleven cues, which could mislead future work even though README, handoff, tests, and current progress state were current.
+
+Implementation:
+
+- Updated the two hoverable help-cue affordance feature briefs to say later packets expanded the tracked cue list to fifteen.
+- No WPF behavior, scan behavior, Quarantine behavior, selected restore behavior, real-profile/custom execution availability, permanent deletion, or cleanup history changed.
+
+Verification:
+
+- `rg -n "tracks fifteen|tracked cue list to fifteen" docs\features\2026-05-30-hoverable-help-cue-affordance.md docs\features\2026-05-30-hoverable-help-cue-affordance-coverage.md .codex\progress.md` showed the updated fifteen-cue alignment.
+- `git -c safe.directory='D:/Codex/Windows File Cleaner' diff --check` passed with line-ending normalization warnings only.
+
+Docs updated:
+
+- `docs/features/2026-05-30-hoverable-help-cue-affordance.md`
+- `docs/features/2026-05-30-hoverable-help-cue-affordance-coverage.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No ADR added. This is bounded feature-brief alignment only.
+
+Open questions:
+
+- During visible fixture review, confirm the full set of compact `?` cues is helpful without making the dense review surface noisy.
+
 ### 2026-05-30: Full Local MVP Preflight After Confirmation Field Help Cues
 
 Status: completed
