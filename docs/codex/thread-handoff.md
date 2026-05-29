@@ -9,7 +9,7 @@ Use this when starting a fresh Codex thread for this repository.
 - Repo: `D:\Codex\Windows File Cleaner`
 - GitHub: `Smellybum1/Windows-File-Cleaner`
 - Branch: `main`
-- Latest completed packet: Collapsed Header Summary Labels
+- Latest completed packet: Full Local MVP Preflight After Header Summary Labels
 - Current app stack: C# / WPF / .NET 8
 - Desktop shortcut target: `D:\Codex\Windows File Cleaner\src\WindowsFileCleaner.App\bin\Debug\net8.0-windows\WindowsFileCleaner.App.exe`
 
@@ -115,6 +115,7 @@ Fixture-only cleanup execution exists for synthetic Cleanup Scopes. Real-profile
 - Full Local MVP Preflight After Header State Help passed `Invoke-MvpPreflight.ps1`; restore, build, core tests, WPF app tests, fixture `-WhatIf`, and whitespace diff check all passed without scanning or modifying real user files.
 - Status State Help Text added textual `Status state:` wording to Review Grid Mode Status and inline Quarantine Preview tooltip/help text so styled status state is not color-only.
 - Collapsed Header Summary Labels made collapsed Safety Summary and Quarantine Shortlist headers start with their visible panel names while preserving compact summary counts, state styling, tooltip/help text, and cleanup boundaries.
+- Full Local MVP Preflight After Header Summary Labels passed `Invoke-MvpPreflight.ps1`; restore, build, core tests, WPF app tests, fixture `-WhatIf`, and whitespace diff check all passed without scanning or modifying real user files.
 
 ## Best next work
 
