@@ -163,10 +163,20 @@ internal sealed class MainWindowSmokeTests
                 && window.AddShownRowsToReviewShortlistButtonToolTipValue.Contains("no files are modified", StringComparison.OrdinalIgnoreCase),
                 "Visible-row shortlist add tooltip should explain scope, approval boundary, and no-file-modified behavior.");
             Assert(
+                window.AddShownRowsToReviewShortlistButtonAutomationHelpTextValue.Contains("currently visible review rows", StringComparison.OrdinalIgnoreCase)
+                && window.AddShownRowsToReviewShortlistButtonAutomationHelpTextValue.Contains("not cleanup approval", StringComparison.OrdinalIgnoreCase)
+                && window.AddShownRowsToReviewShortlistButtonAutomationHelpTextValue.Contains("no files are modified", StringComparison.OrdinalIgnoreCase),
+                "Visible-row shortlist add automation help text should explain scope, approval boundary, and no-file-modified behavior.");
+            Assert(
                 window.RemoveShownRowsFromReviewShortlistButtonToolTipValue.Contains("currently visible review rows", StringComparison.OrdinalIgnoreCase)
                 && window.RemoveShownRowsFromReviewShortlistButtonToolTipValue.Contains("not cleanup approval", StringComparison.OrdinalIgnoreCase)
                 && window.RemoveShownRowsFromReviewShortlistButtonToolTipValue.Contains("no files are modified", StringComparison.OrdinalIgnoreCase),
                 "Visible-row shortlist remove tooltip should explain scope, approval boundary, and no-file-modified behavior.");
+            Assert(
+                window.RemoveShownRowsFromReviewShortlistButtonAutomationHelpTextValue.Contains("currently visible review rows", StringComparison.OrdinalIgnoreCase)
+                && window.RemoveShownRowsFromReviewShortlistButtonAutomationHelpTextValue.Contains("not cleanup approval", StringComparison.OrdinalIgnoreCase)
+                && window.RemoveShownRowsFromReviewShortlistButtonAutomationHelpTextValue.Contains("no files are modified", StringComparison.OrdinalIgnoreCase),
+                "Visible-row shortlist remove automation help text should explain scope, approval boundary, and no-file-modified behavior.");
             Assert(
                 window.ExportShortlistButtonToolTipValue.Contains("CSV report only", StringComparison.OrdinalIgnoreCase)
                 && window.ExportShortlistButtonToolTipValue.Contains("not cleanup approval", StringComparison.OrdinalIgnoreCase)

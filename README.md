@@ -26,7 +26,7 @@ Fresh-thread handoff notes live in `docs/codex/thread-handoff.md`.
 - Scan Report Export and review navigation controls use tooltips and automation help text to keep report-only, in-memory, no-rescan, and no-file-modified boundaries available.
 - Review Shortlist is an in-memory review aid, not cleanup approval.
 - Review Shortlist export and clear controls use tooltips and automation help text to keep report-only and in-memory-only boundaries available.
-- Review Shortlist bulk actions label their scope as visible rows and include tooltips so they apply only to the current displayed review window, not cleanup approval.
+- Review Shortlist bulk actions label their scope as visible rows and include tooltips and automation help text so they apply only to the current displayed review window, not cleanup approval.
 - Review Shortlist Safety Mix summarizes shortlisted rows from completed scan data only; it is review context, not cleanup approval or storage-savings proof.
 - Quarantine Preview is a dry run only, and its preview/gate panes keep Review Shortlist and Quarantine Preview separate from cleanup approval.
 - Quarantine Preview and preview export controls use tooltips and automation help text to keep dry-run and report-only boundaries available.

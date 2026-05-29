@@ -347,7 +347,11 @@ public partial class MainWindow : Window
 
     public string AddShownRowsToReviewShortlistButtonToolTipValue => AddShownToShortlistButton.ToolTip?.ToString() ?? "";
 
+    public string AddShownRowsToReviewShortlistButtonAutomationHelpTextValue => AutomationProperties.GetHelpText(AddShownToShortlistButton);
+
     public string RemoveShownRowsFromReviewShortlistButtonToolTipValue => RemoveShownFromShortlistButton.ToolTip?.ToString() ?? "";
+
+    public string RemoveShownRowsFromReviewShortlistButtonAutomationHelpTextValue => AutomationProperties.GetHelpText(RemoveShownFromShortlistButton);
 
     public bool CanPreviewQuarantine => PreviewQuarantineButton.IsEnabled;
 

@@ -345,6 +345,7 @@
                             MinWidth="160"
                             IsEnabled="False"
                             ToolTip="Applies only to the currently visible review rows. Review Shortlist is review context, not cleanup approval; no files are modified."
+                            AutomationProperties.HelpText="Applies only to the currently visible review rows. Review Shortlist is review context, not cleanup approval; no files are modified."
                             ToolTipService.ShowOnDisabled="True"
                             Click="AddShownToShortlistButton_Click" />
                     <Button x:Name="RemoveShownFromShortlistButton"
@@ -352,6 +353,7 @@
                             MinWidth="155"
                             IsEnabled="False"
                             ToolTip="Removes only the currently visible review rows from Review Shortlist. This is review context, not cleanup approval; no files are modified."
+                            AutomationProperties.HelpText="Removes only the currently visible review rows from Review Shortlist. This is review context, not cleanup approval; no files are modified."
                             ToolTipService.ShowOnDisabled="True"
                             Click="RemoveShownFromShortlistButton_Click" />
                     <Button x:Name="ExportShortlistCsvButton"
