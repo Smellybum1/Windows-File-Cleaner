@@ -1,0 +1,100 @@
+# Feature: Fixture Review Checklist Output
+
+Date started: 2026-05-29  
+Status: completed  
+Owner: project-owner
+
+## Goal
+
+Make the manual fixture review pass easier to run consistently by printing the highest-value review checklist directly from `Start-MvpFixtureReview.ps1`.
+
+## Non-goals
+
+- Do not launch the app in automated checks.
+- Do not auto-scan when WPF opens.
+- Do not scan or modify `C:\Users\moxhe`.
+- Do not add cleanup execution or restore behavior.
+- Do not replace the full README manual checklist.
+
+## Desired behavior
+
+When the fixture launcher runs, it should print a compact checklist before WPF launch that reminds the user to check fixture scope wording, manual Scan, read-only status, review summaries, search/focus actions, Review Shortlist Safety Mix, Quarantine Preview, Quarantine Execution Scope Status, fixture-only execute/undo, manifest discovery, and real/custom execution blockers.
+
+The launcher should support `-SkipChecklist` for focused loops.
+
+## Domain language changes
+
+No new domain terms.
+
+| Term | Change | Docs updated? |
+|---|---|---|
+| None | Existing fixture review and Storage Scan terms used. | n/a |
+
+## Evidence and validation gate
+
+Evidence gathered:
+
+- The next recommended work remains a visible fixture review pass.
+- The launcher already prints basic no-auto-scan wording, but the detailed manual checklist lived in README.
+- Recent packets added scan-gate, shortlist, and execution-scope wording that should be checked together.
+
+Validation gate before implementation:
+
+- [x] Domain terms are clear enough.
+- [x] Permission boundary is clear: script output only in automated verification.
+- [x] Narrowest relevant check is launcher `-WhatIf -SkipPreflight -SkipLaunch`.
+
+## Decisions made
+
+Small feature-level decisions:
+
+- Add a compact checklist to the existing launcher instead of creating a separate script.
+- Print checklist before launching WPF so it remains visible in the terminal.
+- Add `-SkipChecklist` for focused loops.
+
+ADR-worthy decisions:
+
+- [x] None
+
+## Implementation plan
+
+1. Add a checklist writer to `tools/Start-MvpFixtureReview.ps1`.
+2. Print the checklist before launch unless `-SkipChecklist` is passed.
+3. Update README, fixture launcher feature brief, progress, and handoff.
+4. Verify with `-WhatIf -SkipPreflight -SkipLaunch`.
+
+## Completion notes
+
+Completed on: 2026-05-29
+
+What changed:
+
+- `Start-MvpFixtureReview.ps1` now prints a compact manual fixture review checklist.
+- Added `-SkipChecklist` for focused loops.
+- Kept automated verification read-only/no-launch through `-WhatIf -SkipPreflight -SkipLaunch`.
+
+Tests run:
+
+- `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\Start-MvpFixtureReview.ps1 -WhatIf -SkipPreflight -SkipLaunch`
+- `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\Start-MvpFixtureReview.ps1 -WhatIf -SkipPreflight -SkipLaunch -SkipChecklist`
+- `git -c safe.directory='D:/Codex/Windows File Cleaner' diff --check`
+
+Docs updated:
+
+- `README.md`
+- `docs/codex/thread-handoff.md`
+- `docs/features/2026-05-28-mvp-fixture-review-launcher.md`
+- `docs/features/2026-05-29-fixture-review-checklist-output.md`
+- `.codex/progress.md`
+
+ADRs added or skipped:
+
+- Skipped. This is a local workflow-output improvement with no architecture, persistence, cleanup execution, restore, security, deployment, or data-model change.
+
+Open questions:
+
+- After the next visible fixture review, should the checklist be shortened or split into grouped prompts?
+
+Risky assumptions:
+
+- A compact terminal checklist is enough to make the manual pass easier without adding GUI automation.

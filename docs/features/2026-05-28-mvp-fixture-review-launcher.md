@@ -33,6 +33,7 @@ The repo should include a script that:
 - Clearly states that the app will not auto-scan and the user must click `Scan`.
 - Supports `-WhatIf` so the command can be tested without running preflight, writing fixture files, or launching WPF.
 - Supports `-SkipPreflight` and `-SkipLaunch` for focused loops.
+- Prints a compact fixture review checklist before launch unless `-SkipChecklist` is passed.
 
 ## Domain language changes
 
@@ -174,6 +175,7 @@ Follow-up work:
 
 - Run `.\tools\Start-MvpFixtureReview.ps1` without `-WhatIf`, click `Scan`, and inspect the fixture UI by eye.
 - Then rerun the WPF app against `C:\Users\moxhe`.
+- Later packet `2026-05-29-fixture-review-checklist-output.md` added a compact checklist to the launcher output.
 
 Open questions:
 

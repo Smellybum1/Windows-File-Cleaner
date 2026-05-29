@@ -6,7 +6,7 @@ Use it to preserve what was completed, what was verified, what was rejected, and
 
 ## Current status
 
-Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. The app has a broad read-only review workflow, debounced Storage Review Search for large real-profile scans, Cleanup Scope Scan Gate discoverability polish, Matched Review Mix, Review Shortlist Safety Mix, Selected Folder Subtree Summary, Storage Hotspot Trail, Selected Folder Child Focus, Selected Folder Descendant Focus, fixture launch/preflight tooling, Quarantine Preview, Quarantine Execution Scope Status, Restore Manifest Draft, Quarantine Confirmation Draft, Quarantine Action Draft, write-ahead Restore Manifest persistence, core Quarantine execution, core Undo Quarantine, fixture-only WPF Quarantine execution, WPF undo for the current fixture execution, Quarantine Manifest Discovery, Selected Restore Manifest Review, Selected Restore Confirmation Gate, Fixture-only Selected Restore Execution, and Restore Readiness Preview. Real-profile WPF Quarantine execution, real-profile WPF Undo Quarantine, permanent deletion, and persisted cleanup history remain unavailable. Fresh-thread handoff notes and a startup prompt live in `docs/codex/thread-handoff.md`.
+Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. The app has a broad read-only review workflow, debounced Storage Review Search for large real-profile scans, Cleanup Scope Scan Gate discoverability polish, Matched Review Mix, Review Shortlist Safety Mix, Selected Folder Subtree Summary, Storage Hotspot Trail, Selected Folder Child Focus, Selected Folder Descendant Focus, fixture launch/preflight tooling with checklist output, Quarantine Preview, Quarantine Execution Scope Status, Restore Manifest Draft, Quarantine Confirmation Draft, Quarantine Action Draft, write-ahead Restore Manifest persistence, core Quarantine execution, core Undo Quarantine, fixture-only WPF Quarantine execution, WPF undo for the current fixture execution, Quarantine Manifest Discovery, Selected Restore Manifest Review, Selected Restore Confirmation Gate, Fixture-only Selected Restore Execution, and Restore Readiness Preview. Real-profile WPF Quarantine execution, real-profile WPF Undo Quarantine, permanent deletion, and persisted cleanup history remain unavailable. Fresh-thread handoff notes and a startup prompt live in `docs/codex/thread-handoff.md`.
 
 ## Next recommended work
 
@@ -4733,3 +4733,47 @@ Rejected ideas buffer:
 
 - Do not replace the technical `Execution implemented` line before manual review confirms the new wording is sufficient.
 - Do not use scope-status wording as permission to enable real-profile execution.
+
+### 2026-05-29: Add Fixture Review Checklist Output
+
+Status: completed
+
+Evidence:
+
+- The next recommended work remains a visible fixture review pass.
+- `Start-MvpFixtureReview.ps1` already launched the safe fixture workflow, but the detailed review checklist lived in README rather than the terminal where the user starts the pass.
+- Recent packets added scan-gate, shortlist, and execution-scope wording that should be checked together during fixture review.
+
+Implementation:
+
+- Added a compact manual fixture review checklist to `tools/Start-MvpFixtureReview.ps1`.
+- The checklist covers fixture scope wording, manual Scan, no-files-modified status, review summaries, search/focus actions, Review Shortlist Safety Mix, Quarantine Preview, Quarantine Execution Scope Status, fixture-only execution/undo, manifest review, and real/custom blockers.
+- Added `-SkipChecklist` for focused loops.
+- Kept the launcher from scanning automatically, scanning real-profile files, or modifying anything during `-WhatIf`.
+
+Verification:
+
+- `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\Start-MvpFixtureReview.ps1 -WhatIf -SkipPreflight -SkipLaunch` passed and printed the checklist without creating fixture files or launching WPF.
+- `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\Start-MvpFixtureReview.ps1 -WhatIf -SkipPreflight -SkipLaunch -SkipChecklist` passed and omitted the checklist for focused loops.
+- `git -c safe.directory='D:/Codex/Windows File Cleaner' diff --check` passed; Git printed line-ending normalization warnings for touched files but no whitespace errors.
+
+Docs updated:
+
+- `README.md`
+- `docs/codex/thread-handoff.md`
+- `docs/features/2026-05-28-mvp-fixture-review-launcher.md`
+- `docs/features/2026-05-29-fixture-review-checklist-output.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No ADR added. This is a local workflow-output improvement with no architecture, persistence, cleanup execution, restore, security, deployment, or data-model change.
+
+Open questions:
+
+- After the next visible fixture review, should the checklist be shortened or split into grouped prompts?
+
+Rejected ideas buffer:
+
+- Do not make the launcher click Scan automatically.
+- Do not replace the full README checklist with only the compact launcher checklist.

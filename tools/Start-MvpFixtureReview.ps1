@@ -2,7 +2,8 @@
 param(
     [string]$FixtureRoot = ".local\storage-scan-smoke-fixture",
     [switch]$SkipPreflight,
-    [switch]$SkipLaunch
+    [switch]$SkipLaunch,
+    [switch]$SkipChecklist
 )
 
 Set-StrictMode -Version Latest
@@ -12,6 +13,25 @@ $repoRoot = Split-Path -Parent $PSScriptRoot
 $repoFullPath = [System.IO.Path]::GetFullPath($repoRoot).TrimEnd([System.IO.Path]::DirectorySeparatorChar)
 $preflightScript = Join-Path $PSScriptRoot "Invoke-MvpPreflight.ps1"
 $fixtureScript = Join-Path $PSScriptRoot "New-StorageScanSmokeFixture.ps1"
+
+function Write-FixtureReviewChecklist {
+    param(
+        [Parameter(Mandatory)]
+        [string]$FixturePath
+    )
+
+    Write-Host ""
+    Write-Host "Manual fixture review checklist:"
+    Write-Host "  1. Confirm the header says Fixture Cleanup Scope and Scan ready for fixture."
+    Write-Host "  2. Click Scan manually; confirm the status says no files were modified."
+    Write-Host "  3. Check Review Mix, Matched Review Mix, Safety Summary, and Review Shortlist Safety Mix."
+    Write-Host "  4. Try search examples: old-installer, parent:$FixturePath\Downloads, under:$FixturePath\AppData."
+    Write-Host "  5. Select folders and try Show children, Show descendants, hotspot trail, subtree summary, and file preview."
+    Write-Host "  6. Shortlist the fixture cleanup candidate, create Quarantine Preview, and check Execution scope status."
+    Write-Host "  7. For fixture only, type QUARANTINE, execute quarantine, then Undo fixture quarantine and rescan before more review."
+    Write-Host "  8. Use Discover manifests, selected readiness/gate, and restore-readiness preview only against fixture manifests."
+    Write-Host "  9. Confirm real-profile/custom execution remains unavailable in wording before any later real-profile work."
+}
 
 if ([System.IO.Path]::IsPathRooted($FixtureRoot)) {
     $fixtureFullPath = [System.IO.Path]::GetFullPath($FixtureRoot).TrimEnd([System.IO.Path]::DirectorySeparatorChar)
@@ -41,6 +61,9 @@ try {
     Write-Host "Fixture Cleanup Scope: $fixtureFullPath"
     Write-Host "The WPF app will only prefill the Cleanup Scope. It will not auto-scan."
     Write-Host "After the app opens, click Scan yourself and confirm the status says no files were modified."
+    if (-not $SkipChecklist) {
+        Write-FixtureReviewChecklist -FixturePath $fixtureFullPath
+    }
 
     if (-not $SkipLaunch) {
         if ($PSCmdlet.ShouldProcess("Windows File Cleaner fixture review", "Launch WPF app")) {

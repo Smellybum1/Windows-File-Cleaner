@@ -85,6 +85,7 @@ Use the fixture review launcher for the manual fixture UI pass:
 ```
 
 The launcher runs preflight, creates a small synthetic Cleanup Scope inside the repo, and launches the WPF app with that scope. The app does not auto-scan; click `Scan` yourself after it opens.
+Before launching, the script prints a compact fixture review checklist with the main safety, search, shortlist, preview, fixture execution, undo, and manifest-review checks.
 
 For focused troubleshooting, the individual fixture commands are:
 
@@ -99,6 +100,8 @@ dotnet run --project src\WindowsFileCleaner.App -- --scope "D:\Codex\Windows Fil
 ```
 
 This only fills the Cleanup Scope box. Click `Scan` yourself after the app opens.
+
+Use `-SkipChecklist` only when you intentionally want the launcher output without the reminder checklist.
 
 The automated `WindowsFileCleaner.App.Tests` project also scans a synthetic fixture through the WPF shell, exercises read-only review interactions, proves fixture-only Quarantine execution and undo, verifies manifest discovery, selected manifest review, selected restore confirmation gate, fixture-only selected restore execution, and restore-readiness preview, verifies custom non-fixture execution remains blocked, and checks that the review toolbars use wrapping layout, but it does not replace checking the visible layout and controls by eye.
 
