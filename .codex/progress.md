@@ -10,7 +10,7 @@ Storage Scan MVP packet implemented and tested by the user against `C:\Users\mox
 
 ## Next recommended work
 
-1. Start the next thread from `docs/codex/thread-handoff.md`, optionally print the manual prompts with `.\tools\Start-MvpFixtureReview.cmd -ChecklistOnly`, then run `.\tools\Start-MvpFixtureReview.cmd`, confirm the launched app shows Fixture Cleanup Scope and its Cleanup Scope Safety Note `?` help cue, scope-specific scan-gate wording, scan-gate summary `?` help cue, Cleanup Scope browse tooltip, click `Scan`, and manually inspect layout, visible wording, Storage Review Search, Clear search tooltip, `parent:` search, `under:` search, Matched Review Mix, Review Shortlist Safety Mix, Selected Folder Subtree Summary, Storage Hotspot Trail, Selected Folder Child Focus (`Show children`), Selected Folder Descendant Focus (`Show descendants`), selected-row action tooltips, Storage Review Display Window controls and Previous/Next rows tooltips, Scan Report Export tooltip, Reset view tooltip, the `Relative path` and `Parent` columns, Selected Path Hierarchy Context, Selected File Content Preview, Selected Path Review Guidance, export dialogs, Safety Summary shortcuts, Review Shortlist, `Shortlist visible rows`, `Remove visible rows`, visible-row shortlist tooltips, Review Shortlist export/clear tooltips, typed/browsed Quarantine Root Selection, Quarantine Root browse tooltip, Quarantine Root Safety Note and its `?` help cue, Quarantine Preview, Preview quarantine/export tooltips, Quarantine Execution Gate, Quarantine Action Draft, execution-control tooltips, fixture-only `Execute quarantine`, `Current quarantined (N)`, current-fixture `Undo fixture quarantine`, `Discover manifests`, `Preview selected manifest readiness`, `Preview selected restore gate` tooltip, scope status, and approval boundary, fixture-only `Restore selected fixture manifest`, `Preview all-manifest readiness`, Review Mix, Access issues filter, category filter, No category filter, Size filter, and filter wording.
+1. Start the next thread from `docs/codex/thread-handoff.md`, optionally print the manual prompts with `.\tools\Start-MvpFixtureReview.cmd -ChecklistOnly`, then run `.\tools\Start-MvpFixtureReview.cmd`, confirm the launched app shows Fixture Cleanup Scope and its Cleanup Scope Safety Note `?` help cue, scope-specific scan-gate wording, scan-gate summary `?` help cue, Cleanup Scope browse tooltip, click `Scan`, and manually inspect layout, visible wording, Storage Review Search, Clear search tooltip, `parent:` search, `under:` search, Matched Review Mix, Review Shortlist Safety Mix, Selected Folder Subtree Summary, Storage Hotspot Trail, Selected Folder Child Focus (`Show children`), Selected Folder Descendant Focus (`Show descendants`), selected-row action tooltips, Storage Review Display Window controls and Previous/Next rows tooltips, Scan Report Export tooltip, Reset view tooltip, the `Relative path` and `Parent` columns, Selected Path Hierarchy Context, Selected File Content Preview, Selected Path Review Guidance, export dialogs, Safety Summary shortcuts, Review Shortlist, `Shortlist visible rows`, `Remove visible rows`, visible-row shortlist tooltips, Review Shortlist export/clear tooltips, typed/browsed Quarantine Root Selection, Quarantine Root browse tooltip, Quarantine Root Safety Note and its `?` help cue, Quarantine Preview, Preview quarantine/export tooltips, Quarantine Execution Gate, Quarantine Action Draft, execution-control tooltips, fixture-only `Quarantine included shortlist`, `Current quarantined (N)`, current-fixture `Undo fixture quarantine`, `Discover manifests`, `Preview selected manifest readiness`, `Preview selected restore gate` tooltip, scope status, and approval boundary, fixture-only `Restore selected fixture manifest`, `Preview all-manifest readiness`, Review Mix, Access issues filter, category filter, No category filter, Size filter, and filter wording.
 2. Use `README.md` and `docs/features/2026-05-28-mvp-readiness-audit.md` to rerun the WPF app against `C:\Users\moxhe`; confirm `Scan` is disabled until the real-profile preflight acknowledgement is checked and the acknowledgement `?` help cue mirrors the tooltip/help boundary.
 3. Run `.\tools\Invoke-MvpPreflight.cmd` before any later real-profile scan if the worktree changes.
 4. Rerun the real scan and check whether the cleanup scope root row, `Relative path`, `Parent`, `Contents`, and `Access` columns, Size filter, `parent:` / `under:` / `access:readable` / `access:access issue` search, Matched Review Mix, Selected Folder Subtree Summary, Storage Hotspot Trail, `Show children`, `Show descendants`, Previous rows / Next rows, Safety Summary candidate and no-category examples, selected-row relative/parent/depth/access context, cache-specific Review guidance, specific rebuildable cache candidates such as `DXCache` and `pip\Cache`, conservative game/mod-manager labels such as OptiFine/CurseForge/Vortex, Cloud sync data and Credential data labels, and `Preview file` action make unfamiliar rows easier to triage.
@@ -19,6 +19,48 @@ Storage Scan MVP packet implemented and tested by the user against `C:\Users\mox
 7. Revisit .NET 10 before packaging or long-term distribution.
 
 ## Completed packets
+
+### 2026-05-30: Quarantine Execution Label Docs Alignment
+
+Status: completed
+
+Evidence:
+
+- The visible fixture action and WPF smoke coverage use `Quarantine included shortlist`.
+- A few current-facing manual-review docs still used the older generic execution label, which could send the next fixture pass hunting for the wrong button.
+
+Implementation:
+
+- Aligned current-facing README, progress, handoff, domain, and feature-note wording with the visible `Quarantine included shortlist` label.
+- Kept historical feature context where it describes the older label before the wording packet changed it.
+- No app behavior, scan behavior, Quarantine execution, restore behavior, or real-profile availability changed.
+
+Verification:
+
+- `rg -n --fixed-strings "Execute quarantine" README.md docs\codex\thread-handoff.md docs\domain\context.md docs\features\2026-05-29-execution-control-tooltip-clarity.md docs\features\2026-05-29-execution-readiness-automation-help-text.md` returned no current-facing label matches.
+- `git diff --check`
+
+Docs updated:
+
+- `README.md`
+- `docs/domain/context.md`
+- `docs/features/2026-05-29-execution-control-tooltip-clarity.md`
+- `docs/features/2026-05-29-execution-readiness-automation-help-text.md`
+- `docs/features/2026-05-30-quarantine-execution-label-doc-alignment.md`
+- `docs/codex/thread-handoff.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No ADR added. This is wording alignment only and does not change architecture, persistence, cleanup execution, restore rules, data model, or security.
+
+Open questions:
+
+- None.
+
+Rejected ideas buffer:
+
+- Do not rename code symbols solely for this wording packet; the visible label is aligned and a code rename would add churn without behavior value.
 
 ### 2026-05-30: CI Preflight CMD Wrapper Alignment
 

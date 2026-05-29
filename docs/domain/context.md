@@ -2423,7 +2423,7 @@ It is fixture-tested and wired to the WPF app for fixture Cleanup Scopes only.
 
 - Use `QuarantineExecutor`, `QuarantineExecutionResult`, and `QuarantineExecutionEntryResult`.
 - Keep filesystem move APIs allowlisted only in this component.
-- Keep WPF `Execute quarantine` disabled for real-profile and custom non-fixture Cleanup Scopes.
+- Keep the visible WPF `Quarantine included shortlist` action disabled for real-profile and custom non-fixture Cleanup Scopes.
 - Do not overwrite existing destination paths.
 - Do not implement rollback or Undo Quarantine inside the executor.
 

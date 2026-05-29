@@ -135,7 +135,7 @@ Completed on: 2026-05-29
 
 What changed:
 
-- Updated Quarantine confirmation, Execute quarantine, Undo fixture quarantine, selected restore confirmation, and Restore selected fixture manifest tooltips.
+- Updated Quarantine confirmation, Quarantine included shortlist, Undo fixture quarantine, selected restore confirmation, and Restore selected fixture manifest tooltips.
 - Enabled disabled-control tooltip display for those gate controls.
 - Added WPF smoke assertions for tooltip wording.
 - Updated fixture checklist wording to include execution and restore tooltip review.

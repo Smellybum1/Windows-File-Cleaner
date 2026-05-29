@@ -25,7 +25,7 @@ Execution and readiness controls have safety tooltips, but the same wording is n
 
 ## Desired behavior
 
-- Quarantine confirmation, Execute quarantine, Undo fixture quarantine, selected restore confirmation, and Restore selected fixture manifest expose matching automation help text.
+- Quarantine confirmation, Quarantine included shortlist, Undo fixture quarantine, selected restore confirmation, and Restore selected fixture manifest expose matching automation help text.
 - Preview all-manifest readiness and Preview selected manifest readiness expose matching automation help text.
 - Preview selected restore gate exposes a tooltip and matching automation help text.
 - WPF smoke tests assert the safety wording.
