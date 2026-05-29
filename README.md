@@ -39,6 +39,7 @@ Fresh-thread handoff notes live in `docs/codex/thread-handoff.md`.
 - Fixture-only Selected Restore Execution calls Undo Quarantine Executor for selected discovered fixture manifests only.
 - Fixture tests include a source-level guard against accidental cleanup-execution filesystem calls.
 - Real-profile scans require an explicit acknowledgement that MVP preflight and fixture review were run.
+- Scan-gate ready wording is scope-specific: fixture scopes point later cleanup actions back to preview and exact confirmation, while real-profile/custom scopes keep cleanup execution unavailable.
 - User-typed Storage Review Search is debounced for large real-profile scans; the status bar is the only pending-search indicator for now.
 
 ## Requirements
@@ -127,7 +128,7 @@ C:\Users\moxhe
 ```
 
 When the app is opened against the default real-profile Cleanup Scope, `Scan` stays disabled until you tick the preflight and fixture-review acknowledgement in the header.
-The header also shows a scan-gate status line and Scan button tooltip so the locked or ready state is visible before scanning.
+The header also shows a scan-gate status line and Scan button tooltip so the locked or ready state is visible before scanning, with scope-specific wording for fixture, real-profile, and custom scopes.
 
 ## Manual MVP Check
 

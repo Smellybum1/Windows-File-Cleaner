@@ -22,6 +22,7 @@ internal static class Program
                 var tests = new MainWindowSmokeTests();
                 tests.MainWindowDefaultsToCurrentUserCleanupScope();
                 tests.MainWindowUsesLaunchCleanupScopeWithoutStartingScan();
+                tests.MainWindowUsesCustomCleanupScopeWithoutExecutionAvailability();
                 tests.MainWindowUsesWrappingReviewToolbarLayout();
                 tests.MainWindowRunsFixtureStorageScanThroughWpfShell();
                 tests.MainWindowShowsDisplayLimitForLargeFixtureScan();
@@ -124,8 +125,12 @@ internal sealed class MainWindowSmokeTests
                 && window.ScanGateSummaryTextValue.Contains("read-only Storage Scan", StringComparison.OrdinalIgnoreCase),
                 "Acknowledged real-profile scan gate summary should keep the read-only ready state visible.");
             Assert(
-                window.ScanButtonToolTipValue.Contains("read-only Storage Scan", StringComparison.OrdinalIgnoreCase),
-                "Enabled real-profile Scan button tooltip should keep the read-only boundary visible.");
+                window.ScanGateSummaryTextValue.Contains("cleanup execution remains unavailable", StringComparison.OrdinalIgnoreCase),
+                "Acknowledged real-profile scan gate summary should keep execution unavailable.");
+            Assert(
+                window.ScanButtonToolTipValue.Contains("read-only Storage Scan", StringComparison.OrdinalIgnoreCase)
+                && window.ScanButtonToolTipValue.Contains("cleanup execution remains unavailable", StringComparison.OrdinalIgnoreCase),
+                "Enabled real-profile Scan button tooltip should keep the read-only and unavailable-execution boundary visible.");
             Assert(
                 window.ScanGateTextValue.Contains("read-only", StringComparison.OrdinalIgnoreCase),
                 "Confirmed real-profile scan gate should preserve read-only wording.");
@@ -179,11 +184,48 @@ internal sealed class MainWindowSmokeTests
                 window.ScanGateSummaryTextValue.Contains("Scan ready for fixture", StringComparison.OrdinalIgnoreCase),
                 "Fixture scan gate summary should make fixture readiness visible.");
             Assert(
-                window.ScanButtonToolTipValue.Contains("read-only Storage Scan", StringComparison.OrdinalIgnoreCase),
-                "Fixture Scan button tooltip should preserve the read-only boundary.");
+                window.ScanGateSummaryTextValue.Contains("fixture cleanup actions stay gated", StringComparison.OrdinalIgnoreCase),
+                "Fixture scan gate summary should keep later fixture cleanup actions behind gates.");
+            Assert(
+                window.ScanButtonToolTipValue.Contains("read-only Storage Scan", StringComparison.OrdinalIgnoreCase)
+                && window.ScanButtonToolTipValue.Contains("preview and exact confirmation", StringComparison.OrdinalIgnoreCase),
+                "Fixture Scan button tooltip should preserve the read-only boundary and later cleanup gates.");
             Assert(window.CanBrowseCleanupScope, "Launch Cleanup Scope should still allow choosing a different Cleanup Scope before scanning.");
             Assert(!window.IsRealProfilePreflightConfirmationVisible, "Fixture Cleanup Scope should not show real-profile acknowledgement.");
             Assert(!window.CanExportScanCsv, "Launch Cleanup Scope should not create exportable scan data.");
+        }
+        finally
+        {
+            window.Close();
+        }
+    }
+
+    public void MainWindowUsesCustomCleanupScopeWithoutExecutionAvailability()
+    {
+        var customScope = Path.Combine(
+            Environment.CurrentDirectory,
+            ".local",
+            "manual-review-scope");
+
+        var window = new MainWindow(customScope);
+        try
+        {
+            Assert(
+                window.CurrentCleanupScopePath == customScope,
+                "MainWindow should use the custom launch Cleanup Scope.");
+            Assert(
+                window.CleanupScopeSafetyNoteTextValue.Contains("Custom Cleanup Scope", StringComparison.OrdinalIgnoreCase),
+                "Custom launch Cleanup Scope should show the custom safety note.");
+            Assert(window.CanStartStorageScan, "Custom Cleanup Scope should allow a read-only user-triggered scan.");
+            Assert(
+                window.ScanGateSummaryTextValue.Contains("Scan ready for custom Cleanup Scope", StringComparison.OrdinalIgnoreCase)
+                && window.ScanGateSummaryTextValue.Contains("cleanup execution remains unavailable", StringComparison.OrdinalIgnoreCase),
+                "Custom scan gate summary should keep cleanup execution unavailable.");
+            Assert(
+                window.ScanButtonToolTipValue.Contains("read-only Storage Scan", StringComparison.OrdinalIgnoreCase)
+                && window.ScanButtonToolTipValue.Contains("cleanup execution remains unavailable", StringComparison.OrdinalIgnoreCase),
+                "Custom Scan button tooltip should keep the read-only and unavailable-execution boundary visible.");
+            Assert(!window.IsRealProfilePreflightConfirmationVisible, "Custom Cleanup Scope should not show real-profile acknowledgement.");
         }
         finally
         {

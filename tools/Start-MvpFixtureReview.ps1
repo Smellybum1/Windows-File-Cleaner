@@ -23,7 +23,7 @@ function Write-FixtureReviewChecklist {
 
     Write-Host ""
     Write-Host "Manual fixture review checklist:"
-    Write-Host "  1. Confirm the header says Fixture Cleanup Scope and Scan ready for fixture."
+    Write-Host "  1. Confirm the header says Fixture Cleanup Scope, Scan ready for fixture, and fixture cleanup actions stay gated."
     Write-Host "  2. Click Scan manually; confirm the status says no files were modified."
     Write-Host "  3. Check Review Mix, Matched Review Mix, Safety Summary, Review Shortlist Safety Mix, and visible-row shortlist labels."
     Write-Host "  4. Try search examples: old-installer, parent:$FixturePath\Downloads, under:$FixturePath\AppData."

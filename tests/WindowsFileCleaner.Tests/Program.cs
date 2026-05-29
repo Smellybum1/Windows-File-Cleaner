@@ -189,10 +189,16 @@ internal sealed class StorageScanTests
         var confirmedRealProfile = CleanupScopeScanGateBuilder.Build(@"C:\Users\moxhe", realProfilePreflightAcknowledged: true);
         Assert(confirmedRealProfile.CanScan, "Real profile scans should be allowed after explicit acknowledgement.");
         Assert(confirmedRealProfile.Message.Contains("read-only", StringComparison.OrdinalIgnoreCase), "Confirmed real-profile gate should keep read-only wording.");
+        Assert(confirmedRealProfile.Message.Contains("cleanup execution remains unavailable", StringComparison.OrdinalIgnoreCase), "Confirmed real-profile gate should keep cleanup execution unavailable.");
 
         var fixture = CleanupScopeScanGateBuilder.Build(@"D:\Codex\Windows File Cleaner\.local\storage-scan-smoke-fixture", realProfilePreflightAcknowledged: false);
         Assert(fixture.CanScan, "Fixture scans should not require real-profile acknowledgement.");
         Assert(!fixture.RequiresPreflightAcknowledgement, "Fixture scan gate should not ask for real-profile acknowledgement.");
+        Assert(fixture.Message.Contains("preview and exact confirmation", StringComparison.OrdinalIgnoreCase), "Fixture scan gate should point later cleanup actions back to preview and exact confirmation.");
+
+        var custom = CleanupScopeScanGateBuilder.Build(@"D:\Scratch\ReviewOnly", realProfilePreflightAcknowledged: false);
+        Assert(custom.CanScan, "Custom scopes should be scannable as read-only review scopes.");
+        Assert(custom.Message.Contains("custom cleanup execution remain unavailable", StringComparison.OrdinalIgnoreCase), "Custom scan gate should keep cleanup execution unavailable.");
 
         var blank = CleanupScopeScanGateBuilder.Build(" ", realProfilePreflightAcknowledged: true);
         Assert(!blank.CanScan, "Blank Cleanup Scope should not be scannable.");

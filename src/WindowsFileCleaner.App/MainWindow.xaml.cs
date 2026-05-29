@@ -1200,17 +1200,17 @@ public partial class MainWindow : Window
 
         if (note.IsRealUserProfileScope)
         {
-            return "Scan ready for real profile: read-only Storage Scan only.";
+            return "Scan ready for real profile: read-only Storage Scan; cleanup execution remains unavailable.";
         }
 
         if (note.IsFixtureScope)
         {
-            return "Scan ready for fixture Cleanup Scope.";
+            return "Scan ready for fixture Cleanup Scope: read-only scan first; fixture cleanup actions stay gated.";
         }
 
         if (scanGate.CanScan)
         {
-            return "Scan ready for custom Cleanup Scope; review the path before scanning.";
+            return "Scan ready for custom Cleanup Scope: read-only scan; cleanup execution remains unavailable.";
         }
 
         return "Scan waiting for a valid Cleanup Scope.";
@@ -1220,9 +1220,17 @@ public partial class MainWindow : Window
     {
         if (scanGate.CanScan)
         {
-            return note.IsRealUserProfileScope
-                ? "Starts a read-only Storage Scan for the acknowledged real profile."
-                : "Starts a read-only Storage Scan for the selected Cleanup Scope.";
+            if (note.IsRealUserProfileScope)
+            {
+                return "Starts a read-only Storage Scan for the acknowledged real profile; cleanup execution remains unavailable.";
+            }
+
+            if (note.IsFixtureScope)
+            {
+                return "Starts a read-only Storage Scan for the fixture; fixture cleanup actions still require preview and exact confirmation.";
+            }
+
+            return "Starts a read-only Storage Scan for the selected Cleanup Scope; cleanup execution remains unavailable.";
         }
 
         if (note.IsRealUserProfileScope)

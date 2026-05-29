@@ -98,6 +98,7 @@ ADRs added or skipped:
 Open questions:
 
 - Does the extra header line fit comfortably during the next visible fixture and real-profile review pass?
+- Later packet 2026-05-29-scope-specific-scan-gate-ready-wording made ready-state wording scope-specific for fixture, real-profile, and custom Cleanup Scopes.
 
 Risky assumptions:
 

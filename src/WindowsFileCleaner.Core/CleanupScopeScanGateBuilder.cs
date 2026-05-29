@@ -35,12 +35,20 @@ public static class CleanupScopeScanGateBuilder
             return new CleanupScopeScanGate(
                 CanScan: true,
                 RequiresPreflightAcknowledgement: true,
-                Message: "Real-profile scan confirmation accepted. Storage Scan remains read-only.");
+                Message: "Real-profile scan confirmation accepted. Storage Scan remains read-only; real-profile cleanup execution remains unavailable.");
+        }
+
+        if (note.IsFixtureScope)
+        {
+            return new CleanupScopeScanGate(
+                CanScan: true,
+                RequiresPreflightAcknowledgement: false,
+                Message: "Fixture scan can start. Storage Scan is read-only; fixture cleanup actions still require preview and exact confirmation.");
         }
 
         return new CleanupScopeScanGate(
             CanScan: true,
             RequiresPreflightAcknowledgement: false,
-            Message: "Storage Scan can start. No cleanup execution is enabled.");
+            Message: "Custom scope scan can start. Storage Scan is read-only; real-profile and custom cleanup execution remain unavailable.");
     }
 }
