@@ -79,6 +79,12 @@
                            Margin="0,6,0,0"
                            Width="680"
                            TextWrapping="Wrap" />
+                <TextBlock x:Name="ScanGateSummaryText"
+                           FontWeight="SemiBold"
+                           Foreground="#9A5B00"
+                           Margin="0,6,0,0"
+                           Width="680"
+                           TextWrapping="Wrap" />
                 <CheckBox x:Name="RealProfilePreflightCheckBox"
                           Content="I ran MVP preflight and fixture review before scanning this real profile."
                           Margin="0,8,0,0"

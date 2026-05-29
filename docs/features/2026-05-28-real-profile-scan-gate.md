@@ -67,3 +67,4 @@ Follow-up work:
 
 - Manually open the app normally and confirm `Scan` is disabled until acknowledgement.
 - Manually launch the fixture review and confirm fixture scopes do not require real-profile acknowledgement.
+- Later packet `2026-05-29-scan-gate-discoverability-polish.md` added a visible gate summary line and `Scan` button tooltip while preserving this gate.

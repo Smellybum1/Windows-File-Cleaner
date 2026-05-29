@@ -115,6 +115,7 @@ C:\Users\moxhe
 ```
 
 When the app is opened against the default real-profile Cleanup Scope, `Scan` stays disabled until you tick the preflight and fixture-review acknowledgement in the header.
+The header also shows a scan-gate status line and Scan button tooltip so the locked or ready state is visible before scanning.
 
 ## Manual MVP Check
 
@@ -122,7 +123,7 @@ After the app opens:
 
 1. Confirm the scope box shows the intended Cleanup Scope; use `Browse...` if you want to choose a fixture or custom folder before scanning.
 2. Confirm the Cleanup Scope Safety Note matches the path: fixture first for smoke testing, real profile only after preflight.
-3. For the real profile, tick the acknowledgement that MVP preflight and fixture review were run; fixture scopes do not require this real-profile acknowledgement.
+3. For the real profile, confirm the scan-gate status says the scan is locked, then tick the acknowledgement that MVP preflight and fixture review were run; fixture scopes do not require this real-profile acknowledgement.
 4. Click `Scan`.
 5. Confirm the status says no files were modified.
 6. Review the summary cards for total size, folders, files, and access issues.

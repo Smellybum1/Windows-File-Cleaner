@@ -268,7 +268,7 @@ Initial scope note kinds are Fixture Cleanup Scope, Real Profile Cleanup Scope, 
 ### Cleanup Scope Scan Gate
 
 Status: draft
-Last reviewed: 2026-05-28
+Last reviewed: 2026-05-29
 
 #### Definition
 
@@ -280,6 +280,8 @@ For real-profile scopes under `C:\Users\moxhe`, the gate requires explicit ackno
 
 - Fixture Cleanup Scope: `Scan` can start without real-profile acknowledgement.
 - Real Profile Cleanup Scope: `Scan` stays disabled until the user ticks the preflight and fixture-review acknowledgement.
+- Real Profile Cleanup Scope with no acknowledgement: the WPF header shows a locked scan-gate summary and the disabled `Scan` button tooltip explains the lock.
+- Real Profile Cleanup Scope with acknowledgement: the WPF header shows a ready read-only Storage Scan summary.
 - Blank or invalid Cleanup Scope: `Scan` stays disabled.
 
 #### Non-examples
@@ -309,6 +311,7 @@ For real-profile scopes under `C:\Users\moxhe`, the gate requires explicit ackno
 - Keep the gate local and read-only.
 - Reset the acknowledgement when the Cleanup Scope changes.
 - Continue to enforce the gate in the scan-start method, not only through button state.
+- Keep the gate discoverable through visible summary text and the `Scan` button tooltip, especially when the button is disabled.
 
 ### Cleanup Candidate
 

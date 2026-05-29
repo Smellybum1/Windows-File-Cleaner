@@ -89,6 +89,10 @@ public partial class MainWindow : Window
 
     public string ScanGateTextValue => ScanGateText.Text;
 
+    public string ScanGateSummaryTextValue => ScanGateSummaryText.Text;
+
+    public string ScanButtonToolTipValue => ScanButton.ToolTip?.ToString() ?? "";
+
     public bool CanExportScanCsv => ExportCsvButton.IsEnabled;
 
     public int CurrentScanReportExportRowCount => BuildCurrentScanReportExportRows().Count;
@@ -1172,10 +1176,57 @@ public partial class MainWindow : Window
         var note = CleanupScopeSafetyNoteBuilder.Build(ScopePathBox.Text);
         var scanGate = CleanupScopeScanGateBuilder.Build(ScopePathBox.Text, RealProfilePreflightCheckBox.IsChecked == true);
         ScopeSafetyNoteText.Text = $"{note.Label}: {note.Message}";
+        ScanGateSummaryText.Text = FormatScanGateSummary(note, scanGate);
+        ScanGateSummaryText.Foreground = scanGate.CanScan
+            ? System.Windows.Media.Brushes.DarkGreen
+            : System.Windows.Media.Brushes.DarkGoldenrod;
         ScanGateText.Text = scanGate.Message;
+        ScanButton.ToolTip = FormatScanButtonToolTip(note, scanGate);
         RealProfilePreflightCheckBox.Visibility = note.IsRealUserProfileScope ? Visibility.Visible : Visibility.Collapsed;
         RealProfilePreflightCheckBox.IsEnabled = !_isScanning && note.IsRealUserProfileScope;
         ScanButton.IsEnabled = !_isScanning && scanGate.CanScan;
+    }
+
+    private static string FormatScanGateSummary(CleanupScopeSafetyNote note, CleanupScopeScanGate scanGate)
+    {
+        if (note.IsRealUserProfileScope && !scanGate.CanScan)
+        {
+            return "Scan locked for real profile: run MVP preflight, review the fixture, then tick the acknowledgement.";
+        }
+
+        if (note.IsRealUserProfileScope)
+        {
+            return "Scan ready for real profile: read-only Storage Scan only.";
+        }
+
+        if (note.IsFixtureScope)
+        {
+            return "Scan ready for fixture Cleanup Scope.";
+        }
+
+        if (scanGate.CanScan)
+        {
+            return "Scan ready for custom Cleanup Scope; review the path before scanning.";
+        }
+
+        return "Scan waiting for a valid Cleanup Scope.";
+    }
+
+    private static string FormatScanButtonToolTip(CleanupScopeSafetyNote note, CleanupScopeScanGate scanGate)
+    {
+        if (scanGate.CanScan)
+        {
+            return note.IsRealUserProfileScope
+                ? "Starts a read-only Storage Scan for the acknowledged real profile."
+                : "Starts a read-only Storage Scan for the selected Cleanup Scope.";
+        }
+
+        if (note.IsRealUserProfileScope)
+        {
+            return "Scan is locked until MVP preflight and fixture review are acknowledged.";
+        }
+
+        return scanGate.Message;
     }
 
     private void UpdateQuarantineRootSafetyNote()

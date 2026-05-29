@@ -105,11 +105,27 @@ internal sealed class MainWindowSmokeTests
             Assert(window.IsRealProfilePreflightConfirmationVisible, "MainWindow should show the real-profile preflight acknowledgement.");
             Assert(!window.IsRealProfilePreflightConfirmed, "Real-profile preflight acknowledgement should start unchecked.");
             Assert(
+                window.ScanGateSummaryTextValue.Contains("Scan locked for real profile", StringComparison.OrdinalIgnoreCase)
+                && window.ScanGateSummaryTextValue.Contains("run MVP preflight", StringComparison.OrdinalIgnoreCase)
+                && window.ScanGateSummaryTextValue.Contains("tick the acknowledgement", StringComparison.OrdinalIgnoreCase),
+                "Real-profile scan gate summary should make the locked state and next action obvious.");
+            Assert(
+                window.ScanButtonToolTipValue.Contains("locked", StringComparison.OrdinalIgnoreCase)
+                && window.ScanButtonToolTipValue.Contains("acknowledged", StringComparison.OrdinalIgnoreCase),
+                "Disabled real-profile Scan button tooltip should explain the lock.");
+            Assert(
                 window.ScanGateTextValue.Contains("Confirm MVP preflight", StringComparison.OrdinalIgnoreCase),
                 "Real-profile scan gate should explain why Scan is disabled.");
             window.ConfirmRealProfilePreflightForRealProfileScan();
             Assert(window.IsRealProfilePreflightConfirmed, "Real-profile preflight acknowledgement should be settable by the user.");
             Assert(window.CanStartStorageScan, "Real profile Scan should be enabled after acknowledgement.");
+            Assert(
+                window.ScanGateSummaryTextValue.Contains("Scan ready for real profile", StringComparison.OrdinalIgnoreCase)
+                && window.ScanGateSummaryTextValue.Contains("read-only Storage Scan", StringComparison.OrdinalIgnoreCase),
+                "Acknowledged real-profile scan gate summary should keep the read-only ready state visible.");
+            Assert(
+                window.ScanButtonToolTipValue.Contains("read-only Storage Scan", StringComparison.OrdinalIgnoreCase),
+                "Enabled real-profile Scan button tooltip should keep the read-only boundary visible.");
             Assert(
                 window.ScanGateTextValue.Contains("read-only", StringComparison.OrdinalIgnoreCase),
                 "Confirmed real-profile scan gate should preserve read-only wording.");
@@ -159,6 +175,12 @@ internal sealed class MainWindowSmokeTests
                 "Fixture safety note should preserve the user-triggered scan boundary.");
             Assert(window.CurrentStatusText == "Ready", "Launch Cleanup Scope should not trigger a scan.");
             Assert(window.CanStartStorageScan, "Launch Cleanup Scope should still require a user-triggered scan.");
+            Assert(
+                window.ScanGateSummaryTextValue.Contains("Scan ready for fixture", StringComparison.OrdinalIgnoreCase),
+                "Fixture scan gate summary should make fixture readiness visible.");
+            Assert(
+                window.ScanButtonToolTipValue.Contains("read-only Storage Scan", StringComparison.OrdinalIgnoreCase),
+                "Fixture Scan button tooltip should preserve the read-only boundary.");
             Assert(window.CanBrowseCleanupScope, "Launch Cleanup Scope should still allow choosing a different Cleanup Scope before scanning.");
             Assert(!window.IsRealProfilePreflightConfirmationVisible, "Fixture Cleanup Scope should not show real-profile acknowledgement.");
             Assert(!window.CanExportScanCsv, "Launch Cleanup Scope should not create exportable scan data.");

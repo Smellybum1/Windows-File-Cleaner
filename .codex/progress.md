@@ -6,7 +6,7 @@ Use it to preserve what was completed, what was verified, what was rejected, and
 
 ## Current status
 
-Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. The app has a broad read-only review workflow, debounced Storage Review Search for large real-profile scans, Matched Review Mix, Review Shortlist Safety Mix, Selected Folder Subtree Summary, Storage Hotspot Trail, Selected Folder Child Focus, Selected Folder Descendant Focus, fixture launch/preflight tooling, Quarantine Preview, Restore Manifest Draft, Quarantine Confirmation Draft, Quarantine Action Draft, write-ahead Restore Manifest persistence, core Quarantine execution, core Undo Quarantine, fixture-only WPF Quarantine execution, WPF undo for the current fixture execution, Quarantine Manifest Discovery, Selected Restore Manifest Review, Selected Restore Confirmation Gate, Fixture-only Selected Restore Execution, and Restore Readiness Preview. Real-profile WPF Quarantine execution, real-profile WPF Undo Quarantine, permanent deletion, and persisted cleanup history remain unavailable. Fresh-thread handoff notes and a startup prompt live in `docs/codex/thread-handoff.md`.
+Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. The app has a broad read-only review workflow, debounced Storage Review Search for large real-profile scans, Cleanup Scope Scan Gate discoverability polish, Matched Review Mix, Review Shortlist Safety Mix, Selected Folder Subtree Summary, Storage Hotspot Trail, Selected Folder Child Focus, Selected Folder Descendant Focus, fixture launch/preflight tooling, Quarantine Preview, Restore Manifest Draft, Quarantine Confirmation Draft, Quarantine Action Draft, write-ahead Restore Manifest persistence, core Quarantine execution, core Undo Quarantine, fixture-only WPF Quarantine execution, WPF undo for the current fixture execution, Quarantine Manifest Discovery, Selected Restore Manifest Review, Selected Restore Confirmation Gate, Fixture-only Selected Restore Execution, and Restore Readiness Preview. Real-profile WPF Quarantine execution, real-profile WPF Undo Quarantine, permanent deletion, and persisted cleanup history remain unavailable. Fresh-thread handoff notes and a startup prompt live in `docs/codex/thread-handoff.md`.
 
 ## Next recommended work
 
@@ -4214,6 +4214,10 @@ Implementation:
 Verification:
 
 - `dotnet run --project tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj` passed.
+- `dotnet run --project tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj --no-build` passed.
+- `dotnet run --project tests\WindowsFileCleaner.Tests\WindowsFileCleaner.Tests.csproj --no-build` passed.
+- `dotnet build WindowsFileCleaner.sln --no-restore` passed with 0 warnings and 0 errors after rerunning by itself.
+- `git -c safe.directory='D:/Codex/Windows File Cleaner' diff --check` passed; Git printed line-ending normalization warnings for touched files but no whitespace errors.
 - `dotnet build WindowsFileCleaner.sln --no-restore` passed with 0 warnings and 0 errors.
 - `dotnet run --project tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj --no-build` passed.
 - `git -c safe.directory='D:/Codex/Windows File Cleaner' diff --check` passed; Git printed line-ending normalization warnings for touched files but no whitespace errors.
@@ -4640,3 +4644,44 @@ Rejected ideas buffer:
 
 - Do not treat Shortlist Safety Mix as Quarantine Preview readiness.
 - Do not show shortlisted row sizes as confirmed storage savings.
+
+### 2026-05-29: Add Scan Gate Discoverability Polish
+
+Status: completed
+
+Evidence:
+
+- The real-profile scan gate was functionally correct, but its visible locked/ready state relied on quiet checkbox and gray text.
+- Handoff guidance lists scan-gate discoverability as preferred safety work before real cleanup execution.
+- WPF startup tests already cover real-profile and fixture gate states.
+
+Implementation:
+
+- Added a visible `ScanGateSummaryText` line in the WPF header.
+- Added `Scan` button tooltip wording for locked real-profile, acknowledged real-profile, fixture, and custom/invalid states.
+- Kept the existing real-profile acknowledgement requirement, scan-start enforcement, and fixture/custom behavior unchanged.
+- Kept all behavior read-only; no scan was run against the real profile and no cleanup execution was added.
+
+Verification:
+
+- `dotnet run --project tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj` passed.
+
+Docs updated:
+
+- `README.md`
+- `docs/domain/context.md`
+- `docs/features/2026-05-29-scan-gate-discoverability-polish.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No ADR added. This is a reversible WPF wording/discoverability improvement with no persistence, cleanup execution, restore, security, deployment, or data-model change.
+
+Open questions:
+
+- Does the extra header line fit comfortably during the next visible fixture and real-profile review pass?
+
+Rejected ideas buffer:
+
+- Do not replace the acknowledgement checkbox with a modal until manual review proves the inline gate is still easy to miss.
+- Do not run preflight from the WPF app as part of scan-gate polish.
