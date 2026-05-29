@@ -9,7 +9,7 @@ Use this when starting a fresh Codex thread for this repository.
 - Repo: `D:\Codex\Windows File Cleaner`
 - GitHub: `Smellybum1/Windows-File-Cleaner`
 - Branch: `main`
-- Latest completed packet: Safety Summary Header Styling
+- Latest completed packet: Full Local MVP Preflight After Safety Header Styling
 - Current app stack: C# / WPF / .NET 8
 - Desktop shortcut target: `D:\Codex\Windows File Cleaner\src\WindowsFileCleaner.App\bin\Debug\net8.0-windows\WindowsFileCleaner.App.exe`
 
@@ -110,6 +110,7 @@ Fixture-only cleanup execution exists for synthetic Cleanup Scopes. Real-profile
 - Quarantine Preview Status Help Text mirrored dynamic inline preview wording into tooltip and automation help text with read-only, no-create, no-move, no-restore, no-delete, and not-cleanup-approval boundaries.
 - Quarantine Shortlist Header Styling added lightweight closed-header styling for neutral, needs-preview/blocked/stale, preview-ready/undo-completed, and current-quarantined states without changing cleanup execution or restore availability.
 - Safety Summary Header Styling added lightweight closed-header styling for waiting/neutral and safety-signal warning states without changing scan behavior, cleanup execution, or scan gates.
+- Full Local MVP Preflight After Safety Header Styling passed `Invoke-MvpPreflight.ps1`; restore, build, core tests, WPF app tests, fixture `-WhatIf`, and whitespace diff check all passed without scanning or modifying real user files.
 
 ## Best next work
 
