@@ -96,6 +96,18 @@ internal sealed class MainWindowSmokeTests
                 && window.QuarantineRootBoxAutomationHelpTextValue.Contains("move files", StringComparison.OrdinalIgnoreCase),
                 "Quarantine Root text box automation help text should explain preview-only and no-file-modified behavior.");
             Assert(window.CanDiscoverQuarantineManifests, "MainWindow should allow read-only Quarantine Manifest Discovery before scanning.");
+            Assert(
+                window.DiscoverQuarantineManifestsButtonToolTipValue.Contains("action-scoped Restore Manifests", StringComparison.OrdinalIgnoreCase)
+                && window.DiscoverQuarantineManifestsButtonToolTipValue.Contains("read-only", StringComparison.OrdinalIgnoreCase)
+                && window.DiscoverQuarantineManifestsButtonToolTipValue.Contains("does not restore", StringComparison.OrdinalIgnoreCase)
+                && window.DiscoverQuarantineManifestsButtonToolTipValue.Contains("cleanup history", StringComparison.OrdinalIgnoreCase),
+                "Quarantine Manifest Discovery tooltip should explain read-only discovery boundaries.");
+            Assert(
+                window.DiscoverQuarantineManifestsButtonAutomationHelpTextValue.Contains("action-scoped Restore Manifests", StringComparison.OrdinalIgnoreCase)
+                && window.DiscoverQuarantineManifestsButtonAutomationHelpTextValue.Contains("read-only", StringComparison.OrdinalIgnoreCase)
+                && window.DiscoverQuarantineManifestsButtonAutomationHelpTextValue.Contains("does not restore", StringComparison.OrdinalIgnoreCase)
+                && window.DiscoverQuarantineManifestsButtonAutomationHelpTextValue.Contains("cleanup history", StringComparison.OrdinalIgnoreCase),
+                "Quarantine Manifest Discovery automation help text should explain read-only discovery boundaries.");
             Assert(window.CanPreviewRestoreReadiness, "MainWindow should allow read-only Restore Readiness Preview before scanning.");
             Assert(
                 window.PreviewRestoreReadinessButtonText == "Preview all-manifest readiness",
@@ -109,6 +121,18 @@ internal sealed class MainWindowSmokeTests
                 && window.PreviewRestoreReadinessButtonAutomationHelpTextValue.Contains("no files are restored", StringComparison.OrdinalIgnoreCase),
                 "All-manifest readiness automation help text should explain read-only scope and no-restore behavior.");
             Assert(!window.CanSelectDiscoveredRestoreManifest, "MainWindow should not enable Restore Manifest selection before discovery.");
+            Assert(
+                window.RestoreManifestSelectionBoxToolTipValue.Contains("one discovered Restore Manifest", StringComparison.OrdinalIgnoreCase)
+                && window.RestoreManifestSelectionBoxToolTipValue.Contains("not restore approval", StringComparison.OrdinalIgnoreCase)
+                && window.RestoreManifestSelectionBoxToolTipValue.Contains("does not move", StringComparison.OrdinalIgnoreCase)
+                && window.RestoreManifestSelectionBoxToolTipValue.Contains("write manifests", StringComparison.OrdinalIgnoreCase),
+                "Restore Manifest selection tooltip should explain selected review and approval boundaries.");
+            Assert(
+                window.RestoreManifestSelectionBoxAutomationHelpTextValue.Contains("one discovered Restore Manifest", StringComparison.OrdinalIgnoreCase)
+                && window.RestoreManifestSelectionBoxAutomationHelpTextValue.Contains("not restore approval", StringComparison.OrdinalIgnoreCase)
+                && window.RestoreManifestSelectionBoxAutomationHelpTextValue.Contains("does not move", StringComparison.OrdinalIgnoreCase)
+                && window.RestoreManifestSelectionBoxAutomationHelpTextValue.Contains("write manifests", StringComparison.OrdinalIgnoreCase),
+                "Restore Manifest selection automation help text should explain selected review and approval boundaries.");
             Assert(!window.CanPreviewSelectedRestoreManifestReadiness, "MainWindow should not enable selected Restore Manifest review before discovery.");
             Assert(
                 window.PreviewSelectedRestoreManifestReadinessButtonText == "Preview selected manifest readiness",

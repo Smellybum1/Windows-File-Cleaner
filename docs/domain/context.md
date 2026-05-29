@@ -2737,6 +2737,7 @@ It is discovery and status review only, not Undo Quarantine execution and not pe
 - Keep discovery limited to `<quarantine-root>\actions\*\restore-manifest.json`.
 - Keep discovery itself status-only; Selected Restore Manifest Review and selected manifest readiness are separate read-only workflows until a restore execution design exists.
 - WPF discovery output should distinguish discovery from all-manifest restore execution while pointing fixture-only restore toward the selected restore gate.
+- WPF discovery control tooltip and automation help text should state that discovery is read-only and does not restore, move, delete, clean up folders, or create cleanup history.
 - Do not call this cleanup history.
 
 ### Restore Manifest Summary
@@ -2826,6 +2827,7 @@ It is not approval to restore and does not restore files.
 - Use `SelectedRestoreManifestReview` and `SelectedRestoreManifestReviewBuilder`.
 - Keep selection read-only and derived from current discovery results.
 - Keep selected manifest readiness separate from approval and execution.
+- Keep the WPF selection control tooltip and automation help text explicit that selection focuses one discovered Restore Manifest for read-only review and does not move, restore, delete, write manifests, or clean up folders.
 - Keep the WPF selected manifest readiness tooltip and automation help text explicit that the action is selected-only and not restore approval.
 - Do not call `UndoQuarantineExecutor.Undo`.
 

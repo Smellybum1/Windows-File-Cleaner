@@ -695,6 +695,9 @@
                                 <Button x:Name="DiscoverQuarantineManifestsButton"
                                         Content="Discover manifests"
                                         MinWidth="145"
+                                        ToolTip="Discovers action-scoped Restore Manifests under the selected Quarantine Root; discovery is read-only and does not restore, move, delete, clean up folders, or create cleanup history."
+                                        AutomationProperties.HelpText="Discovers action-scoped Restore Manifests under the selected Quarantine Root; discovery is read-only and does not restore, move, delete, clean up folders, or create cleanup history."
+                                        ToolTipService.ShowOnDisabled="True"
                                         Click="DiscoverQuarantineManifestsButton_Click" />
                                 <Button x:Name="PreviewRestoreReadinessButton"
                                         Content="Preview all-manifest readiness"
@@ -713,6 +716,9 @@
                                           MinHeight="30"
                                           DisplayMemberPath="Label"
                                           IsEnabled="False"
+                                          ToolTip="Selects one discovered Restore Manifest for read-only review; selection is not restore approval and does not move, restore, delete, write manifests, or clean up folders."
+                                          AutomationProperties.HelpText="Selects one discovered Restore Manifest for read-only review; selection is not restore approval and does not move, restore, delete, write manifests, or clean up folders."
+                                          ToolTipService.ShowOnDisabled="True"
                                           SelectionChanged="RestoreManifestSelectionBox_SelectionChanged" />
                                 <Button x:Name="PreviewSelectedRestoreManifestReadinessButton"
                                         Content="Preview selected manifest readiness"

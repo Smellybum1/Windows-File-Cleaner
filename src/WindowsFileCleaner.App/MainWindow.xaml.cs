@@ -321,6 +321,10 @@ public partial class MainWindow : Window
 
     public bool CanDiscoverQuarantineManifests => DiscoverQuarantineManifestsButton.IsEnabled;
 
+    public string DiscoverQuarantineManifestsButtonToolTipValue => DiscoverQuarantineManifestsButton.ToolTip?.ToString() ?? "";
+
+    public string DiscoverQuarantineManifestsButtonAutomationHelpTextValue => AutomationProperties.GetHelpText(DiscoverQuarantineManifestsButton);
+
     public bool CanPreviewRestoreReadiness => PreviewRestoreReadinessButton.IsEnabled;
 
     public string PreviewRestoreReadinessButtonText => PreviewRestoreReadinessButton.Content?.ToString() ?? "";
@@ -330,6 +334,10 @@ public partial class MainWindow : Window
     public string PreviewRestoreReadinessButtonAutomationHelpTextValue => AutomationProperties.GetHelpText(PreviewRestoreReadinessButton);
 
     public bool CanSelectDiscoveredRestoreManifest => RestoreManifestSelectionBox.IsEnabled;
+
+    public string RestoreManifestSelectionBoxToolTipValue => RestoreManifestSelectionBox.ToolTip?.ToString() ?? "";
+
+    public string RestoreManifestSelectionBoxAutomationHelpTextValue => AutomationProperties.GetHelpText(RestoreManifestSelectionBox);
 
     public bool CanPreviewSelectedRestoreManifestReadiness => PreviewSelectedRestoreManifestReadinessButton.IsEnabled;
 
