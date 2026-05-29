@@ -171,6 +171,7 @@ What changed:
 - The readout counts the current full matched set by rows, Likely safe, Caution, High risk, Quarantine candidates, Protected, Access issues, and No category.
 - The readout recomputes through the existing filter-summary refresh path, so searches, filters, `Show children`, and `Show descendants` update it.
 - Added smoke coverage for startup placeholder text, scan-time summary, descendant focus updates, and prefixed search recomputation.
+- Later packet `2026-05-30-review-mix-help-text.md` mirrored Matched Review Mix into tooltip and automation help text with no-rescan/no-file-modified/no-storage-savings-proof/not-cleanup-approval wording and full-matched-set scope.
 
 Files changed:
 

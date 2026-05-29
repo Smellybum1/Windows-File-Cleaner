@@ -162,7 +162,9 @@
                     <TextBlock x:Name="ReviewMixText"
                                Text="Review mix appears after a scan."
                                Foreground="#526171"
-                               TextWrapping="Wrap" />
+                               TextWrapping="Wrap"
+                               ToolTip="Review mix appears after a scan. Review Mix is read-only whole-scan review context; it does not rescan, modify files, prove storage savings, or approve cleanup. Largest rows are triage clues because recursive parent and child rows can overlap."
+                               AutomationProperties.HelpText="Review mix appears after a scan. Review Mix is read-only whole-scan review context; it does not rescan, modify files, prove storage savings, or approve cleanup. Largest rows are triage clues because recursive parent and child rows can overlap." />
                     <TextBlock x:Name="SafetySummaryText"
                                Text="Safety summary appears after a scan."
                                Foreground="#526171"
@@ -286,7 +288,9 @@
                            Foreground="#526171"
                            Margin="6,0,0,6"
                            Text="Matched review mix appears after a scan."
-                           TextWrapping="Wrap" />
+                           TextWrapping="Wrap"
+                           ToolTip="Matched review mix appears after a scan. Matched Review Mix is read-only active-review-lens context; it does not rescan, modify files, prove storage savings, or approve cleanup. Counts cover all matched rows, not only the visible display window."
+                           AutomationProperties.HelpText="Matched review mix appears after a scan. Matched Review Mix is read-only active-review-lens context; it does not rescan, modify files, prove storage savings, or approve cleanup. Counts cover all matched rows, not only the visible display window." />
                 <TextBlock x:Name="ReviewSizeNoteText"
                            Foreground="#526171"
                            Margin="6,0,0,8"

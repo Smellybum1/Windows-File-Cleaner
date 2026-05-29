@@ -718,6 +718,8 @@ internal sealed class MainWindowSmokeTests
             Assert(
                 window.MatchedReviewMixTextValue.Contains("appears after a scan", StringComparison.OrdinalIgnoreCase),
                 "Matched Review Mix should stay in placeholder state before a scan.");
+            AssertReviewMixHelpText(window, "Review Mix help text should expose the startup whole-scan boundary.");
+            AssertMatchedReviewMixHelpText(window, "Matched Review Mix help text should expose the startup active-lens boundary.");
             Assert(window.SearchHelpToolTipValue.Contains("path:", StringComparison.OrdinalIgnoreCase), "Search tooltip should show field-prefix examples.");
             Assert(window.SearchHelpToolTipValue.Contains("parent:", StringComparison.OrdinalIgnoreCase), "Search tooltip should include parent-prefix guidance.");
             Assert(window.SearchHelpToolTipValue.Contains("under:", StringComparison.OrdinalIgnoreCase), "Search tooltip should include under-prefix descendant guidance.");
@@ -864,6 +866,7 @@ internal sealed class MainWindowSmokeTests
             Assert(window.FileCountTextValue != "-", "File count card should be populated after scan.");
             Assert(window.AccessIssueCountTextValue == "0", "Synthetic fixture should scan without access issues.");
             Assert(window.ReviewMixTextValue.Contains("Quarantine candidates", StringComparison.OrdinalIgnoreCase), "Review Mix should summarize quarantine candidates.");
+            AssertReviewMixHelpText(window, "Review Mix help text should mirror the completed scan review boundary.");
             Assert(window.SafetySummaryTextValue.Contains("No files were modified", StringComparison.OrdinalIgnoreCase), "Safety Summary should state the read-only boundary.");
             Assert(window.SafetySummaryTextValue.Contains("Candidate examples:", StringComparison.OrdinalIgnoreCase), "Safety Summary should show bounded quarantine candidate examples.");
             Assert(window.SafetySummaryTextValue.Contains(@"Downloads\old-installer.msi", StringComparison.OrdinalIgnoreCase), "Safety Summary candidate examples should include relative candidate paths.");
@@ -879,6 +882,7 @@ internal sealed class MainWindowSmokeTests
                 && window.MatchedReviewMixTextValue.Contains("No category", StringComparison.OrdinalIgnoreCase)
                 && window.MatchedReviewMixTextValue.Contains("not cleanup approval", StringComparison.OrdinalIgnoreCase),
                 "Matched Review Mix should summarize the current matched rows without implying cleanup approval.");
+            AssertMatchedReviewMixHelpText(window, "Matched Review Mix help text should mirror the completed active-lens boundary.");
             Assert(window.ReviewSizeNoteTextValue.Contains("parent and child rows can overlap", StringComparison.OrdinalIgnoreCase), "Review size note should explain recursive row overlap.");
             Assert(window.ReviewSizeNoteTextValue.Contains("not storage savings", StringComparison.OrdinalIgnoreCase), "Review size note should avoid treating row sizes as savings.");
             Assert(
@@ -977,6 +981,7 @@ internal sealed class MainWindowSmokeTests
                 && window.MatchedReviewMixTextValue.Contains("Review context only", StringComparison.OrdinalIgnoreCase)
                 && window.MatchedReviewMixTextValue.Contains("Quarantine candidates", StringComparison.OrdinalIgnoreCase),
                 "Selected-folder descendant focus should update Matched Review Mix for the focused subtree.");
+            AssertMatchedReviewMixHelpText(window, "Matched Review Mix help text should refresh after descendant focus.");
             Assert(window.DisplayedRows.Count > 1, "Fixture AppData descendant focus should show nested descendant rows.");
             Assert(
                 window.DisplayedRows.All(row =>
@@ -1040,6 +1045,7 @@ internal sealed class MainWindowSmokeTests
             Assert(
                 window.MatchedReviewMixTextValue.Contains("No category 0", StringComparison.OrdinalIgnoreCase),
                 "Matched Review Mix should recompute after prefixed search narrows the active review lens.");
+            AssertMatchedReviewMixHelpText(window, "Matched Review Mix help text should refresh after prefixed search.");
             Assert(
                 window.DisplayedRows.All(row => row.Categories.Contains("Python package cache", StringComparison.OrdinalIgnoreCase)),
                 "Category-prefixed search should only show matching category rows.");
@@ -2245,6 +2251,52 @@ internal sealed class MainWindowSmokeTests
             && window.ShortlistSafetyMixAutomationHelpTextValue.Contains("storage savings", StringComparison.OrdinalIgnoreCase)
             && window.ShortlistSafetyMixAutomationHelpTextValue.Contains("approve cleanup", StringComparison.OrdinalIgnoreCase),
             message + " Automation help text should mirror the current safety mix and review boundary.");
+    }
+
+    private static void AssertReviewMixHelpText(MainWindow window, string message)
+    {
+        Assert(
+            window.ReviewMixToolTipValue.Contains(window.ReviewMixTextValue, StringComparison.OrdinalIgnoreCase)
+            && window.ReviewMixToolTipValue.Contains("read-only whole-scan review context", StringComparison.OrdinalIgnoreCase)
+            && window.ReviewMixToolTipValue.Contains("does not rescan", StringComparison.OrdinalIgnoreCase)
+            && window.ReviewMixToolTipValue.Contains("modify files", StringComparison.OrdinalIgnoreCase)
+            && window.ReviewMixToolTipValue.Contains("storage savings", StringComparison.OrdinalIgnoreCase)
+            && window.ReviewMixToolTipValue.Contains("approve cleanup", StringComparison.OrdinalIgnoreCase)
+            && window.ReviewMixToolTipValue.Contains("triage clues", StringComparison.OrdinalIgnoreCase),
+            message + " Tooltip should mirror the current Review Mix and whole-scan boundary.");
+        Assert(
+            window.ReviewMixAutomationHelpTextValue.Contains(window.ReviewMixTextValue, StringComparison.OrdinalIgnoreCase)
+            && window.ReviewMixAutomationHelpTextValue.Contains("read-only whole-scan review context", StringComparison.OrdinalIgnoreCase)
+            && window.ReviewMixAutomationHelpTextValue.Contains("does not rescan", StringComparison.OrdinalIgnoreCase)
+            && window.ReviewMixAutomationHelpTextValue.Contains("modify files", StringComparison.OrdinalIgnoreCase)
+            && window.ReviewMixAutomationHelpTextValue.Contains("storage savings", StringComparison.OrdinalIgnoreCase)
+            && window.ReviewMixAutomationHelpTextValue.Contains("approve cleanup", StringComparison.OrdinalIgnoreCase)
+            && window.ReviewMixAutomationHelpTextValue.Contains("triage clues", StringComparison.OrdinalIgnoreCase),
+            message + " Automation help text should mirror the current Review Mix and whole-scan boundary.");
+    }
+
+    private static void AssertMatchedReviewMixHelpText(MainWindow window, string message)
+    {
+        Assert(
+            window.MatchedReviewMixToolTipValue.Contains(window.MatchedReviewMixTextValue, StringComparison.OrdinalIgnoreCase)
+            && window.MatchedReviewMixToolTipValue.Contains("read-only active-review-lens context", StringComparison.OrdinalIgnoreCase)
+            && window.MatchedReviewMixToolTipValue.Contains("does not rescan", StringComparison.OrdinalIgnoreCase)
+            && window.MatchedReviewMixToolTipValue.Contains("modify files", StringComparison.OrdinalIgnoreCase)
+            && window.MatchedReviewMixToolTipValue.Contains("storage savings", StringComparison.OrdinalIgnoreCase)
+            && window.MatchedReviewMixToolTipValue.Contains("approve cleanup", StringComparison.OrdinalIgnoreCase)
+            && window.MatchedReviewMixToolTipValue.Contains("all matched rows", StringComparison.OrdinalIgnoreCase)
+            && window.MatchedReviewMixToolTipValue.Contains("visible display window", StringComparison.OrdinalIgnoreCase),
+            message + " Tooltip should mirror the current Matched Review Mix and active-lens boundary.");
+        Assert(
+            window.MatchedReviewMixAutomationHelpTextValue.Contains(window.MatchedReviewMixTextValue, StringComparison.OrdinalIgnoreCase)
+            && window.MatchedReviewMixAutomationHelpTextValue.Contains("read-only active-review-lens context", StringComparison.OrdinalIgnoreCase)
+            && window.MatchedReviewMixAutomationHelpTextValue.Contains("does not rescan", StringComparison.OrdinalIgnoreCase)
+            && window.MatchedReviewMixAutomationHelpTextValue.Contains("modify files", StringComparison.OrdinalIgnoreCase)
+            && window.MatchedReviewMixAutomationHelpTextValue.Contains("storage savings", StringComparison.OrdinalIgnoreCase)
+            && window.MatchedReviewMixAutomationHelpTextValue.Contains("approve cleanup", StringComparison.OrdinalIgnoreCase)
+            && window.MatchedReviewMixAutomationHelpTextValue.Contains("all matched rows", StringComparison.OrdinalIgnoreCase)
+            && window.MatchedReviewMixAutomationHelpTextValue.Contains("visible display window", StringComparison.OrdinalIgnoreCase),
+            message + " Automation help text should mirror the current Matched Review Mix and active-lens boundary.");
     }
 
     private static QuarantineExecutionResult CreateExecutedRestoreManifest(

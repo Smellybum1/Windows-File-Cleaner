@@ -247,6 +247,10 @@ public partial class MainWindow : Window
 
     public string ReviewMixTextValue => ReviewMixText.Text;
 
+    public string ReviewMixToolTipValue => ReviewMixText.ToolTip?.ToString() ?? "";
+
+    public string ReviewMixAutomationHelpTextValue => AutomationProperties.GetHelpText(ReviewMixText);
+
     public string SafetySummaryTextValue => SafetySummaryText.Text;
 
     public string SafetySummaryHeaderTextValue => SafetySummaryHeaderText.Text;
@@ -284,6 +288,10 @@ public partial class MainWindow : Window
     public string FilterSummaryTextValue => FilterSummaryText.Text;
 
     public string MatchedReviewMixTextValue => MatchedReviewMixText.Text;
+
+    public string MatchedReviewMixToolTipValue => MatchedReviewMixText.ToolTip?.ToString() ?? "";
+
+    public string MatchedReviewMixAutomationHelpTextValue => AutomationProperties.GetHelpText(MatchedReviewMixText);
 
     public string ReviewSizeNoteTextValue => ReviewSizeNoteText.Text;
 
@@ -2431,7 +2439,7 @@ public partial class MainWindow : Window
         if (_currentReview is null)
         {
             FilterSummaryText.Text = "No scan loaded";
-            MatchedReviewMixText.Text = "Matched review mix appears after a scan.";
+            SetMatchedReviewMixText("Matched review mix appears after a scan.");
             UpdateShortlistSafetyMix();
             UpdateReviewWindowControls(0);
             return;
@@ -2465,7 +2473,7 @@ public partial class MainWindow : Window
         var accessIssueCount = matchedEntries.Count(row => !row.Entry.IsAccessible || row.Entry.BloatCategories.Contains(BloatCategory.AccessIssue));
         var uncategorizedCount = matchedEntries.Count(row => row.Entry.BloatCategories.Count == 0);
 
-        MatchedReviewMixText.Text =
+        SetMatchedReviewMixText(
             $"Matched review mix: {matchedEntries.Count:N0} rows | " +
             $"Likely safe {likelySafeCount:N0} | " +
             $"Caution {cautionCount:N0} | " +
@@ -2473,7 +2481,20 @@ public partial class MainWindow : Window
             $"Quarantine candidates {quarantineCandidateCount:N0} | " +
             $"Protected {protectedLocationCount:N0} | " +
             $"Access issues {accessIssueCount:N0} | " +
-            $"No category {uncategorizedCount:N0}. Review context only, not cleanup approval.";
+            $"No category {uncategorizedCount:N0}. Review context only, not cleanup approval.");
+    }
+
+    private void SetMatchedReviewMixText(string text)
+    {
+        MatchedReviewMixText.Text = text;
+        var helpText = FormatMatchedReviewMixHelpText(text);
+        MatchedReviewMixText.ToolTip = helpText;
+        AutomationProperties.SetHelpText(MatchedReviewMixText, helpText);
+    }
+
+    private static string FormatMatchedReviewMixHelpText(string text)
+    {
+        return $"{text} Matched Review Mix is read-only active-review-lens context; it does not rescan, modify files, prove storage savings, or approve cleanup. Counts cover all matched rows, not only the visible display window.";
     }
 
     private void UpdateShortlistSafetyMix()
@@ -3600,18 +3621,31 @@ public partial class MainWindow : Window
     {
         if (_currentReview is null)
         {
-            ReviewMixText.Text = "Review mix appears after a scan.";
+            SetReviewMixText("Review mix appears after a scan.");
             return;
         }
 
         var summary = _currentReview.Summary;
-        ReviewMixText.Text =
+        SetReviewMixText(
             $"Review mix: " +
             $"Likely safe {summary.LikelySafeCount:N0} (largest {ByteSizeFormatter.Format(summary.LikelySafeLargestEntryBytes)}) | " +
             $"Caution {summary.CautionCount:N0} (largest {ByteSizeFormatter.Format(summary.CautionLargestEntryBytes)}) | " +
             $"High risk {summary.HighRiskCount:N0} (largest {ByteSizeFormatter.Format(summary.HighRiskLargestEntryBytes)}) | " +
             $"Quarantine candidates {summary.QuarantineCandidateCount:N0} (largest {ByteSizeFormatter.Format(summary.QuarantineCandidateLargestEntryBytes)}) | " +
-            $"Access issues {summary.AccessIssueCount:N0}";
+            $"Access issues {summary.AccessIssueCount:N0}");
+    }
+
+    private void SetReviewMixText(string text)
+    {
+        ReviewMixText.Text = text;
+        var helpText = FormatReviewMixHelpText(text);
+        ReviewMixText.ToolTip = helpText;
+        AutomationProperties.SetHelpText(ReviewMixText, helpText);
+    }
+
+    private static string FormatReviewMixHelpText(string text)
+    {
+        return $"{text} Review Mix is read-only whole-scan review context; it does not rescan, modify files, prove storage savings, or approve cleanup. Largest rows are triage clues because recursive parent and child rows can overlap.";
     }
 
     private void UpdateSafetySummary()
