@@ -629,6 +629,14 @@ internal sealed class MainWindowSmokeTests
                 && window.ScanGateSummaryTextValue.Contains("run MVP preflight", StringComparison.OrdinalIgnoreCase)
                 && window.ScanGateSummaryTextValue.Contains("tick the acknowledgement", StringComparison.OrdinalIgnoreCase),
                 "Real-profile scan gate summary should make the locked state and next action obvious.");
+            AssertScanGateSummaryHelpCue(
+                window,
+                "Locked real-profile scan gate summary help cue should mirror the gate boundary.",
+                "run preflight",
+                "create fixtures",
+                "start scanning by itself",
+                "persist approval",
+                "approve cleanup");
             Assert(
                 window.ScanButtonToolTipValue.Contains("locked", StringComparison.OrdinalIgnoreCase)
                 && window.ScanButtonToolTipValue.Contains("acknowledged", StringComparison.OrdinalIgnoreCase),
@@ -650,6 +658,15 @@ internal sealed class MainWindowSmokeTests
             Assert(
                 window.ScanGateSummaryTextValue.Contains("cleanup execution remains unavailable", StringComparison.OrdinalIgnoreCase),
                 "Acknowledged real-profile scan gate summary should keep execution unavailable.");
+            AssertScanGateSummaryHelpCue(
+                window,
+                "Acknowledged real-profile scan gate summary help cue should update with the ready state.",
+                "Scan ready for real profile",
+                "run preflight",
+                "create fixtures",
+                "start scanning by itself",
+                "persist approval",
+                "approve cleanup");
             Assert(
                 window.ScanButtonToolTipValue.Contains("read-only Storage Scan", StringComparison.OrdinalIgnoreCase)
                 && window.ScanButtonToolTipValue.Contains("cleanup execution remains unavailable", StringComparison.OrdinalIgnoreCase),
@@ -784,6 +801,15 @@ internal sealed class MainWindowSmokeTests
             Assert(
                 window.ScanGateSummaryTextValue.Contains("fixture cleanup actions stay gated", StringComparison.OrdinalIgnoreCase),
                 "Fixture scan gate summary should keep later fixture cleanup actions behind gates.");
+            AssertScanGateSummaryHelpCue(
+                window,
+                "Fixture scan gate summary help cue should explain the read-only and later-gate boundary.",
+                "Scan ready for fixture",
+                "start scanning by itself",
+                "create fixtures",
+                "move files",
+                "approve cleanup",
+                "preview and exact confirmation");
             Assert(
                 window.ScanButtonToolTipValue.Contains("read-only Storage Scan", StringComparison.OrdinalIgnoreCase)
                 && window.ScanButtonToolTipValue.Contains("preview and exact confirmation", StringComparison.OrdinalIgnoreCase),
@@ -824,6 +850,14 @@ internal sealed class MainWindowSmokeTests
                 window.ScanGateSummaryTextValue.Contains("Scan ready for custom Cleanup Scope", StringComparison.OrdinalIgnoreCase)
                 && window.ScanGateSummaryTextValue.Contains("cleanup execution remains unavailable", StringComparison.OrdinalIgnoreCase),
                 "Custom scan gate summary should keep cleanup execution unavailable.");
+            AssertScanGateSummaryHelpCue(
+                window,
+                "Custom scan gate summary help cue should explain read-only scan readiness and unavailable cleanup execution.",
+                "Scan ready for custom Cleanup Scope",
+                "start scanning by itself",
+                "move files",
+                "approve cleanup",
+                "Cleanup execution remains unavailable");
             Assert(
                 window.ScanButtonToolTipValue.Contains("read-only Storage Scan", StringComparison.OrdinalIgnoreCase)
                 && window.ScanButtonToolTipValue.Contains("cleanup execution remains unavailable", StringComparison.OrdinalIgnoreCase),
@@ -2240,7 +2274,7 @@ internal sealed class MainWindowSmokeTests
     private static void AssertHoverableHelpCueAffordances(MainWindow window, string message)
     {
         var affordances = window.HoverableHelpCueAffordances;
-        Assert(affordances.Count == 8, message + " Expected all eight circular help cues to be tracked.");
+        Assert(affordances.Count == 9, message + " Expected all nine circular help cues to be tracked.");
 
         foreach (var affordance in affordances)
         {
@@ -2250,6 +2284,33 @@ internal sealed class MainWindowSmokeTests
             Assert(
                 affordance.InitialShowDelay == 250,
                 $"{message} {affordance.Name} should use a prompt tooltip initial delay.");
+        }
+    }
+
+    private static void AssertScanGateSummaryHelpCue(MainWindow window, string message, params string[] expectedSnippets)
+    {
+        Assert(
+            window.ScanGateSummaryToolTipValue.Contains(window.ScanGateSummaryTextValue, StringComparison.OrdinalIgnoreCase)
+            && window.ScanGateSummaryToolTipValue.Contains("read-only", StringComparison.OrdinalIgnoreCase),
+            message + " Summary tooltip should mirror the visible scan-gate state and read-only boundary.");
+        Assert(
+            string.Equals(window.ScanGateSummaryAutomationHelpTextValue, window.ScanGateSummaryToolTipValue, StringComparison.Ordinal),
+            message + " Summary automation help text should mirror the summary tooltip.");
+        Assert(
+            window.ScanGateSummaryHelpCueAutomationNameValue.Contains("Scan gate summary help cue", StringComparison.OrdinalIgnoreCase),
+            message + " Help cue should have a specific automation name.");
+        Assert(
+            string.Equals(window.ScanGateSummaryHelpCueToolTipValue, window.ScanGateSummaryToolTipValue, StringComparison.Ordinal),
+            message + " Help cue tooltip should mirror the summary tooltip.");
+        Assert(
+            string.Equals(window.ScanGateSummaryHelpCueAutomationHelpTextValue, window.ScanGateSummaryAutomationHelpTextValue, StringComparison.Ordinal),
+            message + " Help cue automation help text should mirror the summary help text.");
+
+        foreach (var expectedSnippet in expectedSnippets)
+        {
+            Assert(
+                window.ScanGateSummaryHelpCueToolTipValue.Contains(expectedSnippet, StringComparison.OrdinalIgnoreCase),
+                message + $" Help cue tooltip should include '{expectedSnippet}'.");
         }
     }
 

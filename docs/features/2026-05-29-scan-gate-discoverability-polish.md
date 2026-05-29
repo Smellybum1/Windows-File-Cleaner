@@ -75,6 +75,7 @@ What changed:
 - Added `ScanGateSummaryText` to the WPF header.
 - Added `Scan` button tooltip wording for locked and ready states.
 - Added WPF test coverage for real-profile locked, real-profile acknowledged, and fixture-ready scan-gate discoverability.
+- Later packet `2026-05-30-scan-gate-summary-help-cue.md` added a visible circular `?` help cue beside the scan-gate summary and mirrored dynamic summary help text there.
 
 Tests run:
 
@@ -102,4 +103,4 @@ Open questions:
 
 Risky assumptions:
 
-- A summary line plus tooltip is enough discoverability until the next manual visible UI pass proves otherwise.
+- A summary line plus visible help cue is enough discoverability until the next manual visible UI pass proves otherwise.

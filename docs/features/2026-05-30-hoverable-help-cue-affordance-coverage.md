@@ -30,6 +30,7 @@ What changed:
 - Added a WPF smoke assertion that all seven circular `?` cues use the Help cursor and `250` ms tooltip initial delay.
 - Kept existing tooltip/help-text assertions and all runtime behavior unchanged.
 - Later packet `2026-05-30-real-profile-acknowledgement-help-cue.md` expanded the tracked cue list to eight by adding the real-profile acknowledgement cue.
+- Later packet `2026-05-30-scan-gate-summary-help-cue.md` expanded the tracked cue list to nine by adding the scan-gate summary cue.
 
 Tests run:
 

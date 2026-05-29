@@ -25,6 +25,7 @@ Fresh-thread handoff notes live in `docs/codex/thread-handoff.md`.
 - CSV exports write only to a path selected by the user.
 - Scan Report Export and review navigation controls use tooltips and automation help text to keep report-only, in-memory, no-rescan, and no-file-modified boundaries available.
 - Storage Review Filter buttons and Type, Size, and Category filters use tooltips and automation help text to keep review-only, no-rescan, no-file-modified, no-permission-change for Access issues, and not-cleanup-approval boundaries available.
+- Cleanup Scope Scan Gate status has a visible hoverable `?` help cue that mirrors the current locked/ready summary into tooltip/help text and keeps clear that the status is read-only, does not start scanning by itself, and does not approve cleanup.
 - The real-profile preflight and fixture-review acknowledgement has a visible hoverable `?` help cue that mirrors the acknowledgement tooltip/help text, stays hidden for fixture/custom scopes, and keeps clear that checking the box does not run preflight, create fixtures, start scanning, persist approval, or approve cleanup.
 - Review Mix and Matched Review Mix have visible hoverable `?` help cues that mirror their dynamic summary text into tooltips and automation help text so whole-scan and active-review-lens counts stay read-only review context, not rescans, file modification, storage-savings proof, or cleanup approval.
 - Safety Summary is collapsible, its header starts with the visible panel name, summarizes compact risk counts with lightweight neutral/warning styling, header tooltip/help text mirrors the summary and names the current header state, its visible `?` help cue mirrors the same header help text, and its review shortcuts use disabled-state tooltips and automation help text to keep read-only shortcut scope, no-rescan, no-file-modified, no-permission-change, no-link-following, and not-cleanup-approval boundaries available.
@@ -149,7 +150,7 @@ C:\Users\moxhe
 ```
 
 When the app is opened against the default real-profile Cleanup Scope, `Scan` stays disabled until you tick the preflight and fixture-review acknowledgement in the header.
-The header also shows a scan-gate status line and Scan button tooltip/automation help text so the locked or ready state is visible before scanning, with scope-specific wording for fixture, real-profile, and custom scopes.
+The header also shows a scan-gate status line with a hoverable `?` help cue, plus Scan button tooltip/automation help text, so the locked or ready state is visible before scanning, with scope-specific wording for fixture, real-profile, and custom scopes.
 
 ## Manual MVP Check
 
@@ -157,7 +158,7 @@ After the app opens:
 
 1. Confirm the scope box shows the intended Cleanup Scope; use `Browse...` if you want to choose a fixture or custom folder before scanning, and confirm its tooltip says browsing does not start a scan, bypass the real-profile gate, or approve cleanup.
 2. Confirm the Cleanup Scope Safety Note matches the path: fixture first for smoke testing, real profile only after preflight.
-3. For the real profile, confirm the scan-gate status says the scan is locked, then tick the acknowledgement that MVP preflight and fixture review were run; fixture scopes do not require this real-profile acknowledgement. The acknowledgement `?` help cue should mirror the checkbox tooltip/help text and keep clear that this is local acknowledgement only, not preflight execution, fixture creation, auto-scan, persistence, or cleanup approval.
+3. For the real profile, confirm the scan-gate status says the scan is locked and its `?` help cue mirrors the current locked/ready state without implying auto-scan or cleanup approval, then tick the acknowledgement that MVP preflight and fixture review were run; fixture scopes do not require this real-profile acknowledgement. The acknowledgement `?` help cue should mirror the checkbox tooltip/help text and keep clear that this is local acknowledgement only, not preflight execution, fixture creation, auto-scan, persistence, or cleanup approval.
 4. Click `Scan`; the `Cancel` tooltip/help text should keep clear that cancellation only requests stopping an in-progress read-only Storage Scan and does not move, delete, quarantine, restore, or approve cleanup.
 5. Confirm the status says no files were modified.
 6. Review the summary cards for total size, folders, files, and access issues.

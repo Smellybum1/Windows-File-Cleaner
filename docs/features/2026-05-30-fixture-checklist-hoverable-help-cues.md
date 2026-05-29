@@ -29,6 +29,7 @@ What changed:
 - Updated `Start-MvpFixtureReview.ps1` checklist lines for Review Mix, Matched Review Mix, Review Shortlist Safety Mix, Safety Summary header, Quarantine Shortlist header, inline Quarantine Preview readiness, and Review Grid Mode Status to call out hoverable `?` help cues.
 - Updated README fixture launcher wording to describe hoverable `?` help cues.
 - Recorded this wording alignment in the related fixture checklist and hoverable affordance feature briefs.
+- Later packet `2026-05-30-scan-gate-summary-help-cue.md` updated checklist item 1 to include the scan-gate summary `?` help cue.
 
 Tests run:
 

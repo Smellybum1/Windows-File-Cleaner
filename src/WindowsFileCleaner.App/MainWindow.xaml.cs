@@ -121,6 +121,16 @@ public partial class MainWindow : Window
 
     public string ScanGateSummaryTextValue => ScanGateSummaryText.Text;
 
+    public string ScanGateSummaryToolTipValue => ScanGateSummaryText.ToolTip?.ToString() ?? "";
+
+    public string ScanGateSummaryAutomationHelpTextValue => AutomationProperties.GetHelpText(ScanGateSummaryText);
+
+    public string ScanGateSummaryHelpCueToolTipValue => ScanGateSummaryHelpCue.ToolTip?.ToString() ?? "";
+
+    public string ScanGateSummaryHelpCueAutomationNameValue => AutomationProperties.GetName(ScanGateSummaryHelpCue);
+
+    public string ScanGateSummaryHelpCueAutomationHelpTextValue => AutomationProperties.GetHelpText(ScanGateSummaryHelpCue);
+
     public string ScanButtonToolTipValue => ScanButton.ToolTip?.ToString() ?? "";
 
     public string ScanButtonAutomationHelpTextValue => AutomationProperties.GetHelpText(ScanButton);
@@ -257,7 +267,8 @@ public partial class MainWindow : Window
         GetHelpCueAffordance("Quarantine Shortlist header", QuarantineShortlistHeaderHelpCue),
         GetHelpCueAffordance("Inline Quarantine Preview status", QuarantinePreviewStatusHelpCue),
         GetHelpCueAffordance("Review Grid Mode Status", ReviewGridModeHelpCue),
-        GetHelpCueAffordance("Real-profile preflight acknowledgement", RealProfilePreflightHelpCue)
+        GetHelpCueAffordance("Real-profile preflight acknowledgement", RealProfilePreflightHelpCue),
+        GetHelpCueAffordance("Scan gate summary", ScanGateSummaryHelpCue)
     ];
 
     public string? ContentsColumnSortMemberPath => ResultsGrid.Columns
@@ -1642,7 +1653,8 @@ public partial class MainWindow : Window
         var note = CleanupScopeSafetyNoteBuilder.Build(ScopePathBox.Text);
         var scanGate = CleanupScopeScanGateBuilder.Build(ScopePathBox.Text, RealProfilePreflightCheckBox.IsChecked == true);
         ScopeSafetyNoteText.Text = $"{note.Label}: {note.Message}";
-        ScanGateSummaryText.Text = FormatScanGateSummary(note, scanGate);
+        var scanGateSummary = FormatScanGateSummary(note, scanGate);
+        ScanGateSummaryText.Text = scanGateSummary;
         ScanGateSummaryText.Foreground = scanGate.CanScan
             ? System.Windows.Media.Brushes.DarkGreen
             : System.Windows.Media.Brushes.DarkGoldenrod;
@@ -1650,6 +1662,11 @@ public partial class MainWindow : Window
         var scanButtonHelpText = FormatScanButtonToolTip(note, scanGate);
         ScanButton.ToolTip = scanButtonHelpText;
         AutomationProperties.SetHelpText(ScanButton, scanButtonHelpText);
+        var scanGateSummaryHelpText = FormatScanGateSummaryHelpText(scanGateSummary, note, scanGate);
+        ScanGateSummaryText.ToolTip = scanGateSummaryHelpText;
+        AutomationProperties.SetHelpText(ScanGateSummaryText, scanGateSummaryHelpText);
+        ScanGateSummaryHelpCue.ToolTip = scanGateSummaryHelpText;
+        AutomationProperties.SetHelpText(ScanGateSummaryHelpCue, scanGateSummaryHelpText);
         RealProfilePreflightPanel.Visibility = note.IsRealUserProfileScope ? Visibility.Visible : Visibility.Collapsed;
         RealProfilePreflightCheckBox.IsEnabled = !_isScanning && note.IsRealUserProfileScope;
         ScanButton.IsEnabled = !_isScanning && scanGate.CanScan;
@@ -1678,6 +1695,22 @@ public partial class MainWindow : Window
         }
 
         return "Scan waiting for a valid Cleanup Scope.";
+    }
+
+    private static string FormatScanGateSummaryHelpText(
+        string summary,
+        CleanupScopeSafetyNote note,
+        CleanupScopeScanGate scanGate)
+    {
+        var boundary = note.IsRealUserProfileScope
+            ? "This scan-gate status is read-only; it does not run preflight, create fixtures, start scanning by itself, persist approval, or approve cleanup."
+            : note.IsFixtureScope
+                ? "This scan-gate status is read-only; it does not start scanning by itself, create fixtures, move files, or approve cleanup. Fixture cleanup actions still require preview and exact confirmation."
+                : scanGate.CanScan
+                    ? "This scan-gate status is read-only; it does not start scanning by itself, move files, or approve cleanup. Cleanup execution remains unavailable."
+                    : "This scan-gate status is read-only; it does not start scanning, move files, or approve cleanup.";
+
+        return $"{summary} {boundary}";
     }
 
     private static string FormatScanButtonToolTip(CleanupScopeSafetyNote note, CleanupScopeScanGate scanGate)
