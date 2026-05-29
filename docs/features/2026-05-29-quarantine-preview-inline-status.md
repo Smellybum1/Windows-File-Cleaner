@@ -84,6 +84,7 @@ What changed:
 - Quarantine Root changes now show inline preview invalidation.
 - Fixture execution and undo now replace the inline preview status with fixture execution/undo evidence.
 - Later packet `2026-05-30-quarantine-preview-status-help-text.md` mirrored the dynamic inline status into tooltip and automation help text with no-create/no-move/no-restore/no-delete/not-cleanup-approval boundaries.
+- Later packet `2026-05-30-quarantine-preview-status-help-cue.md` added a visible circular `?` help cue beside the inline status so the mirrored help text is easier to discover.
 
 Files changed:
 

@@ -30,6 +30,7 @@ What changed:
 - Updated the dynamic status setter so help text mirrors every inline status message.
 - Added WPF smoke assertions for tooltip/help text across preview, stale, blocked, execution, and undo states.
 - Later packet `2026-05-30-status-state-help-text.md` added textual status-state wording to the tooltip/help text so neutral/success/warning/error state is not color-only.
+- Later packet `2026-05-30-quarantine-preview-status-help-cue.md` added a visible circular `?` help cue that mirrors the same dynamic tooltip and automation help text.
 
 Tests run:
 

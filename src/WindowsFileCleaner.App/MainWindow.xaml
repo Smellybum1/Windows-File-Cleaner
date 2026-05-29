@@ -599,13 +599,35 @@
                                     ToolTipService.ShowOnDisabled="True"
                                     Click="BackToScanRowsButton_Click" />
                         </WrapPanel>
-                        <TextBlock x:Name="QuarantinePreviewStatusText"
-                                   Text="Quarantine Preview readiness appears after Review Shortlist rows are added. No files were modified."
-                                   Foreground="#526171"
-                                   Margin="0,6,0,0"
-                                   TextWrapping="Wrap"
-                                   ToolTip="Quarantine Preview readiness appears after Review Shortlist rows are added. No files were modified. Status state: neutral. Inline preview status is read-only review context; it does not create folders, move files, restore files, delete files, or approve cleanup."
-                                   AutomationProperties.HelpText="Quarantine Preview readiness appears after Review Shortlist rows are added. No files were modified. Status state: neutral. Inline preview status is read-only review context; it does not create folders, move files, restore files, delete files, or approve cleanup." />
+                        <DockPanel Margin="0,6,0,0"
+                                   LastChildFill="True">
+                            <Border x:Name="QuarantinePreviewStatusHelpCue"
+                                    DockPanel.Dock="Right"
+                                    Width="18"
+                                    Height="18"
+                                    Margin="8,1,0,0"
+                                    VerticalAlignment="Top"
+                                    Background="#F4F7FA"
+                                    BorderBrush="#8A99A8"
+                                    BorderThickness="1"
+                                    CornerRadius="9"
+                                    ToolTip="Quarantine Preview readiness appears after Review Shortlist rows are added. No files were modified. Status state: neutral. Inline preview status is read-only review context; it does not create folders, move files, restore files, delete files, or approve cleanup."
+                                    AutomationProperties.Name="Inline Quarantine Preview status help cue"
+                                    AutomationProperties.HelpText="Quarantine Preview readiness appears after Review Shortlist rows are added. No files were modified. Status state: neutral. Inline preview status is read-only review context; it does not create folders, move files, restore files, delete files, or approve cleanup.">
+                                <TextBlock Text="?"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"
+                                           FontSize="11"
+                                           FontWeight="Bold"
+                                           Foreground="#526171" />
+                            </Border>
+                            <TextBlock x:Name="QuarantinePreviewStatusText"
+                                       Text="Quarantine Preview readiness appears after Review Shortlist rows are added. No files were modified."
+                                       Foreground="#526171"
+                                       TextWrapping="Wrap"
+                                       ToolTip="Quarantine Preview readiness appears after Review Shortlist rows are added. No files were modified. Status state: neutral. Inline preview status is read-only review context; it does not create folders, move files, restore files, delete files, or approve cleanup."
+                                       AutomationProperties.HelpText="Quarantine Preview readiness appears after Review Shortlist rows are added. No files were modified. Status state: neutral. Inline preview status is read-only review context; it does not create folders, move files, restore files, delete files, or approve cleanup." />
+                        </DockPanel>
                         <WrapPanel Margin="0,6,0,0">
                             <TextBlock Text="Shortlist confirmation"
                                        VerticalAlignment="Center"

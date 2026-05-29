@@ -160,6 +160,7 @@ What changed:
 - Aligned the fixture review launcher checklist so the next manual pass prompts neutral/success/warning/error inline status review.
 - Later packet `2026-05-30-quarantine-preview-status-help-text.md` mirrored the dynamic styled status into tooltip and automation help text.
 - Later packet `2026-05-30-status-state-help-text.md` added textual status-state wording to the tooltip/help text so these states are not color-only.
+- Later packet `2026-05-30-quarantine-preview-status-help-cue.md` added a visible circular `?` help cue that mirrors the same dynamic status/state help text.
 
 Files changed:
 
@@ -199,7 +200,7 @@ Follow-up work:
 
 Open questions:
 
-- Does the next manual fixture pass show that the styled inline Quarantine Preview status is noticeable enough without a popup?
+- Does the next manual fixture pass show that the styled inline Quarantine Preview status plus compact `?` cue is noticeable enough without a popup?
 
 Risky assumptions:
 

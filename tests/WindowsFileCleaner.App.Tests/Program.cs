@@ -2250,6 +2250,29 @@ internal sealed class MainWindowSmokeTests
             && window.QuarantinePreviewStatusAutomationHelpTextValue.Contains("delete files", StringComparison.OrdinalIgnoreCase)
             && window.QuarantinePreviewStatusAutomationHelpTextValue.Contains("approve cleanup", StringComparison.OrdinalIgnoreCase),
             message + " Automation help text should mirror the current status text and safety boundary.");
+        Assert(
+            window.QuarantinePreviewStatusHelpCueAutomationNameValue.Contains("Inline Quarantine Preview status help cue", StringComparison.OrdinalIgnoreCase),
+            message + " Help cue automation name should identify the inline preview status.");
+        Assert(
+            window.QuarantinePreviewStatusHelpCueToolTipValue.Contains(window.QuarantinePreviewStatusTextValue, StringComparison.OrdinalIgnoreCase)
+            && window.QuarantinePreviewStatusHelpCueToolTipValue.Contains(expectedStatusState, StringComparison.OrdinalIgnoreCase)
+            && window.QuarantinePreviewStatusHelpCueToolTipValue.Contains("read-only review context", StringComparison.OrdinalIgnoreCase)
+            && window.QuarantinePreviewStatusHelpCueToolTipValue.Contains("does not create folders", StringComparison.OrdinalIgnoreCase)
+            && window.QuarantinePreviewStatusHelpCueToolTipValue.Contains("move files", StringComparison.OrdinalIgnoreCase)
+            && window.QuarantinePreviewStatusHelpCueToolTipValue.Contains("restore files", StringComparison.OrdinalIgnoreCase)
+            && window.QuarantinePreviewStatusHelpCueToolTipValue.Contains("delete files", StringComparison.OrdinalIgnoreCase)
+            && window.QuarantinePreviewStatusHelpCueToolTipValue.Contains("approve cleanup", StringComparison.OrdinalIgnoreCase),
+            message + " Help cue tooltip should mirror the current status text and safety boundary.");
+        Assert(
+            window.QuarantinePreviewStatusHelpCueAutomationHelpTextValue.Contains(window.QuarantinePreviewStatusTextValue, StringComparison.OrdinalIgnoreCase)
+            && window.QuarantinePreviewStatusHelpCueAutomationHelpTextValue.Contains(expectedStatusState, StringComparison.OrdinalIgnoreCase)
+            && window.QuarantinePreviewStatusHelpCueAutomationHelpTextValue.Contains("read-only review context", StringComparison.OrdinalIgnoreCase)
+            && window.QuarantinePreviewStatusHelpCueAutomationHelpTextValue.Contains("does not create folders", StringComparison.OrdinalIgnoreCase)
+            && window.QuarantinePreviewStatusHelpCueAutomationHelpTextValue.Contains("move files", StringComparison.OrdinalIgnoreCase)
+            && window.QuarantinePreviewStatusHelpCueAutomationHelpTextValue.Contains("restore files", StringComparison.OrdinalIgnoreCase)
+            && window.QuarantinePreviewStatusHelpCueAutomationHelpTextValue.Contains("delete files", StringComparison.OrdinalIgnoreCase)
+            && window.QuarantinePreviewStatusHelpCueAutomationHelpTextValue.Contains("approve cleanup", StringComparison.OrdinalIgnoreCase),
+            message + " Help cue automation help text should mirror the current status text and safety boundary.");
     }
 
     private static void AssertShortlistSafetyMixHelpText(MainWindow window, string message)

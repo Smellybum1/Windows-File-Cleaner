@@ -361,6 +361,12 @@ public partial class MainWindow : Window
 
     public string QuarantinePreviewStatusAutomationHelpTextValue => AutomationProperties.GetHelpText(QuarantinePreviewStatusText);
 
+    public string QuarantinePreviewStatusHelpCueToolTipValue => QuarantinePreviewStatusHelpCue.ToolTip?.ToString() ?? "";
+
+    public string QuarantinePreviewStatusHelpCueAutomationNameValue => AutomationProperties.GetName(QuarantinePreviewStatusHelpCue);
+
+    public string QuarantinePreviewStatusHelpCueAutomationHelpTextValue => AutomationProperties.GetHelpText(QuarantinePreviewStatusHelpCue);
+
     public string QuarantineExecutionGateTextValue => QuarantineExecutionGateText.Text;
 
     public double QuarantineExecutionGateViewportMaxHeight => QuarantineExecutionGateScroll.MaxHeight;
@@ -2734,6 +2740,8 @@ public partial class MainWindow : Window
         var helpText = FormatQuarantinePreviewStatusHelpText(text, style);
         QuarantinePreviewStatusText.ToolTip = helpText;
         AutomationProperties.SetHelpText(QuarantinePreviewStatusText, helpText);
+        QuarantinePreviewStatusHelpCue.ToolTip = helpText;
+        AutomationProperties.SetHelpText(QuarantinePreviewStatusHelpCue, helpText);
         QuarantinePreviewStatusText.Foreground = style switch
         {
             QuarantinePreviewStatusStyle.Success => System.Windows.Media.Brushes.DarkGreen,
