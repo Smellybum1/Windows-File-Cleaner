@@ -288,6 +288,12 @@ internal sealed class MainWindowSmokeTests
                 && window.BrowseQuarantineRootButtonToolTipValue.Contains("approve cleanup", StringComparison.OrdinalIgnoreCase),
                 "Quarantine Root browse tooltip should explain preview-only selection and no-file-modified behavior.");
             Assert(
+                window.BrowseQuarantineRootButtonAutomationHelpTextValue.Contains("Quarantine Root", StringComparison.OrdinalIgnoreCase)
+                && window.BrowseQuarantineRootButtonAutomationHelpTextValue.Contains("preview paths only", StringComparison.OrdinalIgnoreCase)
+                && window.BrowseQuarantineRootButtonAutomationHelpTextValue.Contains("does not create folders", StringComparison.OrdinalIgnoreCase)
+                && window.BrowseQuarantineRootButtonAutomationHelpTextValue.Contains("approve cleanup", StringComparison.OrdinalIgnoreCase),
+                "Quarantine Root browse automation help text should explain preview-only selection and no-file-modified behavior.");
+            Assert(
                 window.CurrentQuarantineRootPath == QuarantinePreviewBuilder.DefaultQuarantineRootPath,
                 "MainWindow should default Quarantine Preview to the D: root requested by the user.");
             Assert(
@@ -317,6 +323,12 @@ internal sealed class MainWindowSmokeTests
                 && window.BrowseCleanupScopeButtonToolTipValue.Contains("real-profile gate", StringComparison.OrdinalIgnoreCase)
                 && window.BrowseCleanupScopeButtonToolTipValue.Contains("approve cleanup", StringComparison.OrdinalIgnoreCase),
                 "Cleanup Scope browse tooltip should explain path-only selection and scan-gate boundaries.");
+            Assert(
+                window.BrowseCleanupScopeButtonAutomationHelpTextValue.Contains("Cleanup Scope", StringComparison.OrdinalIgnoreCase)
+                && window.BrowseCleanupScopeButtonAutomationHelpTextValue.Contains("does not start a scan", StringComparison.OrdinalIgnoreCase)
+                && window.BrowseCleanupScopeButtonAutomationHelpTextValue.Contains("real-profile gate", StringComparison.OrdinalIgnoreCase)
+                && window.BrowseCleanupScopeButtonAutomationHelpTextValue.Contains("approve cleanup", StringComparison.OrdinalIgnoreCase),
+                "Cleanup Scope browse automation help text should explain path-only selection and scan-gate boundaries.");
             Assert(window.IsRealProfilePreflightConfirmationVisible, "MainWindow should show the real-profile preflight acknowledgement.");
             Assert(!window.IsRealProfilePreflightConfirmed, "Real-profile preflight acknowledgement should start unchecked.");
             Assert(

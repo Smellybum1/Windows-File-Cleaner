@@ -222,7 +222,7 @@ The path may be typed or chosen through the native folder browser. Selecting a f
 
 - Use `BrowseScopeButton` for the WPF folder browser action.
 - Keep folder selection separate from `Scan`; never auto-scan after a folder is selected.
-- Browse tooltips should say selection is path-only and does not start a scan, bypass the real-profile gate, or approve cleanup.
+- Browse tooltips and automation help text should say selection is path-only and does not start a scan, bypass the real-profile gate, or approve cleanup.
 - Keep the selected path in `ScopePathBox` so existing safety-note and scan-gate behavior remains authoritative.
 
 ### Cleanup Scope Safety Note
@@ -1809,7 +1809,7 @@ It does not create folders, move files, write manifests, or approve future Quara
 - Use `QuarantineRootSafetyNote` and `QuarantineRootSafetyNoteBuilder` for preview-root messaging and gating.
 - Use the typed value when calling `QuarantinePreviewBuilder`.
 - Keep the default as `D:\WindowsFileCleanerQuarantine`.
-- Browse tooltips should say selection is for preview paths only and does not create folders, move files, or approve cleanup.
+- Browse tooltips and automation help text should say selection is for preview paths only and does not create folders, move files, or approve cleanup.
 - Do not create or validate the folder by touching the filesystem during preview.
 
 ### Quarantine Root Safety Note

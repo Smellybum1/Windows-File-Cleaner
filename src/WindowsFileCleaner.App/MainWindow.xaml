@@ -66,6 +66,7 @@
                             Content="Browse..."
                             MinWidth="100"
                             ToolTip="Chooses a Cleanup Scope path only; browsing does not start a scan, bypass the real-profile gate, or approve cleanup."
+                            AutomationProperties.HelpText="Chooses a Cleanup Scope path only; browsing does not start a scan, bypass the real-profile gate, or approve cleanup."
                             ToolTipService.ShowOnDisabled="True"
                             Click="BrowseScopeButton_Click" />
                     <Button x:Name="ScanButton"
@@ -395,6 +396,7 @@
                                     Content="Browse..."
                                     MinWidth="100"
                                     ToolTip="Chooses a Quarantine Root for preview paths only; browsing does not create folders, move files, or approve cleanup."
+                                    AutomationProperties.HelpText="Chooses a Quarantine Root for preview paths only; browsing does not create folders, move files, or approve cleanup."
                                     ToolTipService.ShowOnDisabled="True"
                                     Click="BrowseQuarantineRootButton_Click" />
                         </StackPanel>
