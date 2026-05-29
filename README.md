@@ -77,7 +77,7 @@ Run the MVP preflight from the repository root before scanning real user files:
 
 The `.cmd` tool wrappers call the existing PowerShell scripts with process-scoped `-ExecutionPolicy Bypass`, so they work when direct `.ps1` execution is blocked without changing your machine or user execution policy. If your shell already allows scripts, the `.ps1` commands still work.
 
-The preflight restores, builds, runs both test harnesses, runs the fixture generator in `-WhatIf` mode, and runs `git diff --check`. It fails if any child command exits non-zero. It does not scan `C:\Users\moxhe`.
+The preflight restores, builds, runs both test harnesses, runs the fixture generator in `-WhatIf` mode, prints the fixture review checklist in checklist-only mode, and runs `git diff --check`. It fails if any child command exits non-zero. It does not scan `C:\Users\moxhe`.
 
 The individual commands are:
 
@@ -87,6 +87,7 @@ dotnet build WindowsFileCleaner.sln --no-restore
 dotnet run --project tests\WindowsFileCleaner.Tests\WindowsFileCleaner.Tests.csproj --no-build
 dotnet run --project tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj --no-build
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\New-StorageScanSmokeFixture.ps1 -WhatIf
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\Start-MvpFixtureReview.ps1 -ChecklistOnly
 git -c safe.directory='D:/Codex/Windows File Cleaner' diff --check
 ```
 
@@ -99,7 +100,7 @@ All WindowsFileCleaner.App.Tests checks passed.
 
 ## CI Preflight
 
-Pushes and pull requests to `main` run the same MVP preflight on GitHub Actions with a Windows runner and .NET 8. The CI job restores, builds, runs both test harnesses, runs the fixture generator in `-WhatIf` mode, and runs `git diff --check`; any non-zero child command fails the job. It does not scan `C:\Users\moxhe`.
+Pushes and pull requests to `main` run the same MVP preflight on GitHub Actions with a Windows runner and .NET 8. The CI job restores, builds, runs both test harnesses, runs the fixture generator in `-WhatIf` mode, prints the fixture review checklist in checklist-only mode, and runs `git diff --check`; any non-zero child command fails the job. It does not scan `C:\Users\moxhe`.
 
 ## WPF Fixture Smoke
 

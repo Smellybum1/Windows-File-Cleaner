@@ -2,6 +2,7 @@
 param(
     [switch]$SkipRestore,
     [switch]$SkipFixtureWhatIf,
+    [switch]$SkipFixtureChecklist,
     [switch]$SkipDiffCheck
 )
 
@@ -10,6 +11,7 @@ $ErrorActionPreference = "Stop"
 
 $repoRoot = Split-Path -Parent $PSScriptRoot
 $fixtureScript = Join-Path $PSScriptRoot "New-StorageScanSmokeFixture.ps1"
+$fixtureReviewScript = Join-Path $PSScriptRoot "Start-MvpFixtureReview.ps1"
 $fixtureRoot = [System.IO.Path]::GetFullPath((Join-Path $repoRoot ".local\storage-scan-smoke-fixture")).TrimEnd([System.IO.Path]::DirectorySeparatorChar)
 
 function Invoke-PreflightStep {
@@ -54,6 +56,12 @@ try {
     if (-not $SkipFixtureWhatIf) {
         Invoke-PreflightStep -Name "Fixture dry run" -Command {
             & powershell.exe -NoProfile -ExecutionPolicy Bypass -File $fixtureScript -WhatIf
+        }
+    }
+
+    if (-not $SkipFixtureChecklist) {
+        Invoke-PreflightStep -Name "Fixture checklist" -Command {
+            & powershell.exe -NoProfile -ExecutionPolicy Bypass -File $fixtureReviewScript -ChecklistOnly
         }
     }
 

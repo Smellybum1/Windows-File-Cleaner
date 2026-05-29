@@ -32,6 +32,7 @@ The repo should include a script that:
 - Runs core tests.
 - Runs WPF app smoke tests.
 - Runs the synthetic fixture generator in `-WhatIf` mode.
+- Prints the fixture review checklist in checklist-only mode.
 - Runs `git diff --check`.
 - Prints the next fixture review launcher command.
 - States that no real user files were scanned or modified by preflight.
@@ -83,7 +84,7 @@ Small feature-level decisions:
 
 - Add `tools/Invoke-MvpPreflight.ps1`.
 - Keep fixture generation dry-run by default through `New-StorageScanSmokeFixture.ps1 -WhatIf`.
-- Add `-SkipRestore`, `-SkipFixtureWhatIf`, and `-SkipDiffCheck` switches for focused local loops.
+- Add `-SkipRestore`, `-SkipFixtureWhatIf`, `-SkipFixtureChecklist`, and `-SkipDiffCheck` switches for focused local loops.
 
 ADR-worthy decisions:
 
@@ -139,9 +140,10 @@ Completed on: 2026-05-28
 What changed:
 
 - Added `tools/Invoke-MvpPreflight.ps1`.
-- Preflight runs restore, build, core tests, WPF app tests, fixture `-WhatIf`, and `git diff --check`.
+- Preflight runs restore, build, core tests, WPF app tests, fixture `-WhatIf`, fixture checklist-only output, and `git diff --check`.
 - Preflight prints the next fixture review launcher command.
 - Kept the workflow read-only with respect to real user files.
+- Later packet `2026-05-30-preflight-fixture-checklist-step.md` added a checklist-only fixture review step to the full preflight so manual checklist regressions fail preflight before visible review.
 
 Files changed:
 
