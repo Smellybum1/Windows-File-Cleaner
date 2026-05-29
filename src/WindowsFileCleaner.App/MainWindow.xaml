@@ -606,8 +606,8 @@
                                           IsEnabled="False"
                                           SelectionChanged="RestoreManifestSelectionBox_SelectionChanged" />
                                 <Button x:Name="PreviewSelectedRestoreManifestReadinessButton"
-                                        Content="Preview selected readiness"
-                                        MinWidth="205"
+                                        Content="Preview selected manifest readiness"
+                                        MinWidth="260"
                                         IsEnabled="False"
                                         Click="PreviewSelectedRestoreManifestReadinessButton_Click" />
                             </WrapPanel>
@@ -618,7 +618,7 @@
                                        Margin="0,6,0,0"
                                        TextWrapping="Wrap" />
                             <TextBlock x:Name="SelectedRestoreManifestReviewText"
-                                       Text="Selected Restore Manifest Review appears after discovery and Preview selected readiness."
+                                       Text="Selected Restore Manifest Review appears after discovery and Preview selected manifest readiness."
                                        FontFamily="Consolas"
                                        FontSize="12"
                                        Margin="0,6,0,0"
@@ -645,7 +645,7 @@
                                         Content="Restore selected fixture manifest"
                                         MinWidth="215"
                                         IsEnabled="False"
-                                        ToolTip="Fixture selected restore only after selected readiness and exact RESTORE; real-profile/custom selected restore remains unavailable."
+                                        ToolTip="Fixture selected restore only after selected manifest readiness and exact RESTORE; real-profile/custom selected restore remains unavailable."
                                         ToolTipService.ShowOnDisabled="True"
                                         Click="ExecuteSelectedRestoreButton_Click" />
                             </WrapPanel>

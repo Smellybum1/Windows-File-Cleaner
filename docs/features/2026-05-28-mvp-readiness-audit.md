@@ -146,7 +146,7 @@ Use `README.md` as the current manual MVP checklist. The highest-value retest is
 15. Add one likely-safe row to Review Shortlist.
 16. Create a Quarantine Preview.
 17. Confirm Restore Manifest Draft and Quarantine Confirmation Draft wording is understandable.
-18. After a fixture execution, use `Discover manifests`, select one Restore Manifest, use `Preview selected readiness`, use `Preview selected restore gate`, type `RESTORE`, and for fixture manifests try `Restore selected fixture manifest`.
+18. After a fixture execution, use `Discover manifests`, select one Restore Manifest, use `Preview selected manifest readiness`, use `Preview selected restore gate`, type `RESTORE`, and for fixture manifests try `Restore selected fixture manifest`.
 19. Export the Quarantine Preview CSV only to a user-selected report path.
 
 ## Decisions made

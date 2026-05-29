@@ -2684,7 +2684,7 @@ It is discovery and status review only, not Undo Quarantine execution and not pe
 - Looking under `<quarantine-root>\actions\*\restore-manifest.json`.
 - Showing that one discovered Restore Manifest is Completed and has Moved entries.
 - Reporting an invalid or unreadable manifest file as a discovery issue.
-- Showing that no all-manifest restore action is available from discovery and that fixture selected restore must go through selected readiness and the selected restore gate.
+- Showing that no all-manifest restore action is available from discovery and that fixture selected restore must go through selected manifest readiness and the selected restore gate.
 
 #### Non-examples
 
@@ -2714,7 +2714,7 @@ It is discovery and status review only, not Undo Quarantine execution and not pe
 
 - Use `QuarantineManifestDiscovery`, `QuarantineManifestDiscoveryBuilder`, and `QuarantineManifestDiscoveryIssue`.
 - Keep discovery limited to `<quarantine-root>\actions\*\restore-manifest.json`.
-- Keep discovery itself status-only; Selected Restore Manifest Review and selected readiness are separate read-only workflows until a restore execution design exists.
+- Keep discovery itself status-only; Selected Restore Manifest Review and selected manifest readiness are separate read-only workflows until a restore execution design exists.
 - WPF discovery output should distinguish discovery from all-manifest restore execution while pointing fixture-only restore toward the selected restore gate.
 - Do not call this cleanup history.
 
@@ -2788,7 +2788,7 @@ It is not approval to restore and does not restore files.
 
 - Uses the current Quarantine Manifest Discovery result.
 - Populates selection from discovered Restore Manifest Summary rows.
-- Recomputes Restore Readiness Preview for the selected Restore Manifest when the user requests selected readiness.
+- Recomputes Restore Readiness Preview for the selected Restore Manifest when the user requests selected manifest readiness.
 - Is discarded when the Quarantine Root changes, discovery is rerun, or another manifest is selected.
 - Does not create, move, delete, restore, write, or clean up files or folders.
 
@@ -2804,7 +2804,7 @@ It is not approval to restore and does not restore files.
 
 - Use `SelectedRestoreManifestReview` and `SelectedRestoreManifestReviewBuilder`.
 - Keep selection read-only and derived from current discovery results.
-- Keep selected readiness separate from approval and execution.
+- Keep selected manifest readiness separate from approval and execution.
 - Do not call `UndoQuarantineExecutor.Undo`.
 
 ### Selected Restore Confirmation Draft
@@ -2836,7 +2836,7 @@ It summarizes the selected Restore Manifest, restorable entries, restorable byte
 #### Lifecycle
 
 - Created after Selected Restore Manifest Review has readiness output.
-- Is discarded when discovery is rerun, a different Restore Manifest is selected, selected readiness changes, or the Quarantine Root changes.
+- Is discarded when discovery is rerun, a different Restore Manifest is selected, selected manifest readiness changes, or the Quarantine Root changes.
 - Feeds Selected Restore Execution Gate.
 - Does not create, move, delete, restore, write, or clean up files or folders.
 
@@ -2871,7 +2871,7 @@ In the current WPF app, selected restore execution availability can be true only
 - Showing `Execution implemented: yes` and `Can execute: yes` for a selected fixture Restore Manifest after exact `RESTORE` confirmation.
 - Showing `Execution implemented: no` and `Can execute: no` for real-profile or custom non-fixture selected Restore Manifests.
 - Showing an execution scope status that distinguishes fixture-only selected restore from preview-only real-profile/custom selected restore.
-- Showing an approval boundary that says selected readiness is not restore approval.
+- Showing an approval boundary that says selected manifest readiness is not restore approval.
 - Reporting confirmation-readiness blockers before any future restore action can open.
 
 #### Non-examples
@@ -2884,7 +2884,7 @@ In the current WPF app, selected restore execution availability can be true only
 
 - Created after Selected Restore Confirmation Draft.
 - Refreshes when the selected restore confirmation text changes.
-- Is discarded when selected readiness, selected manifest, discovery, or Quarantine Root changes.
+- Is discarded when selected manifest readiness, selected manifest, discovery, or Quarantine Root changes.
 - Does not create, move, delete, restore, write, or clean up files or folders by itself.
 
 #### Relationships
@@ -2913,7 +2913,7 @@ It is the fixture proof for selected discovered Restore Manifest restore, not re
 
 #### Examples
 
-- Discovering a fixture Restore Manifest in a new WPF window, selecting it, previewing selected readiness, typing `RESTORE`, and restoring the synthetic file from quarantine.
+- Discovering a fixture Restore Manifest in a new WPF window, selecting it, previewing selected manifest readiness, typing `RESTORE`, and restoring the synthetic file from quarantine.
 - Showing selected restore result rows and stale-state guidance after the restore attempt.
 - Blocking the same workflow for a custom non-fixture Cleanup Scope even when `RESTORE` is typed.
 
@@ -2967,7 +2967,7 @@ It is not approval to restore and does not restore files.
 - Show that a restore would be blocked because the original path already exists.
 - Show that a restore would be blocked because the quarantine path is missing.
 - Show that a Restored entry has no restore work left.
-- Show that no all-manifest restore action is available from readiness preview and that fixture selected restore must go through selected readiness and the selected restore gate.
+- Show that no all-manifest restore action is available from readiness preview and that fixture selected restore must go through selected manifest readiness and the selected restore gate.
 
 #### Non-examples
 

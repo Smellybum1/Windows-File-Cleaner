@@ -59,7 +59,7 @@ Questions that can be deferred:
 
 ### Edge cases
 
-- Selected fixture restore remains available only through selected readiness and exact `RESTORE` confirmation.
+- Selected fixture restore remains available only through selected manifest readiness and exact `RESTORE` confirmation.
 - Real-profile and custom non-fixture Restore Manifests remain preview-only.
 
 ### Dependencies between decisions

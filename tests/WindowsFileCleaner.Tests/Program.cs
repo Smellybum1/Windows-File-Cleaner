@@ -1757,9 +1757,9 @@ internal sealed class StorageScanTests
         Assert(review.HasSelectedManifest, "Selected review should bind to the requested Restore Manifest.");
         Assert(review.SelectedManifestPath == executionTwo.RestoreManifest.ManifestPath, "Selected review should expose the selected manifest path.");
         Assert(review.HasReadinessPreview, "Selected review should include readiness for the selected manifest.");
-        Assert(review.Readiness!.ManifestPath == executionTwo.RestoreManifest.ManifestPath, "Selected readiness should be for the selected manifest only.");
-        Assert(review.Readiness.Entries.Count == 1, "Selected readiness should include only the selected manifest entries.");
-        Assert(review.Readiness.Entries.Single().OriginalPath == selectedEntry.OriginalPath, "Selected readiness should not include unselected manifest entries.");
+        Assert(review.Readiness!.ManifestPath == executionTwo.RestoreManifest.ManifestPath, "Selected manifest readiness should be for the selected manifest only.");
+        Assert(review.Readiness.Entries.Count == 1, "Selected manifest readiness should include only the selected manifest entries.");
+        Assert(review.Readiness.Entries.Single().OriginalPath == selectedEntry.OriginalPath, "Selected manifest readiness should not include unselected manifest entries.");
         Assert(review.RestorableEntryCount == 1, "Selected moved entry should be restorable.");
         Assert(review.BlockedEntryCount == 0, "Selected review should not report blockers for restorable fixture state.");
         Assert(missingSelection.HasSelectionIssues, "A stale selected path should report a selection issue.");
@@ -1786,7 +1786,7 @@ internal sealed class StorageScanTests
         var gate = SelectedRestoreExecutionGateBuilder.Build(draft, "RESTORE");
 
         Assert(execution.Succeeded, "Fixture setup should move the file before selected restore confirmation.");
-        Assert(!draft.HasDataBlockers, "Restorable selected readiness should not produce confirmation data blockers.");
+        Assert(!draft.HasDataBlockers, "Restorable selected manifest readiness should not produce confirmation data blockers.");
         Assert(draft.RequiredConfirmationText == SelectedRestoreConfirmationDraft.DefaultRequiredConfirmationText, "Selected restore confirmation should expose the required RESTORE text.");
         Assert(draft.RequiredConfirmationText == "RESTORE", "Selected restore confirmation phrase should be RESTORE.");
         Assert(!draft.IsExecutionImplemented, "Selected restore execution should be unavailable by default.");
@@ -1819,7 +1819,7 @@ internal sealed class StorageScanTests
         var gate = SelectedRestoreExecutionGateBuilder.Build(draft, "RESTORE");
 
         Assert(execution.Succeeded, "Fixture setup should move the file before blocker confirmation.");
-        Assert(draft.HasDataBlockers, "Blocked selected readiness should produce confirmation data blockers.");
+        Assert(draft.HasDataBlockers, "Blocked selected manifest readiness should produce confirmation data blockers.");
         Assert(draft.BlockedEntryCount == 1, "Selected restore confirmation should count blocked readiness rows.");
         Assert(draft.Blockers.Any(blocker => blocker.Contains("blocked restore readiness", StringComparison.OrdinalIgnoreCase)), "Selected restore confirmation should explain blocked readiness rows.");
         Assert(gate.IsConfirmationTextMatched, "Exact RESTORE can match even when blockers remain.");

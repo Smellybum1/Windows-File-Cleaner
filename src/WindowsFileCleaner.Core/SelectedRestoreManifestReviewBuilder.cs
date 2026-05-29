@@ -35,7 +35,7 @@ public static class SelectedRestoreManifestReviewBuilder
             return CreateIssueReview(
                 discovery,
                 selectedPath,
-                "Select one discovered Restore Manifest before previewing selected readiness.");
+                "Select one discovered Restore Manifest before previewing selected manifest readiness.");
         }
 
         var selectedManifest = discovery.RestoreManifests
