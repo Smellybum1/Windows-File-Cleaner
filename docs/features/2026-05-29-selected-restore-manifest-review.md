@@ -211,6 +211,7 @@ ADRs added or skipped:
 Follow-up work:
 
 - Add explicit confirmation and restore execution for selected manifests only after selected readiness is verified.
+- Later selected-restore packets added fixture-only selected restore; selected review wording now calls itself readiness evidence and routes fixture selected restore through the selected restore gate.
 - Decide stale-state handling between selected readiness preview and future restore execution.
 - Decide whether successful restore should offer empty action-folder cleanup.
 

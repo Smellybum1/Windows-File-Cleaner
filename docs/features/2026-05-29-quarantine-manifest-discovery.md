@@ -221,6 +221,7 @@ ADRs added or skipped:
 Follow-up work:
 
 - Add WPF selection and restore execution for discovered old manifests only after read-only discovery is manually reviewed.
+- Later selected-restore packets added fixture-only selected restore; discovery pane wording now says no broad restore action is available from discovery and routes fixture selected restore through selected readiness and the selected restore gate.
 - Decide whether successful undo should offer empty action-folder cleanup.
 - Decide whether discovery should support browsing directly to a single manifest file.
 

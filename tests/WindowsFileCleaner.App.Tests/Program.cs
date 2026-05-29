@@ -934,8 +934,9 @@ internal sealed class MainWindowSmokeTests
                 && discoveryText.Contains(manifestPath, StringComparison.OrdinalIgnoreCase),
                 "Discovery pane should show the persisted manifest summary. Text: " + discoveryText);
             Assert(
-                discoveryText.Contains("No restore action is available", StringComparison.OrdinalIgnoreCase),
-                "Discovery pane should not imply old-manifest restore is available.");
+                discoveryText.Contains("No broad restore action is available", StringComparison.OrdinalIgnoreCase)
+                && discoveryText.Contains("selected restore gate", StringComparison.OrdinalIgnoreCase),
+                "Discovery pane should not imply broad old-manifest restore is available.");
             Assert(discoveryWindow.DiscoveredRestoreManifestCount == 1, "Discovery should populate one selectable Restore Manifest.");
             Assert(discoveryWindow.CanSelectDiscoveredRestoreManifest, "Discovery should enable Restore Manifest selection when a manifest exists.");
             Assert(discoveryWindow.CanPreviewSelectedRestoreManifestReadiness, "Discovery should enable selected Restore Manifest readiness preview when a manifest is selected.");
@@ -955,7 +956,8 @@ internal sealed class MainWindowSmokeTests
                 selectedReviewText.Contains("Selected Restore Manifest Review: read-only", StringComparison.OrdinalIgnoreCase)
                 && selectedReviewText.Contains("Selected manifest: " + manifestPath, StringComparison.OrdinalIgnoreCase)
                 && selectedReviewText.Contains("Restore readiness row | Restorable", StringComparison.OrdinalIgnoreCase)
-                && selectedReviewText.Contains("No restore action is available", StringComparison.OrdinalIgnoreCase),
+                && selectedReviewText.Contains("readiness evidence only", StringComparison.OrdinalIgnoreCase)
+                && selectedReviewText.Contains("selected restore gate", StringComparison.OrdinalIgnoreCase),
                 "Selected Restore Manifest Review pane should show only selected readiness evidence. Text: " + selectedReviewText);
             Assert(discoveryWindow.CanPreviewSelectedRestoreGate, "Selected readiness should enable selected restore gate preview.");
             Assert(!discoveryWindow.CanEnterSelectedRestoreConfirmation, "Selected restore confirmation should stay disabled until gate preview exists.");
@@ -1015,8 +1017,9 @@ internal sealed class MainWindowSmokeTests
                 && readinessText.Contains(manifestPath, StringComparison.OrdinalIgnoreCase),
                 "Restore readiness pane should show restorable old-manifest evidence. Text: " + readinessText);
             Assert(
-                readinessText.Contains("No restore action is available", StringComparison.OrdinalIgnoreCase),
-                "Restore readiness pane should not imply old-manifest restore is available.");
+                readinessText.Contains("No broad restore action is available", StringComparison.OrdinalIgnoreCase)
+                && readinessText.Contains("selected restore gate", StringComparison.OrdinalIgnoreCase),
+                "Restore readiness pane should not imply broad old-manifest restore is available.");
             Assert(File.Exists(quarantinePath), "Restore readiness preview should not move quarantined files.");
             Assert(!File.Exists(originalPath), "Restore readiness preview should not restore original paths.");
 

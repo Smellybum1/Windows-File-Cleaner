@@ -2498,7 +2498,7 @@ public partial class MainWindow : Window
             $"Quarantine root: {discovery.QuarantineRootPath}",
             $"Actions root: {discovery.ActionsRootPath}",
             $"Discovered manifests: {discovery.ManifestCount:N0} | Issues: {discovery.Issues.Count:N0}",
-            "No restore action is available from this discovery pane."
+            "No broad restore action is available from this discovery pane; fixture selected restore must go through selected readiness and the selected restore gate."
         };
 
         foreach (var summary in discovery.Manifests.Take(8))
@@ -2533,7 +2533,7 @@ public partial class MainWindow : Window
             $"Actions root: {preview.ActionsRootPath}",
             $"Manifests: {preview.ManifestCount:N0} | Restorable manifests: {preview.RestorableManifestCount:N0} | Restorable entries: {preview.RestorableEntryCount:N0} | Blocked entries: {preview.BlockedEntryCount:N0} | Recovery review entries: {preview.RecoveryReviewEntryCount:N0}",
             $"Discovery issues: {preview.DiscoveryIssues.Count:N0}",
-            "No restore action is available from this readiness preview."
+            "No broad restore action is available from this readiness preview; fixture selected restore must go through selected readiness and the selected restore gate."
         };
 
         foreach (var manifest in preview.Manifests.Take(6))
@@ -2570,7 +2570,7 @@ public partial class MainWindow : Window
             $"Quarantine root: {review.QuarantineRootPath}",
             $"Actions root: {review.ActionsRootPath}",
             $"Selected manifest: {selectedPath}",
-            "No restore action is available from this selected-manifest review."
+            "Selected Restore Manifest Review is readiness evidence only; fixture selected restore must go through the selected restore gate."
         };
 
         foreach (var issue in review.SelectionIssues.Take(6))
