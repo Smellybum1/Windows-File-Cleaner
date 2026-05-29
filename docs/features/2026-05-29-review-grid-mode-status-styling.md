@@ -160,6 +160,7 @@ What changed:
 - Added WPF smoke assertions for neutral, informational, warning, stale-return, and empty moved-entry styling.
 - Aligned the fixture review launcher checklist so the next manual pass prompts neutral/informational/warning grid-mode status review.
 - Later packet `2026-05-30-review-grid-mode-status-help-text.md` added matching tooltip and automation help text for the same status states.
+- Later packet `2026-05-30-status-state-help-text.md` added textual status-state wording to the tooltip/help text so these states are not color-only.
 
 Files changed:
 

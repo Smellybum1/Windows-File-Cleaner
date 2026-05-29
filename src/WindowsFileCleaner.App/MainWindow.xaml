@@ -532,8 +532,8 @@
                                    Foreground="#526171"
                                    Margin="0,6,0,0"
                                    TextWrapping="Wrap"
-                                   ToolTip="Quarantine Preview readiness appears after Review Shortlist rows are added. No files were modified. Inline preview status is read-only review context; it does not create folders, move files, restore files, delete files, or approve cleanup."
-                                   AutomationProperties.HelpText="Quarantine Preview readiness appears after Review Shortlist rows are added. No files were modified. Inline preview status is read-only review context; it does not create folders, move files, restore files, delete files, or approve cleanup." />
+                                   ToolTip="Quarantine Preview readiness appears after Review Shortlist rows are added. No files were modified. Status state: neutral. Inline preview status is read-only review context; it does not create folders, move files, restore files, delete files, or approve cleanup."
+                                   AutomationProperties.HelpText="Quarantine Preview readiness appears after Review Shortlist rows are added. No files were modified. Status state: neutral. Inline preview status is read-only review context; it does not create folders, move files, restore files, delete files, or approve cleanup." />
                         <WrapPanel Margin="0,6,0,0">
                             <TextBlock Text="Shortlist confirmation"
                                        VerticalAlignment="Center"
@@ -586,8 +586,8 @@
                            Foreground="#526171"
                            Margin="0,8,0,0"
                            TextWrapping="Wrap"
-                           ToolTip="Main grid: Storage Scan rows appear after a scan. No files were modified. Grid mode status is read-only review context; it does not rescan, modify files, restore files, or approve cleanup."
-                           AutomationProperties.HelpText="Main grid: Storage Scan rows appear after a scan. No files were modified. Grid mode status is read-only review context; it does not rescan, modify files, restore files, or approve cleanup." />
+                           ToolTip="Main grid: Storage Scan rows appear after a scan. No files were modified. Status state: neutral. Grid mode status is read-only review context; it does not rescan, modify files, restore files, or approve cleanup."
+                           AutomationProperties.HelpText="Main grid: Storage Scan rows appear after a scan. No files were modified. Status state: neutral. Grid mode status is read-only review context; it does not rescan, modify files, restore files, or approve cleanup." />
             </StackPanel>
 
             <DataGrid x:Name="ResultsGrid"

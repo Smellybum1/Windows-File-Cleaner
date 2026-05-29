@@ -53,6 +53,7 @@ What changed:
 - Added static startup tooltip and automation help text to `ReviewGridModeText`.
 - Mirrored dynamic Review Grid Mode Status text into tooltip and automation help text whenever the status updates.
 - Added WPF smoke coverage for startup, normal scan rows, stale scan rows after fixture execution, Current-Session Quarantined Review rows, returning to scan rows, and empty current-session view after undo.
+- Later packet `2026-05-30-status-state-help-text.md` added textual status-state wording to the tooltip/help text so neutral/information/warning state is not color-only.
 
 Docs updated:
 

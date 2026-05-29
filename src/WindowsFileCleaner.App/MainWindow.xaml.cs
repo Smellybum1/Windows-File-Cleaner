@@ -2081,7 +2081,7 @@ public partial class MainWindow : Window
     {
         ReviewGridModeText.Text = text;
         ReviewGridModeText.Tag = style.ToString();
-        var helpText = FormatReviewGridModeHelpText(text);
+        var helpText = FormatReviewGridModeHelpText(text, style);
         ReviewGridModeText.ToolTip = helpText;
         AutomationProperties.SetHelpText(ReviewGridModeText, helpText);
         ReviewGridModeText.Foreground = style switch
@@ -2095,9 +2095,9 @@ public partial class MainWindow : Window
             : FontWeights.SemiBold;
     }
 
-    private static string FormatReviewGridModeHelpText(string text)
+    private static string FormatReviewGridModeHelpText(string text, ReviewGridModeStatusStyle style)
     {
-        return $"{text} Grid mode status is read-only review context; it does not rescan, modify files, restore files, or approve cleanup.";
+        return $"{text} Status state: {FormatReviewGridModeStatusState(style)}. Grid mode status is read-only review context; it does not rescan, modify files, restore files, or approve cleanup.";
     }
 
     private enum ReviewGridModeStatusStyle
@@ -2105,6 +2105,16 @@ public partial class MainWindow : Window
         Neutral,
         Information,
         Warning
+    }
+
+    private static string FormatReviewGridModeStatusState(ReviewGridModeStatusStyle style)
+    {
+        return style switch
+        {
+            ReviewGridModeStatusStyle.Information => "information",
+            ReviewGridModeStatusStyle.Warning => "warning",
+            _ => "neutral"
+        };
     }
 
     private void UpdateQuarantinedViewControls()
@@ -2653,7 +2663,7 @@ public partial class MainWindow : Window
     {
         QuarantinePreviewStatusText.Text = text;
         QuarantinePreviewStatusText.Tag = style.ToString();
-        var helpText = FormatQuarantinePreviewStatusHelpText(text);
+        var helpText = FormatQuarantinePreviewStatusHelpText(text, style);
         QuarantinePreviewStatusText.ToolTip = helpText;
         AutomationProperties.SetHelpText(QuarantinePreviewStatusText, helpText);
         QuarantinePreviewStatusText.Foreground = style switch
@@ -2668,9 +2678,9 @@ public partial class MainWindow : Window
             : FontWeights.SemiBold;
     }
 
-    private static string FormatQuarantinePreviewStatusHelpText(string text)
+    private static string FormatQuarantinePreviewStatusHelpText(string text, QuarantinePreviewStatusStyle style)
     {
-        return $"{text} Inline preview status is read-only review context; it does not create folders, move files, restore files, delete files, or approve cleanup.";
+        return $"{text} Status state: {FormatQuarantinePreviewStatusState(style)}. Inline preview status is read-only review context; it does not create folders, move files, restore files, delete files, or approve cleanup.";
     }
 
     private enum QuarantinePreviewStatusStyle
@@ -2679,6 +2689,17 @@ public partial class MainWindow : Window
         Success,
         Warning,
         Error
+    }
+
+    private static string FormatQuarantinePreviewStatusState(QuarantinePreviewStatusStyle style)
+    {
+        return style switch
+        {
+            QuarantinePreviewStatusStyle.Success => "success",
+            QuarantinePreviewStatusStyle.Warning => "warning",
+            QuarantinePreviewStatusStyle.Error => "error",
+            _ => "neutral"
+        };
     }
 
     private static string FormatRowCount(int count)

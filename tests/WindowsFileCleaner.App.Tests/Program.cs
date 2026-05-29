@@ -2170,8 +2170,10 @@ internal sealed class MainWindowSmokeTests
 
     private static void AssertReviewGridModeHelpText(MainWindow window, string message)
     {
+        var expectedStatusState = $"Status state: {window.ReviewGridModeStatusStyleValue.ToLowerInvariant()}";
         Assert(
             window.ReviewGridModeToolTipValue.Contains(window.ReviewGridModeTextValue, StringComparison.OrdinalIgnoreCase)
+            && window.ReviewGridModeToolTipValue.Contains(expectedStatusState, StringComparison.OrdinalIgnoreCase)
             && window.ReviewGridModeToolTipValue.Contains("read-only review context", StringComparison.OrdinalIgnoreCase)
             && window.ReviewGridModeToolTipValue.Contains("does not rescan", StringComparison.OrdinalIgnoreCase)
             && window.ReviewGridModeToolTipValue.Contains("modify files", StringComparison.OrdinalIgnoreCase)
@@ -2180,6 +2182,7 @@ internal sealed class MainWindowSmokeTests
             message + " Tooltip should mirror the current status text and safety boundary.");
         Assert(
             window.ReviewGridModeAutomationHelpTextValue.Contains(window.ReviewGridModeTextValue, StringComparison.OrdinalIgnoreCase)
+            && window.ReviewGridModeAutomationHelpTextValue.Contains(expectedStatusState, StringComparison.OrdinalIgnoreCase)
             && window.ReviewGridModeAutomationHelpTextValue.Contains("read-only review context", StringComparison.OrdinalIgnoreCase)
             && window.ReviewGridModeAutomationHelpTextValue.Contains("does not rescan", StringComparison.OrdinalIgnoreCase)
             && window.ReviewGridModeAutomationHelpTextValue.Contains("modify files", StringComparison.OrdinalIgnoreCase)
@@ -2190,8 +2193,10 @@ internal sealed class MainWindowSmokeTests
 
     private static void AssertQuarantinePreviewStatusHelpText(MainWindow window, string message)
     {
+        var expectedStatusState = $"Status state: {window.QuarantinePreviewStatusStyleValue.ToLowerInvariant()}";
         Assert(
             window.QuarantinePreviewStatusToolTipValue.Contains(window.QuarantinePreviewStatusTextValue, StringComparison.OrdinalIgnoreCase)
+            && window.QuarantinePreviewStatusToolTipValue.Contains(expectedStatusState, StringComparison.OrdinalIgnoreCase)
             && window.QuarantinePreviewStatusToolTipValue.Contains("read-only review context", StringComparison.OrdinalIgnoreCase)
             && window.QuarantinePreviewStatusToolTipValue.Contains("does not create folders", StringComparison.OrdinalIgnoreCase)
             && window.QuarantinePreviewStatusToolTipValue.Contains("move files", StringComparison.OrdinalIgnoreCase)
@@ -2201,6 +2206,7 @@ internal sealed class MainWindowSmokeTests
             message + " Tooltip should mirror the current status text and safety boundary.");
         Assert(
             window.QuarantinePreviewStatusAutomationHelpTextValue.Contains(window.QuarantinePreviewStatusTextValue, StringComparison.OrdinalIgnoreCase)
+            && window.QuarantinePreviewStatusAutomationHelpTextValue.Contains(expectedStatusState, StringComparison.OrdinalIgnoreCase)
             && window.QuarantinePreviewStatusAutomationHelpTextValue.Contains("read-only review context", StringComparison.OrdinalIgnoreCase)
             && window.QuarantinePreviewStatusAutomationHelpTextValue.Contains("does not create folders", StringComparison.OrdinalIgnoreCase)
             && window.QuarantinePreviewStatusAutomationHelpTextValue.Contains("move files", StringComparison.OrdinalIgnoreCase)

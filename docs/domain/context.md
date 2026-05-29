@@ -2560,6 +2560,7 @@ In the current build the gate can open only for recognized fixture Cleanup Scope
 - In WPF, keep the collapsed Quarantine shortlist header useful with shortlist, preview, current quarantined, and undo state, and mirror that header summary plus current header state into tooltip and automation help text with read-only/not-cleanup-approval wording.
 - In WPF, lightweight Quarantine shortlist header styling may distinguish neutral, success, information, and warning states, but must not imply cleanup approval or change preview/execution gates.
 - In WPF, show a compact inline Quarantine Preview readiness status in the Quarantine shortlist area so successful previews are visible without relying only on the status bar.
+- In WPF, inline Quarantine Preview readiness/status tooltip and automation help text should mirror the status text, name the current status state, and keep no-create/no-move/no-restore/no-delete/not-cleanup-approval wording available.
 - Keep inline preview readiness text aligned with preview/gate state: before preview it explains what to do next, after preview it summarizes included/blocked/redundant counts and blockers, and after fixture execution or undo it switches to fixture execution/undo evidence.
 - Keep inline preview readiness styling semantic and lightweight: neutral for waiting, success for ready/completed fixture evidence, warning for blockers or stale preview state, and error for preview creation failures; styling must not imply cleanup approval.
 - Keep inline preview readiness tooltip and automation help text synchronized with the dynamic status and explicit no-create/no-move/no-restore/no-delete/not-cleanup-approval boundaries.
@@ -2760,7 +2761,7 @@ It is reached with the `Current quarantined` button and returns to Storage Scan 
 - Keep Review Grid Mode Status visible above the main grid so users can tell whether they are reviewing Storage Scan rows or current-session quarantined entries.
 - When Storage Scan rows may be stale after fixture Quarantine execution, Review Grid Mode Status should point to available current-session quarantined entries instead of implying refreshed scan evidence.
 - Keep Review Grid Mode Status styling semantic and lightweight: neutral for ordinary scan rows, informational for current-session quarantined rows, and warning for stale or empty moved-entry states; styling must not imply cleanup approval.
-- Keep Review Grid Mode Status tooltip and automation help text synchronized with the dynamic status text and explicit that the status is read-only review context; it must not rescan, modify files, restore files, or approve cleanup.
+- Keep Review Grid Mode Status tooltip and automation help text synchronized with the dynamic status text, name the current status state, and make explicit that the status is read-only review context; it must not rescan, modify files, restore files, or approve cleanup.
 - Keep `Current quarantined` and `Back to scan rows` tooltips and automation help text dynamic enough to explain disabled states, current-session-only scope, read-only behavior, older-manifest discovery boundaries, and that returning to scan rows does not rescan or undo.
 - Keep this view read-only and current-session-only until a separate discovered-manifest design exists.
 
