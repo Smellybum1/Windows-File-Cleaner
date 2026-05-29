@@ -429,7 +429,7 @@ Initial candidate categories include cleanup scope roots, profile containers, Ap
 ### Cloud Sync Data
 
 Status: draft
-Last reviewed: 2026-05-29
+Last reviewed: 2026-05-30
 
 #### Definition
 
@@ -2995,6 +2995,7 @@ In the current WPF app, selected restore execution availability can be true only
 - Showing `Can execute: yes` for a selected fixture Restore Manifest after exact `RESTORE` confirmation.
 - Showing `Can execute: no` for real-profile or custom non-fixture selected Restore Manifests.
 - Showing an approval boundary that says selected manifest readiness is not restore approval.
+- Showing a visible hoverable `?` cue beside the WPF gate readout that mirrors the current waiting, closed, open, or restored gate state.
 - Reporting confirmation-readiness blockers before any future restore action can open.
 
 #### Non-examples
@@ -3022,6 +3023,7 @@ In the current WPF app, selected restore execution availability can be true only
 - Keep `CanExecute` false unless the exact `RESTORE` text matches, selected restore execution is implemented, and blockers are clear.
 - WPF must keep selected restore execution unavailable for real-profile and custom non-fixture manifests.
 - WPF should show `Execution scope status`, `Approval boundary`, and `Can execute` lines instead of asking users to infer fixture-only versus preview-only behavior from technical implementation fields.
+- In WPF, mirror concise Selected Restore Execution Gate tooltip/help text onto both the gate readout and visible non-clickable `?` help cue, including current gate state, exact `RESTORE`, fixture-only selected restore, real-profile/custom blockers, no-create/no-move/no-restore/no-delete/no-manifest-write/no-cleanup-folder wording, and not-restore-approval wording.
 
 ### Fixture-only Selected Restore Execution
 

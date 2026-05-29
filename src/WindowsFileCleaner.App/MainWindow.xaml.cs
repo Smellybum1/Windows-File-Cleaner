@@ -277,6 +277,7 @@ public partial class MainWindow : Window
         GetHelpCueAffordance("Quarantine Shortlist header", QuarantineShortlistHeaderHelpCue),
         GetHelpCueAffordance("Inline Quarantine Preview status", QuarantinePreviewStatusHelpCue),
         GetHelpCueAffordance("Quarantine Execution Gate", QuarantineExecutionGateHelpCue),
+        GetHelpCueAffordance("Selected Restore Execution Gate", SelectedRestoreExecutionGateHelpCue),
         GetHelpCueAffordance("Review Grid Mode Status", ReviewGridModeHelpCue),
         GetHelpCueAffordance("Real-profile preflight acknowledgement", RealProfilePreflightHelpCue),
         GetHelpCueAffordance("Scan gate summary", ScanGateSummaryHelpCue),
@@ -448,6 +449,16 @@ public partial class MainWindow : Window
     public string SelectedRestoreManifestReviewTextValue => SelectedRestoreManifestReviewText.Text;
 
     public string SelectedRestoreExecutionGateTextValue => SelectedRestoreExecutionGateText.Text;
+
+    public string SelectedRestoreExecutionGateToolTipValue => SelectedRestoreExecutionGateText.ToolTip?.ToString() ?? "";
+
+    public string SelectedRestoreExecutionGateAutomationHelpTextValue => AutomationProperties.GetHelpText(SelectedRestoreExecutionGateText);
+
+    public string SelectedRestoreExecutionGateHelpCueToolTipValue => SelectedRestoreExecutionGateHelpCue.ToolTip?.ToString() ?? "";
+
+    public string SelectedRestoreExecutionGateHelpCueAutomationNameValue => AutomationProperties.GetName(SelectedRestoreExecutionGateHelpCue);
+
+    public string SelectedRestoreExecutionGateHelpCueAutomationHelpTextValue => AutomationProperties.GetHelpText(SelectedRestoreExecutionGateHelpCue);
 
     public string CurrentQuarantineRootPath => QuarantineRootBox.Text;
 
@@ -1999,8 +2010,11 @@ public partial class MainWindow : Window
         _currentSelectedRestoreExecutionGate = SelectedRestoreExecutionGateBuilder.Build(
             _currentSelectedRestoreConfirmationDraft,
             SelectedRestoreConfirmationBox.Text);
-        SelectedRestoreExecutionGateText.Text = FormatSelectedRestoreExecutionGate(
-            _currentSelectedRestoreConfirmationDraft,
+        SetSelectedRestoreExecutionGateText(
+            FormatSelectedRestoreExecutionGate(
+                _currentSelectedRestoreConfirmationDraft,
+                _currentSelectedRestoreExecutionGate,
+                _currentSelectedRestoreResult),
             _currentSelectedRestoreExecutionGate,
             _currentSelectedRestoreResult);
         UpdateQuarantineManifestDiscoveryControls();
@@ -3110,8 +3124,21 @@ public partial class MainWindow : Window
         SetSelectedRestoreConfirmationTextSilently("");
         if (SelectedRestoreExecutionGateText is not null)
         {
-            SelectedRestoreExecutionGateText.Text = "Selected Restore Confirmation Draft appears after Preview selected restore gate.";
+            SetSelectedRestoreExecutionGateText("Selected Restore Confirmation Draft appears after Preview selected restore gate.");
         }
+    }
+
+    private void SetSelectedRestoreExecutionGateText(
+        string text,
+        SelectedRestoreExecutionGate? gate = null,
+        UndoQuarantineResult? selectedRestoreResult = null)
+    {
+        SelectedRestoreExecutionGateText.Text = text;
+        var helpText = FormatSelectedRestoreExecutionGateHelpText(gate, selectedRestoreResult);
+        SelectedRestoreExecutionGateText.ToolTip = helpText;
+        AutomationProperties.SetHelpText(SelectedRestoreExecutionGateText, helpText);
+        SelectedRestoreExecutionGateHelpCue.ToolTip = helpText;
+        AutomationProperties.SetHelpText(SelectedRestoreExecutionGateHelpCue, helpText);
     }
 
     private void SetRestoreManifestSelectionOptions(IReadOnlyList<RestoreManifestSummary> manifests)
@@ -3216,8 +3243,11 @@ public partial class MainWindow : Window
         _currentSelectedRestoreExecutionGate = SelectedRestoreExecutionGateBuilder.Build(
             _currentSelectedRestoreConfirmationDraft,
             SelectedRestoreConfirmationBox.Text);
-        SelectedRestoreExecutionGateText.Text = FormatSelectedRestoreExecutionGate(
-            _currentSelectedRestoreConfirmationDraft,
+        SetSelectedRestoreExecutionGateText(
+            FormatSelectedRestoreExecutionGate(
+                _currentSelectedRestoreConfirmationDraft,
+                _currentSelectedRestoreExecutionGate,
+                _currentSelectedRestoreResult),
             _currentSelectedRestoreExecutionGate,
             _currentSelectedRestoreResult);
         UpdateQuarantineManifestDiscoveryControls();
@@ -3289,8 +3319,11 @@ public partial class MainWindow : Window
                 .ToArray()
         };
         SetSelectedRestoreConfirmationTextSilently("");
-        SelectedRestoreExecutionGateText.Text = FormatSelectedRestoreExecutionGate(
-            _currentSelectedRestoreConfirmationDraft,
+        SetSelectedRestoreExecutionGateText(
+            FormatSelectedRestoreExecutionGate(
+                _currentSelectedRestoreConfirmationDraft,
+                _currentSelectedRestoreExecutionGate,
+                _currentSelectedRestoreResult),
             _currentSelectedRestoreExecutionGate,
             _currentSelectedRestoreResult);
         UpdateQuarantineManifestDiscoveryControls();
@@ -3732,6 +3765,23 @@ public partial class MainWindow : Window
         }
 
         return string.Join(Environment.NewLine, lines);
+    }
+
+    private static string FormatSelectedRestoreExecutionGateHelpText(
+        SelectedRestoreExecutionGate? gate,
+        UndoQuarantineResult? selectedRestoreResult = null)
+    {
+        var state = gate is null
+            ? "Preview selected restore gate after selected manifest readiness to review exact RESTORE confirmation."
+            : selectedRestoreResult is not null
+            ? "Fixture Selected Restore has already run; rediscover manifests and rescan before further review."
+            : gate.CanExecute
+            ? "Gate is open for fixture selected restore after selected manifest readiness and exact RESTORE confirmation."
+            : gate.HasBlockers
+            ? $"Gate is closed: {gate.Blockers[0]}"
+            : "Gate is closed until exact RESTORE confirmation.";
+
+        return $"Selected Restore Execution Gate: {state} The gate text is review context; only the separate fixture selected restore button can restore files after selected manifest readiness and exact RESTORE. Real-profile/custom selected restore remains unavailable. This cue does not create folders, move files, restore files, delete files, write manifests, clean up folders, or approve restore.";
     }
 
     private static string FormatSelectedRestoreExecutionScopeStatus(bool isExecutionImplemented)

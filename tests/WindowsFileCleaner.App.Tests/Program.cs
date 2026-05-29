@@ -128,6 +128,11 @@ internal sealed class MainWindowSmokeTests
                 "Collapsed Quarantine shortlist header should start with neutral styling before shortlist, preview, or current quarantine state exists.");
             AssertQuarantineShortlistHeaderHelpCue(window, "Startup Quarantine Shortlist header cue should expose the same help text as the header.");
             AssertReviewGridModeHelpText(window, "Review Grid Mode Status help text should expose the startup grid-mode boundary.");
+            AssertSelectedRestoreExecutionGateHelpCue(
+                window,
+                "Startup Selected Restore Execution Gate cue should expose preview-gate guidance.",
+                "Preview selected restore gate",
+                "Real-profile/custom selected restore remains unavailable");
             AssertHoverableHelpCueAffordances(window, "Startup circular help cues should expose hover affordances.");
             Assert(!window.CanStartStorageScan, "MainWindow should require preflight acknowledgement before scanning the real profile.");
             Assert(!window.CanCancelStorageScan, "MainWindow should not enable Cancel before a Storage Scan starts.");
@@ -2048,6 +2053,12 @@ internal sealed class MainWindowSmokeTests
                 && selectedGateText.Contains("Can execute: no", StringComparison.OrdinalIgnoreCase)
                 && selectedGateText.Contains("No files were modified", StringComparison.OrdinalIgnoreCase),
                 "Selected restore gate pane should show fixture confirmation evidence before exact RESTORE. Text: " + selectedGateText);
+            AssertSelectedRestoreExecutionGateHelpCue(
+                discoveryWindow,
+                "Fixture selected restore gate cue should expose exact RESTORE blocker before match.",
+                "Gate is closed",
+                "Type RESTORE",
+                "approve restore");
             discoveryWindow.SetSelectedRestoreConfirmationText("NOPE");
             Assert(
                 discoveryWindow.SelectedRestoreExecutionGateTextValue.Contains("Entered confirmation matches: no", StringComparison.OrdinalIgnoreCase),
@@ -2061,6 +2072,12 @@ internal sealed class MainWindowSmokeTests
                 && !matchedSelectedGateText.Contains("Execution implemented", StringComparison.OrdinalIgnoreCase)
                 && matchedSelectedGateText.Contains("Can execute: yes", StringComparison.OrdinalIgnoreCase),
                 "Exact RESTORE should open selected fixture restore execution. Text: " + matchedSelectedGateText);
+            AssertSelectedRestoreExecutionGateHelpCue(
+                discoveryWindow,
+                "Open fixture selected restore gate cue should expose fixture-only restore state.",
+                "Gate is open",
+                "fixture selected restore",
+                "Real-profile/custom selected restore remains unavailable");
             Assert(discoveryWindow.CanExecuteSelectedRestore, "Exact RESTORE should enable selected fixture restore execution.");
             Assert(
                 discoveryWindow.ExecuteSelectedRestoreButtonToolTipValue.Contains("Fixture selected restore only", StringComparison.OrdinalIgnoreCase)
@@ -2107,6 +2124,12 @@ internal sealed class MainWindowSmokeTests
                 && discoveryWindow.SelectedRestoreExecutionGateTextValue.Contains("Current scan, discovery, and readiness rows are stale", StringComparison.OrdinalIgnoreCase)
                 && discoveryWindow.SelectedRestoreExecutionGateTextValue.Contains("Selected restore row | Restored", StringComparison.OrdinalIgnoreCase),
                 "Selected restore gate pane should show fixture restore result evidence.");
+            AssertSelectedRestoreExecutionGateHelpCue(
+                discoveryWindow,
+                "Restored fixture selected restore gate cue should expose stale-state guidance.",
+                "Fixture Selected Restore has already run",
+                "rediscover manifests",
+                "rescan");
         }
         finally
         {
@@ -2199,11 +2222,23 @@ internal sealed class MainWindowSmokeTests
                 && window.SelectedRestoreExecutionGateTextValue.Contains("Approval boundary:", StringComparison.OrdinalIgnoreCase)
                 && window.SelectedRestoreExecutionGateTextValue.Contains("not restore approval", StringComparison.OrdinalIgnoreCase),
                 "Custom-scope selected restore gate should keep execution unavailable with visible scope wording.");
+            AssertSelectedRestoreExecutionGateHelpCue(
+                window,
+                "Custom-scope selected restore gate cue should expose preview-only blocker.",
+                "Gate is closed",
+                "Type RESTORE",
+                "Real-profile/custom selected restore remains unavailable");
             window.SetSelectedRestoreConfirmationText("RESTORE");
             Assert(
                 window.SelectedRestoreExecutionGateTextValue.Contains("Entered confirmation matches: yes", StringComparison.OrdinalIgnoreCase)
                 && window.SelectedRestoreExecutionGateTextValue.Contains("Can execute: no", StringComparison.OrdinalIgnoreCase),
                 "Custom-scope selected restore should match RESTORE but stay closed.");
+            AssertSelectedRestoreExecutionGateHelpCue(
+                window,
+                "Custom-scope selected restore gate cue should stay blocked after exact RESTORE.",
+                "Gate is closed",
+                "Selected restore execution is not available",
+                "approve restore");
             Assert(!window.CanExecuteSelectedRestore, "Custom-scope selected restore execution should remain unavailable.");
 
             window.ExecuteSelectedRestoreForCurrentSelection();
@@ -2348,7 +2383,7 @@ internal sealed class MainWindowSmokeTests
     private static void AssertHoverableHelpCueAffordances(MainWindow window, string message)
     {
         var affordances = window.HoverableHelpCueAffordances;
-        Assert(affordances.Count == 12, message + " Expected all twelve circular help cues to be tracked.");
+        Assert(affordances.Count == 13, message + " Expected all thirteen circular help cues to be tracked.");
 
         foreach (var affordance in affordances)
         {
@@ -2358,6 +2393,35 @@ internal sealed class MainWindowSmokeTests
             Assert(
                 affordance.InitialShowDelay == 250,
                 $"{message} {affordance.Name} should use a prompt tooltip initial delay.");
+        }
+    }
+
+    private static void AssertSelectedRestoreExecutionGateHelpCue(MainWindow window, string message, params string[] expectedSnippets)
+    {
+        Assert(
+            window.SelectedRestoreExecutionGateToolTipValue.Contains("Selected Restore Execution Gate", StringComparison.OrdinalIgnoreCase)
+            && window.SelectedRestoreExecutionGateToolTipValue.Contains("review context", StringComparison.OrdinalIgnoreCase)
+            && window.SelectedRestoreExecutionGateToolTipValue.Contains("exact RESTORE", StringComparison.OrdinalIgnoreCase)
+            && window.SelectedRestoreExecutionGateToolTipValue.Contains("approve restore", StringComparison.OrdinalIgnoreCase),
+            message + " Gate tooltip should expose selected restore gate scope and approval boundary.");
+        Assert(
+            string.Equals(window.SelectedRestoreExecutionGateAutomationHelpTextValue, window.SelectedRestoreExecutionGateToolTipValue, StringComparison.Ordinal),
+            message + " Gate automation help text should mirror the tooltip.");
+        Assert(
+            window.SelectedRestoreExecutionGateHelpCueAutomationNameValue.Contains("Selected Restore Execution Gate help cue", StringComparison.OrdinalIgnoreCase),
+            message + " Help cue should have a specific automation name.");
+        Assert(
+            string.Equals(window.SelectedRestoreExecutionGateHelpCueToolTipValue, window.SelectedRestoreExecutionGateToolTipValue, StringComparison.Ordinal),
+            message + " Help cue tooltip should mirror the gate tooltip.");
+        Assert(
+            string.Equals(window.SelectedRestoreExecutionGateHelpCueAutomationHelpTextValue, window.SelectedRestoreExecutionGateAutomationHelpTextValue, StringComparison.Ordinal),
+            message + " Help cue automation help text should mirror the gate help text.");
+
+        foreach (var expectedSnippet in expectedSnippets)
+        {
+            Assert(
+                window.SelectedRestoreExecutionGateHelpCueToolTipValue.Contains(expectedSnippet, StringComparison.OrdinalIgnoreCase),
+                message + $" Help cue tooltip should include expected wording: {expectedSnippet}");
         }
     }
 
