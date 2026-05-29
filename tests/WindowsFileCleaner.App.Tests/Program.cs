@@ -1451,6 +1451,7 @@ internal sealed class MainWindowSmokeTests
             Assert(!window.CanExecuteQuarantine, "Execution gate should close after the fixture execution attempt.");
             Assert(!window.CanEnterQuarantineConfirmation, "Confirmation text should disable after the fixture execution attempt.");
             Assert(window.CanUndoQuarantine, "Fixture undo should become available after a successful fixture execution.");
+            Assert(window.CanShowQuarantinedRows, "Current-session quarantined rows should be available after successful fixture execution.");
             Assert(!window.CanExportQuarantinePreview, "Preview export should disable after execution because preview state is stale.");
             Assert(window.ReviewShortlistCount == 0, "Fixture execution should clear Review Shortlist to prevent stale re-execution.");
             Assert(window.CurrentRestoreManifestStatus == RestoreManifestActionStatus.Completed.ToString(), "Successful fixture execution should complete the Restore Manifest.");
@@ -1474,19 +1475,46 @@ internal sealed class MainWindowSmokeTests
                 && window.QuarantineExecutionGateTextValue.Contains("Current scan results are stale", StringComparison.OrdinalIgnoreCase),
                 "Execution gate should retain execution evidence after the gate closes.");
 
+            window.ShowQuarantinedRows();
+            Assert(window.IsShowingQuarantinedRows, "Quarantined button should switch the main grid to quarantined rows.");
+            Assert(window.AreQuarantinedRowsVisible, "Quarantined rows grid should be visible in quarantined view.");
+            Assert(!window.AreScanRowsVisible, "Storage Scan rows grid should be hidden in quarantined view.");
+            Assert(window.DisplayedQuarantinedRows.Count == 2, "Quarantined view should show every current Moved Restore Manifest entry.");
+            Assert(
+                window.DisplayedQuarantinedRows.Any(row => row.OriginalPath.Equals(installer.FullPath, StringComparison.OrdinalIgnoreCase))
+                && window.DisplayedQuarantinedRows.Any(row => row.OriginalPath.Equals(pipCacheBody.FullPath, StringComparison.OrdinalIgnoreCase)),
+                "Quarantined view should include current-session original paths.");
+            Assert(
+                window.DisplayedQuarantinedRows.All(row => row.Status.Equals("Moved", StringComparison.OrdinalIgnoreCase))
+                && window.DisplayedQuarantinedRows.All(row => File.Exists(row.QuarantinePath)),
+                "Quarantined view should show currently moved entries and their quarantine paths.");
+            Assert(window.CanShowScanRows, "Back to scan rows should enable while quarantined rows are shown.");
+            Assert(!window.CanShowQuarantinedRows, "Quarantined button should disable while the quarantined view is already active.");
+
+            window.ShowScanRows();
+            Assert(!window.IsShowingQuarantinedRows, "Back to scan rows should leave quarantined view.");
+            Assert(window.AreScanRowsVisible, "Storage Scan rows grid should be visible after returning.");
+            Assert(!window.AreQuarantinedRowsVisible, "Quarantined rows grid should hide after returning.");
+
             RunDispatcherTask(() => window.RunStorageScanForCurrentScopeAsync());
             Assert(!File.Exists(installer.FullPath), "Post-execution rescan should reflect that the original fixture file moved.");
             Assert(!File.Exists(pipCacheBody.FullPath), "Post-execution rescan should reflect that every included source file moved.");
             Assert(window.CanUndoQuarantine, "Fixture undo should remain available after a post-execution rescan.");
+            Assert(window.CanShowQuarantinedRows, "Quarantined view should remain available after a post-execution rescan preserves current fixture undo.");
             Assert(window.CurrentRestoreManifestStatus == RestoreManifestActionStatus.Completed.ToString(), "Post-execution rescan should keep current Restore Manifest evidence for undo.");
             Assert(
                 window.CurrentStatusText.Contains("Undo fixture quarantine remains available", StringComparison.OrdinalIgnoreCase)
-                && window.CurrentStatusText.Contains("Quarantine execution area", StringComparison.OrdinalIgnoreCase),
+                && window.CurrentStatusText.Contains("Quarantine shortlist area", StringComparison.OrdinalIgnoreCase),
                 "Post-execution rescan status should point to the preserved current-fixture undo action.");
+
+            window.ShowQuarantinedRows();
+            Assert(window.DisplayedQuarantinedRows.Count == 2, "Quarantined view should still show current-session entries after rescan.");
 
             window.UndoQuarantineForCurrentExecution();
 
             Assert(!window.CanUndoQuarantine, "Fixture undo should disable after the undo attempt.");
+            Assert(window.DisplayedQuarantinedRows.Count == 0, "Quarantined view should clear current-session moved entries after undo.");
+            Assert(!window.CanShowQuarantinedRows, "Quarantined button should disable after undo leaves no current-session moved entries.");
             Assert(window.CurrentRestoreManifestStatus == RestoreManifestActionStatus.Restored.ToString(), "Successful fixture undo should mark the Restore Manifest restored.");
             Assert(File.Exists(installer.FullPath), "Fixture undo should restore the selected source file.");
             Assert(File.Exists(pipCacheBody.FullPath), "Fixture undo should restore every included Review Shortlist row.");

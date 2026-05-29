@@ -2700,6 +2700,53 @@ It is not a manifest discovery or history workflow.
 - Do not tie current-fixture undo availability to the moved source row remaining visible after rescan.
 - Do not clean up quarantine folders in this action.
 
+### Current-Session Quarantined Review
+
+Status: draft
+Last reviewed: 2026-05-29
+
+#### Definition
+
+Current-Session Quarantined Review is a read-only WPF grid view that shows entries still in `Moved` state from the current in-memory Restore Manifest.
+
+It is reached with the `Quarantined` button and returns to Storage Scan rows with `Back to scan rows`.
+
+#### Examples
+
+- After fixture-only WPF Quarantine execution moves two included Review Shortlist rows, `Quarantined` shows both original paths, quarantine paths, sizes, and manifest path.
+- After a post-execution rescan removes the moved source rows from Storage Scan results, `Quarantined` still shows the current-session moved entries while current-fixture undo is available.
+- After `Undo fixture quarantine`, the view becomes empty because no current-session entries remain in `Moved` state.
+
+#### Non-examples
+
+- Quarantine Manifest Discovery.
+- Persisted cleanup history.
+- Real-profile WPF Undo Quarantine.
+- Restore approval or restore execution.
+- A reason to keep moved source rows visible in refreshed Storage Scan results.
+
+#### Lifecycle
+
+- Available only when the current in-memory Restore Manifest has `Moved` entries.
+- Uses current-session fixture execution state; it does not scan discovered Restore Manifests from disk.
+- Remains available after a post-execution rescan while current-fixture undo remains available.
+- Shows only entries still recorded as `Moved`.
+- Becomes empty or unavailable after current-fixture undo restores those entries.
+- Does not create, move, delete, restore, write, or clean up files or folders.
+
+#### Relationships
+
+- Depends on Restore Manifest and Restore Manifest Entry Status.
+- Complements WPF Current Fixture Undo Quarantine by keeping moved entries visible even when Storage Scan rows refresh.
+- Older or discovered manifests remain under Quarantine Manifest Discovery, Selected Restore Manifest Review, and Restore Readiness Preview.
+
+#### Code implications
+
+- Use `QuarantinedItemRow` for WPF grid rows.
+- Use `ShowQuarantinedButton` and `BackToScanRowsButton` for the view switch.
+- Populate the view from current Restore Manifest entries with `RestoreManifestEntryStatus.Moved`.
+- Keep this view read-only and current-session-only until a separate discovered-manifest design exists.
+
 ### Quarantine Manifest Discovery
 
 Status: draft

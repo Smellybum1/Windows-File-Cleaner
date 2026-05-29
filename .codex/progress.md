@@ -6610,3 +6610,51 @@ Rejected ideas buffer:
 
 - Do not remove exact confirmation while clarifying shortlist-level execution.
 - Do not call the action `Quarantine all` without qualifying that only included rows move; blocked and redundant rows must stay out of execution.
+
+### 2026-05-29: Add Current-Session Quarantined Review
+
+Status: completed
+
+Evidence:
+
+- During manual fixture review, the user wanted Quarantine shortlist execution controls out of the selected-row detail scroll area and grouped with Quarantine Root.
+- The user also wanted a `Quarantined`-style button that switches the main grid to quarantined items, plus a way back to normal scan rows.
+- Existing docs already captured that current-fixture undo remains available after a post-execution rescan, but the visible controls were still too easy to miss.
+
+Implementation:
+
+- Added a dedicated Quarantine shortlist area above the main grid for Quarantine Root Selection, preview/export, `QUARANTINE` confirmation, `Quarantine included shortlist`, `Undo fixture quarantine`, and Quarantine Execution Gate text.
+- Removed the shortlist execution gate from the right selected-row scroll panel.
+- Added `Quarantined` and `Back to scan rows` controls.
+- Added a read-only current-session quarantined grid backed by current Restore Manifest entries still in `Moved` state.
+- Kept older/discovered manifest review in the existing Quarantine Manifest Discovery and readiness panes.
+- Kept real-profile Quarantine execution, real-profile Undo Quarantine, permanent deletion, and cleanup history unavailable.
+
+Verification:
+
+- `dotnet build tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj "-p:BaseOutputPath=D:/Codex/Windows File Cleaner/.local/test-bin/app-tests/"` passed.
+- `D:\Codex\Windows File Cleaner\.local\test-bin\app-tests\Debug\net8.0-windows\WindowsFileCleaner.App.Tests.exe` passed.
+- `dotnet build WindowsFileCleaner.sln --no-restore "-p:BaseOutputPath=D:/Codex/Windows File Cleaner/.local/test-bin/solution/"` passed.
+- `git -c safe.directory='D:/Codex/Windows File Cleaner' diff --check` passed with line-ending normalization warnings only.
+
+Docs updated:
+
+- `README.md`
+- `docs/domain/context.md`
+- `docs/domain/glossary.md`
+- `docs/features/2026-05-29-quarantined-review-mode.md`
+- `docs/codex/thread-handoff.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No ADR added. This is a reversible UI placement and read-only current-session review packet under existing fixture-only execution and undo ADRs 0009 and 0010.
+
+Open questions:
+
+- Should a future `Quarantined` view include discovered Restore Manifest entries, or should discovered manifests remain in the existing manifest discovery/readiness panes?
+
+Rejected ideas buffer:
+
+- Do not make moved source rows persist in refreshed Storage Scan results.
+- Do not use the `Quarantined` button as cleanup history or broad manifest restore.

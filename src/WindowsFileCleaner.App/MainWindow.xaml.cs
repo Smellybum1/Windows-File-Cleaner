@@ -50,6 +50,7 @@ public partial class MainWindow : Window
     private bool _isUpdatingRestoreManifestSelectionBox;
     private bool _isUpdatingSelectedRestoreConfirmationBox;
     private bool _isWindowInitialized;
+    private bool _isShowingQuarantinedRows;
 
     public MainWindow()
         : this(StorageScanOptions.DefaultForCurrentUser().CleanupScopePath)
@@ -63,6 +64,7 @@ public partial class MainWindow : Window
         _isWindowInitialized = true;
         ScopePathBox.Text = initialCleanupScopePath;
         ResultsGrid.ItemsSource = Array.Empty<StorageEntryRow>();
+        QuarantinedGrid.ItemsSource = Array.Empty<QuarantinedItemRow>();
         UpdateCategoryFilterOptions();
         UpdateEntryTypeFilterOptions();
         UpdateSizeThresholdFilterOptions();
@@ -71,6 +73,7 @@ public partial class MainWindow : Window
         UpdateShortlistSafetyMix();
         UpdateQuarantineExecutionGate();
         UpdateQuarantineManifestDiscoveryControls();
+        UpdateQuarantinedViewControls();
     }
 
     public string CurrentCleanupScopePath => ScopePathBox.Text;
@@ -203,6 +206,16 @@ public partial class MainWindow : Window
         ? rows.ToArray()
         : [];
 
+    public IReadOnlyList<QuarantinedItemRow> DisplayedQuarantinedRows => QuarantinedGrid.ItemsSource is IEnumerable<QuarantinedItemRow> rows
+        ? rows.ToArray()
+        : [];
+
+    public bool IsShowingQuarantinedRows => _isShowingQuarantinedRows;
+
+    public bool AreScanRowsVisible => ResultsGrid.Visibility == Visibility.Visible;
+
+    public bool AreQuarantinedRowsVisible => QuarantinedGrid.Visibility == Visibility.Visible;
+
     public string? ContentsColumnSortMemberPath => ResultsGrid.Columns
         .OfType<DataGridTextColumn>()
         .FirstOrDefault(column => string.Equals(column.Header?.ToString(), "Contents", StringComparison.OrdinalIgnoreCase))
@@ -315,6 +328,18 @@ public partial class MainWindow : Window
     public IReadOnlyList<string> CurrentQuarantinePaths => _currentRestoreManifest?.Entries.Select(entry => entry.QuarantinePath).ToArray() ?? [];
 
     public bool CanUndoQuarantine => UndoQuarantineButton.IsEnabled;
+
+    public bool CanShowQuarantinedRows => ShowQuarantinedButton.IsEnabled;
+
+    public bool CanShowScanRows => BackToScanRowsButton.IsEnabled;
+
+    public string ShowQuarantinedButtonToolTipValue => ShowQuarantinedButton.ToolTip?.ToString() ?? "";
+
+    public string ShowQuarantinedButtonAutomationHelpTextValue => AutomationProperties.GetHelpText(ShowQuarantinedButton);
+
+    public string BackToScanRowsButtonToolTipValue => BackToScanRowsButton.ToolTip?.ToString() ?? "";
+
+    public string BackToScanRowsButtonAutomationHelpTextValue => AutomationProperties.GetHelpText(BackToScanRowsButton);
 
     public string QuarantineConfirmationToolTipValue => QuarantineConfirmationBox.ToolTip?.ToString() ?? "";
 
@@ -651,18 +676,22 @@ public partial class MainWindow : Window
         var rows = BuildDisplayedRows(matchedEntries);
 
         ResultsGrid.ItemsSource = rows;
+        _isShowingQuarantinedRows = false;
+        RefreshQuarantinedRowsIfVisible();
+        UpdateMainGridVisibility();
         TotalSizeText.Text = result.TotalSizeDisplay;
         FolderCountText.Text = result.FolderCount.ToString("N0");
         FileCountText.Text = result.FileCount.ToString("N0");
         AccessIssueCountText.Text = result.InaccessibleCount.ToString("N0");
         StatusText.Text = CanUndoCurrentQuarantineExecution()
-            ? $"{FormatScanCompletedStatus(matchedEntries.Count)} Undo fixture quarantine remains available in the Quarantine execution area."
+            ? $"{FormatScanCompletedStatus(matchedEntries.Count)} Undo fixture quarantine remains available in the Quarantine shortlist area."
             : FormatScanCompletedStatus(matchedEntries.Count);
         UpdateFilterButtons();
         UpdateFilterSummary(matchedEntries);
         UpdateReviewMix();
         UpdateSafetySummary();
         UpdateShortlistControls();
+        UpdateQuarantinedViewControls();
 
         if (rows.Length > 0)
         {
@@ -785,6 +814,16 @@ public partial class MainWindow : Window
     private void PreviewQuarantineButton_Click(object sender, RoutedEventArgs e)
     {
         PreviewQuarantineForReviewShortlist();
+    }
+
+    private void ShowQuarantinedButton_Click(object sender, RoutedEventArgs e)
+    {
+        ShowQuarantinedRows();
+    }
+
+    private void BackToScanRowsButton_Click(object sender, RoutedEventArgs e)
+    {
+        ShowScanRows();
     }
 
     public void AddSelectedPathToReviewShortlist()
@@ -1162,25 +1201,48 @@ public partial class MainWindow : Window
         if (ResultsGrid.SelectedItem is not StorageEntryRow row)
         {
             _selectedRow = null;
-            DetailTitleText.Text = "Select a result";
-            DetailPathText.Text = "";
-            DetailPathContextText.Text = "";
-            DetailMetaText.Text = "";
-            DetailEvidenceText.Text = "";
-            DetailGuidanceText.Text = "";
-            DetailSubtreeSummaryText.Text = "";
-            DetailChildrenText.Text = "";
-            DetailHotspotTrailText.Text = "";
-            FilePreviewText.Text = "Preview appears after selecting a file and using Preview file.";
-            CopyPathButton.IsEnabled = false;
-            ShowChildrenButton.IsEnabled = false;
-            ShowDescendantsButton.IsEnabled = false;
-            PreviewFileButton.IsEnabled = false;
-            OpenInExplorerButton.IsEnabled = false;
+            ShowEmptyStorageEntryDetails();
             UpdateShortlistControls();
             return;
         }
 
+        ShowStorageEntryDetails(row);
+        UpdateShortlistControls();
+    }
+
+    private void QuarantinedGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (!_isShowingQuarantinedRows)
+        {
+            return;
+        }
+
+        _selectedRow = null;
+        DisableSelectedStorageRowActions();
+
+        if (QuarantinedGrid.SelectedItem is not QuarantinedItemRow row)
+        {
+            ShowEmptyQuarantinedDetails();
+            return;
+        }
+
+        DetailTitleText.Text = row.Name;
+        DetailPathText.Text = row.OriginalPath;
+        DetailPathContextText.Text =
+            $"Original: {row.OriginalPath}\n" +
+            $"Quarantine: {row.QuarantinePath}\n" +
+            $"Restore Manifest: {row.ManifestPath}";
+        DetailMetaText.Text = $"{row.Size} | {row.Type} | Restore Manifest entry status: {row.Status}";
+        DetailEvidenceText.Text = "Current-session quarantined item from the in-memory Restore Manifest. This review view is read-only.";
+        DetailGuidanceText.Text = "Use Undo fixture quarantine from the Quarantine shortlist area to restore current fixture entries when available. Use Back to scan rows to return to Storage Scan rows.";
+        DetailSubtreeSummaryText.Text = "Quarantined rows do not have Storage Scan descendant summaries in this view.";
+        DetailChildrenText.Text = "Quarantined rows do not show scanned child breakdowns in this view.";
+        DetailHotspotTrailText.Text = "Quarantined rows do not show scanned hotspot trails in this view.";
+        FilePreviewText.Text = "File preview is available from Storage Scan rows only. No files were modified.";
+    }
+
+    private void ShowStorageEntryDetails(StorageEntryRow row)
+    {
         _selectedRow = row;
         DetailTitleText.Text = row.Entry.Name;
         DetailPathText.Text = row.FullPath;
@@ -1196,7 +1258,48 @@ public partial class MainWindow : Window
         FilePreviewText.Text = row.Entry.IsDirectory
             ? "Folders do not have file content previews. Review Largest immediate children instead."
             : "Preview is loaded only when you use Preview file. No files were modified.";
-        UpdateShortlistControls();
+    }
+
+    private void ShowEmptyStorageEntryDetails()
+    {
+        DetailTitleText.Text = "Select a result";
+        DetailPathText.Text = "";
+        DetailPathContextText.Text = "";
+        DetailMetaText.Text = "";
+        DetailEvidenceText.Text = "";
+        DetailGuidanceText.Text = "";
+        DetailSubtreeSummaryText.Text = "";
+        DetailChildrenText.Text = "";
+        DetailHotspotTrailText.Text = "";
+        FilePreviewText.Text = "Preview appears after selecting a file and using Preview file.";
+        DisableSelectedStorageRowActions();
+    }
+
+    private void ShowEmptyQuarantinedDetails()
+    {
+        _selectedRow = null;
+        DetailTitleText.Text = "No quarantined item selected";
+        DetailPathText.Text = "";
+        DetailPathContextText.Text = "Current-session quarantined rows appear after fixture Quarantine execution records Moved entries.";
+        DetailMetaText.Text = "";
+        DetailEvidenceText.Text = "This view is read-only and current-session-only. Use Discover manifests for older Restore Manifest review.";
+        DetailGuidanceText.Text = "Use Back to scan rows to return to Storage Scan rows.";
+        DetailSubtreeSummaryText.Text = "";
+        DetailChildrenText.Text = "";
+        DetailHotspotTrailText.Text = "";
+        FilePreviewText.Text = "File preview is available from Storage Scan rows only. No files were modified.";
+        DisableSelectedStorageRowActions();
+    }
+
+    private void DisableSelectedStorageRowActions()
+    {
+        AddToShortlistButton.IsEnabled = false;
+        RemoveFromShortlistButton.IsEnabled = false;
+        CopyPathButton.IsEnabled = false;
+        ShowChildrenButton.IsEnabled = false;
+        ShowDescendantsButton.IsEnabled = false;
+        PreviewFileButton.IsEnabled = false;
+        OpenInExplorerButton.IsEnabled = false;
     }
 
     private void CopyPathButton_Click(object sender, RoutedEventArgs e)
@@ -1347,6 +1450,7 @@ public partial class MainWindow : Window
         UpdateSafetyShortcutButtons();
         UpdateQuarantineExecutionGate();
         UpdateQuarantineManifestDiscoveryControls();
+        UpdateQuarantinedViewControls();
     }
 
     private string? GetInitialBrowseDirectory()
@@ -1718,6 +1822,42 @@ public partial class MainWindow : Window
         StatusText.Text = "Review view reset. Review Shortlist was kept. No files were modified.";
     }
 
+    public void ShowQuarantinedRows()
+    {
+        var rows = BuildCurrentQuarantinedRows();
+        QuarantinedGrid.ItemsSource = rows;
+        _isShowingQuarantinedRows = true;
+        UpdateMainGridVisibility();
+        UpdateQuarantinedViewControls();
+        StatusText.Text = rows.Count == 0
+            ? "No current-session quarantined items are available. Use Discover manifests for older Restore Manifest review. No files were modified."
+            : $"Showing {rows.Count:N0} current-session quarantined item(s) from the current fixture Restore Manifest. Use Back to scan rows to return. No files were modified.";
+
+        if (rows.Count > 0)
+        {
+            QuarantinedGrid.SelectedIndex = 0;
+        }
+        else
+        {
+            ShowEmptyQuarantinedDetails();
+        }
+    }
+
+    public void ShowScanRows()
+    {
+        _isShowingQuarantinedRows = false;
+        UpdateMainGridVisibility();
+        UpdateQuarantinedViewControls();
+        if (ResultsGrid.SelectedItem is StorageEntryRow row)
+        {
+            ShowStorageEntryDetails(row);
+        }
+
+        StatusText.Text = _currentReview is null
+            ? "Storage Scan rows appear after a scan. No files were modified."
+            : "Showing Storage Scan rows. No files were modified.";
+    }
+
     public void ApplySafetyReviewShortcut(StorageScanSafetyShortcut shortcut)
     {
         if (_currentReview is null)
@@ -1803,6 +1943,56 @@ public partial class MainWindow : Window
         {
             ResultsGrid.SelectedItem = null;
         }
+    }
+
+    private void RefreshQuarantinedRowsIfVisible()
+    {
+        if (!_isShowingQuarantinedRows)
+        {
+            return;
+        }
+
+        QuarantinedGrid.ItemsSource = BuildCurrentQuarantinedRows();
+        if (QuarantinedGrid.Items.Count > 0)
+        {
+            QuarantinedGrid.SelectedIndex = 0;
+        }
+        else
+        {
+            ShowEmptyQuarantinedDetails();
+        }
+    }
+
+    private void UpdateMainGridVisibility()
+    {
+        ResultsGrid.Visibility = _isShowingQuarantinedRows ? Visibility.Collapsed : Visibility.Visible;
+        QuarantinedGrid.Visibility = _isShowingQuarantinedRows ? Visibility.Visible : Visibility.Collapsed;
+    }
+
+    private void UpdateQuarantinedViewControls()
+    {
+        if (ShowQuarantinedButton is null)
+        {
+            return;
+        }
+
+        ShowQuarantinedButton.IsEnabled = !_isScanning
+            && !_isShowingQuarantinedRows
+            && BuildCurrentQuarantinedRows().Count > 0;
+        BackToScanRowsButton.IsEnabled = !_isScanning && _isShowingQuarantinedRows;
+    }
+
+    private IReadOnlyList<QuarantinedItemRow> BuildCurrentQuarantinedRows()
+    {
+        if (_currentRestoreManifest is null)
+        {
+            return [];
+        }
+
+        return _currentRestoreManifest.Entries
+            .Where(entry => entry.Status == RestoreManifestEntryStatus.Moved)
+            .Select(entry => new QuarantinedItemRow(entry, _currentRestoreManifest.ManifestPath))
+            .ToArray();
     }
 
     private void UpdateFilterButtons()
@@ -2287,6 +2477,8 @@ public partial class MainWindow : Window
 
         ExportQuarantinePreviewButton.IsEnabled = false;
         UpdateQuarantineExecutionGate();
+        RefreshQuarantinedRowsIfVisible();
+        UpdateQuarantinedViewControls();
     }
 
     private void ClearQuarantineManifestDiscovery()
@@ -2461,6 +2653,8 @@ public partial class MainWindow : Window
         QuarantinePreviewText.Text = FormatQuarantineExecutionResult(_currentQuarantineExecutionResult);
         UpdateShortlistControls();
         UpdateQuarantineExecutionGate();
+        RefreshQuarantinedRowsIfVisible();
+        UpdateQuarantinedViewControls();
 
         var result = _currentQuarantineExecutionResult;
         StatusText.Text = result.Succeeded
@@ -2516,6 +2710,8 @@ public partial class MainWindow : Window
         QuarantinePreviewText.Text = FormatUndoQuarantineResult(_currentUndoQuarantineResult);
         UpdateShortlistControls();
         UpdateQuarantineExecutionGate();
+        RefreshQuarantinedRowsIfVisible();
+        UpdateQuarantinedViewControls();
 
         var result = _currentUndoQuarantineResult;
         StatusText.Text = result.Succeeded

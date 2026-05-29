@@ -418,57 +418,124 @@
                             AutomationProperties.HelpText="Clears only the in-memory Review Shortlist for this scan; this does not delete, move, quarantine, or restore files."
                             ToolTipService.ShowOnDisabled="True"
                             Click="ClearShortlistButton_Click" />
-                    <Button x:Name="PreviewQuarantineButton"
-                            Content="Preview shortlist quarantine"
-                            MinWidth="205"
-                            IsEnabled="False"
-                            ToolTip="Builds a read-only Quarantine Preview from every row in the Review Shortlist; preview does not create folders, move files, or approve cleanup."
-                            AutomationProperties.HelpText="Builds a read-only Quarantine Preview from every row in the Review Shortlist; preview does not create folders, move files, or approve cleanup."
-                            ToolTipService.ShowOnDisabled="True"
-                            Click="PreviewQuarantineButton_Click" />
-                    <StackPanel Margin="6,0,0,0"
-                                VerticalAlignment="Center">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="Quarantine root"
-                                       VerticalAlignment="Center"
-                                       Foreground="#526171"
-                                       Margin="0,0,8,0" />
-                            <TextBox x:Name="QuarantineRootBox"
-                                     Width="260"
-                                     Height="30"
-                                     VerticalContentAlignment="Center"
-                                     Text="D:\WindowsFileCleanerQuarantine"
-                                     ToolTip="Read-only preview destination root. Preview does not create this folder or move files."
-                                     AutomationProperties.HelpText="Read-only preview destination root. Preview does not create this folder or move files."
-                                     TextChanged="QuarantineRootBox_TextChanged" />
-                            <Button x:Name="BrowseQuarantineRootButton"
-                                    Content="Browse..."
-                                    MinWidth="100"
-                                    ToolTip="Chooses a Quarantine Root for preview paths only; browsing does not create folders, move files, or approve cleanup."
-                                    AutomationProperties.HelpText="Chooses a Quarantine Root for preview paths only; browsing does not create folders, move files, or approve cleanup."
-                                    ToolTipService.ShowOnDisabled="True"
-                                    Click="BrowseQuarantineRootButton_Click" />
-                        </StackPanel>
-                        <TextBlock x:Name="QuarantineRootSafetyNoteText"
-                                   Width="520"
-                                   Foreground="#526171"
-                                   Margin="0,4,0,0"
-                                   TextWrapping="Wrap" />
-                    </StackPanel>
-                    <Button x:Name="ExportQuarantinePreviewButton"
-                            Content="Export preview"
-                            MinWidth="120"
-                            IsEnabled="False"
-                            ToolTip="Exports the current Quarantine Preview as a CSV report only; it does not execute Quarantine or modify scanned files."
-                            AutomationProperties.HelpText="Exports the current Quarantine Preview as a CSV report only; it does not execute Quarantine or modify scanned files."
-                            ToolTipService.ShowOnDisabled="True"
-                            Click="ExportQuarantinePreviewButton_Click" />
                 </WrapPanel>
                 <TextBlock x:Name="ShortlistSafetyMixText"
                            Text="Review Shortlist is empty. Shortlist safety mix appears after rows are shortlisted."
                            Foreground="#526171"
                            Margin="0,6,0,0"
                            TextWrapping="Wrap" />
+                <Border x:Name="QuarantineShortlistArea"
+                        Background="#F7FAFD"
+                        BorderBrush="#DCE3EA"
+                        BorderThickness="1"
+                        Padding="12"
+                        Margin="0,10,0,0">
+                    <StackPanel>
+                        <TextBlock Text="Quarantine shortlist"
+                                   FontWeight="SemiBold"
+                                   Margin="0,0,0,6" />
+                        <WrapPanel>
+                            <StackPanel Margin="0,0,8,6"
+                                        VerticalAlignment="Center">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Quarantine root"
+                                               VerticalAlignment="Center"
+                                               Foreground="#526171"
+                                               Margin="0,0,8,0" />
+                                    <TextBox x:Name="QuarantineRootBox"
+                                             Width="330"
+                                             Height="30"
+                                             VerticalContentAlignment="Center"
+                                             Text="D:\WindowsFileCleanerQuarantine"
+                                             ToolTip="Read-only preview destination root. Preview does not create this folder or move files."
+                                             AutomationProperties.HelpText="Read-only preview destination root. Preview does not create this folder or move files."
+                                             TextChanged="QuarantineRootBox_TextChanged" />
+                                    <Button x:Name="BrowseQuarantineRootButton"
+                                            Content="Browse..."
+                                            MinWidth="100"
+                                            ToolTip="Chooses a Quarantine Root for preview paths only; browsing does not create folders, move files, or approve cleanup."
+                                            AutomationProperties.HelpText="Chooses a Quarantine Root for preview paths only; browsing does not create folders, move files, or approve cleanup."
+                                            ToolTipService.ShowOnDisabled="True"
+                                            Click="BrowseQuarantineRootButton_Click" />
+                                </StackPanel>
+                                <TextBlock x:Name="QuarantineRootSafetyNoteText"
+                                           Width="620"
+                                           Foreground="#526171"
+                                           Margin="0,4,0,0"
+                                           TextWrapping="Wrap" />
+                            </StackPanel>
+                            <Button x:Name="PreviewQuarantineButton"
+                                    Content="Preview shortlist quarantine"
+                                    MinWidth="205"
+                                    IsEnabled="False"
+                                    ToolTip="Builds a read-only Quarantine Preview from every row in the Review Shortlist; preview does not create folders, move files, or approve cleanup."
+                                    AutomationProperties.HelpText="Builds a read-only Quarantine Preview from every row in the Review Shortlist; preview does not create folders, move files, or approve cleanup."
+                                    ToolTipService.ShowOnDisabled="True"
+                                    Click="PreviewQuarantineButton_Click" />
+                            <Button x:Name="ExportQuarantinePreviewButton"
+                                    Content="Export preview"
+                                    MinWidth="120"
+                                    IsEnabled="False"
+                                    ToolTip="Exports the current Quarantine Preview as a CSV report only; it does not execute Quarantine or modify scanned files."
+                                    AutomationProperties.HelpText="Exports the current Quarantine Preview as a CSV report only; it does not execute Quarantine or modify scanned files."
+                                    ToolTipService.ShowOnDisabled="True"
+                                    Click="ExportQuarantinePreviewButton_Click" />
+                            <Button x:Name="ShowQuarantinedButton"
+                                    Content="Quarantined"
+                                    MinWidth="120"
+                                    IsEnabled="False"
+                                    ToolTip="Shows current-session quarantined Restore Manifest entries in the main grid; this is read-only and does not restore, move, or delete files."
+                                    AutomationProperties.HelpText="Shows current-session quarantined Restore Manifest entries in the main grid; this is read-only and does not restore, move, or delete files."
+                                    ToolTipService.ShowOnDisabled="True"
+                                    Click="ShowQuarantinedButton_Click" />
+                            <Button x:Name="BackToScanRowsButton"
+                                    Content="Back to scan rows"
+                                    MinWidth="145"
+                                    IsEnabled="False"
+                                    ToolTip="Returns the main grid to completed Storage Scan rows without rescanning or modifying files."
+                                    AutomationProperties.HelpText="Returns the main grid to completed Storage Scan rows without rescanning or modifying files."
+                                    ToolTipService.ShowOnDisabled="True"
+                                    Click="BackToScanRowsButton_Click" />
+                        </WrapPanel>
+                        <WrapPanel Margin="0,6,0,0">
+                            <TextBlock Text="Shortlist confirmation"
+                                       VerticalAlignment="Center"
+                                       Foreground="#526171"
+                                       Margin="0,0,8,0" />
+                            <TextBox x:Name="QuarantineConfirmationBox"
+                                     Width="170"
+                                     Height="30"
+                                     IsEnabled="False"
+                                     VerticalContentAlignment="Center"
+                                     ToolTip="Type QUARANTINE once to enable fixture-only quarantine for all included Review Shortlist rows; real-profile and custom execution stay unavailable in this build."
+                                     AutomationProperties.HelpText="Type QUARANTINE once to enable fixture-only quarantine for all included Review Shortlist rows; real-profile and custom execution stay unavailable in this build."
+                                     ToolTipService.ShowOnDisabled="True"
+                                     TextChanged="QuarantineConfirmationBox_TextChanged" />
+                            <Button x:Name="ExecuteQuarantineButton"
+                                    Content="Quarantine included shortlist"
+                                    MinWidth="220"
+                                    IsEnabled="False"
+                                    ToolTip="Fixture-only button that moves all included rows from the current Review Shortlist preview after exact QUARANTINE; real-profile/custom execution remains unavailable."
+                                    AutomationProperties.HelpText="Fixture-only button that moves all included rows from the current Review Shortlist preview after exact QUARANTINE; real-profile/custom execution remains unavailable."
+                                    ToolTipService.ShowOnDisabled="True"
+                                    Click="ExecuteQuarantineButton_Click" />
+                            <Button x:Name="UndoQuarantineButton"
+                                    Content="Undo fixture quarantine"
+                                    MinWidth="170"
+                                    IsEnabled="False"
+                                    ToolTip="Current fixture execution only; discovered Restore Manifests and real-profile/custom undo remain unavailable."
+                                    AutomationProperties.HelpText="Current fixture execution only; discovered Restore Manifests and real-profile/custom undo remain unavailable."
+                                    ToolTipService.ShowOnDisabled="True"
+                                    Click="UndoQuarantineButton_Click" />
+                        </WrapPanel>
+                        <TextBlock x:Name="QuarantineExecutionGateText"
+                                   Text="Execution gate appears after using Preview quarantine."
+                                   FontFamily="Consolas"
+                                   FontSize="12"
+                                   Margin="0,6,0,0"
+                                   TextWrapping="Wrap" />
+                    </StackPanel>
+                </Border>
             </StackPanel>
 
             <DataGrid x:Name="ResultsGrid"
@@ -499,6 +566,34 @@
                     <DataGridTextColumn Header="Categories" Binding="{Binding Categories}" Width="220" />
                     <DataGridTextColumn Header="Access" Binding="{Binding AccessStatus}" Width="105" />
                     <DataGridTextColumn Header="Modified" Binding="{Binding LastModified}" Width="135" />
+                </DataGrid.Columns>
+            </DataGrid>
+
+            <DataGrid x:Name="QuarantinedGrid"
+                      Grid.Row="1"
+                      AutoGenerateColumns="False"
+                      CanUserAddRows="False"
+                      CanUserDeleteRows="False"
+                      IsReadOnly="True"
+                      GridLinesVisibility="Horizontal"
+                      HeadersVisibility="Column"
+                      SelectionMode="Single"
+                      SelectionChanged="QuarantinedGrid_SelectionChanged"
+                      Background="White"
+                      BorderBrush="#DCE3EA"
+                      HorizontalGridLinesBrush="#E8EEF4"
+                      RowHeight="24"
+                      BorderThickness="1"
+                      Visibility="Collapsed">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="105" />
+                    <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="1.2*" />
+                    <DataGridTextColumn Header="Relative path" Binding="{Binding RelativePath}" Width="1.5*" />
+                    <DataGridTextColumn Header="Type" Binding="{Binding Type}" Width="90" />
+                    <DataGridTextColumn Header="Size" Binding="{Binding Size}" SortMemberPath="SizeBytes" Width="100" />
+                    <DataGridTextColumn Header="Original path" Binding="{Binding OriginalPath}" Width="2*" />
+                    <DataGridTextColumn Header="Quarantine path" Binding="{Binding QuarantinePath}" Width="2*" />
+                    <DataGridTextColumn Header="Manifest" Binding="{Binding ManifestPath}" Width="1.6*" />
                 </DataGrid.Columns>
             </DataGrid>
 
@@ -650,46 +745,6 @@
                                        Text="Preview and draft readiness appear after using Preview quarantine."
                                        FontFamily="Consolas"
                                        FontSize="12"
-                                       TextWrapping="Wrap" />
-                            <TextBlock Text="Quarantine shortlist execution gate"
-                                       FontWeight="SemiBold"
-                                       Margin="0,18,0,4" />
-                            <WrapPanel>
-                                <TextBlock Text="Shortlist confirmation"
-                                           VerticalAlignment="Center"
-                                           Foreground="#526171"
-                                           Margin="0,0,8,0" />
-                                <TextBox x:Name="QuarantineConfirmationBox"
-                                         Width="170"
-                                         Height="30"
-                                         IsEnabled="False"
-                                         VerticalContentAlignment="Center"
-                                         ToolTip="Type QUARANTINE once to enable fixture-only quarantine for all included Review Shortlist rows; real-profile and custom execution stay unavailable in this build."
-                                         AutomationProperties.HelpText="Type QUARANTINE once to enable fixture-only quarantine for all included Review Shortlist rows; real-profile and custom execution stay unavailable in this build."
-                                         ToolTipService.ShowOnDisabled="True"
-                                         TextChanged="QuarantineConfirmationBox_TextChanged" />
-                                <Button x:Name="ExecuteQuarantineButton"
-                                        Content="Quarantine included shortlist"
-                                        MinWidth="220"
-                                        IsEnabled="False"
-                                        ToolTip="Fixture-only button that moves all included rows from the current Review Shortlist preview after exact QUARANTINE; real-profile/custom execution remains unavailable."
-                                        AutomationProperties.HelpText="Fixture-only button that moves all included rows from the current Review Shortlist preview after exact QUARANTINE; real-profile/custom execution remains unavailable."
-                                        ToolTipService.ShowOnDisabled="True"
-                                        Click="ExecuteQuarantineButton_Click" />
-                                <Button x:Name="UndoQuarantineButton"
-                                        Content="Undo fixture quarantine"
-                                        MinWidth="170"
-                                        IsEnabled="False"
-                                        ToolTip="Current fixture execution only; discovered Restore Manifests and real-profile/custom undo remain unavailable."
-                                        AutomationProperties.HelpText="Current fixture execution only; discovered Restore Manifests and real-profile/custom undo remain unavailable."
-                                        ToolTipService.ShowOnDisabled="True"
-                                        Click="UndoQuarantineButton_Click" />
-                            </WrapPanel>
-                            <TextBlock x:Name="QuarantineExecutionGateText"
-                                       Text="Execution gate appears after using Preview quarantine."
-                                       FontFamily="Consolas"
-                                       FontSize="12"
-                                       Margin="0,6,0,0"
                                        TextWrapping="Wrap" />
                             <TextBlock Text="Quarantine manifest discovery"
                                        FontWeight="SemiBold"
