@@ -90,6 +90,7 @@ What changed:
 - Later packet `2026-05-30-review-shortlist-safety-mix-help-text.md` updated the checklist to call out Review Shortlist Safety Mix tooltip/help text.
 - Later packet `2026-05-30-review-mix-help-text.md` updated the checklist to call out Review Mix and Matched Review Mix tooltip/help text.
 - Later packet `2026-05-30-review-mix-help-cues.md` updated the checklist to call out Review Mix and Matched Review Mix `?` help cues.
+- Later packet `2026-05-30-review-shortlist-safety-mix-help-cue.md` updated the checklist to call out the Review Shortlist Safety Mix `?` help cue.
 
 Tests run:
 

@@ -480,13 +480,35 @@
                             ToolTipService.ShowOnDisabled="True"
                             Click="ClearShortlistButton_Click" />
                 </WrapPanel>
-                <TextBlock x:Name="ShortlistSafetyMixText"
-                           Text="Review Shortlist is empty. Shortlist safety mix appears after rows are shortlisted."
-                           Foreground="#526171"
-                           Margin="0,6,0,0"
-                           TextWrapping="Wrap"
-                           ToolTip="Review Shortlist is empty. Shortlist safety mix appears after rows are shortlisted. Review Shortlist Safety Mix is read-only review context; it does not rescan, modify files, prove Quarantine readiness, prove storage savings, or approve cleanup."
-                           AutomationProperties.HelpText="Review Shortlist is empty. Shortlist safety mix appears after rows are shortlisted. Review Shortlist Safety Mix is read-only review context; it does not rescan, modify files, prove Quarantine readiness, prove storage savings, or approve cleanup." />
+                <DockPanel Margin="0,6,0,0"
+                           LastChildFill="True">
+                    <Border x:Name="ShortlistSafetyMixHelpCue"
+                            DockPanel.Dock="Right"
+                            Width="18"
+                            Height="18"
+                            Margin="8,1,0,0"
+                            CornerRadius="9"
+                            Background="#F4F7FA"
+                            BorderBrush="#8A99A8"
+                            BorderThickness="1"
+                            VerticalAlignment="Top"
+                            ToolTip="Review Shortlist is empty. Shortlist safety mix appears after rows are shortlisted. Review Shortlist Safety Mix is read-only review context; it does not rescan, modify files, prove Quarantine readiness, prove storage savings, or approve cleanup."
+                            AutomationProperties.Name="Review Shortlist Safety Mix help cue"
+                            AutomationProperties.HelpText="Review Shortlist is empty. Shortlist safety mix appears after rows are shortlisted. Review Shortlist Safety Mix is read-only review context; it does not rescan, modify files, prove Quarantine readiness, prove storage savings, or approve cleanup.">
+                        <TextBlock Text="?"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"
+                                   FontSize="11"
+                                   FontWeight="Bold"
+                                   Foreground="#526171" />
+                    </Border>
+                    <TextBlock x:Name="ShortlistSafetyMixText"
+                               Text="Review Shortlist is empty. Shortlist safety mix appears after rows are shortlisted."
+                               Foreground="#526171"
+                               TextWrapping="Wrap"
+                               ToolTip="Review Shortlist is empty. Shortlist safety mix appears after rows are shortlisted. Review Shortlist Safety Mix is read-only review context; it does not rescan, modify files, prove Quarantine readiness, prove storage savings, or approve cleanup."
+                               AutomationProperties.HelpText="Review Shortlist is empty. Shortlist safety mix appears after rows are shortlisted. Review Shortlist Safety Mix is read-only review context; it does not rescan, modify files, prove Quarantine readiness, prove storage savings, or approve cleanup." />
+                </DockPanel>
                 <Border x:Name="QuarantineShortlistArea"
                         Background="#F7FAFD"
                         BorderBrush="#DCE3EA"

@@ -2251,6 +2251,27 @@ internal sealed class MainWindowSmokeTests
             && window.ShortlistSafetyMixAutomationHelpTextValue.Contains("storage savings", StringComparison.OrdinalIgnoreCase)
             && window.ShortlistSafetyMixAutomationHelpTextValue.Contains("approve cleanup", StringComparison.OrdinalIgnoreCase),
             message + " Automation help text should mirror the current safety mix and review boundary.");
+        Assert(
+            window.ShortlistSafetyMixHelpCueAutomationNameValue.Contains("Review Shortlist Safety Mix help cue", StringComparison.OrdinalIgnoreCase),
+            message + " Help cue should have a specific automation name.");
+        Assert(
+            window.ShortlistSafetyMixHelpCueToolTipValue.Contains(window.ShortlistSafetyMixTextValue, StringComparison.OrdinalIgnoreCase)
+            && window.ShortlistSafetyMixHelpCueToolTipValue.Contains("read-only review context", StringComparison.OrdinalIgnoreCase)
+            && window.ShortlistSafetyMixHelpCueToolTipValue.Contains("does not rescan", StringComparison.OrdinalIgnoreCase)
+            && window.ShortlistSafetyMixHelpCueToolTipValue.Contains("modify files", StringComparison.OrdinalIgnoreCase)
+            && window.ShortlistSafetyMixHelpCueToolTipValue.Contains("Quarantine readiness", StringComparison.OrdinalIgnoreCase)
+            && window.ShortlistSafetyMixHelpCueToolTipValue.Contains("storage savings", StringComparison.OrdinalIgnoreCase)
+            && window.ShortlistSafetyMixHelpCueToolTipValue.Contains("approve cleanup", StringComparison.OrdinalIgnoreCase),
+            message + " Help cue tooltip should mirror the current safety mix and review boundary.");
+        Assert(
+            window.ShortlistSafetyMixHelpCueAutomationHelpTextValue.Contains(window.ShortlistSafetyMixTextValue, StringComparison.OrdinalIgnoreCase)
+            && window.ShortlistSafetyMixHelpCueAutomationHelpTextValue.Contains("read-only review context", StringComparison.OrdinalIgnoreCase)
+            && window.ShortlistSafetyMixHelpCueAutomationHelpTextValue.Contains("does not rescan", StringComparison.OrdinalIgnoreCase)
+            && window.ShortlistSafetyMixHelpCueAutomationHelpTextValue.Contains("modify files", StringComparison.OrdinalIgnoreCase)
+            && window.ShortlistSafetyMixHelpCueAutomationHelpTextValue.Contains("Quarantine readiness", StringComparison.OrdinalIgnoreCase)
+            && window.ShortlistSafetyMixHelpCueAutomationHelpTextValue.Contains("storage savings", StringComparison.OrdinalIgnoreCase)
+            && window.ShortlistSafetyMixHelpCueAutomationHelpTextValue.Contains("approve cleanup", StringComparison.OrdinalIgnoreCase),
+            message + " Help cue automation help text should mirror the current safety mix and review boundary.");
     }
 
     private static void AssertReviewMixHelpText(MainWindow window, string message)

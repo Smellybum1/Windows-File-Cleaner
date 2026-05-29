@@ -1677,7 +1677,7 @@ It is not a cleanup approval and does not modify files.
 ### Review Shortlist Safety Mix
 
 Status: draft
-Last reviewed: 2026-05-29
+Last reviewed: 2026-05-30
 
 #### Definition
 
@@ -1716,9 +1716,10 @@ It is not cleanup approval, Quarantine Preview readiness, or a storage-savings e
 #### Code implications
 
 - Use `ShortlistSafetyMixText` for the WPF readout.
+- Use `ShortlistSafetyMixHelpCue` for the visible non-clickable `?` help cue beside the readout.
 - Compute from `StorageReviewShortlist.ApplyTo(_currentReview.Entries)` so the summary follows scan review ordering and completed scan data.
 - Keep the readout explicitly framed as review context only, not cleanup approval.
-- WPF tooltip and automation help text should mirror the current mix and say it is read-only review context that does not rescan, modify files, prove Quarantine readiness, prove storage savings, or approve cleanup.
+- WPF tooltip and automation help text should mirror the current mix on both the readout and the visible `?` help cue, and say it is read-only review context that does not rescan, modify files, prove Quarantine readiness, prove storage savings, or approve cleanup.
 
 ### Quarantine Preview
 

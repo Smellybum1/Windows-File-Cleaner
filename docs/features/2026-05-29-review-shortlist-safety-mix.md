@@ -68,6 +68,7 @@ What changed:
 - Added app smoke assertions for the new readout.
 - Kept behavior read-only and separate from Quarantine Preview and fixture-only execution.
 - Later packet `2026-05-30-review-shortlist-safety-mix-help-text.md` mirrored the dynamic readout into tooltip and automation help text with no-rescan/no-file-modified/no-readiness-proof/no-savings-proof/not-cleanup-approval wording.
+- Later packet `2026-05-30-review-shortlist-safety-mix-help-cue.md` added a visible circular `?` help cue that mirrors the same tooltip and automation help text.
 
 Tests run:
 
@@ -90,8 +91,8 @@ ADRs added or skipped:
 
 Open questions:
 
-- Should a later layout pass convert Review Shortlist Safety Mix into compact chips or a table if the visible line feels too dense?
+- During the next visible fixture pass, confirm whether the `?` cue makes Review Shortlist Safety Mix help discoverable without needing a larger chips/table redesign.
 
 Risky assumptions:
 
-- A compact text readout is enough until a manual fixture/real-profile review pass shows otherwise.
+- A compact text readout plus visible help cue is enough until a manual fixture/real-profile review pass shows otherwise.

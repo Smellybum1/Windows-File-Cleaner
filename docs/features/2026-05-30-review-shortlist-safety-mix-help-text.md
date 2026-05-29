@@ -34,6 +34,7 @@ What changed:
 - Added static startup tooltip and automation help text to `ShortlistSafetyMixText`.
 - Updated the dynamic setter so empty and populated Review Shortlist Safety Mix text is mirrored into tooltip/help text.
 - Added WPF smoke assertions for empty, populated, and empty-after-removal states.
+- Later packet `2026-05-30-review-shortlist-safety-mix-help-cue.md` added a visible circular `?` help cue that mirrors the same dynamic tooltip and automation help text.
 
 Tests run:
 

@@ -479,6 +479,12 @@ public partial class MainWindow : Window
 
     public string ShortlistSafetyMixAutomationHelpTextValue => AutomationProperties.GetHelpText(ShortlistSafetyMixText);
 
+    public string ShortlistSafetyMixHelpCueToolTipValue => ShortlistSafetyMixHelpCue.ToolTip?.ToString() ?? "";
+
+    public string ShortlistSafetyMixHelpCueAutomationNameValue => AutomationProperties.GetName(ShortlistSafetyMixHelpCue);
+
+    public string ShortlistSafetyMixHelpCueAutomationHelpTextValue => AutomationProperties.GetHelpText(ShortlistSafetyMixHelpCue);
+
     public string QuarantineShortlistHeaderTextValue => QuarantineShortlistHeaderText.Text;
 
     public string QuarantineShortlistHeaderToolTipValue => QuarantineShortlistHeaderText.ToolTip?.ToString() ?? "";
@@ -2559,6 +2565,8 @@ public partial class MainWindow : Window
         var helpText = FormatShortlistSafetyMixHelpText(text);
         ShortlistSafetyMixText.ToolTip = helpText;
         AutomationProperties.SetHelpText(ShortlistSafetyMixText, helpText);
+        ShortlistSafetyMixHelpCue.ToolTip = helpText;
+        AutomationProperties.SetHelpText(ShortlistSafetyMixHelpCue, helpText);
     }
 
     private static string FormatShortlistSafetyMixHelpText(string text)
