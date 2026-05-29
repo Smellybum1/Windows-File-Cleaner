@@ -9,7 +9,7 @@ Use this when starting a fresh Codex thread for this repository.
 - Repo: `D:\Codex\Windows File Cleaner`
 - GitHub: `Smellybum1/Windows-File-Cleaner`
 - Branch: `main`
-- Latest completed packet: Quarantine Execution Gate Help Cue
+- Latest completed packet: Run Full Local MVP Preflight After Gate Help Cue
 - Current app stack: C# / WPF / .NET 8
 - Desktop shortcut target: `D:\Codex\Windows File Cleaner\src\WindowsFileCleaner.App\bin\Debug\net8.0-windows\WindowsFileCleaner.App.exe`
 
@@ -58,6 +58,7 @@ Fixture-only cleanup execution exists for synthetic Cleanup Scopes. Real-profile
 - Full Local MVP Preflight After Placeholder Label passed `cmd.exe /c tools\Invoke-MvpPreflight.cmd`; restore, build, core tests, WPF app tests, fixture `-WhatIf`, fixture checklist-only output, and whitespace diff check all passed without scanning or modifying real user files.
 - Quarantine Execution Gate Preview Button Label translates the WPF missing-preview blocker to `Use Preview shortlist quarantine before entering confirmation text.` while leaving the core gate wording unchanged.
 - Quarantine Execution Gate Help Cue adds a visible hoverable `?` cue beside the WPF gate readout, mirrors concise dynamic tooltip/help text for startup, closed, open, executed, and undone gate states, and expands WPF smoke affordance coverage to twelve cues.
+- Full Local MVP Preflight After Gate Help Cue passed `cmd.exe /c tools\Invoke-MvpPreflight.cmd`; restore, build, core tests, WPF app tests, fixture `-WhatIf`, fixture checklist-only output with the Quarantine Execution Gate `?` help cue, and whitespace diff check all passed without scanning or modifying real user files.
 - Quarantine Execution Scope Status added plain-language fixture-only versus preview-only scope wording to Quarantine Preview and Quarantine Execution Gate output.
 - Fixture Review Checklist Output added a compact terminal checklist to `Start-MvpFixtureReview.ps1`.
 - Fixture Review Checklist-Only Mode added `Start-MvpFixtureReview.ps1 -ChecklistOnly`, which prints the same checklist without preflight, fixture creation, or WPF launch.
