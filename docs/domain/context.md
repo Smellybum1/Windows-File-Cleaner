@@ -2510,7 +2510,7 @@ In the current build the gate can open only for recognized fixture Cleanup Scope
 - After `QUARANTINE` is typed for a real-profile or custom non-fixture scope, keep the gate closed.
 - Carry forward blocked preview row or manifest mismatch blockers from Quarantine Confirmation Draft.
 - Show Quarantine Execution Scope Status before `Can execute` so the scope boundary is plain even when exact confirmation text matches.
-- Show disabled-state tooltips on confirmation and execution controls so fixture-only and real-profile/custom blockers remain visible before gates open.
+- Show disabled-state tooltips and automation help text on confirmation and execution controls so fixture-only and real-profile/custom blockers remain visible before gates open.
 
 #### Non-examples
 
@@ -2538,7 +2538,7 @@ In the current build the gate can open only for recognized fixture Cleanup Scope
 - `CanExecute` must require no blockers, exact confirmation text, and implemented execution support.
 - Keep `CanExecute` false for real-profile and custom non-fixture Cleanup Scopes.
 - Keep Quarantine Execution Scope Status visible in the gate readout.
-- Keep confirmation and execution control tooltips aligned with fixture-only execution and real-profile/custom blockers.
+- Keep confirmation and execution control tooltips and automation help text aligned with fixture-only execution and real-profile/custom blockers.
 - Do not create folders, move files, delete files, write manifests, or persist cleanup jobs from gate builder code.
 
 ### Quarantine Execution Scope Status
@@ -2556,7 +2556,7 @@ It is shown in Quarantine Preview and Quarantine Execution Gate output so real-p
 
 - Fixture Cleanup Scope: state that fixture-only execution is available only after preview readiness and exact `QUARANTINE` confirmation.
 - Real-profile or custom Cleanup Scope: state that the workflow is preview-only and real-profile/custom execution remains unavailable.
-- Disabled Quarantine confirmation/execution controls repeat the same fixture-only and real/custom boundary in tooltips.
+- Disabled Quarantine confirmation/execution controls repeat the same fixture-only and real/custom boundary in tooltips and automation help text.
 
 #### Non-examples
 
@@ -2581,7 +2581,7 @@ It is shown in Quarantine Preview and Quarantine Execution Gate output so real-p
 
 - Use `FormatQuarantineExecutionScopeStatus` for WPF output.
 - Keep wording explicit about `fixture-only`, `preview only`, `real-profile`, and `custom` scopes.
-- Keep disabled-control tooltips consistent with the visible scope-status wording.
+- Keep disabled-control tooltips and automation help text consistent with the visible scope-status wording.
 - Do not use this status as permission to move files.
 
 ### Fixture-only WPF Quarantine Execution
@@ -2817,7 +2817,7 @@ It is not approval to restore and does not restore files.
 - Use `SelectedRestoreManifestReview` and `SelectedRestoreManifestReviewBuilder`.
 - Keep selection read-only and derived from current discovery results.
 - Keep selected manifest readiness separate from approval and execution.
-- Keep the WPF selected manifest readiness tooltip explicit that the action is selected-only and not restore approval.
+- Keep the WPF selected manifest readiness tooltip and automation help text explicit that the action is selected-only and not restore approval.
 - Do not call `UndoQuarantineExecutor.Undo`.
 
 ### Selected Restore Confirmation Draft
@@ -3012,7 +3012,7 @@ It is not approval to restore and does not restore files.
 - Use `RestoreReadinessPreview`, `RestoreReadinessPreviewBuilder`, `RestoreReadinessManifestPreview`, and `RestoreReadinessEntryPreview`.
 - Keep it read-only. Do not call `UndoQuarantineExecutor.Undo`.
 - The WPF action label should make the all-manifest readiness scope visible so it is distinct from selected manifest readiness.
-- The WPF action tooltip should repeat the read-only all-manifest scope and no-restore boundary.
+- The WPF action tooltip and automation help text should repeat the read-only all-manifest scope and no-restore boundary.
 - WPF readiness output should distinguish read-only blocker evidence from all-manifest restore execution while pointing fixture-only restore toward the selected restore gate.
 - Recompute readiness immediately before any future restore execution because filesystem state can change.
 
@@ -3142,7 +3142,7 @@ The current core implementation is fixture-tested through Undo Quarantine Execut
 - Has read-only Selected Restore Manifest Review for focusing one discovered manifest before any all-manifest restore action exists.
 - Has read-only Selected Restore Confirmation Draft and Selected Restore Execution Gate for exact-confirmation semantics before any selected restore action exists.
 - Has Fixture-only Selected Restore Execution for selected discovered fixture manifests.
-- Shows disabled-control tooltip wording so selected restore controls do not imply real-profile/custom selected restore is available.
+- Shows disabled-control tooltip and automation help text wording so selected restore controls do not imply real-profile/custom selected restore is available.
 - Reverses a quarantine Cleanup Action.
 
 #### Code implications

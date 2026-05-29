@@ -237,9 +237,15 @@ public partial class MainWindow : Window
 
     public string QuarantineConfirmationToolTipValue => QuarantineConfirmationBox.ToolTip?.ToString() ?? "";
 
+    public string QuarantineConfirmationAutomationHelpTextValue => AutomationProperties.GetHelpText(QuarantineConfirmationBox);
+
     public string ExecuteQuarantineButtonToolTipValue => ExecuteQuarantineButton.ToolTip?.ToString() ?? "";
 
+    public string ExecuteQuarantineButtonAutomationHelpTextValue => AutomationProperties.GetHelpText(ExecuteQuarantineButton);
+
     public string UndoQuarantineButtonToolTipValue => UndoQuarantineButton.ToolTip?.ToString() ?? "";
+
+    public string UndoQuarantineButtonAutomationHelpTextValue => AutomationProperties.GetHelpText(UndoQuarantineButton);
 
     public bool CanDiscoverQuarantineManifests => DiscoverQuarantineManifestsButton.IsEnabled;
 
@@ -249,6 +255,8 @@ public partial class MainWindow : Window
 
     public string PreviewRestoreReadinessButtonToolTipValue => PreviewRestoreReadinessButton.ToolTip?.ToString() ?? "";
 
+    public string PreviewRestoreReadinessButtonAutomationHelpTextValue => AutomationProperties.GetHelpText(PreviewRestoreReadinessButton);
+
     public bool CanSelectDiscoveredRestoreManifest => RestoreManifestSelectionBox.IsEnabled;
 
     public bool CanPreviewSelectedRestoreManifestReadiness => PreviewSelectedRestoreManifestReadinessButton.IsEnabled;
@@ -257,17 +265,27 @@ public partial class MainWindow : Window
 
     public string PreviewSelectedRestoreManifestReadinessButtonToolTipValue => PreviewSelectedRestoreManifestReadinessButton.ToolTip?.ToString() ?? "";
 
+    public string PreviewSelectedRestoreManifestReadinessButtonAutomationHelpTextValue => AutomationProperties.GetHelpText(PreviewSelectedRestoreManifestReadinessButton);
+
     public bool CanPreviewSelectedRestoreGate => PreviewSelectedRestoreGateButton.IsEnabled;
+
+    public string PreviewSelectedRestoreGateButtonToolTipValue => PreviewSelectedRestoreGateButton.ToolTip?.ToString() ?? "";
+
+    public string PreviewSelectedRestoreGateButtonAutomationHelpTextValue => AutomationProperties.GetHelpText(PreviewSelectedRestoreGateButton);
 
     public bool CanEnterSelectedRestoreConfirmation => SelectedRestoreConfirmationBox.IsEnabled;
 
     public string SelectedRestoreConfirmationToolTipValue => SelectedRestoreConfirmationBox.ToolTip?.ToString() ?? "";
+
+    public string SelectedRestoreConfirmationAutomationHelpTextValue => AutomationProperties.GetHelpText(SelectedRestoreConfirmationBox);
 
     public string CurrentSelectedRestoreConfirmationText => SelectedRestoreConfirmationBox.Text;
 
     public bool CanExecuteSelectedRestore => ExecuteSelectedRestoreButton.IsEnabled;
 
     public string ExecuteSelectedRestoreButtonToolTipValue => ExecuteSelectedRestoreButton.ToolTip?.ToString() ?? "";
+
+    public string ExecuteSelectedRestoreButtonAutomationHelpTextValue => AutomationProperties.GetHelpText(ExecuteSelectedRestoreButton);
 
     public int DiscoveredRestoreManifestCount => _currentQuarantineManifestDiscovery?.ManifestCount ?? 0;
 

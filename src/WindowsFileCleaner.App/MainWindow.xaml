@@ -616,6 +616,7 @@
                                          IsEnabled="False"
                                          VerticalContentAlignment="Center"
                                          ToolTip="Fixture-only execution gate. Real-profile and custom execution stay unavailable in this build."
+                                         AutomationProperties.HelpText="Fixture-only execution gate. Real-profile and custom execution stay unavailable in this build."
                                          ToolTipService.ShowOnDisabled="True"
                                          TextChanged="QuarantineConfirmationBox_TextChanged" />
                                 <Button x:Name="ExecuteQuarantineButton"
@@ -623,6 +624,7 @@
                                         MinWidth="145"
                                         IsEnabled="False"
                                         ToolTip="Fixture-only after Quarantine Preview readiness and exact QUARANTINE; real-profile/custom execution remains unavailable."
+                                        AutomationProperties.HelpText="Fixture-only after Quarantine Preview readiness and exact QUARANTINE; real-profile/custom execution remains unavailable."
                                         ToolTipService.ShowOnDisabled="True"
                                         Click="ExecuteQuarantineButton_Click" />
                                 <Button x:Name="UndoQuarantineButton"
@@ -630,6 +632,7 @@
                                         MinWidth="170"
                                         IsEnabled="False"
                                         ToolTip="Current fixture execution only; discovered Restore Manifests and real-profile/custom undo remain unavailable."
+                                        AutomationProperties.HelpText="Current fixture execution only; discovered Restore Manifests and real-profile/custom undo remain unavailable."
                                         ToolTipService.ShowOnDisabled="True"
                                         Click="UndoQuarantineButton_Click" />
                             </WrapPanel>
@@ -651,6 +654,7 @@
                                         Content="Preview all-manifest readiness"
                                         MinWidth="245"
                                         ToolTip="Read-only all-manifest readiness for discovered Restore Manifests under the selected Quarantine Root; no files are restored."
+                                        AutomationProperties.HelpText="Read-only all-manifest readiness for discovered Restore Manifests under the selected Quarantine Root; no files are restored."
                                         Click="PreviewRestoreReadinessButton_Click" />
                             </WrapPanel>
                             <WrapPanel Margin="0,6,0,0">
@@ -669,6 +673,7 @@
                                         MinWidth="260"
                                         IsEnabled="False"
                                         ToolTip="Read-only readiness for the selected Restore Manifest only; selection is not restore approval."
+                                        AutomationProperties.HelpText="Read-only readiness for the selected Restore Manifest only; selection is not restore approval."
                                         ToolTipService.ShowOnDisabled="True"
                                         Click="PreviewSelectedRestoreManifestReadinessButton_Click" />
                             </WrapPanel>
@@ -689,6 +694,9 @@
                                         Content="Preview selected restore gate"
                                         MinWidth="210"
                                         IsEnabled="False"
+                                        ToolTip="Read-only selected restore confirmation gate for the selected Restore Manifest; exact RESTORE is required before fixture selected restore can execute."
+                                        AutomationProperties.HelpText="Read-only selected restore confirmation gate for the selected Restore Manifest; exact RESTORE is required before fixture selected restore can execute."
+                                        ToolTipService.ShowOnDisabled="True"
                                         Click="PreviewSelectedRestoreGateButton_Click" />
                                 <TextBlock Text="Confirmation"
                                            VerticalAlignment="Center"
@@ -700,6 +708,7 @@
                                          IsEnabled="False"
                                          VerticalContentAlignment="Center"
                                          ToolTip="Selected restore gate. Exact RESTORE can open only fixture selected restore; real-profile/custom selected restore remains unavailable."
+                                         AutomationProperties.HelpText="Selected restore gate. Exact RESTORE can open only fixture selected restore; real-profile/custom selected restore remains unavailable."
                                          ToolTipService.ShowOnDisabled="True"
                                          TextChanged="SelectedRestoreConfirmationBox_TextChanged" />
                                 <Button x:Name="ExecuteSelectedRestoreButton"
@@ -707,6 +716,7 @@
                                         MinWidth="215"
                                         IsEnabled="False"
                                         ToolTip="Fixture selected restore only after selected manifest readiness and exact RESTORE; real-profile/custom selected restore remains unavailable."
+                                        AutomationProperties.HelpText="Fixture selected restore only after selected manifest readiness and exact RESTORE; real-profile/custom selected restore remains unavailable."
                                         ToolTipService.ShowOnDisabled="True"
                                         Click="ExecuteSelectedRestoreButton_Click" />
                             </WrapPanel>

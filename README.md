@@ -32,8 +32,8 @@ Fresh-thread handoff notes live in `docs/codex/thread-handoff.md`.
 - Quarantine Preview and preview export controls use tooltips and automation help text to keep dry-run and report-only boundaries available.
 - Restore Manifest Draft and Quarantine Confirmation Draft are in-memory readiness evidence only.
 - Quarantine Execution Gate enables execution only for fixture Cleanup Scopes after preview readiness and exact `QUARANTINE` confirmation, and its scope-status wording keeps real-profile/custom execution visibly preview-only.
-- Quarantine and selected-restore execution controls have disabled-state tooltips that keep fixture-only gates and real-profile/custom blockers visible.
-- All-manifest and selected-manifest readiness controls have scope tooltips that keep read-only/no-restore and selected-only/not-approval boundaries visible.
+- Quarantine and selected-restore execution controls have disabled-state tooltips and automation help text that keep fixture-only gates and real-profile/custom blockers visible.
+- All-manifest and selected-manifest readiness controls have scope tooltips and automation help text that keep read-only/no-restore and selected-only/not-approval boundaries visible.
 - Quarantine Action Draft shows action-scoped item and manifest paths before execution creates them.
 - Write-ahead Restore Manifest modeling shows planned status/write order before fixture execution writes the manifest.
 - Restore Manifest File Store writes action-scoped manifest JSON during fixture-tested execution paths.
@@ -120,7 +120,7 @@ This only fills the Cleanup Scope box. Click `Scan` yourself after the app opens
 
 Use `-SkipChecklist` only when you intentionally want the launcher output without the reminder checklist.
 
-The automated `WindowsFileCleaner.App.Tests` project also scans a synthetic fixture through the WPF shell, exercises read-only review interactions, proves fixture-only Quarantine execution and undo, verifies manifest discovery, selected manifest review, selected restore confirmation gate, fixture-only selected restore execution, and all-manifest readiness preview, verifies custom non-fixture execution remains blocked, checks review navigation/export, report/preview, browse, and selected-row tooltip and automation help text boundaries, and checks that the review toolbars use wrapping layout, but it does not replace checking the visible layout and controls by eye.
+The automated `WindowsFileCleaner.App.Tests` project also scans a synthetic fixture through the WPF shell, exercises read-only review interactions, proves fixture-only Quarantine execution and undo, verifies manifest discovery, selected manifest review, selected restore confirmation gate, fixture-only selected restore execution, and all-manifest readiness preview, verifies custom non-fixture execution remains blocked, checks review navigation/export, report/preview, browse, selected-row, execution-gate, and restore-readiness tooltip and automation help text boundaries, and checks that the review toolbars use wrapping layout, but it does not replace checking the visible layout and controls by eye.
 
 ## Run The App
 

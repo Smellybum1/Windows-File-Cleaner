@@ -82,6 +82,10 @@ internal sealed class MainWindowSmokeTests
                 window.PreviewRestoreReadinessButtonToolTipValue.Contains("Read-only all-manifest readiness", StringComparison.OrdinalIgnoreCase)
                 && window.PreviewRestoreReadinessButtonToolTipValue.Contains("no files are restored", StringComparison.OrdinalIgnoreCase),
                 "All-manifest readiness tooltip should explain read-only scope and no-restore behavior.");
+            Assert(
+                window.PreviewRestoreReadinessButtonAutomationHelpTextValue.Contains("Read-only all-manifest readiness", StringComparison.OrdinalIgnoreCase)
+                && window.PreviewRestoreReadinessButtonAutomationHelpTextValue.Contains("no files are restored", StringComparison.OrdinalIgnoreCase),
+                "All-manifest readiness automation help text should explain read-only scope and no-restore behavior.");
             Assert(!window.CanSelectDiscoveredRestoreManifest, "MainWindow should not enable Restore Manifest selection before discovery.");
             Assert(!window.CanPreviewSelectedRestoreManifestReadiness, "MainWindow should not enable selected Restore Manifest review before discovery.");
             Assert(
@@ -91,6 +95,10 @@ internal sealed class MainWindowSmokeTests
                 window.PreviewSelectedRestoreManifestReadinessButtonToolTipValue.Contains("selected Restore Manifest only", StringComparison.OrdinalIgnoreCase)
                 && window.PreviewSelectedRestoreManifestReadinessButtonToolTipValue.Contains("not restore approval", StringComparison.OrdinalIgnoreCase),
                 "Selected manifest readiness tooltip should explain selected-only scope and approval boundary.");
+            Assert(
+                window.PreviewSelectedRestoreManifestReadinessButtonAutomationHelpTextValue.Contains("selected Restore Manifest only", StringComparison.OrdinalIgnoreCase)
+                && window.PreviewSelectedRestoreManifestReadinessButtonAutomationHelpTextValue.Contains("not restore approval", StringComparison.OrdinalIgnoreCase),
+                "Selected manifest readiness automation help text should explain selected-only scope and approval boundary.");
             Assert(
                 window.ExportScanCsvButtonToolTipValue.Contains("CSV report", StringComparison.OrdinalIgnoreCase)
                 && window.ExportScanCsvButtonToolTipValue.Contains("not cleanup approval", StringComparison.OrdinalIgnoreCase)
@@ -371,22 +379,51 @@ internal sealed class MainWindowSmokeTests
                 && window.QuarantineConfirmationToolTipValue.Contains("custom execution stay unavailable", StringComparison.OrdinalIgnoreCase),
                 "Quarantine confirmation tooltip should explain fixture-only execution and custom blockers.");
             Assert(
+                window.QuarantineConfirmationAutomationHelpTextValue.Contains("Fixture-only execution gate", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineConfirmationAutomationHelpTextValue.Contains("custom execution stay unavailable", StringComparison.OrdinalIgnoreCase),
+                "Quarantine confirmation automation help text should explain fixture-only execution and custom blockers.");
+            Assert(
                 window.ExecuteQuarantineButtonToolTipValue.Contains("Quarantine Preview readiness", StringComparison.OrdinalIgnoreCase)
                 && window.ExecuteQuarantineButtonToolTipValue.Contains("real-profile/custom execution remains unavailable", StringComparison.OrdinalIgnoreCase),
                 "Execute quarantine tooltip should explain preview readiness and real/custom blockers.");
+            Assert(
+                window.ExecuteQuarantineButtonAutomationHelpTextValue.Contains("Quarantine Preview readiness", StringComparison.OrdinalIgnoreCase)
+                && window.ExecuteQuarantineButtonAutomationHelpTextValue.Contains("real-profile/custom execution remains unavailable", StringComparison.OrdinalIgnoreCase),
+                "Execute quarantine automation help text should explain preview readiness and real/custom blockers.");
             Assert(
                 window.UndoQuarantineButtonToolTipValue.Contains("Current fixture execution only", StringComparison.OrdinalIgnoreCase)
                 && window.UndoQuarantineButtonToolTipValue.Contains("real-profile/custom undo remain unavailable", StringComparison.OrdinalIgnoreCase),
                 "Undo fixture quarantine tooltip should explain current-fixture-only undo.");
             Assert(
+                window.UndoQuarantineButtonAutomationHelpTextValue.Contains("Current fixture execution only", StringComparison.OrdinalIgnoreCase)
+                && window.UndoQuarantineButtonAutomationHelpTextValue.Contains("real-profile/custom undo remain unavailable", StringComparison.OrdinalIgnoreCase),
+                "Undo fixture quarantine automation help text should explain current-fixture-only undo.");
+            Assert(
+                window.PreviewSelectedRestoreGateButtonToolTipValue.Contains("selected restore confirmation gate", StringComparison.OrdinalIgnoreCase)
+                && window.PreviewSelectedRestoreGateButtonToolTipValue.Contains("exact RESTORE", StringComparison.OrdinalIgnoreCase),
+                "Preview selected restore gate tooltip should explain confirmation gate scope.");
+            Assert(
+                window.PreviewSelectedRestoreGateButtonAutomationHelpTextValue.Contains("selected restore confirmation gate", StringComparison.OrdinalIgnoreCase)
+                && window.PreviewSelectedRestoreGateButtonAutomationHelpTextValue.Contains("exact RESTORE", StringComparison.OrdinalIgnoreCase),
+                "Preview selected restore gate automation help text should explain confirmation gate scope.");
+            Assert(
                 window.SelectedRestoreConfirmationToolTipValue.Contains("Exact RESTORE", StringComparison.OrdinalIgnoreCase)
                 && window.SelectedRestoreConfirmationToolTipValue.Contains("real-profile/custom selected restore remains unavailable", StringComparison.OrdinalIgnoreCase),
                 "Selected restore confirmation tooltip should explain fixture-only selected restore.");
+            Assert(
+                window.SelectedRestoreConfirmationAutomationHelpTextValue.Contains("Exact RESTORE", StringComparison.OrdinalIgnoreCase)
+                && window.SelectedRestoreConfirmationAutomationHelpTextValue.Contains("real-profile/custom selected restore remains unavailable", StringComparison.OrdinalIgnoreCase),
+                "Selected restore confirmation automation help text should explain fixture-only selected restore.");
             Assert(
                 window.ExecuteSelectedRestoreButtonToolTipValue.Contains("Fixture selected restore only", StringComparison.OrdinalIgnoreCase)
                 && window.ExecuteSelectedRestoreButtonToolTipValue.Contains("selected manifest readiness", StringComparison.OrdinalIgnoreCase)
                 && window.ExecuteSelectedRestoreButtonToolTipValue.Contains("real-profile/custom selected restore remains unavailable", StringComparison.OrdinalIgnoreCase),
                 "Restore selected fixture manifest tooltip should explain fixture-only selected restore.");
+            Assert(
+                window.ExecuteSelectedRestoreButtonAutomationHelpTextValue.Contains("Fixture selected restore only", StringComparison.OrdinalIgnoreCase)
+                && window.ExecuteSelectedRestoreButtonAutomationHelpTextValue.Contains("selected manifest readiness", StringComparison.OrdinalIgnoreCase)
+                && window.ExecuteSelectedRestoreButtonAutomationHelpTextValue.Contains("real-profile/custom selected restore remains unavailable", StringComparison.OrdinalIgnoreCase),
+                "Restore selected fixture manifest automation help text should explain fixture-only selected restore.");
             Assert(
                 window.QuarantineExecutionGateTextValue.Contains("Create a Quarantine Preview", StringComparison.OrdinalIgnoreCase),
                 "Quarantine execution gate should explain the preview dependency at startup.");
