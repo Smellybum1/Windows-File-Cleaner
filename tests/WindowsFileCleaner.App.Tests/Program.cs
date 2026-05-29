@@ -82,6 +82,19 @@ internal sealed class MainWindowSmokeTests
                 "Default Cleanup Scope safety note should remind the user to run preflight.");
             Assert(window.CurrentStatusText == "Ready", "MainWindow should not start scanning when constructed.");
             Assert(!window.CanStartStorageScan, "MainWindow should require preflight acknowledgement before scanning the real profile.");
+            Assert(!window.CanCancelStorageScan, "MainWindow should not enable Cancel before a Storage Scan starts.");
+            Assert(
+                window.CancelButtonToolTipValue.Contains("in-progress read-only Storage Scan", StringComparison.OrdinalIgnoreCase)
+                && window.CancelButtonToolTipValue.Contains("does not move", StringComparison.OrdinalIgnoreCase)
+                && window.CancelButtonToolTipValue.Contains("delete", StringComparison.OrdinalIgnoreCase)
+                && window.CancelButtonToolTipValue.Contains("approve cleanup", StringComparison.OrdinalIgnoreCase),
+                "Cancel tooltip should explain scan-cancellation and no-cleanup boundaries.");
+            Assert(
+                window.CancelButtonAutomationHelpTextValue.Contains("in-progress read-only Storage Scan", StringComparison.OrdinalIgnoreCase)
+                && window.CancelButtonAutomationHelpTextValue.Contains("does not move", StringComparison.OrdinalIgnoreCase)
+                && window.CancelButtonAutomationHelpTextValue.Contains("delete", StringComparison.OrdinalIgnoreCase)
+                && window.CancelButtonAutomationHelpTextValue.Contains("approve cleanup", StringComparison.OrdinalIgnoreCase),
+                "Cancel automation help text should explain scan-cancellation and no-cleanup boundaries.");
             Assert(window.CanBrowseCleanupScope, "MainWindow should allow choosing a Cleanup Scope without starting a scan.");
             Assert(window.CanEditQuarantineRoot, "MainWindow should allow editing the read-only Quarantine Preview root before scanning.");
             Assert(window.CanBrowseQuarantineRoot, "MainWindow should allow browsing for the read-only Quarantine Preview root before scanning.");

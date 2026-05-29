@@ -78,6 +78,9 @@
                     <Button x:Name="CancelButton"
                             Content="Cancel"
                             IsEnabled="False"
+                            ToolTip="Requests cancellation of the in-progress read-only Storage Scan; it does not move, delete, quarantine, restore, or approve cleanup."
+                            AutomationProperties.HelpText="Requests cancellation of the in-progress read-only Storage Scan; it does not move, delete, quarantine, restore, or approve cleanup."
+                            ToolTipService.ShowOnDisabled="True"
                             Click="CancelButton_Click" />
                 </StackPanel>
                 <TextBlock x:Name="ScopeSafetyNoteText"

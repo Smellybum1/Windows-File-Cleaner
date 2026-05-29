@@ -84,6 +84,8 @@ public partial class MainWindow : Window
 
     public bool CanStartStorageScan => ScanButton.IsEnabled;
 
+    public bool CanCancelStorageScan => CancelButton.IsEnabled;
+
     public bool CanBrowseCleanupScope => BrowseScopeButton.IsEnabled;
 
     public string BrowseCleanupScopeButtonText => BrowseScopeButton.Content?.ToString() ?? "";
@@ -107,6 +109,10 @@ public partial class MainWindow : Window
     public string ScanButtonToolTipValue => ScanButton.ToolTip?.ToString() ?? "";
 
     public string ScanButtonAutomationHelpTextValue => AutomationProperties.GetHelpText(ScanButton);
+
+    public string CancelButtonToolTipValue => CancelButton.ToolTip?.ToString() ?? "";
+
+    public string CancelButtonAutomationHelpTextValue => AutomationProperties.GetHelpText(CancelButton);
 
     public bool CanExportScanCsv => ExportCsvButton.IsEnabled;
 

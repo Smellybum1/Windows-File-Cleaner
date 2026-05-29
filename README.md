@@ -48,6 +48,7 @@ Fresh-thread handoff notes live in `docs/codex/thread-handoff.md`.
 - Fixture tests include a source-level guard against accidental cleanup-execution filesystem calls.
 - Real-profile scans require an explicit acknowledgement that MVP preflight and fixture review were run; the acknowledgement tooltip and automation help text keep clear that checking it does not run preflight, create fixtures, start scanning by itself, persist approval, or approve cleanup.
 - Scan-gate ready wording is scope-specific: fixture scopes point later cleanup actions back to preview and exact confirmation, while real-profile/custom scopes keep cleanup execution unavailable. The Scan button mirrors this wording in tooltips and automation help text.
+- The Cancel scan control uses disabled-state tooltip and automation help text to keep clear that cancellation only requests stopping the in-progress read-only Storage Scan and does not move, delete, quarantine, restore, or approve cleanup.
 - Cleanup Scope typed/browse and Quarantine Root typed/browse controls use tooltips and automation help text to keep path-selection, scan-gate, preview-only, and no-folder-creation boundaries available.
 - Selected-row review actions use tooltips and automation help text to keep shortlist, focus, file-preview, copy, and Explorer inspection boundaries available.
 - User-typed Storage Review Search is debounced for large real-profile scans; its input tooltip and automation help text expose prefix examples and read-only boundaries, and the status bar is the only pending-search indicator for now.
@@ -147,7 +148,7 @@ After the app opens:
 1. Confirm the scope box shows the intended Cleanup Scope; use `Browse...` if you want to choose a fixture or custom folder before scanning, and confirm its tooltip says browsing does not start a scan, bypass the real-profile gate, or approve cleanup.
 2. Confirm the Cleanup Scope Safety Note matches the path: fixture first for smoke testing, real profile only after preflight.
 3. For the real profile, confirm the scan-gate status says the scan is locked, then tick the acknowledgement that MVP preflight and fixture review were run; fixture scopes do not require this real-profile acknowledgement. The acknowledgement tooltip/help text should keep clear that this is local acknowledgement only, not preflight execution, fixture creation, auto-scan, persistence, or cleanup approval.
-4. Click `Scan`.
+4. Click `Scan`; the `Cancel` tooltip/help text should keep clear that cancellation only requests stopping an in-progress read-only Storage Scan and does not move, delete, quarantine, restore, or approve cleanup.
 5. Confirm the status says no files were modified.
 6. Review the summary cards for total size, folders, files, and access issues.
 7. If the status or filter summary says `rows 1-2,000 of ... matched`, use `Next rows` / `Previous rows` to move through matched in-memory rows, or narrow with search and filters. Their tooltips should keep no-rescan and no-file-modified wording visible.
