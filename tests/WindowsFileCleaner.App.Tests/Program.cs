@@ -1455,6 +1455,8 @@ internal sealed class MainWindowSmokeTests
                 window.ReviewGridModeTextValue.Contains("Main grid: Storage Scan rows", StringComparison.OrdinalIgnoreCase)
                 && window.ReviewGridModeTextValue.Contains("No files were modified", StringComparison.OrdinalIgnoreCase),
                 "Main grid mode text should identify Storage Scan rows after scanning.");
+            Assert(window.ReviewGridModeStatusStyleValue == "Neutral", "Storage Scan rows should use neutral grid-mode styling before fixture execution.");
+            Assert(window.ReviewGridModeStatusFontWeightValue == "Normal", "Neutral grid-mode status should not visually compete with warnings.");
 
             var installer = window.DisplayedRows.Single(row =>
                 row.FullPath.EndsWith(@"Downloads\old-installer.msi", StringComparison.OrdinalIgnoreCase));
@@ -1537,6 +1539,8 @@ internal sealed class MainWindowSmokeTests
                 && window.ReviewGridModeTextValue.Contains("2 current-session quarantined", StringComparison.OrdinalIgnoreCase)
                 && window.ReviewGridModeTextValue.Contains("Scan rows may be stale", StringComparison.OrdinalIgnoreCase),
                 "Main grid mode text should point from stale scan rows to available current-session quarantined rows.");
+            Assert(window.ReviewGridModeStatusStyleValue == "Warning", "Stale Storage Scan rows should use warning grid-mode styling.");
+            Assert(window.ReviewGridModeStatusFontWeightValue == "SemiBold", "Stale grid-mode warning should be visually emphasized.");
             Assert(
                 window.QuarantineShortlistHeaderTextValue.Contains("2 current quarantined", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantineShortlistHeaderTextValue.Contains("undo available", StringComparison.OrdinalIgnoreCase),
@@ -1579,6 +1583,8 @@ internal sealed class MainWindowSmokeTests
                 && window.ReviewGridModeTextValue.Contains("Read-only view", StringComparison.OrdinalIgnoreCase)
                 && window.ReviewGridModeTextValue.Contains("Back to scan rows", StringComparison.OrdinalIgnoreCase),
                 "Main grid mode text should identify the current-session quarantined view and how to return.");
+            Assert(window.ReviewGridModeStatusStyleValue == "Information", "Current-session quarantined view should use informational grid-mode styling.");
+            Assert(window.ReviewGridModeStatusFontWeightValue == "SemiBold", "Current-session quarantined grid-mode status should be visually emphasized.");
             Assert(window.DisplayedQuarantinedRows.Count == 2, "Quarantined view should show every current Moved Restore Manifest entry.");
             Assert(
                 window.DisplayedQuarantinedRows.Any(row => row.OriginalPath.Equals(installer.FullPath, StringComparison.OrdinalIgnoreCase))
@@ -1612,6 +1618,7 @@ internal sealed class MainWindowSmokeTests
                 window.ReviewGridModeTextValue.Contains("Main grid: Storage Scan rows", StringComparison.OrdinalIgnoreCase)
                 && window.ReviewGridModeTextValue.Contains("2 current-session quarantined", StringComparison.OrdinalIgnoreCase),
                 "Main grid mode text should identify scan rows after returning from quarantined rows.");
+            Assert(window.ReviewGridModeStatusStyleValue == "Warning", "Returning to stale scan rows should keep warning grid-mode styling.");
 
             RunDispatcherTask(() => window.RunStorageScanForCurrentScopeAsync());
             Assert(!File.Exists(installer.FullPath), "Post-execution rescan should reflect that the original fixture file moved.");
@@ -1640,6 +1647,7 @@ internal sealed class MainWindowSmokeTests
                 window.ReviewGridModeTextValue.Contains("Current-session quarantined rows appear after fixture Quarantine execution", StringComparison.OrdinalIgnoreCase)
                 || window.ReviewGridModeTextValue.Contains("No moved entries are available", StringComparison.OrdinalIgnoreCase),
                 "Main grid mode text should stop advertising current quarantined rows after undo.");
+            Assert(window.ReviewGridModeStatusStyleValue == "Warning", "Empty current-session quarantined view should use warning grid-mode styling until returning to scan rows.");
             Assert(
                 window.QuarantineShortlistHeaderTextValue.Contains("undo completed", StringComparison.OrdinalIgnoreCase),
                 "Collapsed Quarantine shortlist header should summarize completed undo state.");

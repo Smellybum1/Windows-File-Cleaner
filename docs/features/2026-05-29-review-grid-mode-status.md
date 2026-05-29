@@ -84,6 +84,7 @@ What changed:
 - Current-session quarantined mode now identifies the read-only Restore Manifest view and points to `Back to scan rows`.
 - Fixture execution state now warns that scan rows may be stale and points to the quarantined view.
 - Fixture undo state stops advertising moved current-session entries once no moved entries remain.
+- Later packet `2026-05-29-review-grid-mode-status-styling.md` added neutral/informational/warning styling to the same status line without adding layout.
 
 Files changed:
 
@@ -94,6 +95,7 @@ Files changed:
 - `docs/domain/context.md`
 - `docs/domain/glossary.md`
 - `docs/features/2026-05-29-review-grid-mode-status.md`
+- `docs/features/2026-05-29-review-grid-mode-status-styling.md`
 - `docs/codex/thread-handoff.md`
 - `.codex/progress.md`
 

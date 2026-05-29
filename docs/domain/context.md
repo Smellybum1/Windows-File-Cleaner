@@ -2755,6 +2755,7 @@ It is reached with the `Quarantined` button and returns to Storage Scan rows wit
 - Populate the view from current Restore Manifest entries with `RestoreManifestEntryStatus.Moved`.
 - Keep Review Grid Mode Status visible above the main grid so users can tell whether they are reviewing Storage Scan rows or current-session quarantined entries.
 - When Storage Scan rows may be stale after fixture Quarantine execution, Review Grid Mode Status should point to available current-session quarantined entries instead of implying refreshed scan evidence.
+- Keep Review Grid Mode Status styling semantic and lightweight: neutral for ordinary scan rows, informational for current-session quarantined rows, and warning for stale or empty moved-entry states; styling must not imply cleanup approval.
 - Keep `Quarantined` and `Back to scan rows` tooltips and automation help text dynamic enough to explain disabled states, current-session-only scope, read-only behavior, older-manifest discovery boundaries, and that returning to scan rows does not rescan or undo.
 - Keep this view read-only and current-session-only until a separate discovered-manifest design exists.
 

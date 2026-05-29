@@ -220,6 +220,10 @@ public partial class MainWindow : Window
 
     public string ReviewGridModeTextValue => ReviewGridModeText.Text;
 
+    public string ReviewGridModeStatusStyleValue => ReviewGridModeText.Tag?.ToString() ?? "";
+
+    public string ReviewGridModeStatusFontWeightValue => ReviewGridModeText.FontWeight.ToString();
+
     public string? ContentsColumnSortMemberPath => ResultsGrid.Columns
         .OfType<DataGridTextColumn>()
         .FirstOrDefault(column => string.Equals(column.Header?.ToString(), "Contents", StringComparison.OrdinalIgnoreCase))
@@ -2021,15 +2025,20 @@ public partial class MainWindow : Window
         var currentQuarantinedCount = BuildCurrentQuarantinedRows().Count;
         if (_isShowingQuarantinedRows)
         {
-            ReviewGridModeText.Text = currentQuarantinedCount == 0
+            var text = currentQuarantinedCount == 0
                 ? "Main grid: Current-session quarantined items. No moved entries are available; use Back to scan rows to return. No files were modified."
                 : $"Main grid: Current-session quarantined items ({currentQuarantinedCount:N0}). Read-only view from the current in-memory Restore Manifest; use Back to scan rows to return. No files were modified.";
+            SetReviewGridModeStatus(
+                text,
+                currentQuarantinedCount == 0 ? ReviewGridModeStatusStyle.Warning : ReviewGridModeStatusStyle.Information);
             return;
         }
 
         if (_currentReview is null)
         {
-            ReviewGridModeText.Text = "Main grid: Storage Scan rows appear after a scan. No files were modified.";
+            SetReviewGridModeStatus(
+                "Main grid: Storage Scan rows appear after a scan. No files were modified.",
+                ReviewGridModeStatusStyle.Neutral);
             return;
         }
 
@@ -2041,8 +2050,31 @@ public partial class MainWindow : Window
             ? " Scan rows may be stale after fixture Quarantine execution; rescan refreshes rows."
             : "";
 
-        ReviewGridModeText.Text =
-            $"Main grid: Storage Scan rows ({FormatReviewWindowRange(matchedCount)}).{quarantinedHint}{staleHint} No files were modified.";
+        SetReviewGridModeStatus(
+            $"Main grid: Storage Scan rows ({FormatReviewWindowRange(matchedCount)}).{quarantinedHint}{staleHint} No files were modified.",
+            string.IsNullOrEmpty(staleHint) ? ReviewGridModeStatusStyle.Neutral : ReviewGridModeStatusStyle.Warning);
+    }
+
+    private void SetReviewGridModeStatus(string text, ReviewGridModeStatusStyle style)
+    {
+        ReviewGridModeText.Text = text;
+        ReviewGridModeText.Tag = style.ToString();
+        ReviewGridModeText.Foreground = style switch
+        {
+            ReviewGridModeStatusStyle.Information => System.Windows.Media.Brushes.DarkCyan,
+            ReviewGridModeStatusStyle.Warning => System.Windows.Media.Brushes.DarkGoldenrod,
+            _ => System.Windows.Media.Brushes.SlateGray
+        };
+        ReviewGridModeText.FontWeight = style == ReviewGridModeStatusStyle.Neutral
+            ? FontWeights.Normal
+            : FontWeights.SemiBold;
+    }
+
+    private enum ReviewGridModeStatusStyle
+    {
+        Neutral,
+        Information,
+        Warning
     }
 
     private void UpdateQuarantinedViewControls()

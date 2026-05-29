@@ -7088,3 +7088,50 @@ Open questions:
 Rejected ideas buffer:
 
 - Do not treat preflight as a replacement for manual visual fixture review; it proves automated gates only.
+
+### 2026-05-29: Add Review Grid Mode Status Styling
+
+Status: completed
+
+Evidence:
+
+- During manual fixture review, after fixture Quarantine execution and rescan, moved files disappeared from Storage Scan rows as expected.
+- Review Grid Mode Status already names Storage Scan rows versus current-session quarantined rows, but it used the same muted styling for ordinary scan rows, stale scan warnings, and current-session quarantined review.
+
+Implementation:
+
+- Added lightweight semantic styling for `ReviewGridModeText`.
+- Ordinary Storage Scan rows use neutral styling.
+- Current-session quarantined rows use informational styling.
+- Stale Storage Scan rows after fixture Quarantine execution use warning styling.
+- Empty current-session quarantined rows after moved entries are gone use warning styling.
+- Kept the status read-only and did not add cleanup execution, restore behavior, persistent history, or new UI layout.
+
+Verification:
+
+- `dotnet build tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj "-p:BaseOutputPath=D:/Codex/Windows File Cleaner/.local/test-bin/app-tests/"` passed.
+- `D:\Codex\Windows File Cleaner\.local\test-bin\app-tests\Debug\net8.0-windows\WindowsFileCleaner.App.Tests.exe` passed.
+- `dotnet build WindowsFileCleaner.sln --no-restore "-p:BaseOutputPath=D:/Codex/Windows File Cleaner/.local/test-bin/solution/"` passed.
+- `git -c safe.directory='D:/Codex/Windows File Cleaner' diff --check` passed with line-ending normalization warnings only.
+
+Docs updated:
+
+- `README.md`
+- `docs/domain/context.md`
+- `docs/domain/glossary.md`
+- `docs/features/2026-05-29-review-grid-mode-status.md`
+- `docs/features/2026-05-29-review-grid-mode-status-styling.md`
+- `docs/codex/thread-handoff.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No ADR added. This is reversible WPF styling with no persistence, cleanup execution, restore rule, data-model, or security change.
+
+Open questions:
+
+- Should the status eventually use a badge instead of styled text?
+
+Rejected ideas buffer:
+
+- Do not add tabs, modal explanations, persisted cleanup history, or discovered-manifest merging just to distinguish the current grid mode.
