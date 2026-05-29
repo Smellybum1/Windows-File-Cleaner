@@ -41,6 +41,7 @@ Tests run:
 
 - `dotnet build tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj "-p:BaseOutputPath=D:/Codex/Windows File Cleaner/.local/test-bin/app-tests/"` passed.
 - `D:\Codex\Windows File Cleaner\.local\test-bin\app-tests\Debug\net8.0-windows\WindowsFileCleaner.App.Tests.exe` passed.
+- Later verification packet `2026-05-30: Run Full Local MVP Preflight After Scan Gate Cue` passed `cmd.exe /c tools\Invoke-MvpPreflight.cmd` without scanning or modifying real user files.
 
 ADRs added or skipped:
 

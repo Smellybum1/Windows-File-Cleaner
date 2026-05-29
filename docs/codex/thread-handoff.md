@@ -9,7 +9,7 @@ Use this when starting a fresh Codex thread for this repository.
 - Repo: `D:\Codex\Windows File Cleaner`
 - GitHub: `Smellybum1/Windows-File-Cleaner`
 - Branch: `main`
-- Latest completed packet: Run Full Local MVP Preflight After Current Quarantined Count
+- Latest completed packet: Run Full Local MVP Preflight After Scan Gate Cue
 - Current app stack: C# / WPF / .NET 8
 - Desktop shortcut target: `D:\Codex\Windows File Cleaner\src\WindowsFileCleaner.App\bin\Debug\net8.0-windows\WindowsFileCleaner.App.exe`
 
@@ -139,6 +139,7 @@ Fixture-only cleanup execution exists for synthetic Cleanup Scopes. Real-profile
 - Full Local MVP Preflight After Hoverable Checklist passed `cmd.exe /c tools\Invoke-MvpPreflight.cmd`; restore, build, core tests, WPF app tests, fixture `-WhatIf`, and whitespace diff check all passed without scanning or modifying real user files.
 - Hoverable Help Cue Affordance Coverage added WPF smoke assertions that all tracked circular `?` cues use the Help cursor and prompt tooltip delay.
 - Full Local MVP Preflight After Help Cue Coverage passed `cmd.exe /c tools\Invoke-MvpPreflight.cmd`; restore, build, core tests, WPF app tests, fixture `-WhatIf`, and whitespace diff check all passed without scanning or modifying real user files.
+- Full Local MVP Preflight After Scan Gate Cue passed `cmd.exe /c tools\Invoke-MvpPreflight.cmd`; restore, build, core tests, WPF app tests, fixture `-WhatIf`, and whitespace diff check all passed without scanning or modifying real user files.
 
 ## Best next work
 

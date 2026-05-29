@@ -20,6 +20,45 @@ Storage Scan MVP packet implemented and tested by the user against `C:\Users\mox
 
 ## Completed packets
 
+### 2026-05-30: Run Full Local MVP Preflight After Scan Gate Cue
+
+Status: completed
+
+Evidence:
+
+- Scan Gate Summary Help Cue changed WPF layout, dynamic help text, WPF smoke assertions, fixture checklist wording, README, domain docs, feature notes, progress, and handoff.
+- A full local preflight through the preferred `.cmd` wrapper gives stronger evidence that restore, build, test, fixture dry-run, and whitespace gates still pass after the scan-gate help-cue packet.
+
+Implementation:
+
+- Ran `Invoke-MvpPreflight.cmd` from the repository root after the scan-gate summary help-cue packet was pushed.
+- Preflight restored packages, built the solution, ran core tests, ran WPF app tests, ran the synthetic fixture generator in `-WhatIf` mode, and ran whitespace diff checking.
+- No real user files were scanned or modified.
+
+Verification:
+
+- `cmd.exe /c tools\Invoke-MvpPreflight.cmd` passed.
+- Preflight output ended with `MVP preflight passed. No real user files were scanned or modified.`
+- Preflight suggested `.\tools\Start-MvpFixtureReview.cmd -SkipPreflight` as the next manual fixture step.
+
+Docs updated:
+
+- `docs/codex/thread-handoff.md`
+- `.codex/progress.md`
+- `docs/features/2026-05-30-scan-gate-summary-help-cue.md`
+
+ADRs:
+
+- No ADR added. This is verification evidence only, with no architecture, persistence, cleanup execution, restore rule, data-model, or security change.
+
+Open questions:
+
+- The next useful product signal remains a visible fixture or real-profile review pass against the scan-gate summary `?` cue and the rest of the hoverable help cues.
+
+Rejected ideas buffer:
+
+- Do not treat preflight as a replacement for visible UI review; it proves automated gates only.
+
 ### 2026-05-30: Scan Gate Summary Help Cue
 
 Status: completed
