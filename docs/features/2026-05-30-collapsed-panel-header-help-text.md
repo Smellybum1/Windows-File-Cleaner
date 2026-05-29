@@ -52,6 +52,7 @@ What changed:
 - Mirrored each header's dynamic summary into its tooltip/help text whenever scan, preview, execution, or undo state changes.
 - Added header text trimming so tight layouts keep the header compact instead of crowding the review grid.
 - Later packet `2026-05-30-quarantine-shortlist-header-styling.md` added lightweight semantic styling to the Quarantine shortlist header while preserving the same compact summary and help text.
+- Later packet `2026-05-30-safety-summary-header-styling.md` added lightweight neutral/warning styling to the Safety Summary header while preserving the same compact summary and help text.
 
 Docs updated:
 

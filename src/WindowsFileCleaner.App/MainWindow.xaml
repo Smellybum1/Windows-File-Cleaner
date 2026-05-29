@@ -152,6 +152,8 @@
                     <TextBlock x:Name="SafetySummaryHeaderText"
                                Text="Scan safety summary: waiting for scan"
                                FontWeight="SemiBold"
+                               Foreground="#526171"
+                               Tag="Neutral"
                                TextTrimming="CharacterEllipsis"
                                ToolTip="Scan safety summary: waiting for scan. Header summary is read-only review context, not cleanup approval."
                                AutomationProperties.HelpText="Scan safety summary: waiting for scan. Header summary is read-only review context, not cleanup approval." />

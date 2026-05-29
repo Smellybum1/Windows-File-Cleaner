@@ -255,6 +255,8 @@ public partial class MainWindow : Window
 
     public string SafetySummaryHeaderAutomationHelpTextValue => AutomationProperties.GetHelpText(SafetySummaryHeaderText);
 
+    public string SafetySummaryHeaderStatusStyleValue => SafetySummaryHeaderText.Tag?.ToString() ?? "";
+
     public string SafetyHighRiskButtonToolTipValue => SafetyHighRiskButton.ToolTip?.ToString() ?? "";
 
     public string SafetyHighRiskButtonAutomationHelpTextValue => AutomationProperties.GetHelpText(SafetyHighRiskButton);
@@ -3600,10 +3602,7 @@ public partial class MainWindow : Window
         if (_currentSafetySummary is null)
         {
             const string waitingHeaderText = "Scan safety summary: waiting for scan";
-            const string waitingHelpText = waitingHeaderText + ". Header summary is read-only review context, not cleanup approval.";
-            SafetySummaryHeaderText.Text = waitingHeaderText;
-            SafetySummaryHeaderText.ToolTip = waitingHelpText;
-            AutomationProperties.SetHelpText(SafetySummaryHeaderText, waitingHelpText);
+            SetSafetySummaryHeader(waitingHeaderText, SafetySummaryHeaderStatusStyle.Neutral);
             return;
         }
 
@@ -3615,10 +3614,30 @@ public partial class MainWindow : Window
             $"Access {summary.AccessIssueCount:N0} | " +
             $"Quarantine {summary.QuarantineCandidateCount:N0} | " +
             $"No category {summary.UncategorizedCount:N0}";
+        var style = summary.HasReviewWarnings
+            ? SafetySummaryHeaderStatusStyle.Warning
+            : SafetySummaryHeaderStatusStyle.Neutral;
+        SetSafetySummaryHeader(headerText, style);
+    }
+
+    private void SetSafetySummaryHeader(string headerText, SafetySummaryHeaderStatusStyle style)
+    {
         var helpText = $"{headerText}. Header summary is read-only review context, not cleanup approval.";
         SafetySummaryHeaderText.Text = headerText;
+        SafetySummaryHeaderText.Tag = style.ToString();
         SafetySummaryHeaderText.ToolTip = helpText;
         AutomationProperties.SetHelpText(SafetySummaryHeaderText, helpText);
+        SafetySummaryHeaderText.Foreground = style switch
+        {
+            SafetySummaryHeaderStatusStyle.Warning => System.Windows.Media.Brushes.DarkGoldenrod,
+            _ => System.Windows.Media.Brushes.SlateGray
+        };
+    }
+
+    private enum SafetySummaryHeaderStatusStyle
+    {
+        Neutral,
+        Warning
     }
 
     private static string FormatAccessIssueExamples(StorageScanSafetySummary summary)

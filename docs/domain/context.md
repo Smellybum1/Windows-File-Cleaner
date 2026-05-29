@@ -1161,6 +1161,7 @@ It summarizes safety-relevant scan signals such as high-risk rows, Protected Loc
 - Safety Summary review shortcut tooltips and automation help text should keep shortcut scope, read-only behavior, no-rescan/no-file-modified boundaries, no-permission-change behavior for Access issues, no-link-following behavior for reparse points, and not-cleanup-approval wording available.
 - In WPF, keep Safety Summary collapsible so the main review grid can recover vertical space during focused review.
 - In WPF, keep the collapsed Safety Summary header useful with compact risk counts, and mirror that header summary into tooltip and automation help text with read-only/not-cleanup-approval wording.
+- In WPF, lightweight Safety Summary header styling may distinguish waiting/neutral from warning states when scan safety signals need review, but must not imply cleanup approval, safety clearance, or a changed scan gate.
 - Do not trigger permission changes, cleanup actions, quarantine actions, or rescans from the summary.
 
 ### Child Breakdown

@@ -92,6 +92,9 @@ internal sealed class MainWindowSmokeTests
                 && window.SafetySummaryHeaderAutomationHelpTextValue.Contains("not cleanup approval", StringComparison.OrdinalIgnoreCase),
                 "Safety Summary header automation help text should expose the collapsed summary and safety boundary before scanning.");
             Assert(
+                window.SafetySummaryHeaderStatusStyleValue == "Neutral",
+                "Collapsed Safety Summary header should start with neutral styling before scan safety signals exist.");
+            Assert(
                 window.QuarantineShortlistHeaderToolTipValue.Contains("0 shortlisted", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantineShortlistHeaderToolTipValue.Contains("read-only review context", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantineShortlistHeaderToolTipValue.Contains("not cleanup approval", StringComparison.OrdinalIgnoreCase),
@@ -1486,6 +1489,9 @@ internal sealed class MainWindowSmokeTests
                 && window.SafetySummaryHeaderAutomationHelpTextValue.Contains("read-only review context", StringComparison.OrdinalIgnoreCase)
                 && window.SafetySummaryHeaderAutomationHelpTextValue.Contains("not cleanup approval", StringComparison.OrdinalIgnoreCase),
                 "Collapsed Safety Summary header automation help text should mirror the dynamic header and safety boundary.");
+            Assert(
+                window.SafetySummaryHeaderStatusStyleValue == "Warning",
+                "Collapsed Safety Summary header should use warning styling when scan safety signals need review.");
             Assert(
                 window.ShowQuarantinedButtonText == "Current quarantined",
                 "Current-session quarantined view button label should expose the current-session scope.");
