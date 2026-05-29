@@ -31,7 +31,7 @@ Quarantine Manifest Discovery shows valid action-scoped Restore Manifests and di
 - Core Restore Readiness Preview evaluates discovered manifests under the selected Quarantine Root.
 - It reports manifest-level blockers, restorable entries, blocked entries, skipped entries, and discovery issues.
 - It checks missing quarantine paths, existing original paths, quarantine-path reparse points, non-moved entry states, and recovery-review states read-only.
-- WPF exposes a status-only `Preview restore readiness` action.
+- WPF exposes a status-only `Preview all-manifest readiness` action.
 - WPF does not expose old-manifest restore execution.
 
 ## Domain language changes
@@ -118,7 +118,7 @@ ADR-worthy decisions:
 2. Add Restore Readiness Preview models and builder.
 3. Extend discovery to retain valid Restore Manifests for readiness preview.
 4. Add core readiness preview tests.
-5. Add WPF `Preview restore readiness` status-only action.
+5. Add WPF `Preview all-manifest readiness` status-only action.
 6. Add WPF smoke coverage proving readiness preview does not restore files.
 7. Update README, domain docs, glossary, audit, and progress.
 8. Run preflight, commit, push, and verify CI.
@@ -178,7 +178,7 @@ What changed:
 - Added ADR 0012 for read-only Restore Readiness Preview.
 - Added core Restore Readiness Preview models and builder.
 - Extended Quarantine Manifest Discovery to retain valid Restore Manifest objects for readiness evaluation.
-- Added WPF `Preview restore readiness` status-only action and pane.
+- Added WPF `Preview all-manifest readiness` status-only action and pane.
 - Added core coverage for restorable, blocked, missing quarantine path, and already-restored readiness states.
 - Added WPF smoke coverage proving readiness preview shows restorable discovered-manifest evidence without restoring files.
 
@@ -223,7 +223,7 @@ Follow-up work:
 
 - Add WPF selection for one discovered Restore Manifest.
 - Add explicit confirmation and restore execution for selected manifests only after readiness preview is manually reviewed.
-- Later selected-restore packets added fixture-only selected restore; readiness pane wording now says no all-manifest restore action is available from readiness preview and routes fixture selected restore through selected readiness and the selected restore gate.
+- Later selected-restore packets added fixture-only selected restore; readiness pane wording now says no all-manifest restore action is available from readiness preview and routes fixture selected restore through selected manifest readiness and the selected restore gate. Later label polish renamed the visible WPF action to `Preview all-manifest readiness`.
 - Decide whether successful restore should offer empty action-folder cleanup.
 
 Open questions:

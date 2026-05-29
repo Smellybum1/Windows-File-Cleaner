@@ -6,11 +6,11 @@ Use it to preserve what was completed, what was verified, what was rejected, and
 
 ## Current status
 
-Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. The app has a broad read-only review workflow, debounced Storage Review Search for large real-profile scans, scope-specific Cleanup Scope Scan Gate discoverability polish, Matched Review Mix, Review Shortlist Safety Mix, visible-row Review Shortlist bulk labels, Selected Folder Subtree Summary, Storage Hotspot Trail, Selected Folder Child Focus, Selected Folder Descendant Focus, fixture launch/preflight tooling with checklist output, checklist-only mode, approval-boundary prompt coverage, selected-restore scope-status checklist coverage, all-manifest restore boundary checklist coverage, execution-control tooltip clarity, Undo Quarantine domain consistency, Restore Manifest wording polish, and Selected Manifest Readiness label polish, Quarantine Preview, Quarantine approval-boundary wording, Quarantine Execution Scope Status, Restore Manifest Draft, Quarantine Confirmation Draft, confirmation label wording polish, Quarantine Action Draft, write-ahead Restore Manifest persistence, core Quarantine execution, core Undo Quarantine, fixture-only WPF Quarantine execution, WPF undo for the current fixture execution, Quarantine Manifest Discovery with all-manifest restore wording, Selected Restore Manifest Review with readiness-evidence wording, Selected Restore Confirmation Gate with scope-status/approval-boundary wording, Fixture-only Selected Restore Execution, and Restore Readiness Preview with all-manifest restore wording. Real-profile WPF Quarantine execution, real-profile WPF Undo Quarantine, permanent deletion, and persisted cleanup history remain unavailable. Fresh-thread handoff notes and a startup prompt live in `docs/codex/thread-handoff.md`.
+Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. The app has a broad read-only review workflow, debounced Storage Review Search for large real-profile scans, scope-specific Cleanup Scope Scan Gate discoverability polish, Matched Review Mix, Review Shortlist Safety Mix, visible-row Review Shortlist bulk labels, Selected Folder Subtree Summary, Storage Hotspot Trail, Selected Folder Child Focus, Selected Folder Descendant Focus, fixture launch/preflight tooling with checklist output, checklist-only mode, approval-boundary prompt coverage, selected-restore scope-status checklist coverage, all-manifest restore boundary checklist coverage, execution-control tooltip clarity, Undo Quarantine domain consistency, Restore Manifest wording polish, Selected Manifest Readiness label polish, and All-Manifest Readiness label polish, Quarantine Preview, Quarantine approval-boundary wording, Quarantine Execution Scope Status, Restore Manifest Draft, Quarantine Confirmation Draft, confirmation label wording polish, Quarantine Action Draft, write-ahead Restore Manifest persistence, core Quarantine execution, core Undo Quarantine, fixture-only WPF Quarantine execution, WPF undo for the current fixture execution, Quarantine Manifest Discovery with all-manifest restore wording, Selected Restore Manifest Review with readiness-evidence wording, Selected Restore Confirmation Gate with scope-status/approval-boundary wording, Fixture-only Selected Restore Execution, and Restore Readiness Preview with all-manifest restore wording. Real-profile WPF Quarantine execution, real-profile WPF Undo Quarantine, permanent deletion, and persisted cleanup history remain unavailable. Fresh-thread handoff notes and a startup prompt live in `docs/codex/thread-handoff.md`.
 
 ## Next recommended work
 
-1. Start the next thread from `docs/codex/thread-handoff.md`, optionally print the manual prompts with `.\tools\Start-MvpFixtureReview.ps1 -ChecklistOnly`, then run `.\tools\Start-MvpFixtureReview.ps1`, confirm the launched app shows Fixture Cleanup Scope, scope-specific scan-gate wording, click `Scan`, and manually inspect layout, visible wording, Storage Review Search, `parent:` search, `under:` search, Matched Review Mix, Review Shortlist Safety Mix, Selected Folder Subtree Summary, Storage Hotspot Trail, Selected Folder Child Focus (`Show children`), Selected Folder Descendant Focus (`Show descendants`), Storage Review Display Window controls, the `Relative path` and `Parent` columns, Selected Path Hierarchy Context, Selected File Content Preview, Selected Path Review Guidance, export dialogs, Safety Summary shortcuts, Review Shortlist, `Shortlist visible rows`, `Remove visible rows`, typed/browsed Quarantine Root Selection, Quarantine Root Safety Note, Quarantine Preview, Quarantine Execution Gate, Quarantine Action Draft, execution-control tooltips, fixture-only `Execute quarantine`, current-fixture `Undo fixture quarantine`, `Discover manifests`, `Preview selected manifest readiness`, `Preview selected restore gate` scope status and approval boundary, fixture-only `Restore selected fixture manifest`, `Preview restore readiness`, Review Mix, Access issues filter, category filter, No category filter, Size filter, and filter wording.
+1. Start the next thread from `docs/codex/thread-handoff.md`, optionally print the manual prompts with `.\tools\Start-MvpFixtureReview.ps1 -ChecklistOnly`, then run `.\tools\Start-MvpFixtureReview.ps1`, confirm the launched app shows Fixture Cleanup Scope, scope-specific scan-gate wording, click `Scan`, and manually inspect layout, visible wording, Storage Review Search, `parent:` search, `under:` search, Matched Review Mix, Review Shortlist Safety Mix, Selected Folder Subtree Summary, Storage Hotspot Trail, Selected Folder Child Focus (`Show children`), Selected Folder Descendant Focus (`Show descendants`), Storage Review Display Window controls, the `Relative path` and `Parent` columns, Selected Path Hierarchy Context, Selected File Content Preview, Selected Path Review Guidance, export dialogs, Safety Summary shortcuts, Review Shortlist, `Shortlist visible rows`, `Remove visible rows`, typed/browsed Quarantine Root Selection, Quarantine Root Safety Note, Quarantine Preview, Quarantine Execution Gate, Quarantine Action Draft, execution-control tooltips, fixture-only `Execute quarantine`, current-fixture `Undo fixture quarantine`, `Discover manifests`, `Preview selected manifest readiness`, `Preview selected restore gate` scope status and approval boundary, fixture-only `Restore selected fixture manifest`, `Preview all-manifest readiness`, Review Mix, Access issues filter, category filter, No category filter, Size filter, and filter wording.
 2. Use `README.md` and `docs/features/2026-05-28-mvp-readiness-audit.md` to rerun the WPF app against `C:\Users\moxhe`; confirm `Scan` is disabled until the real-profile preflight acknowledgement is checked.
 3. Run `.\tools\Invoke-MvpPreflight.ps1` before any later real-profile scan if the worktree changes.
 4. Rerun the real scan and check whether the cleanup scope root row, `Relative path`, `Parent`, `Contents`, and `Access` columns, Size filter, `parent:` / `under:` / `access:readable` / `access:access issue` search, Matched Review Mix, Selected Folder Subtree Summary, Storage Hotspot Trail, `Show children`, `Show descendants`, Previous rows / Next rows, Safety Summary candidate and no-category examples, selected-row relative/parent/depth/access context, cache-specific Review guidance, specific rebuildable cache candidates such as `DXCache` and `pip\Cache`, conservative game/mod-manager labels such as OptiFine/CurseForge/Vortex, Cloud sync data and Credential data labels, and `Preview file` action make unfamiliar rows easier to triage.
@@ -4040,7 +4040,7 @@ Implementation:
 - Added ADR 0012 for read-only Restore Readiness Preview.
 - Added `RestoreReadinessPreview`, `RestoreReadinessManifestPreview`, `RestoreReadinessEntryPreview`, `RestoreReadinessDisposition`, and `RestoreReadinessPreviewBuilder`.
 - Extended discovery to retain valid Restore Manifest objects for readiness evaluation.
-- WPF now exposes `Preview restore readiness` as a status-only action under the selected Quarantine Root.
+- WPF now exposes `Preview all-manifest readiness` as a status-only action under the selected Quarantine Root.
 - Readiness preview reports restorable, blocked, already-restored, recovery-review, and not-moved entries without restoring files.
 - Kept discovered-manifest restore, real-profile execution, permanent deletion, cleanup history, manifest writes, and quarantine-folder cleanup unavailable.
 
@@ -5481,3 +5481,51 @@ Rejected ideas buffer:
 
 - Do not rename core types or workflows in this packet.
 - Do not use the shorter `selected readiness` label again unless visible review shows the longer label does not fit.
+
+### 2026-05-29: Add All-Manifest Readiness Label Polish
+
+Status: completed
+
+Evidence:
+
+- `Preview restore readiness` was accurate but less explicit after the selected-manifest readiness label became `Preview selected manifest readiness`.
+- ADR 0012 and the Restore Readiness Preview feature brief describe this workflow as evaluating discovered Restore Manifests under the selected Quarantine Root.
+- Handoff guidance prefers readiness clarity before any real cleanup execution.
+
+Implementation:
+
+- Renamed the WPF Restore Readiness Preview action to `Preview all-manifest readiness`.
+- Updated the readiness placeholder text and added WPF smoke assertions for the button label and placeholder.
+- Updated README, domain docs, fixture checklist, relevant feature notes, progress, and handoff.
+- Kept Restore Readiness Preview read-only and kept all restore execution availability boundaries unchanged.
+
+Verification:
+
+- `dotnet run --project tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj` passed.
+- `dotnet build WindowsFileCleaner.sln --no-restore` passed with 0 warnings and 0 errors.
+- `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\Start-MvpFixtureReview.ps1 -ChecklistOnly` passed and printed the all-manifest readiness preview checklist wording without preflight, fixture creation, or WPF launch.
+- `git -c safe.directory='D:/Codex/Windows File Cleaner' diff --check` passed; Git printed line-ending normalization warnings for touched files but no whitespace errors.
+
+Docs updated:
+
+- `README.md`
+- `docs/domain/context.md`
+- `docs/domain/glossary.md`
+- `docs/features/2026-05-29-all-manifest-readiness-label-polish.md`
+- `docs/features/2026-05-29-restore-readiness-preview.md`
+- `docs/features/2026-05-28-mvp-readiness-audit.md`
+- `docs/codex/thread-handoff.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No ADR added. This is reversible UI wording clarity with no persistence, cleanup execution, restore, security, deployment, or data-model change.
+
+Open questions:
+
+- Does the longer all-manifest readiness label fit comfortably during visible fixture review?
+
+Rejected ideas buffer:
+
+- Do not rename the domain concept away from Restore Readiness Preview.
+- Do not add all-manifest restore while polishing a read-only readiness label.

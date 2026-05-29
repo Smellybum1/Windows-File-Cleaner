@@ -9,7 +9,7 @@ Use this when starting a fresh Codex thread for this repository.
 - Repo: `D:\Codex\Windows File Cleaner`
 - GitHub: `Smellybum1/Windows-File-Cleaner`
 - Branch: `main`
-- Latest completed packet: Selected Manifest Readiness Label Polish (after Restore Manifest Wording Polish)
+- Latest completed packet: All-Manifest Readiness Label Polish (after Selected Manifest Readiness Label Polish)
 - Current app stack: C# / WPF / .NET 8
 - Desktop shortcut target: `D:\Codex\Windows File Cleaner\src\WindowsFileCleaner.App\bin\Debug\net8.0-windows\WindowsFileCleaner.App.exe`
 
@@ -17,7 +17,7 @@ Use this when starting a fresh Codex thread for this repository.
 
 Windows File Cleaner is a local Windows-only desktop app for reviewing storage under `C:\Users\moxhe`.
 
-The current MVP has a read-only Storage Scan that can inspect large real-profile scans with filters, debounced search, visible scope-specific Cleanup Scope Scan Gate status/tooltip wording, Review Mix, Matched Review Mix, Review Shortlist Safety Mix, visible-row Review Shortlist bulk labels, selected-folder child/descendant focus, selected-folder summaries, hotspot trail, file preview, CSV export, Review Shortlist, fixture launcher checklist output and checklist-only mode, Quarantine Preview, Quarantine approval-boundary wording, Quarantine Execution Scope Status, execution-control tooltip clarity, Restore Manifest Draft, Quarantine Confirmation Draft, confirmation label wording polish, Quarantine Action Draft, manifest discovery with all-manifest restore wording, Restore Manifest wording polish, selected manifest readiness label polish, selected manifest review with readiness-evidence wording, selected restore gate scope-status/approval-boundary wording, selected-restore scope-status checklist coverage, restore-readiness preview with all-manifest restore wording, and all-manifest restore boundary checklist coverage.
+The current MVP has a read-only Storage Scan that can inspect large real-profile scans with filters, debounced search, visible scope-specific Cleanup Scope Scan Gate status/tooltip wording, Review Mix, Matched Review Mix, Review Shortlist Safety Mix, visible-row Review Shortlist bulk labels, selected-folder child/descendant focus, selected-folder summaries, hotspot trail, file preview, CSV export, Review Shortlist, fixture launcher checklist output and checklist-only mode, Quarantine Preview, Quarantine approval-boundary wording, Quarantine Execution Scope Status, execution-control tooltip clarity, Restore Manifest Draft, Quarantine Confirmation Draft, confirmation label wording polish, Quarantine Action Draft, manifest discovery with all-manifest restore wording, Restore Manifest wording polish, selected manifest readiness label polish, all-manifest readiness label polish, selected manifest review with readiness-evidence wording, selected restore gate scope-status/approval-boundary wording, selected-restore scope-status checklist coverage, all-manifest readiness preview with all-manifest restore wording, and all-manifest restore boundary checklist coverage.
 
 Fixture-only cleanup execution exists for synthetic Cleanup Scopes. Real-profile cleanup execution remains intentionally unavailable.
 
@@ -58,6 +58,7 @@ Fixture-only cleanup execution exists for synthetic Cleanup Scopes. Real-profile
 - Undo Quarantine Domain Consistency corrected current domain wording so Undo Quarantine Executor is described as used by current-fixture undo and fixture-only selected restore, while real-profile/all-manifest restore stays unavailable.
 - Restore Manifest Wording Polish aligned current-facing manifest wording with Restore Manifest language in the current-fixture undo tooltip, README manual check, WPF smoke assertion messages, and domain docs without changing restore availability.
 - Selected Manifest Readiness Label Polish renamed the visible selected-readiness action to `Preview selected manifest readiness` and aligned current checklist/docs/tests wording without changing restore availability.
+- All-Manifest Readiness Label Polish renamed the all-manifest readiness action to `Preview all-manifest readiness` and aligned current checklist/docs/tests wording without changing restore availability.
 
 ## Best next work
 

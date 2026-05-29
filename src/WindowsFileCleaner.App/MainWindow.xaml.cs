@@ -220,6 +220,8 @@ public partial class MainWindow : Window
 
     public bool CanPreviewRestoreReadiness => PreviewRestoreReadinessButton.IsEnabled;
 
+    public string PreviewRestoreReadinessButtonText => PreviewRestoreReadinessButton.Content?.ToString() ?? "";
+
     public bool CanSelectDiscoveredRestoreManifest => RestoreManifestSelectionBox.IsEnabled;
 
     public bool CanPreviewSelectedRestoreManifestReadiness => PreviewSelectedRestoreManifestReadinessButton.IsEnabled;
@@ -1406,7 +1408,7 @@ public partial class MainWindow : Window
         _currentSelectedRestoreManifestReview = null;
         ClearSelectedRestoreGate();
         QuarantineManifestDiscoveryText.Text = FormatQuarantineManifestDiscovery(_currentQuarantineManifestDiscovery);
-        RestoreReadinessPreviewText.Text = "Read-only restore readiness appears after using Preview restore readiness.";
+        RestoreReadinessPreviewText.Text = "Read-only all-manifest readiness appears after using Preview all-manifest readiness.";
         SetRestoreManifestSelectionOptions(_currentQuarantineManifestDiscovery.Manifests);
         SelectedRestoreManifestReviewText.Text = _currentQuarantineManifestDiscovery.ManifestCount == 0
             ? "No discovered Restore Manifest is available for selected review."
@@ -2080,7 +2082,7 @@ public partial class MainWindow : Window
         ClearRestoreManifestSelectionOptions();
         QuarantineManifestDiscoveryText.Text = "Read-only manifest discovery appears after using Discover manifests.";
         SelectedRestoreManifestReviewText.Text = "Selected Restore Manifest Review appears after discovery and Preview selected manifest readiness.";
-        RestoreReadinessPreviewText.Text = "Read-only restore readiness appears after using Preview restore readiness.";
+        RestoreReadinessPreviewText.Text = "Read-only all-manifest readiness appears after using Preview all-manifest readiness.";
         UpdateQuarantineManifestDiscoveryControls();
     }
 

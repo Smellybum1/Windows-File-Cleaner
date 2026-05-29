@@ -75,6 +75,9 @@ internal sealed class MainWindowSmokeTests
             Assert(window.CanBrowseQuarantineRoot, "MainWindow should allow browsing for the read-only Quarantine Preview root before scanning.");
             Assert(window.CanDiscoverQuarantineManifests, "MainWindow should allow read-only Quarantine Manifest Discovery before scanning.");
             Assert(window.CanPreviewRestoreReadiness, "MainWindow should allow read-only Restore Readiness Preview before scanning.");
+            Assert(
+                window.PreviewRestoreReadinessButtonText == "Preview all-manifest readiness",
+                "Restore Readiness Preview button should name its all-manifest scope.");
             Assert(!window.CanSelectDiscoveredRestoreManifest, "MainWindow should not enable Restore Manifest selection before discovery.");
             Assert(!window.CanPreviewSelectedRestoreManifestReadiness, "MainWindow should not enable selected Restore Manifest review before discovery.");
             Assert(
@@ -97,8 +100,9 @@ internal sealed class MainWindowSmokeTests
                 window.QuarantineManifestDiscoveryTextValue.Contains("Read-only manifest discovery", StringComparison.OrdinalIgnoreCase),
                 "Quarantine Manifest Discovery pane should start in a read-only placeholder state.");
             Assert(
-                window.RestoreReadinessPreviewTextValue.Contains("Read-only restore readiness", StringComparison.OrdinalIgnoreCase),
-                "Restore Readiness Preview pane should start in a read-only placeholder state.");
+                window.RestoreReadinessPreviewTextValue.Contains("Read-only all-manifest readiness", StringComparison.OrdinalIgnoreCase)
+                && window.RestoreReadinessPreviewTextValue.Contains("Preview all-manifest readiness", StringComparison.OrdinalIgnoreCase),
+                "Restore Readiness Preview pane should start in a read-only all-manifest placeholder state.");
             Assert(
                 window.SelectedRestoreManifestReviewTextValue.Contains("Selected Restore Manifest Review", StringComparison.OrdinalIgnoreCase),
                 "Selected Restore Manifest Review pane should start in a read-only placeholder state.");

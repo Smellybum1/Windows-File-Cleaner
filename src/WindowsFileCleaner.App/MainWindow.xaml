@@ -590,8 +590,8 @@
                                         MinWidth="145"
                                         Click="DiscoverQuarantineManifestsButton_Click" />
                                 <Button x:Name="PreviewRestoreReadinessButton"
-                                        Content="Preview restore readiness"
-                                        MinWidth="185"
+                                        Content="Preview all-manifest readiness"
+                                        MinWidth="245"
                                         Click="PreviewRestoreReadinessButton_Click" />
                             </WrapPanel>
                             <WrapPanel Margin="0,6,0,0">
@@ -656,7 +656,7 @@
                                        Margin="0,6,0,0"
                                        TextWrapping="Wrap" />
                             <TextBlock x:Name="RestoreReadinessPreviewText"
-                                       Text="Read-only restore readiness appears after using Preview restore readiness."
+                                       Text="Read-only all-manifest readiness appears after using Preview all-manifest readiness."
                                        FontFamily="Consolas"
                                        FontSize="12"
                                        Margin="0,6,0,0"

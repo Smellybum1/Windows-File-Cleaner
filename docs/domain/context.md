@@ -2957,7 +2957,7 @@ Last reviewed: 2026-05-29
 
 #### Definition
 
-Restore Readiness Preview is the read-only workflow that evaluates whether discovered Restore Manifests appear ready for a future Undo Quarantine action.
+Restore Readiness Preview is the read-only workflow that evaluates whether discovered Restore Manifests under the selected Quarantine Root appear ready for a future Undo Quarantine action.
 
 It is not approval to restore and does not restore files.
 
@@ -2998,6 +2998,7 @@ It is not approval to restore and does not restore files.
 
 - Use `RestoreReadinessPreview`, `RestoreReadinessPreviewBuilder`, `RestoreReadinessManifestPreview`, and `RestoreReadinessEntryPreview`.
 - Keep it read-only. Do not call `UndoQuarantineExecutor.Undo`.
+- The WPF action label should make the all-manifest readiness scope visible so it is distinct from selected manifest readiness.
 - WPF readiness output should distinguish read-only blocker evidence from all-manifest restore execution while pointing fixture-only restore toward the selected restore gate.
 - Recompute readiness immediately before any future restore execution because filesystem state can change.
 
