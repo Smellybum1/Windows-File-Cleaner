@@ -20,6 +20,45 @@ Storage Scan MVP packet implemented and tested by the user against `C:\Users\mox
 
 ## Completed packets
 
+### 2026-05-30: Run Full Local MVP Preflight Through CMD Wrapper
+
+Status: completed
+
+Evidence:
+
+- Execution-Policy Friendly Tool Wrappers made `.\tools\Invoke-MvpPreflight.cmd` the preferred manual preflight command.
+- The wrapper packet had already passed `Invoke-MvpPreflight.cmd -SkipRestore`; a full run verifies the complete preferred command path, including restore.
+
+Implementation:
+
+- Ran `Invoke-MvpPreflight.cmd` from the repository root after the tool-wrapper packet was pushed.
+- Preflight restored packages, built the solution, ran core tests, ran WPF app tests, ran the synthetic fixture generator in `-WhatIf` mode, and ran whitespace diff checking.
+- No real user files were scanned or modified.
+
+Verification:
+
+- `cmd.exe /c tools\Invoke-MvpPreflight.cmd` passed.
+- Preflight output ended with `MVP preflight passed. No real user files were scanned or modified.`
+- Preflight suggested `.\tools\Start-MvpFixtureReview.cmd -SkipPreflight` as the next manual fixture step.
+- `git -c safe.directory='D:/Codex/Windows File Cleaner' status --short --branch` showed a clean tree before recording this docs-only verification note.
+
+Docs updated:
+
+- `docs/codex/thread-handoff.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No ADR added. This is verification evidence only, with no architecture, persistence, cleanup execution, restore rule, data-model, or security change.
+
+Open questions:
+
+- The next useful product signal remains visible fixture review using the `.cmd` launcher.
+
+Rejected ideas buffer:
+
+- Do not treat preflight as a replacement for manual visible fixture review; it proves automated gates only.
+
 ### 2026-05-30: Execution-Policy Friendly Tool Wrappers
 
 Status: completed

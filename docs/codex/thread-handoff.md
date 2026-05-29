@@ -9,7 +9,7 @@ Use this when starting a fresh Codex thread for this repository.
 - Repo: `D:\Codex\Windows File Cleaner`
 - GitHub: `Smellybum1/Windows-File-Cleaner`
 - Branch: `main`
-- Latest completed packet: Execution-Policy Friendly Tool Wrappers
+- Latest completed packet: Full Local MVP Preflight Through CMD Wrapper
 - Current app stack: C# / WPF / .NET 8
 - Desktop shortcut target: `D:\Codex\Windows File Cleaner\src\WindowsFileCleaner.App\bin\Debug\net8.0-windows\WindowsFileCleaner.App.exe`
 
@@ -130,6 +130,7 @@ Fixture-only cleanup execution exists for synthetic Cleanup Scopes. Real-profile
 - Execution-Policy Friendly Fixture Launcher added `.\tools\Start-MvpFixtureReview.cmd`, which invokes the existing PowerShell launcher with process-scoped `-ExecutionPolicy Bypass` and forwards arguments such as `-ChecklistOnly` and `-SkipPreflight`.
 - Full Local MVP Preflight After CMD Launcher passed `Invoke-MvpPreflight.ps1`; restore, build, core tests, WPF app tests, fixture `-WhatIf`, and whitespace diff check all passed, and preflight now suggests `.\tools\Start-MvpFixtureReview.cmd -SkipPreflight` as the next manual fixture step.
 - Execution-Policy Friendly Tool Wrappers added `.\tools\Invoke-MvpPreflight.cmd` and `.\tools\New-StorageScanSmokeFixture.cmd`, making process-scoped bypass wrappers available for all human-facing PowerShell tools.
+- Full Local MVP Preflight Through CMD Wrapper passed `cmd.exe /c tools\Invoke-MvpPreflight.cmd`; restore, build, core tests, WPF app tests, fixture `-WhatIf`, and whitespace diff check all passed without scanning or modifying real user files.
 
 ## Best next work
 
