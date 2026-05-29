@@ -224,6 +224,10 @@ public partial class MainWindow : Window
 
     public string ReviewGridModeStatusFontWeightValue => ReviewGridModeText.FontWeight.ToString();
 
+    public string ReviewGridModeToolTipValue => ReviewGridModeText.ToolTip?.ToString() ?? "";
+
+    public string ReviewGridModeAutomationHelpTextValue => AutomationProperties.GetHelpText(ReviewGridModeText);
+
     public string? ContentsColumnSortMemberPath => ResultsGrid.Columns
         .OfType<DataGridTextColumn>()
         .FirstOrDefault(column => string.Equals(column.Header?.ToString(), "Contents", StringComparison.OrdinalIgnoreCase))
@@ -2069,6 +2073,9 @@ public partial class MainWindow : Window
     {
         ReviewGridModeText.Text = text;
         ReviewGridModeText.Tag = style.ToString();
+        var helpText = FormatReviewGridModeHelpText(text);
+        ReviewGridModeText.ToolTip = helpText;
+        AutomationProperties.SetHelpText(ReviewGridModeText, helpText);
         ReviewGridModeText.Foreground = style switch
         {
             ReviewGridModeStatusStyle.Information => System.Windows.Media.Brushes.DarkCyan,
@@ -2078,6 +2085,11 @@ public partial class MainWindow : Window
         ReviewGridModeText.FontWeight = style == ReviewGridModeStatusStyle.Neutral
             ? FontWeights.Normal
             : FontWeights.SemiBold;
+    }
+
+    private static string FormatReviewGridModeHelpText(string text)
+    {
+        return $"{text} Grid mode status is read-only review context; it does not rescan, modify files, restore files, or approve cleanup.";
     }
 
     private enum ReviewGridModeStatusStyle

@@ -101,6 +101,7 @@ internal sealed class MainWindowSmokeTests
                 && window.QuarantineShortlistHeaderAutomationHelpTextValue.Contains("read-only review context", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantineShortlistHeaderAutomationHelpTextValue.Contains("not cleanup approval", StringComparison.OrdinalIgnoreCase),
                 "Quarantine shortlist header automation help text should expose the collapsed summary and safety boundary before scanning.");
+            AssertReviewGridModeHelpText(window, "Review Grid Mode Status help text should expose the startup grid-mode boundary.");
             Assert(!window.CanStartStorageScan, "MainWindow should require preflight acknowledgement before scanning the real profile.");
             Assert(!window.CanCancelStorageScan, "MainWindow should not enable Cancel before a Storage Scan starts.");
             Assert(
@@ -1488,6 +1489,7 @@ internal sealed class MainWindowSmokeTests
                 window.ReviewGridModeTextValue.Contains("Main grid: Storage Scan rows", StringComparison.OrdinalIgnoreCase)
                 && window.ReviewGridModeTextValue.Contains("No files were modified", StringComparison.OrdinalIgnoreCase),
                 "Main grid mode text should identify Storage Scan rows after scanning.");
+            AssertReviewGridModeHelpText(window, "Review Grid Mode Status help text should mirror scan-row mode after scanning.");
             Assert(window.ReviewGridModeStatusStyleValue == "Neutral", "Storage Scan rows should use neutral grid-mode styling before fixture execution.");
             Assert(window.ReviewGridModeStatusFontWeightValue == "Normal", "Neutral grid-mode status should not visually compete with warnings.");
 
@@ -1583,6 +1585,7 @@ internal sealed class MainWindowSmokeTests
                 && window.ReviewGridModeTextValue.Contains("Current quarantined", StringComparison.OrdinalIgnoreCase)
                 && window.ReviewGridModeTextValue.Contains("Scan rows may be stale", StringComparison.OrdinalIgnoreCase),
                 "Main grid mode text should point from stale scan rows to available current-session quarantined rows.");
+            AssertReviewGridModeHelpText(window, "Review Grid Mode Status help text should mirror stale scan-row mode after fixture execution.");
             Assert(window.ReviewGridModeStatusStyleValue == "Warning", "Stale Storage Scan rows should use warning grid-mode styling.");
             Assert(window.ReviewGridModeStatusFontWeightValue == "SemiBold", "Stale grid-mode warning should be visually emphasized.");
             Assert(
@@ -1631,6 +1634,7 @@ internal sealed class MainWindowSmokeTests
                 && window.ReviewGridModeTextValue.Contains("Read-only view", StringComparison.OrdinalIgnoreCase)
                 && window.ReviewGridModeTextValue.Contains("Back to scan rows", StringComparison.OrdinalIgnoreCase),
                 "Main grid mode text should identify the current-session quarantined view and how to return.");
+            AssertReviewGridModeHelpText(window, "Review Grid Mode Status help text should mirror current-session quarantined mode.");
             Assert(window.ReviewGridModeStatusStyleValue == "Information", "Current-session quarantined view should use informational grid-mode styling.");
             Assert(window.ReviewGridModeStatusFontWeightValue == "SemiBold", "Current-session quarantined grid-mode status should be visually emphasized.");
             Assert(window.DisplayedQuarantinedRows.Count == 2, "Quarantined view should show every current Moved Restore Manifest entry.");
@@ -1666,6 +1670,7 @@ internal sealed class MainWindowSmokeTests
                 window.ReviewGridModeTextValue.Contains("Main grid: Storage Scan rows", StringComparison.OrdinalIgnoreCase)
                 && window.ReviewGridModeTextValue.Contains("2 current-session quarantined", StringComparison.OrdinalIgnoreCase),
                 "Main grid mode text should identify scan rows after returning from quarantined rows.");
+            AssertReviewGridModeHelpText(window, "Review Grid Mode Status help text should mirror scan-row mode after returning from quarantined rows.");
             Assert(window.ReviewGridModeStatusStyleValue == "Warning", "Returning to stale scan rows should keep warning grid-mode styling.");
 
             RunDispatcherTask(() => window.RunStorageScanForCurrentScopeAsync());
@@ -1695,6 +1700,7 @@ internal sealed class MainWindowSmokeTests
                 window.ReviewGridModeTextValue.Contains("Current-session quarantined rows appear after fixture Quarantine execution", StringComparison.OrdinalIgnoreCase)
                 || window.ReviewGridModeTextValue.Contains("No moved entries are available", StringComparison.OrdinalIgnoreCase),
                 "Main grid mode text should stop advertising current quarantined rows after undo.");
+            AssertReviewGridModeHelpText(window, "Review Grid Mode Status help text should mirror empty current-session quarantined state after undo.");
             Assert(window.ReviewGridModeStatusStyleValue == "Warning", "Empty current-session quarantined view should use warning grid-mode styling until returning to scan rows.");
             Assert(
                 window.QuarantineShortlistHeaderTextValue.Contains("undo completed", StringComparison.OrdinalIgnoreCase),
@@ -2113,6 +2119,26 @@ internal sealed class MainWindowSmokeTests
         {
             throw new InvalidOperationException(message);
         }
+    }
+
+    private static void AssertReviewGridModeHelpText(MainWindow window, string message)
+    {
+        Assert(
+            window.ReviewGridModeToolTipValue.Contains(window.ReviewGridModeTextValue, StringComparison.OrdinalIgnoreCase)
+            && window.ReviewGridModeToolTipValue.Contains("read-only review context", StringComparison.OrdinalIgnoreCase)
+            && window.ReviewGridModeToolTipValue.Contains("does not rescan", StringComparison.OrdinalIgnoreCase)
+            && window.ReviewGridModeToolTipValue.Contains("modify files", StringComparison.OrdinalIgnoreCase)
+            && window.ReviewGridModeToolTipValue.Contains("restore files", StringComparison.OrdinalIgnoreCase)
+            && window.ReviewGridModeToolTipValue.Contains("approve cleanup", StringComparison.OrdinalIgnoreCase),
+            message + " Tooltip should mirror the current status text and safety boundary.");
+        Assert(
+            window.ReviewGridModeAutomationHelpTextValue.Contains(window.ReviewGridModeTextValue, StringComparison.OrdinalIgnoreCase)
+            && window.ReviewGridModeAutomationHelpTextValue.Contains("read-only review context", StringComparison.OrdinalIgnoreCase)
+            && window.ReviewGridModeAutomationHelpTextValue.Contains("does not rescan", StringComparison.OrdinalIgnoreCase)
+            && window.ReviewGridModeAutomationHelpTextValue.Contains("modify files", StringComparison.OrdinalIgnoreCase)
+            && window.ReviewGridModeAutomationHelpTextValue.Contains("restore files", StringComparison.OrdinalIgnoreCase)
+            && window.ReviewGridModeAutomationHelpTextValue.Contains("approve cleanup", StringComparison.OrdinalIgnoreCase),
+            message + " Automation help text should mirror the current status text and safety boundary.");
     }
 
     private static QuarantineExecutionResult CreateExecutedRestoreManifest(

@@ -159,6 +159,7 @@ What changed:
 - Empty current-session quarantined rows after moved entries are gone use warning styling.
 - Added WPF smoke assertions for neutral, informational, warning, stale-return, and empty moved-entry styling.
 - Aligned the fixture review launcher checklist so the next manual pass prompts neutral/informational/warning grid-mode status review.
+- Later packet `2026-05-30-review-grid-mode-status-help-text.md` added matching tooltip and automation help text for the same status states.
 
 Files changed:
 

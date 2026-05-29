@@ -86,6 +86,7 @@ What changed:
 - Later label polish changed the visible grid switch from `Quarantined` to `Current quarantined`.
 - Fixture undo state stops advertising moved current-session entries once no moved entries remain.
 - Later packet `2026-05-29-review-grid-mode-status-styling.md` added neutral/informational/warning styling to the same status line without adding layout.
+- Later packet `2026-05-30-review-grid-mode-status-help-text.md` mirrored the dynamic status into tooltip and automation help text with read-only, no-rescan, no-restore, and not-cleanup-approval boundaries.
 
 Files changed:
 
