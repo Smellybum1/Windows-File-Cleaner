@@ -557,17 +557,22 @@
                                          Height="30"
                                          IsEnabled="False"
                                          VerticalContentAlignment="Center"
-                                         ToolTip="Fixture-only execution gate. Real-profile execution stays unavailable in this build."
+                                         ToolTip="Fixture-only execution gate. Real-profile and custom execution stay unavailable in this build."
+                                         ToolTipService.ShowOnDisabled="True"
                                          TextChanged="QuarantineConfirmationBox_TextChanged" />
                                 <Button x:Name="ExecuteQuarantineButton"
                                         Content="Execute quarantine"
                                         MinWidth="145"
                                         IsEnabled="False"
+                                        ToolTip="Fixture-only after Quarantine Preview readiness and exact QUARANTINE; real-profile/custom execution remains unavailable."
+                                        ToolTipService.ShowOnDisabled="True"
                                         Click="ExecuteQuarantineButton_Click" />
                                 <Button x:Name="UndoQuarantineButton"
                                         Content="Undo fixture quarantine"
                                         MinWidth="170"
                                         IsEnabled="False"
+                                        ToolTip="Current fixture execution only; discovered old manifests and real-profile/custom undo remain unavailable."
+                                        ToolTipService.ShowOnDisabled="True"
                                         Click="UndoQuarantineButton_Click" />
                             </WrapPanel>
                             <TextBlock x:Name="QuarantineExecutionGateText"
@@ -633,12 +638,15 @@
                                          Height="30"
                                          IsEnabled="False"
                                          VerticalContentAlignment="Center"
-                                         ToolTip="Read-only selected restore gate. Discovered-manifest restore execution is unavailable in this build."
+                                         ToolTip="Selected restore gate. Exact RESTORE can open only fixture selected restore; real-profile/custom selected restore remains unavailable."
+                                         ToolTipService.ShowOnDisabled="True"
                                          TextChanged="SelectedRestoreConfirmationBox_TextChanged" />
                                 <Button x:Name="ExecuteSelectedRestoreButton"
                                         Content="Restore selected fixture manifest"
                                         MinWidth="215"
                                         IsEnabled="False"
+                                        ToolTip="Fixture selected restore only after selected readiness and exact RESTORE; real-profile/custom selected restore remains unavailable."
+                                        ToolTipService.ShowOnDisabled="True"
                                         Click="ExecuteSelectedRestoreButton_Click" />
                             </WrapPanel>
                             <TextBlock x:Name="SelectedRestoreExecutionGateText"

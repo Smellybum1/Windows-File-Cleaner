@@ -141,6 +141,26 @@ internal sealed class MainWindowSmokeTests
             Assert(!window.CanEnterQuarantineConfirmation, "MainWindow should not allow quarantine confirmation before a preview exists.");
             Assert(!window.CanExecuteQuarantine, "MainWindow should not allow quarantine execution before a preview exists.");
             Assert(
+                window.QuarantineConfirmationToolTipValue.Contains("Fixture-only execution gate", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineConfirmationToolTipValue.Contains("custom execution stay unavailable", StringComparison.OrdinalIgnoreCase),
+                "Quarantine confirmation tooltip should explain fixture-only execution and custom blockers.");
+            Assert(
+                window.ExecuteQuarantineButtonToolTipValue.Contains("Quarantine Preview readiness", StringComparison.OrdinalIgnoreCase)
+                && window.ExecuteQuarantineButtonToolTipValue.Contains("real-profile/custom execution remains unavailable", StringComparison.OrdinalIgnoreCase),
+                "Execute quarantine tooltip should explain preview readiness and real/custom blockers.");
+            Assert(
+                window.UndoQuarantineButtonToolTipValue.Contains("Current fixture execution only", StringComparison.OrdinalIgnoreCase)
+                && window.UndoQuarantineButtonToolTipValue.Contains("real-profile/custom undo remain unavailable", StringComparison.OrdinalIgnoreCase),
+                "Undo fixture quarantine tooltip should explain current-fixture-only undo.");
+            Assert(
+                window.SelectedRestoreConfirmationToolTipValue.Contains("Exact RESTORE", StringComparison.OrdinalIgnoreCase)
+                && window.SelectedRestoreConfirmationToolTipValue.Contains("real-profile/custom selected restore remains unavailable", StringComparison.OrdinalIgnoreCase),
+                "Selected restore confirmation tooltip should explain fixture-only selected restore.");
+            Assert(
+                window.ExecuteSelectedRestoreButtonToolTipValue.Contains("Fixture selected restore only", StringComparison.OrdinalIgnoreCase)
+                && window.ExecuteSelectedRestoreButtonToolTipValue.Contains("real-profile/custom selected restore remains unavailable", StringComparison.OrdinalIgnoreCase),
+                "Restore selected fixture manifest tooltip should explain fixture-only selected restore.");
+            Assert(
                 window.QuarantineExecutionGateTextValue.Contains("Create a Quarantine Preview", StringComparison.OrdinalIgnoreCase),
                 "Quarantine execution gate should explain the preview dependency at startup.");
             Assert(
@@ -1046,6 +1066,10 @@ internal sealed class MainWindowSmokeTests
                 && matchedSelectedGateText.Contains("Can execute: yes", StringComparison.OrdinalIgnoreCase),
                 "Exact RESTORE should open selected fixture restore execution. Text: " + matchedSelectedGateText);
             Assert(discoveryWindow.CanExecuteSelectedRestore, "Exact RESTORE should enable selected fixture restore execution.");
+            Assert(
+                discoveryWindow.ExecuteSelectedRestoreButtonToolTipValue.Contains("Fixture selected restore only", StringComparison.OrdinalIgnoreCase)
+                && discoveryWindow.ExecuteSelectedRestoreButtonToolTipValue.Contains("exact RESTORE", StringComparison.OrdinalIgnoreCase),
+                "Enabled selected fixture restore tooltip should still explain the fixture-only gate.");
             Assert(File.Exists(quarantinePath), "Selected restore gate should not move quarantined files.");
             Assert(!File.Exists(originalPath), "Selected restore gate should not restore original paths.");
 

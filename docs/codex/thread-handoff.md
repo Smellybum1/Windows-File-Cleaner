@@ -9,7 +9,7 @@ Use this when starting a fresh Codex thread for this repository.
 - Repo: `D:\Codex\Windows File Cleaner`
 - GitHub: `Smellybum1/Windows-File-Cleaner`
 - Branch: `main`
-- Latest completed packet: Scope-Specific Scan Gate Ready Wording (after Visible Row Shortlist Labels)
+- Latest completed packet: Execution Control Tooltip Clarity (after Scope-Specific Scan Gate Ready Wording)
 - Current app stack: C# / WPF / .NET 8
 - Desktop shortcut target: `D:\Codex\Windows File Cleaner\src\WindowsFileCleaner.App\bin\Debug\net8.0-windows\WindowsFileCleaner.App.exe`
 
@@ -17,7 +17,7 @@ Use this when starting a fresh Codex thread for this repository.
 
 Windows File Cleaner is a local Windows-only desktop app for reviewing storage under `C:\Users\moxhe`.
 
-The current MVP has a read-only Storage Scan that can inspect large real-profile scans with filters, debounced search, visible scope-specific Cleanup Scope Scan Gate status/tooltip wording, Review Mix, Matched Review Mix, Review Shortlist Safety Mix, visible-row Review Shortlist bulk labels, selected-folder child/descendant focus, selected-folder summaries, hotspot trail, file preview, CSV export, Review Shortlist, fixture launcher checklist output and checklist-only mode, Quarantine Preview, Quarantine approval-boundary wording, Quarantine Execution Scope Status, Restore Manifest Draft, Quarantine Confirmation Draft, confirmation label wording polish, Quarantine Action Draft, manifest discovery with all-manifest restore wording, selected manifest review with readiness-evidence wording, selected restore gate scope-status/approval-boundary wording, selected-restore scope-status checklist coverage, restore-readiness preview with all-manifest restore wording, and all-manifest restore boundary checklist coverage.
+The current MVP has a read-only Storage Scan that can inspect large real-profile scans with filters, debounced search, visible scope-specific Cleanup Scope Scan Gate status/tooltip wording, Review Mix, Matched Review Mix, Review Shortlist Safety Mix, visible-row Review Shortlist bulk labels, selected-folder child/descendant focus, selected-folder summaries, hotspot trail, file preview, CSV export, Review Shortlist, fixture launcher checklist output and checklist-only mode, Quarantine Preview, Quarantine approval-boundary wording, Quarantine Execution Scope Status, execution-control tooltip clarity, Restore Manifest Draft, Quarantine Confirmation Draft, confirmation label wording polish, Quarantine Action Draft, manifest discovery with all-manifest restore wording, selected manifest review with readiness-evidence wording, selected restore gate scope-status/approval-boundary wording, selected-restore scope-status checklist coverage, restore-readiness preview with all-manifest restore wording, and all-manifest restore boundary checklist coverage.
 
 Fixture-only cleanup execution exists for synthetic Cleanup Scopes. Real-profile cleanup execution remains intentionally unavailable.
 
@@ -54,6 +54,7 @@ Fixture-only cleanup execution exists for synthetic Cleanup Scopes. Real-profile
 - All-Manifest Restore Wording refined user-facing `broad restore action` wording to `all-manifest restore action` in WPF and checklist surfaces.
 - Visible Row Shortlist Labels renamed bulk shortlist buttons/status text to `Shortlist visible rows` / `Remove visible rows` without changing the read-only display-window behavior.
 - Scope-Specific Scan Gate Ready Wording made ready scan-gate summaries/tooltips distinguish fixture gated cleanup actions from unavailable real-profile/custom cleanup execution.
+- Execution Control Tooltip Clarity updated disabled Quarantine and selected-restore controls so their tooltips match fixture-only gates and real-profile/custom blockers.
 
 ## Best next work
 
@@ -61,7 +62,7 @@ Prefer a small packet. Good candidates:
 
 1. Manual fixture visual polish pass using `.\tools\Start-MvpFixtureReview.ps1`; optionally preview the prompts with `.\tools\Start-MvpFixtureReview.ps1 -ChecklistOnly`, use the launcher checklist, then update docs with any findings.
 2. Continue Quarantine Preview/readiness wording review in the visible app, still without enabling real-profile execution.
-3. Retest Review Shortlist Safety Mix, visible-row shortlist labels, and Quarantine Execution Scope Status in the visible app during fixture or real-profile review.
+3. Retest Review Shortlist Safety Mix, visible-row shortlist labels, execution-control tooltips, and Quarantine Execution Scope Status in the visible app during fixture or real-profile review.
 4. During the next visible fixture/real-profile pass, confirm the scope-specific scan-gate summary line fits comfortably and makes locked/ready state obvious.
 5. Start real-profile Quarantine execution design only after the user explicitly wants to move beyond preview and the safety/undo story is reviewed again.
 

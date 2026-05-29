@@ -210,6 +210,12 @@ public partial class MainWindow : Window
 
     public bool CanUndoQuarantine => UndoQuarantineButton.IsEnabled;
 
+    public string QuarantineConfirmationToolTipValue => QuarantineConfirmationBox.ToolTip?.ToString() ?? "";
+
+    public string ExecuteQuarantineButtonToolTipValue => ExecuteQuarantineButton.ToolTip?.ToString() ?? "";
+
+    public string UndoQuarantineButtonToolTipValue => UndoQuarantineButton.ToolTip?.ToString() ?? "";
+
     public bool CanDiscoverQuarantineManifests => DiscoverQuarantineManifestsButton.IsEnabled;
 
     public bool CanPreviewRestoreReadiness => PreviewRestoreReadinessButton.IsEnabled;
@@ -222,9 +228,13 @@ public partial class MainWindow : Window
 
     public bool CanEnterSelectedRestoreConfirmation => SelectedRestoreConfirmationBox.IsEnabled;
 
+    public string SelectedRestoreConfirmationToolTipValue => SelectedRestoreConfirmationBox.ToolTip?.ToString() ?? "";
+
     public string CurrentSelectedRestoreConfirmationText => SelectedRestoreConfirmationBox.Text;
 
     public bool CanExecuteSelectedRestore => ExecuteSelectedRestoreButton.IsEnabled;
+
+    public string ExecuteSelectedRestoreButtonToolTipValue => ExecuteSelectedRestoreButton.ToolTip?.ToString() ?? "";
 
     public int DiscoveredRestoreManifestCount => _currentQuarantineManifestDiscovery?.ManifestCount ?? 0;
 
