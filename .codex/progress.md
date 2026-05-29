@@ -20,6 +20,45 @@ Storage Scan MVP packet implemented and tested by the user against `C:\Users\mox
 
 ## Completed packets
 
+### 2026-05-30: Run Full Local MVP Preflight After Header Cues
+
+Status: completed
+
+Evidence:
+
+- Collapsed Header Help Cues touched WPF Expander header layout, dynamic help-text wiring, WPF smoke assertions, fixture checklist wording, and durable docs.
+- A full local preflight gives stronger evidence than the focused app-test run before the next manual fixture visual pass.
+
+Implementation:
+
+- Ran `Invoke-MvpPreflight.ps1` from the repository root after the collapsed header help-cue packet was pushed.
+- Preflight restored packages, built the solution, ran core tests, ran WPF app tests, ran the synthetic fixture generator in `-WhatIf` mode, and ran whitespace diff checking.
+- No real user files were scanned or modified.
+
+Verification:
+
+- `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\Invoke-MvpPreflight.ps1` passed.
+- Preflight output ended with `MVP preflight passed. No real user files were scanned or modified.`
+- Preflight suggested the next manual fixture step: `.\tools\Start-MvpFixtureReview.ps1 -SkipPreflight`.
+- `git -c safe.directory='D:/Codex/Windows File Cleaner' status --short --branch` showed a clean tree before recording this docs-only verification note.
+
+Docs updated:
+
+- `docs/codex/thread-handoff.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No ADR added. This is verification evidence only, with no architecture, persistence, cleanup execution, restore rule, data-model, or security change.
+
+Open questions:
+
+- The next useful product signal is still a visible fixture review pass against all compact `?` help cues, collapsed panel header summaries/state styling, styled inline Quarantine Preview readiness, styled Review Grid Mode Status, and current-session quarantined controls.
+
+Rejected ideas buffer:
+
+- Do not treat preflight as a replacement for manual visual fixture review; it proves automated gates only.
+
 ### 2026-05-30: Add Collapsed Header Help Cues
 
 Status: completed

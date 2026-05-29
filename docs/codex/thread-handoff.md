@@ -9,7 +9,7 @@ Use this when starting a fresh Codex thread for this repository.
 - Repo: `D:\Codex\Windows File Cleaner`
 - GitHub: `Smellybum1/Windows-File-Cleaner`
 - Branch: `main`
-- Latest completed packet: Collapsed Header Help Cues
+- Latest completed packet: Full Local MVP Preflight After Header Cues
 - Current app stack: C# / WPF / .NET 8
 - Desktop shortcut target: `D:\Codex\Windows File Cleaner\src\WindowsFileCleaner.App\bin\Debug\net8.0-windows\WindowsFileCleaner.App.exe`
 
@@ -125,6 +125,7 @@ Fixture-only cleanup execution exists for synthetic Cleanup Scopes. Real-profile
 - Quarantine Preview Status Help Cue added a visible circular `?` help cue beside the inline Quarantine Preview readiness/status line so its mirrored dry-run/status-state tooltip/help text is easier to discover before any fixture execution gate.
 - Full Local MVP Preflight After Help Cues passed `Invoke-MvpPreflight.ps1`; restore, build, core tests, WPF app tests, fixture `-WhatIf`, and whitespace diff check all passed without scanning or modifying real user files.
 - Collapsed Header Help Cues added visible circular `?` help cues beside Safety Summary and Quarantine Shortlist collapsed headers so their mirrored header summary/state tooltip/help text is easier to discover.
+- Full Local MVP Preflight After Header Cues passed `Invoke-MvpPreflight.ps1`; restore, build, core tests, WPF app tests, fixture `-WhatIf`, and whitespace diff check all passed without scanning or modifying real user files.
 
 ## Best next work
 
