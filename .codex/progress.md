@@ -6,7 +6,7 @@ Use it to preserve what was completed, what was verified, what was rejected, and
 
 ## Current status
 
-Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. The app has a broad read-only review workflow, debounced Storage Review Search for large real-profile scans, scope-specific Cleanup Scope Scan Gate discoverability polish, Matched Review Mix, Review Shortlist Safety Mix, visible-row Review Shortlist bulk labels, Selected Folder Subtree Summary, Storage Hotspot Trail, Selected Folder Child Focus, Selected Folder Descendant Focus, fixture launch/preflight tooling with checklist output, checklist-only mode, approval-boundary prompt coverage, selected-restore scope-status checklist coverage, all-manifest restore boundary checklist coverage, and execution-control tooltip clarity, Quarantine Preview, Quarantine approval-boundary wording, Quarantine Execution Scope Status, Restore Manifest Draft, Quarantine Confirmation Draft, confirmation label wording polish, Quarantine Action Draft, write-ahead Restore Manifest persistence, core Quarantine execution, core Undo Quarantine, fixture-only WPF Quarantine execution, WPF undo for the current fixture execution, Quarantine Manifest Discovery with all-manifest restore wording, Selected Restore Manifest Review with readiness-evidence wording, Selected Restore Confirmation Gate with scope-status/approval-boundary wording, Fixture-only Selected Restore Execution, and Restore Readiness Preview with all-manifest restore wording. Real-profile WPF Quarantine execution, real-profile WPF Undo Quarantine, permanent deletion, and persisted cleanup history remain unavailable. Fresh-thread handoff notes and a startup prompt live in `docs/codex/thread-handoff.md`.
+Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. The app has a broad read-only review workflow, debounced Storage Review Search for large real-profile scans, scope-specific Cleanup Scope Scan Gate discoverability polish, Matched Review Mix, Review Shortlist Safety Mix, visible-row Review Shortlist bulk labels, Selected Folder Subtree Summary, Storage Hotspot Trail, Selected Folder Child Focus, Selected Folder Descendant Focus, fixture launch/preflight tooling with checklist output, checklist-only mode, approval-boundary prompt coverage, selected-restore scope-status checklist coverage, all-manifest restore boundary checklist coverage, execution-control tooltip clarity, and Undo Quarantine domain consistency, Quarantine Preview, Quarantine approval-boundary wording, Quarantine Execution Scope Status, Restore Manifest Draft, Quarantine Confirmation Draft, confirmation label wording polish, Quarantine Action Draft, write-ahead Restore Manifest persistence, core Quarantine execution, core Undo Quarantine, fixture-only WPF Quarantine execution, WPF undo for the current fixture execution, Quarantine Manifest Discovery with all-manifest restore wording, Selected Restore Manifest Review with readiness-evidence wording, Selected Restore Confirmation Gate with scope-status/approval-boundary wording, Fixture-only Selected Restore Execution, and Restore Readiness Preview with all-manifest restore wording. Real-profile WPF Quarantine execution, real-profile WPF Undo Quarantine, permanent deletion, and persisted cleanup history remain unavailable. Fresh-thread handoff notes and a startup prompt live in `docs/codex/thread-handoff.md`.
 
 ## Next recommended work
 
@@ -5340,3 +5340,46 @@ Rejected ideas buffer:
 
 - Do not add new execution paths.
 - Do not rely only on pane text when disabled controls can carry their own safety context.
+
+### 2026-05-29: Add Undo Quarantine Domain Consistency
+
+Status: completed
+
+Evidence:
+
+- Current WPF app can undo the current fixture execution and run fixture-only selected restore through `UndoQuarantineExecutor`.
+- `docs/domain/context.md` still said Undo Quarantine Executor was fixture-tested but not wired to WPF yet.
+- ADR 0010 context also read like current state rather than decision-time state.
+
+Implementation:
+
+- Updated Undo Quarantine Executor current-state wording in domain context.
+- Clarified ADR 0010 context as decision-time wording.
+- Preserved real-profile WPF Undo Quarantine and all-manifest discovered-manifest restore blockers.
+- Left older feature briefs historical when their stale-sounding wording describes packet-start behavior.
+
+Verification:
+
+- `rg -n "not wired to the WPF|not wired to WPF|does not expose undo yet|Keep WPF Undo Quarantine unavailable" docs/domain docs/decisions/0010-use-current-fixture-execution-wpf-undo.md` found no current-state stale wording.
+- `git -c safe.directory='D:/Codex/Windows File Cleaner' diff --check` passed; Git printed line-ending normalization warnings for touched files but no whitespace errors.
+
+Docs updated:
+
+- `docs/domain/context.md`
+- `docs/decisions/0010-use-current-fixture-execution-wpf-undo.md`
+- `docs/features/2026-05-29-undo-quarantine-domain-consistency.md`
+- `docs/codex/thread-handoff.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No ADR added. This is a docs consistency correction, not a new durable decision.
+
+Open questions:
+
+- Should future docs distinguish current-state domain context from historical ADR/feature context more explicitly?
+
+Rejected ideas buffer:
+
+- Do not rewrite old feature briefs that accurately describe packet-start behavior.
+- Do not turn this docs correction into a real-profile undo design packet.

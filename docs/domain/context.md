@@ -2386,7 +2386,7 @@ Last reviewed: 2026-05-29
 
 Undo Quarantine Executor is the narrow core component that restores Restore Manifest entries recorded as Moved from their action-scoped quarantine paths back to their original paths.
 
-It is fixture-tested but not wired to the WPF app yet.
+It is fixture-tested and is used by the WPF app for current-fixture undo and fixture-only selected restore. Real-profile WPF Undo Quarantine and all-manifest discovered-manifest restore remain unavailable.
 
 #### Examples
 
@@ -2397,7 +2397,8 @@ It is fixture-tested but not wired to the WPF app yet.
 
 #### Non-examples
 
-- WPF Undo Quarantine UI.
+- Real-profile WPF Undo Quarantine.
+- All-manifest WPF Undo Quarantine for discovered manifests.
 - Quarantine Executor rollback.
 - Permanent deletion.
 - Cleaning up empty quarantine action folders.
@@ -2419,13 +2420,14 @@ It is fixture-tested but not wired to the WPF app yet.
 - Depends on Restore Manifest and Restore Manifest File Store.
 - Reverses entries moved by Quarantine Executor.
 - Implements the fixture-first boundary accepted in ADR 0008.
-- Precedes WPF Undo Quarantine wiring.
+- Supports WPF Current Fixture Undo Quarantine and Fixture-only Selected Restore Execution.
+- Precedes real-profile WPF Undo Quarantine and any all-manifest discovered-manifest restore workflow.
 
 #### Code implications
 
 - Use `UndoQuarantineExecutor`, `UndoQuarantineResult`, and `UndoQuarantineEntryResult`.
 - Keep filesystem move-back APIs allowlisted only in this component.
-- Keep WPF Undo Quarantine unavailable until a separate UI wiring packet.
+- Keep real-profile WPF Undo Quarantine and all-manifest discovered-manifest restore unavailable until separate design packets.
 - Do not overwrite existing original paths.
 - Do not permanently delete quarantined items or cleanup action folders from this component.
 

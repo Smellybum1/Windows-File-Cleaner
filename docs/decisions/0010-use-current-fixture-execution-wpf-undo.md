@@ -6,7 +6,7 @@ Owner: project-owner
 
 ## Context
 
-The visible WPF app can execute Quarantine for recognized fixture Cleanup Scopes only. The core Undo Quarantine Executor can restore moved entries from a Restore Manifest, but the WPF app does not expose undo yet.
+At decision time, the visible WPF app could execute Quarantine for recognized fixture Cleanup Scopes only. The core Undo Quarantine Executor could restore moved entries from a Restore Manifest, but the WPF app did not expose undo yet.
 
 Undo is safety-sensitive because restoring can collide with new original paths or reveal ambiguous recovery state. A broad manifest picker/history UI is not needed to prove the first visible undo path.
 

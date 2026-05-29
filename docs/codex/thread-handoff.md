@@ -9,7 +9,7 @@ Use this when starting a fresh Codex thread for this repository.
 - Repo: `D:\Codex\Windows File Cleaner`
 - GitHub: `Smellybum1/Windows-File-Cleaner`
 - Branch: `main`
-- Latest completed packet: Execution Control Tooltip Clarity (after Scope-Specific Scan Gate Ready Wording)
+- Latest completed packet: Undo Quarantine Domain Consistency (after Execution Control Tooltip Clarity)
 - Current app stack: C# / WPF / .NET 8
 - Desktop shortcut target: `D:\Codex\Windows File Cleaner\src\WindowsFileCleaner.App\bin\Debug\net8.0-windows\WindowsFileCleaner.App.exe`
 
@@ -55,6 +55,7 @@ Fixture-only cleanup execution exists for synthetic Cleanup Scopes. Real-profile
 - Visible Row Shortlist Labels renamed bulk shortlist buttons/status text to `Shortlist visible rows` / `Remove visible rows` without changing the read-only display-window behavior.
 - Scope-Specific Scan Gate Ready Wording made ready scan-gate summaries/tooltips distinguish fixture gated cleanup actions from unavailable real-profile/custom cleanup execution.
 - Execution Control Tooltip Clarity updated disabled Quarantine and selected-restore controls so their tooltips match fixture-only gates and real-profile/custom blockers.
+- Undo Quarantine Domain Consistency corrected current domain wording so Undo Quarantine Executor is described as used by current-fixture undo and fixture-only selected restore, while real-profile/all-manifest restore stays unavailable.
 
 ## Best next work
 
