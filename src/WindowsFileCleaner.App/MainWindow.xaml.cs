@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Automation;
 using System.Windows.Controls;
@@ -1198,8 +1199,16 @@ public partial class MainWindow : Window
         }
 
         var plan = PathInspectionPlanBuilder.Build(_selectedRow.Entry);
-        Clipboard.SetText(plan.PathToCopy);
-        StatusText.Text = "Selected path copied. No files were modified.";
+        try
+        {
+            Clipboard.SetText(plan.PathToCopy);
+            StatusText.Text = "Selected path copied. No files were modified.";
+        }
+        catch (COMException ex)
+        {
+            StatusText.Text = "Could not copy selected path because the Windows Clipboard was busy. Try Copy path again. No files were modified.";
+            MessageBox.Show(this, ex.Message, "Copy path failed", MessageBoxButton.OK, MessageBoxImage.Warning);
+        }
     }
 
     private void ShowChildrenButton_Click(object sender, RoutedEventArgs e)
@@ -1232,7 +1241,7 @@ public partial class MainWindow : Window
         SelectSizeThresholdFilterOption(_currentSizeThresholdFilter);
         SetSearchTextSilently(_currentSearch.Query);
         RefreshResults();
-        StatusText.Text = $"Focused review on immediate children of {selectedFolderName}. No files were modified.";
+        StatusText.Text = $"Focused review on immediate children of {selectedFolderName}. Use Reset view to show all rows again. No files were modified.";
     }
 
     public void ShowSelectedFolderDescendants()

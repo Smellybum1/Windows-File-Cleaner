@@ -1338,6 +1338,7 @@ It is a table-level follow-up to Child Breakdown: the detail pane shows a bounde
 - Use `ShowSelectedFolderChildren` for the WPF selected-row action.
 - Keep the action disabled for files and before a scan result exists.
 - Tooltip and automation help text should say this is read-only `parent:` focus that does not rescan, modify files, or approve cleanup.
+- Status text after applying this focus should say `Reset view` returns to all rows so the user has an obvious way back.
 - Keep the action read-only and avoid rescanning, opening Explorer, previewing file content, or modifying files.
 
 ### Selected Folder Descendant Focus
@@ -1428,6 +1429,7 @@ Initial actions are copying the selected path and opening the selected path in F
 - Use `PathInspectionPlanBuilder` for Explorer launch details.
 - Keep inspection actions separate from Cleanup Actions.
 - Tooltip and automation help text should keep Copy path and Open in Explorer framed as manual inspection, not cleanup approval or file modification by the app.
+- Clipboard failures during Copy path should be handled as a warning/status update, not as an app crash.
 - Status messages should state that no files were modified.
 
 ### Selected Path Hierarchy Context

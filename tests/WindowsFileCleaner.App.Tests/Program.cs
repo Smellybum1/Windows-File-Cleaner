@@ -904,6 +904,7 @@ internal sealed class MainWindowSmokeTests
             Assert(window.CurrentSearchText.StartsWith("parent:", StringComparison.OrdinalIgnoreCase), "Selected-folder child focus should apply a parent-prefixed search.");
             Assert(window.FilterSummaryTextValue.Contains("Search \"parent:", StringComparison.OrdinalIgnoreCase), "Selected-folder child focus should update the filter summary.");
             Assert(window.CurrentStatusText.Contains("Focused review on immediate children", StringComparison.OrdinalIgnoreCase), "Selected-folder child focus should report a read-only focus action.");
+            Assert(window.CurrentStatusText.Contains("Reset view", StringComparison.OrdinalIgnoreCase), "Selected-folder child focus status should explain how to return to all rows.");
             Assert(window.CurrentStatusText.Contains("No files were modified", StringComparison.OrdinalIgnoreCase), "Selected-folder child focus status should preserve the read-only boundary.");
             Assert(window.DisplayedRows.Count == 1, "Fixture Downloads focus should show its one immediate child.");
             Assert(
