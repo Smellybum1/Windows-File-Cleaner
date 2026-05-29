@@ -237,6 +237,8 @@ A Cleanup Scope Safety Note is read-only UI text that explains what kind of Clea
 
 Initial scope note kinds are Fixture Cleanup Scope, Real Profile Cleanup Scope, Custom Cleanup Scope, Choose Cleanup Scope, and Check Cleanup Scope.
 
+The WPF note has a visible hoverable `?` help cue. The cue mirrors the note tooltip and automation help text so the fixture/real-profile/custom safety boundary is discoverable without making the note look like scan approval or cleanup approval.
+
 #### Examples
 
 - Fixture Cleanup Scope: remind the user this is the synthetic fixture review path and the app still waits for a manual Scan click.
@@ -266,6 +268,7 @@ Initial scope note kinds are Fixture Cleanup Scope, Real Profile Cleanup Scope, 
 
 - Use `CleanupScopeSafetyNote` and `CleanupScopeSafetyNoteBuilder`.
 - Keep the note informational; do not scan, create fixtures, or run preflight from the note builder.
+- Keep the visible `?` cue tooltip/help text synchronized with the note text.
 
 ### Cleanup Scope Scan Gate
 

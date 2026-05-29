@@ -33,6 +33,7 @@ What changed:
 - Later packet `2026-05-30-real-profile-acknowledgement-help-cue.md` added an eighth tracked circular `?` cue for the real-profile acknowledgement.
 - Later packet `2026-05-30-scan-gate-summary-help-cue.md` added a ninth tracked circular `?` cue for the scan-gate summary.
 - Later packet `2026-05-30-quarantine-root-safety-note-help-cue.md` added a tenth tracked circular `?` cue for the Quarantine Root Safety Note.
+- Later packet `2026-05-30-cleanup-scope-safety-note-help-cue.md` added an eleventh tracked circular `?` cue for the Cleanup Scope Safety Note.
 
 Tests run:
 

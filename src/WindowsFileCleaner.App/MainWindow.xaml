@@ -83,11 +83,37 @@
                             ToolTipService.ShowOnDisabled="True"
                             Click="CancelButton_Click" />
                 </StackPanel>
-                <TextBlock x:Name="ScopeSafetyNoteText"
-                           Foreground="#526171"
+                <DockPanel Width="680"
                            Margin="0,6,0,0"
-                           Width="680"
-                           TextWrapping="Wrap" />
+                           LastChildFill="True">
+                    <Border x:Name="CleanupScopeSafetyNoteHelpCue"
+                            DockPanel.Dock="Right"
+                            Width="18"
+                            Height="18"
+                            Margin="8,1,0,0"
+                            CornerRadius="9"
+                            Background="#F4F7FA"
+                            BorderBrush="#8A99A8"
+                            BorderThickness="1"
+                            VerticalAlignment="Top"
+                            Cursor="Help"
+                            ToolTipService.InitialShowDelay="250"
+                            ToolTip="Cleanup Scope Safety Note appears after a Cleanup Scope is entered. It is read-only scope context; it does not start scanning, run preflight, create fixtures, persist approval, or approve cleanup."
+                            AutomationProperties.Name="Cleanup Scope Safety Note help cue"
+                            AutomationProperties.HelpText="Cleanup Scope Safety Note appears after a Cleanup Scope is entered. It is read-only scope context; it does not start scanning, run preflight, create fixtures, persist approval, or approve cleanup.">
+                        <TextBlock Text="?"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"
+                                   FontSize="11"
+                                   FontWeight="Bold"
+                                   Foreground="#526171" />
+                    </Border>
+                    <TextBlock x:Name="ScopeSafetyNoteText"
+                               Foreground="#526171"
+                               TextWrapping="Wrap"
+                               ToolTip="Cleanup Scope Safety Note appears after a Cleanup Scope is entered. It is read-only scope context; it does not start scanning, run preflight, create fixtures, persist approval, or approve cleanup."
+                               AutomationProperties.HelpText="Cleanup Scope Safety Note appears after a Cleanup Scope is entered. It is read-only scope context; it does not start scanning, run preflight, create fixtures, persist approval, or approve cleanup." />
+                </DockPanel>
                 <DockPanel x:Name="ScanGateSummaryPanel"
                            Width="680"
                            Margin="0,6,0,0"

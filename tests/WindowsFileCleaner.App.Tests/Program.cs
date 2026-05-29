@@ -80,6 +80,14 @@ internal sealed class MainWindowSmokeTests
             Assert(
                 window.CleanupScopeSafetyNoteTextValue.Contains("preflight", StringComparison.OrdinalIgnoreCase),
                 "Default Cleanup Scope safety note should remind the user to run preflight.");
+            AssertCleanupScopeSafetyNoteHelpCue(
+                window,
+                "Default Cleanup Scope Safety Note help cue should mirror real-profile boundaries.",
+                "Real Profile Cleanup Scope",
+                "run MVP preflight",
+                "start scanning by itself",
+                "persist approval",
+                "approve cleanup");
             Assert(window.CurrentStatusText == "Ready", "MainWindow should not start scanning when constructed.");
             Assert(
                 window.SafetySummaryHeaderTextValue.StartsWith("Safety Summary:", StringComparison.OrdinalIgnoreCase),
@@ -801,6 +809,14 @@ internal sealed class MainWindowSmokeTests
             Assert(
                 window.CleanupScopeSafetyNoteTextValue.Contains("click Scan", StringComparison.OrdinalIgnoreCase),
                 "Fixture safety note should preserve the user-triggered scan boundary.");
+            AssertCleanupScopeSafetyNoteHelpCue(
+                window,
+                "Fixture Cleanup Scope Safety Note help cue should mirror fixture boundaries.",
+                "Fixture Cleanup Scope",
+                "click Scan",
+                "start scanning by itself",
+                "move files",
+                "preview and exact confirmation");
             Assert(window.CurrentStatusText == "Ready", "Launch Cleanup Scope should not trigger a scan.");
             Assert(window.CanStartStorageScan, "Launch Cleanup Scope should still require a user-triggered scan.");
             Assert(
@@ -853,6 +869,14 @@ internal sealed class MainWindowSmokeTests
             Assert(
                 window.CleanupScopeSafetyNoteTextValue.Contains("Custom Cleanup Scope", StringComparison.OrdinalIgnoreCase),
                 "Custom launch Cleanup Scope should show the custom safety note.");
+            AssertCleanupScopeSafetyNoteHelpCue(
+                window,
+                "Custom Cleanup Scope Safety Note help cue should mirror custom-scope boundaries.",
+                "Custom Cleanup Scope",
+                "Verify this path",
+                "start scanning by itself",
+                "move files",
+                "approve cleanup");
             Assert(window.CanStartStorageScan, "Custom Cleanup Scope should allow a read-only user-triggered scan.");
             Assert(
                 window.ScanGateSummaryTextValue.Contains("Scan ready for custom Cleanup Scope", StringComparison.OrdinalIgnoreCase)
@@ -2290,7 +2314,7 @@ internal sealed class MainWindowSmokeTests
     private static void AssertHoverableHelpCueAffordances(MainWindow window, string message)
     {
         var affordances = window.HoverableHelpCueAffordances;
-        Assert(affordances.Count == 10, message + " Expected all ten circular help cues to be tracked.");
+        Assert(affordances.Count == 11, message + " Expected all eleven circular help cues to be tracked.");
 
         foreach (var affordance in affordances)
         {
@@ -2300,6 +2324,34 @@ internal sealed class MainWindowSmokeTests
             Assert(
                 affordance.InitialShowDelay == 250,
                 $"{message} {affordance.Name} should use a prompt tooltip initial delay.");
+        }
+    }
+
+    private static void AssertCleanupScopeSafetyNoteHelpCue(MainWindow window, string message, params string[] expectedSnippets)
+    {
+        Assert(
+            window.CleanupScopeSafetyNoteToolTipValue.Contains(window.CleanupScopeSafetyNoteTextValue, StringComparison.OrdinalIgnoreCase)
+            && window.CleanupScopeSafetyNoteToolTipValue.Contains("read-only scope context", StringComparison.OrdinalIgnoreCase)
+            && window.CleanupScopeSafetyNoteToolTipValue.Contains("approve cleanup", StringComparison.OrdinalIgnoreCase),
+            message + " Safety note tooltip should mirror the visible note and scope boundary.");
+        Assert(
+            string.Equals(window.CleanupScopeSafetyNoteAutomationHelpTextValue, window.CleanupScopeSafetyNoteToolTipValue, StringComparison.Ordinal),
+            message + " Safety note automation help text should mirror the tooltip.");
+        Assert(
+            window.CleanupScopeSafetyNoteHelpCueAutomationNameValue.Contains("Cleanup Scope Safety Note help cue", StringComparison.OrdinalIgnoreCase),
+            message + " Help cue should have a specific automation name.");
+        Assert(
+            string.Equals(window.CleanupScopeSafetyNoteHelpCueToolTipValue, window.CleanupScopeSafetyNoteToolTipValue, StringComparison.Ordinal),
+            message + " Help cue tooltip should mirror the safety note tooltip.");
+        Assert(
+            string.Equals(window.CleanupScopeSafetyNoteHelpCueAutomationHelpTextValue, window.CleanupScopeSafetyNoteAutomationHelpTextValue, StringComparison.Ordinal),
+            message + " Help cue automation help text should mirror the safety note help text.");
+
+        foreach (var expectedSnippet in expectedSnippets)
+        {
+            Assert(
+                window.CleanupScopeSafetyNoteHelpCueToolTipValue.Contains(expectedSnippet, StringComparison.OrdinalIgnoreCase),
+                message + $" Help cue tooltip should include '{expectedSnippet}'.");
         }
     }
 

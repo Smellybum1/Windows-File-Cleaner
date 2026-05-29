@@ -32,6 +32,7 @@ What changed:
 - Later packet `2026-05-30-real-profile-acknowledgement-help-cue.md` expanded the tracked cue list to eight by adding the real-profile acknowledgement cue.
 - Later packet `2026-05-30-scan-gate-summary-help-cue.md` expanded the tracked cue list to nine by adding the scan-gate summary cue.
 - Later packet `2026-05-30-quarantine-root-safety-note-help-cue.md` expanded the tracked cue list to ten by adding the Quarantine Root Safety Note cue.
+- Later packet `2026-05-30-cleanup-scope-safety-note-help-cue.md` expanded the tracked cue list to eleven by adding the Cleanup Scope Safety Note cue.
 
 Tests run:
 

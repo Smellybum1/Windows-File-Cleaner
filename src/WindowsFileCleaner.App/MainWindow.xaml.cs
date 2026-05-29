@@ -86,6 +86,16 @@ public partial class MainWindow : Window
 
     public string CleanupScopeSafetyNoteTextValue => ScopeSafetyNoteText.Text;
 
+    public string CleanupScopeSafetyNoteToolTipValue => ScopeSafetyNoteText.ToolTip?.ToString() ?? "";
+
+    public string CleanupScopeSafetyNoteAutomationHelpTextValue => AutomationProperties.GetHelpText(ScopeSafetyNoteText);
+
+    public string CleanupScopeSafetyNoteHelpCueToolTipValue => CleanupScopeSafetyNoteHelpCue.ToolTip?.ToString() ?? "";
+
+    public string CleanupScopeSafetyNoteHelpCueAutomationNameValue => AutomationProperties.GetName(CleanupScopeSafetyNoteHelpCue);
+
+    public string CleanupScopeSafetyNoteHelpCueAutomationHelpTextValue => AutomationProperties.GetHelpText(CleanupScopeSafetyNoteHelpCue);
+
     public string CurrentStatusText => StatusText.Text;
 
     public bool CanStartStorageScan => ScanButton.IsEnabled;
@@ -269,6 +279,7 @@ public partial class MainWindow : Window
         GetHelpCueAffordance("Review Grid Mode Status", ReviewGridModeHelpCue),
         GetHelpCueAffordance("Real-profile preflight acknowledgement", RealProfilePreflightHelpCue),
         GetHelpCueAffordance("Scan gate summary", ScanGateSummaryHelpCue),
+        GetHelpCueAffordance("Cleanup Scope Safety Note", CleanupScopeSafetyNoteHelpCue),
         GetHelpCueAffordance("Quarantine Root Safety Note", QuarantineRootSafetyNoteHelpCue)
     ];
 
@@ -1663,7 +1674,13 @@ public partial class MainWindow : Window
 
         var note = CleanupScopeSafetyNoteBuilder.Build(ScopePathBox.Text);
         var scanGate = CleanupScopeScanGateBuilder.Build(ScopePathBox.Text, RealProfilePreflightCheckBox.IsChecked == true);
-        ScopeSafetyNoteText.Text = $"{note.Label}: {note.Message}";
+        var safetyNoteText = $"{note.Label}: {note.Message}";
+        ScopeSafetyNoteText.Text = safetyNoteText;
+        var safetyNoteHelpText = FormatCleanupScopeSafetyNoteHelpText(safetyNoteText, note);
+        ScopeSafetyNoteText.ToolTip = safetyNoteHelpText;
+        AutomationProperties.SetHelpText(ScopeSafetyNoteText, safetyNoteHelpText);
+        CleanupScopeSafetyNoteHelpCue.ToolTip = safetyNoteHelpText;
+        AutomationProperties.SetHelpText(CleanupScopeSafetyNoteHelpCue, safetyNoteHelpText);
         var scanGateSummary = FormatScanGateSummary(note, scanGate);
         ScanGateSummaryText.Text = scanGateSummary;
         ScanGateSummaryText.Foreground = scanGate.CanScan
@@ -1681,6 +1698,17 @@ public partial class MainWindow : Window
         RealProfilePreflightPanel.Visibility = note.IsRealUserProfileScope ? Visibility.Visible : Visibility.Collapsed;
         RealProfilePreflightCheckBox.IsEnabled = !_isScanning && note.IsRealUserProfileScope;
         ScanButton.IsEnabled = !_isScanning && scanGate.CanScan;
+    }
+
+    private static string FormatCleanupScopeSafetyNoteHelpText(string safetyNoteText, CleanupScopeSafetyNote note)
+    {
+        var boundary = note.IsRealUserProfileScope
+            ? "This Cleanup Scope Safety Note is read-only scope context; it does not run MVP preflight, create fixtures, start scanning by itself, persist approval, move files, or approve cleanup."
+            : note.IsFixtureScope
+                ? "This Cleanup Scope Safety Note is read-only scope context; it does not create fixtures, start scanning by itself, move files, or approve cleanup. Fixture cleanup actions still require preview and exact confirmation."
+                : "This Cleanup Scope Safety Note is read-only scope context; it does not start scanning by itself, move files, or approve cleanup. Verify the path before scanning real user files.";
+
+        return $"{safetyNoteText} {boundary}";
     }
 
     private static string FormatScanGateSummary(CleanupScopeSafetyNote note, CleanupScopeScanGate scanGate)
