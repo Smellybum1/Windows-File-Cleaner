@@ -483,6 +483,14 @@
                             <TextBlock x:Name="DetailGuidanceText"
                                        Text=""
                                        TextWrapping="Wrap" />
+                            <TextBlock Text="Descendant review summary"
+                                       FontWeight="SemiBold"
+                                       Margin="0,18,0,4" />
+                            <TextBlock x:Name="DetailSubtreeSummaryText"
+                                       Text=""
+                                       FontFamily="Consolas"
+                                       FontSize="12"
+                                       TextWrapping="Wrap" />
                             <TextBlock Text="Largest immediate children"
                                        FontWeight="SemiBold"
                                        Margin="0,18,0,4" />

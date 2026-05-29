@@ -1180,6 +1180,52 @@ It is a directional inspection aid, not a storage-savings calculation. Parent an
 - Include files only as the terminal row in the trail.
 - Keep UI wording explicit that trail sizes overlap and are not storage savings.
 
+### Selected Folder Subtree Summary
+
+Status: draft
+Last reviewed: 2026-05-29
+
+#### Definition
+
+Selected Folder Subtree Summary is a read-only selected-folder summary of the descendant rows under the selected folder.
+
+It summarizes descendant row counts by entry type, Importance Rating, Deletion Recommendation, Bloat Category risk flags, access status, and a few largest examples so the user can understand the mix inside a large folder before shortlisting or previewing anything.
+
+#### Examples
+
+- Selecting `AppData` shows how many descendant rows are High risk, Protected Location, Caution, Quarantine candidate, Access issue, or Uncategorized Result.
+- Selecting `Downloads` shows its descendant files and any Quarantine candidate examples.
+- Selecting a file shows that files do not have descendant subtree summaries.
+
+#### Non-examples
+
+- A Cleanup Action.
+- Cleanup approval.
+- A confirmed storage-savings estimate.
+- A recursive tree view.
+- A replacement for inspecting child rows.
+
+#### Lifecycle
+
+- Generated from a completed Storage Scan.
+- Updates when the user selects a different result row.
+- Remains read-only and in-memory.
+- Does not change classifications, recommendations, Review Shortlist, Quarantine Preview, or cleanup eligibility.
+
+#### Relationships
+
+- Complements Child Breakdown, Storage Hotspot Trail, Selected Folder Child Focus, Review Mix, Storage Scan Safety Summary, and Quarantine Preview.
+- Uses the same Storage Scan result tree, Bloat Categories, Importance Ratings, Deletion Recommendations, and access status as the main grid.
+- Supports the rule that broad parent folders should stay inspection-first when their descendants include protected, high-risk, inaccessible, or uncategorized rows.
+
+#### Code implications
+
+- Use `StorageSubtreeReviewSummary` and `StorageSubtreeReviewSummaryBuilder`.
+- Exclude the selected folder itself from descendant counts so broad parent labels do not hide the child mix.
+- Keep examples bounded and largest-first where size is relevant.
+- Format example paths relative to the Cleanup Scope when possible.
+- Keep wording explicit that recursive folder sizes overlap and are not storage savings.
+
 ### Selected Folder Child Focus
 
 Status: draft

@@ -165,6 +165,8 @@ public partial class MainWindow : Window
 
     public string DetailMetaTextValue => DetailMetaText.Text;
 
+    public string DetailSubtreeSummaryTextValue => DetailSubtreeSummaryText.Text;
+
     public string DetailHotspotTrailTextValue => DetailHotspotTrailText.Text;
 
     public string FilePreviewTextValue => FilePreviewText.Text;
@@ -909,6 +911,7 @@ public partial class MainWindow : Window
             DetailMetaText.Text = "";
             DetailEvidenceText.Text = "";
             DetailGuidanceText.Text = "";
+            DetailSubtreeSummaryText.Text = "";
             DetailChildrenText.Text = "";
             DetailHotspotTrailText.Text = "";
             FilePreviewText.Text = "Preview appears after selecting a file and using Preview file.";
@@ -929,6 +932,7 @@ public partial class MainWindow : Window
             ? row.Evidence
             : $"{row.Evidence}\n\nAccess issue: {row.Error}";
         DetailGuidanceText.Text = FormatSelectedPathReviewGuidance(row.Entry);
+        DetailSubtreeSummaryText.Text = FormatStorageSubtreeReviewSummary(row.Entry, _currentCleanupScopePath);
         DetailChildrenText.Text = FormatChildSummary(row.Entry);
         DetailHotspotTrailText.Text = FormatStorageHotspotTrail(row.Entry);
         FilePreviewText.Text = row.Entry.IsDirectory
@@ -2795,6 +2799,41 @@ public partial class MainWindow : Window
             Environment.NewLine,
             children.Select(child =>
                 $"{child.Name} | {child.SizeDisplay} | {FormatImportance(child.ImportanceRating)} | {FormatRecommendation(child.DeletionRecommendation)} | {FormatCategories(child.BloatCategories)}"));
+    }
+
+    private static string FormatStorageSubtreeReviewSummary(StorageEntry entry, string? cleanupScopePath)
+    {
+        if (!entry.IsDirectory)
+        {
+            return "Files do not have descendant subtree summaries.";
+        }
+
+        var summary = StorageSubtreeReviewSummaryBuilder.Build(entry, cleanupScopePath);
+        if (summary.DescendantRowCount == 0)
+        {
+            return "No descendant rows were found for this folder.";
+        }
+
+        var lines = new List<string>
+        {
+            $"Descendant rows: {summary.DescendantRowCount:N0} ({summary.DescendantFileCount:N0} files | {summary.DescendantFolderCount:N0} folders).",
+            $"Ratings: Likely safe {summary.LikelySafeCount:N0} | Caution {summary.CautionCount:N0} | High risk {summary.HighRiskCount:N0}.",
+            $"Review flags: Quarantine candidates {summary.QuarantineCandidateCount:N0} | Protected {summary.ProtectedLocationCount:N0} | Access issues {summary.AccessIssueCount:N0} | Reparse points {summary.ReparsePointCount:N0} | No category {summary.UncategorizedCount:N0}.",
+            $"Largest descendant row: {summary.LargestDescendantSizeDisplay}. Recursive folder row sizes overlap and are not storage savings or cleanup approval."
+        };
+        AddExampleLine(lines, "Candidate examples", summary.QuarantineCandidateExamples);
+        AddExampleLine(lines, "Protected examples", summary.ProtectedLocationExamples);
+        AddExampleLine(lines, "Access issue examples", summary.AccessIssueExamples);
+        AddExampleLine(lines, "No category examples", summary.UncategorizedExamples);
+        return string.Join(Environment.NewLine, lines);
+    }
+
+    private static void AddExampleLine(List<string> lines, string label, IReadOnlyList<string> examples)
+    {
+        if (examples.Count > 0)
+        {
+            lines.Add($"{label}: {string.Join("; ", examples)}.");
+        }
     }
 
     private static string FormatStorageHotspotTrail(StorageEntry entry)

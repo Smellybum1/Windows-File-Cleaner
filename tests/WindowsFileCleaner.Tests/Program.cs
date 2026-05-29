@@ -56,6 +56,7 @@ tests.UndoQuarantineRequiresRecoveryReviewWhenPostRestoreManifestWriteFails();
 tests.UndoQuarantineRestoresFixtureDirectories();
 tests.ChildSummaryShowsLargestImmediateChildren();
 tests.StorageHotspotTrailShowsLargestDescendantPath();
+tests.StorageSubtreeReviewSummaryCountsDescendantReviewSignals();
 tests.SelectedPathReviewGuidanceExplainsReviewNextSteps();
 tests.PathInspectionPlanBuildsExplorerArguments();
 tests.SelectedFileContentPreviewReadsBoundedTextOnly();
@@ -2321,6 +2322,119 @@ internal sealed class StorageScanTests
                     Children: [])
             ]);
         Assert(StorageHotspotTrailBuilder.Build(tieRoot).Single().Name == "Alpha", "Hotspot trail should break size ties by name for deterministic output.");
+    }
+
+    public void StorageSubtreeReviewSummaryCountsDescendantReviewSignals()
+    {
+        var now = DateTimeOffset.UtcNow;
+        var selected = new StorageEntry(
+            @"C:\Root\Selected",
+            "Selected",
+            IsDirectory: true,
+            SizeBytes: 12_000,
+            LastModifiedUtc: now,
+            IsAccessible: true,
+            IsReparsePoint: false,
+            ErrorMessage: null,
+            BloatCategories: [BloatCategory.ProtectedLocation],
+            ImportanceRating: ImportanceRating.HighRisk,
+            DeletionRecommendation: DeletionRecommendation.Keep,
+            Evidence: "Selected parent should be excluded from descendant counts.",
+            Children:
+            [
+                new StorageEntry(
+                    @"C:\Root\Selected\cache.msi",
+                    "cache.msi",
+                    IsDirectory: false,
+                    SizeBytes: 4096,
+                    LastModifiedUtc: now,
+                    IsAccessible: true,
+                    IsReparsePoint: false,
+                    ErrorMessage: null,
+                    BloatCategories: [BloatCategory.InstallerCache],
+                    ImportanceRating: ImportanceRating.LikelySafe,
+                    DeletionRecommendation: DeletionRecommendation.QuarantineCandidate,
+                    Evidence: "Synthetic quarantine candidate.",
+                    Children: []),
+                new StorageEntry(
+                    @"C:\Root\Selected\Documents",
+                    "Documents",
+                    IsDirectory: true,
+                    SizeBytes: 2048,
+                    LastModifiedUtc: now,
+                    IsAccessible: true,
+                    IsReparsePoint: false,
+                    ErrorMessage: null,
+                    BloatCategories: [BloatCategory.ProtectedLocation],
+                    ImportanceRating: ImportanceRating.HighRisk,
+                    DeletionRecommendation: DeletionRecommendation.Keep,
+                    Evidence: "Synthetic protected descendant.",
+                    Children: []),
+                new StorageEntry(
+                    @"C:\Root\Selected\Locked",
+                    "Locked",
+                    IsDirectory: true,
+                    SizeBytes: 0,
+                    LastModifiedUtc: null,
+                    IsAccessible: false,
+                    IsReparsePoint: false,
+                    ErrorMessage: "Access denied.",
+                    BloatCategories: [BloatCategory.AccessIssue],
+                    ImportanceRating: ImportanceRating.Caution,
+                    DeletionRecommendation: DeletionRecommendation.Inspect,
+                    Evidence: "Synthetic access issue.",
+                    Children: []),
+                new StorageEntry(
+                    @"C:\Root\Selected\Unknown.txt",
+                    "Unknown.txt",
+                    IsDirectory: false,
+                    SizeBytes: 512,
+                    LastModifiedUtc: now,
+                    IsAccessible: true,
+                    IsReparsePoint: false,
+                    ErrorMessage: null,
+                    BloatCategories: [],
+                    ImportanceRating: ImportanceRating.Caution,
+                    DeletionRecommendation: DeletionRecommendation.Inspect,
+                    Evidence: "Synthetic uncategorized descendant.",
+                    Children: []),
+                new StorageEntry(
+                    @"C:\Root\Selected\Link",
+                    "Link",
+                    IsDirectory: true,
+                    SizeBytes: 64,
+                    LastModifiedUtc: now,
+                    IsAccessible: true,
+                    IsReparsePoint: true,
+                    ErrorMessage: null,
+                    BloatCategories: [BloatCategory.ReparsePoint],
+                    ImportanceRating: ImportanceRating.Caution,
+                    DeletionRecommendation: DeletionRecommendation.Inspect,
+                    Evidence: "Synthetic reparse point.",
+                    Children: [])
+            ]);
+
+        var summary = StorageSubtreeReviewSummaryBuilder.Build(selected, @"C:\Root");
+
+        Assert(summary.DescendantRowCount == 5, "Subtree summary should count descendants but exclude the selected folder itself.");
+        Assert(summary.DescendantFileCount == 2, "Subtree summary should count descendant files.");
+        Assert(summary.DescendantFolderCount == 3, "Subtree summary should count descendant folders.");
+        Assert(summary.LikelySafeCount == 1, "Subtree summary should count likely-safe descendants.");
+        Assert(summary.CautionCount == 3, "Subtree summary should count caution descendants.");
+        Assert(summary.HighRiskCount == 1, "Subtree summary should count high-risk descendants without including the selected folder.");
+        Assert(summary.QuarantineCandidateCount == 1, "Subtree summary should count quarantine candidate descendants.");
+        Assert(summary.ProtectedLocationCount == 1, "Subtree summary should count protected descendants.");
+        Assert(summary.AccessIssueCount == 1, "Subtree summary should count access issue descendants.");
+        Assert(summary.ReparsePointCount == 1, "Subtree summary should count reparse point descendants.");
+        Assert(summary.UncategorizedCount == 1, "Subtree summary should count uncategorized descendants.");
+        Assert(summary.LargestDescendantBytes == 4096, "Subtree summary should expose the largest descendant row as a triage clue.");
+        Assert(summary.QuarantineCandidateExamples.Single().Contains(@"Selected\cache.msi", StringComparison.OrdinalIgnoreCase), "Candidate examples should be cleanup-scope-relative when possible.");
+        Assert(summary.ProtectedLocationExamples.Single().Contains(@"Selected\Documents", StringComparison.OrdinalIgnoreCase), "Protected examples should include relative descendant paths.");
+        Assert(summary.AccessIssueExamples.Single().Contains(@"Selected\Locked", StringComparison.OrdinalIgnoreCase), "Access issue examples should include relative descendant paths.");
+        Assert(summary.UncategorizedExamples.Single().Contains(@"Selected\Unknown.txt", StringComparison.OrdinalIgnoreCase), "Uncategorized examples should include relative descendant paths.");
+
+        var fileSummary = StorageSubtreeReviewSummaryBuilder.Build(selected.Children[0], @"C:\Root");
+        Assert(fileSummary.DescendantRowCount == 0, "Files should not have descendant subtree rows.");
     }
 
     public void SelectedPathReviewGuidanceExplainsReviewNextSteps()

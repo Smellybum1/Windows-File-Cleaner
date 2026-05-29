@@ -6,14 +6,14 @@ Use it to preserve what was completed, what was verified, what was rejected, and
 
 ## Current status
 
-Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. The app has a broad read-only review workflow, Storage Hotspot Trail, Selected Folder Child Focus, fixture launch/preflight tooling, Quarantine Preview, Restore Manifest Draft, Quarantine Confirmation Draft, Quarantine Action Draft, write-ahead Restore Manifest persistence, core Quarantine execution, core Undo Quarantine, fixture-only WPF Quarantine execution, WPF undo for the current fixture execution, Quarantine Manifest Discovery, Selected Restore Manifest Review, Selected Restore Confirmation Gate, Fixture-only Selected Restore Execution, and Restore Readiness Preview. Real-profile WPF Quarantine execution, real-profile WPF Undo Quarantine, permanent deletion, and persisted cleanup history remain unavailable.
+Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. The app has a broad read-only review workflow, Selected Folder Subtree Summary, Storage Hotspot Trail, Selected Folder Child Focus, fixture launch/preflight tooling, Quarantine Preview, Restore Manifest Draft, Quarantine Confirmation Draft, Quarantine Action Draft, write-ahead Restore Manifest persistence, core Quarantine execution, core Undo Quarantine, fixture-only WPF Quarantine execution, WPF undo for the current fixture execution, Quarantine Manifest Discovery, Selected Restore Manifest Review, Selected Restore Confirmation Gate, Fixture-only Selected Restore Execution, and Restore Readiness Preview. Real-profile WPF Quarantine execution, real-profile WPF Undo Quarantine, permanent deletion, and persisted cleanup history remain unavailable.
 
 ## Next recommended work
 
-1. Run `.\tools\Start-MvpFixtureReview.ps1`, confirm the launched app shows Fixture Cleanup Scope, click `Scan`, and manually inspect layout, visible wording, Storage Review Search, `parent:` search, Storage Hotspot Trail, Selected Folder Child Focus (`Show children`), Storage Review Display Window controls, the `Relative path` and `Parent` columns, Selected Path Hierarchy Context, Selected File Content Preview, Selected Path Review Guidance, export dialogs, Safety Summary shortcuts, Review Shortlist, Shortlist shown, Remove shown, typed/browsed Quarantine Root Selection, Quarantine Root Safety Note, Quarantine Preview, Quarantine Execution Gate, Quarantine Action Draft, fixture-only `Execute quarantine`, current-fixture `Undo fixture quarantine`, `Discover manifests`, `Preview selected readiness`, `Preview selected restore gate`, fixture-only `Restore selected fixture manifest`, `Preview restore readiness`, Review Mix, Access issues filter, category filter, No category filter, Size filter, and filter wording.
+1. Run `.\tools\Start-MvpFixtureReview.ps1`, confirm the launched app shows Fixture Cleanup Scope, click `Scan`, and manually inspect layout, visible wording, Storage Review Search, `parent:` search, Selected Folder Subtree Summary, Storage Hotspot Trail, Selected Folder Child Focus (`Show children`), Storage Review Display Window controls, the `Relative path` and `Parent` columns, Selected Path Hierarchy Context, Selected File Content Preview, Selected Path Review Guidance, export dialogs, Safety Summary shortcuts, Review Shortlist, Shortlist shown, Remove shown, typed/browsed Quarantine Root Selection, Quarantine Root Safety Note, Quarantine Preview, Quarantine Execution Gate, Quarantine Action Draft, fixture-only `Execute quarantine`, current-fixture `Undo fixture quarantine`, `Discover manifests`, `Preview selected readiness`, `Preview selected restore gate`, fixture-only `Restore selected fixture manifest`, `Preview restore readiness`, Review Mix, Access issues filter, category filter, No category filter, Size filter, and filter wording.
 2. Use `README.md` and `docs/features/2026-05-28-mvp-readiness-audit.md` to rerun the WPF app against `C:\Users\moxhe`; confirm `Scan` is disabled until the real-profile preflight acknowledgement is checked.
 3. Run `.\tools\Invoke-MvpPreflight.ps1` before any later real-profile scan if the worktree changes.
-4. Rerun the real scan and check whether the cleanup scope root row, `Relative path`, `Parent`, `Contents`, and `Access` columns, Size filter, `parent:` / `access:readable` / `access:access issue` search, Storage Hotspot Trail, `Show children`, Previous rows / Next rows, Safety Summary candidate and no-category examples, selected-row relative/parent/depth/access context, cache-specific Review guidance, specific rebuildable cache candidates such as `DXCache` and `pip\Cache`, conservative game/mod-manager labels such as OptiFine/CurseForge/Vortex, Cloud sync data and Credential data labels, and `Preview file` action make unfamiliar rows easier to triage.
+4. Rerun the real scan and check whether the cleanup scope root row, `Relative path`, `Parent`, `Contents`, and `Access` columns, Size filter, `parent:` / `access:readable` / `access:access issue` search, Selected Folder Subtree Summary, Storage Hotspot Trail, `Show children`, Previous rows / Next rows, Safety Summary candidate and no-category examples, selected-row relative/parent/depth/access context, cache-specific Review guidance, specific rebuildable cache candidates such as `DXCache` and `pip\Cache`, conservative game/mod-manager labels such as OptiFine/CurseForge/Vortex, Cloud sync data and Credential data labels, and `Preview file` action make unfamiliar rows easier to triage.
 5. Retest the Quarantine Readiness UI with a real scan and confirm typed Quarantine root destinations, broad-parent protected descendant blockers, readable relative examples, draft/readiness wording, and real-profile execution blockers are understandable.
 6. Defer real-profile Quarantine execution and broad WPF Undo Quarantine that restores discovered manifests until scan review, preview semantics, confirmation semantics, restore rules, manifest write order, and failure handling are trustworthy.
 7. Revisit .NET 10 before packaging or long-term distribution.
@@ -4353,3 +4353,55 @@ Rejected ideas buffer:
 - Do not call the trail a savings estimate.
 - Do not use the hotspot trail to auto-shortlist or recommend cleanup.
 - Do not build a full tree view before manual review proves the smaller trail/focus tools are insufficient.
+
+### 2026-05-29: Add Selected Folder Subtree Summary
+
+Status: completed
+
+Evidence:
+
+- The user's real scan screenshot showed large container rows where the next decision depends on the descendant mix, not just parent size.
+- Child Breakdown, Storage Hotspot Trail, and Selected Folder Child Focus help inspect shape, but the detail pane still lacked a compact descendant risk/count summary.
+- Quarantine Preview already blocks broad parents with protected descendants, so a pre-preview read-only summary helps explain why broad parents should stay inspection-first.
+
+Implementation:
+
+- Added `StorageSubtreeReviewSummary` and `StorageSubtreeReviewSummaryBuilder`.
+- Added WPF Descendant review summary detail text for selected rows.
+- The summary excludes the selected folder itself, counts descendant files/folders, Importance Ratings, Quarantine candidates, Protected Location rows, Access issues, Reparse points, and Uncategorized Results.
+- The summary shows bounded examples for Quarantine candidates, Protected Location rows, Access issues, and Uncategorized Results.
+- The WPF detail pane says recursive row sizes overlap and are not storage savings or cleanup approval.
+- Files explicitly report that they do not have descendant subtree summaries.
+- Kept real-profile cleanup execution, Quarantine execution changes, Undo changes, permanent deletion, cleanup history, and classification changes out of this packet.
+
+Verification:
+
+- `dotnet build WindowsFileCleaner.sln --no-restore` passed with 0 warnings and 0 errors.
+- `dotnet run --project tests\WindowsFileCleaner.Tests\WindowsFileCleaner.Tests.csproj --no-build` passed.
+- `dotnet run --project tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj --no-build` passed.
+- `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\Invoke-MvpPreflight.ps1` passed.
+- Preflight restored, built, ran core tests, ran WPF app tests, ran fixture `-WhatIf`, ran `git diff --check`, and reported that no real user files were scanned or modified.
+
+Docs updated:
+
+- `README.md`
+- `docs/domain/context.md`
+- `docs/domain/glossary.md`
+- `docs/features/2026-05-28-mvp-readiness-audit.md`
+- `docs/features/2026-05-29-selected-folder-subtree-summary.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No ADR added. This is a reversible read-only review aid that does not change persistence, cleanup execution, recovery rules, or durable architecture.
+
+Open questions:
+
+- Should the summary eventually include clickable review shortcuts for each descendant bucket?
+- Should the summary appear as a compact table instead of text after manual layout review?
+
+Rejected ideas buffer:
+
+- Do not turn descendant summary counts into cleanup approval.
+- Do not sum flattened recursive row sizes as savings.
+- Do not add clickable bulk shortcuts before manual review proves the wording/layout works.
