@@ -496,18 +496,21 @@
                                 MinWidth="130"
                                 IsEnabled="False"
                                 ToolTip="Adds only the selected row to Review Shortlist. This is review context, not cleanup approval; no files are modified."
+                                AutomationProperties.HelpText="Adds only the selected row to Review Shortlist. This is review context, not cleanup approval; no files are modified."
                                 ToolTipService.ShowOnDisabled="True"
                                 Click="AddToShortlistButton_Click" />
                         <Button x:Name="RemoveFromShortlistButton"
                                 Content="Remove"
                                 IsEnabled="False"
                                 ToolTip="Removes only the selected row from Review Shortlist. This is review context, not cleanup approval; no files are modified."
+                                AutomationProperties.HelpText="Removes only the selected row from Review Shortlist. This is review context, not cleanup approval; no files are modified."
                                 ToolTipService.ShowOnDisabled="True"
                                 Click="RemoveFromShortlistButton_Click" />
                         <Button x:Name="CopyPathButton"
                                 Content="Copy path"
                                 IsEnabled="False"
                                 ToolTip="Copies the selected path for manual inspection; this does not modify files or approve cleanup."
+                                AutomationProperties.HelpText="Copies the selected path for manual inspection; this does not modify files or approve cleanup."
                                 ToolTipService.ShowOnDisabled="True"
                                 Click="CopyPathButton_Click" />
                         <Button x:Name="ShowChildrenButton"
@@ -515,6 +518,7 @@
                                 MinWidth="115"
                                 IsEnabled="False"
                                 ToolTip="Read-only focus on immediate child rows with parent: search; does not rescan, modify files, or approve cleanup."
+                                AutomationProperties.HelpText="Read-only focus on immediate child rows with parent: search; does not rescan, modify files, or approve cleanup."
                                 ToolTipService.ShowOnDisabled="True"
                                 Click="ShowChildrenButton_Click" />
                         <Button x:Name="ShowDescendantsButton"
@@ -522,6 +526,7 @@
                                 MinWidth="135"
                                 IsEnabled="False"
                                 ToolTip="Read-only focus on descendant rows with under: search; does not rescan, modify files, or approve cleanup."
+                                AutomationProperties.HelpText="Read-only focus on descendant rows with under: search; does not rescan, modify files, or approve cleanup."
                                 ToolTipService.ShowOnDisabled="True"
                                 Click="ShowDescendantsButton_Click" />
                         <Button x:Name="PreviewFileButton"
@@ -529,6 +534,7 @@
                                 MinWidth="110"
                                 IsEnabled="False"
                                 ToolTip="Reads a bounded text sample only after request; does not preview folders, Credential Data, or modify files."
+                                AutomationProperties.HelpText="Reads a bounded text sample only after request; does not preview folders, Credential Data, or modify files."
                                 ToolTipService.ShowOnDisabled="True"
                                 Click="PreviewFileButton_Click" />
                         <Button x:Name="OpenInExplorerButton"
@@ -536,6 +542,7 @@
                                 MinWidth="130"
                                 IsEnabled="False"
                                 ToolTip="Opens the selected path in File Explorer for manual inspection; this is not cleanup approval and the app does not modify files."
+                                AutomationProperties.HelpText="Opens the selected path in File Explorer for manual inspection; this is not cleanup approval and the app does not modify files."
                                 ToolTipService.ShowOnDisabled="True"
                                 Click="OpenInExplorerButton_Click" />
                     </WrapPanel>

@@ -210,15 +210,30 @@ internal sealed class MainWindowSmokeTests
                 && window.AddSelectedRowToReviewShortlistButtonToolTipValue.Contains("no files are modified", StringComparison.OrdinalIgnoreCase),
                 "Selected-row shortlist add tooltip should explain selected-only scope and approval boundary.");
             Assert(
+                window.AddSelectedRowToReviewShortlistButtonAutomationHelpTextValue.Contains("selected row", StringComparison.OrdinalIgnoreCase)
+                && window.AddSelectedRowToReviewShortlistButtonAutomationHelpTextValue.Contains("not cleanup approval", StringComparison.OrdinalIgnoreCase)
+                && window.AddSelectedRowToReviewShortlistButtonAutomationHelpTextValue.Contains("no files are modified", StringComparison.OrdinalIgnoreCase),
+                "Selected-row shortlist add automation help text should explain selected-only scope and approval boundary.");
+            Assert(
                 window.RemoveSelectedRowFromReviewShortlistButtonToolTipValue.Contains("selected row", StringComparison.OrdinalIgnoreCase)
                 && window.RemoveSelectedRowFromReviewShortlistButtonToolTipValue.Contains("not cleanup approval", StringComparison.OrdinalIgnoreCase)
                 && window.RemoveSelectedRowFromReviewShortlistButtonToolTipValue.Contains("no files are modified", StringComparison.OrdinalIgnoreCase),
                 "Selected-row shortlist remove tooltip should explain selected-only scope and approval boundary.");
             Assert(
+                window.RemoveSelectedRowFromReviewShortlistButtonAutomationHelpTextValue.Contains("selected row", StringComparison.OrdinalIgnoreCase)
+                && window.RemoveSelectedRowFromReviewShortlistButtonAutomationHelpTextValue.Contains("not cleanup approval", StringComparison.OrdinalIgnoreCase)
+                && window.RemoveSelectedRowFromReviewShortlistButtonAutomationHelpTextValue.Contains("no files are modified", StringComparison.OrdinalIgnoreCase),
+                "Selected-row shortlist remove automation help text should explain selected-only scope and approval boundary.");
+            Assert(
                 window.CopySelectedPathButtonToolTipValue.Contains("manual inspection", StringComparison.OrdinalIgnoreCase)
                 && window.CopySelectedPathButtonToolTipValue.Contains("does not modify files", StringComparison.OrdinalIgnoreCase)
                 && window.CopySelectedPathButtonToolTipValue.Contains("approve cleanup", StringComparison.OrdinalIgnoreCase),
                 "Copy path tooltip should explain inspection-only behavior.");
+            Assert(
+                window.CopySelectedPathButtonAutomationHelpTextValue.Contains("manual inspection", StringComparison.OrdinalIgnoreCase)
+                && window.CopySelectedPathButtonAutomationHelpTextValue.Contains("does not modify files", StringComparison.OrdinalIgnoreCase)
+                && window.CopySelectedPathButtonAutomationHelpTextValue.Contains("approve cleanup", StringComparison.OrdinalIgnoreCase),
+                "Copy path automation help text should explain inspection-only behavior.");
             Assert(
                 window.ShowSelectedFolderChildrenButtonToolTipValue.Contains("Read-only focus", StringComparison.OrdinalIgnoreCase)
                 && window.ShowSelectedFolderChildrenButtonToolTipValue.Contains("parent: search", StringComparison.OrdinalIgnoreCase)
@@ -226,22 +241,45 @@ internal sealed class MainWindowSmokeTests
                 && window.ShowSelectedFolderChildrenButtonToolTipValue.Contains("approve cleanup", StringComparison.OrdinalIgnoreCase),
                 "Show children tooltip should explain read-only focus behavior.");
             Assert(
+                window.ShowSelectedFolderChildrenButtonAutomationHelpTextValue.Contains("Read-only focus", StringComparison.OrdinalIgnoreCase)
+                && window.ShowSelectedFolderChildrenButtonAutomationHelpTextValue.Contains("parent: search", StringComparison.OrdinalIgnoreCase)
+                && window.ShowSelectedFolderChildrenButtonAutomationHelpTextValue.Contains("does not rescan", StringComparison.OrdinalIgnoreCase)
+                && window.ShowSelectedFolderChildrenButtonAutomationHelpTextValue.Contains("approve cleanup", StringComparison.OrdinalIgnoreCase),
+                "Show children automation help text should explain read-only focus behavior.");
+            Assert(
                 window.ShowSelectedFolderDescendantsButtonToolTipValue.Contains("Read-only focus", StringComparison.OrdinalIgnoreCase)
                 && window.ShowSelectedFolderDescendantsButtonToolTipValue.Contains("under: search", StringComparison.OrdinalIgnoreCase)
                 && window.ShowSelectedFolderDescendantsButtonToolTipValue.Contains("does not rescan", StringComparison.OrdinalIgnoreCase)
                 && window.ShowSelectedFolderDescendantsButtonToolTipValue.Contains("approve cleanup", StringComparison.OrdinalIgnoreCase),
                 "Show descendants tooltip should explain read-only focus behavior.");
             Assert(
+                window.ShowSelectedFolderDescendantsButtonAutomationHelpTextValue.Contains("Read-only focus", StringComparison.OrdinalIgnoreCase)
+                && window.ShowSelectedFolderDescendantsButtonAutomationHelpTextValue.Contains("under: search", StringComparison.OrdinalIgnoreCase)
+                && window.ShowSelectedFolderDescendantsButtonAutomationHelpTextValue.Contains("does not rescan", StringComparison.OrdinalIgnoreCase)
+                && window.ShowSelectedFolderDescendantsButtonAutomationHelpTextValue.Contains("approve cleanup", StringComparison.OrdinalIgnoreCase),
+                "Show descendants automation help text should explain read-only focus behavior.");
+            Assert(
                 window.PreviewSelectedFileButtonToolTipValue.Contains("bounded text sample", StringComparison.OrdinalIgnoreCase)
                 && window.PreviewSelectedFileButtonToolTipValue.Contains("Credential Data", StringComparison.OrdinalIgnoreCase)
                 && window.PreviewSelectedFileButtonToolTipValue.Contains("modify files", StringComparison.OrdinalIgnoreCase),
                 "Preview file tooltip should explain bounded read-only behavior.");
+            Assert(
+                window.PreviewSelectedFileButtonAutomationHelpTextValue.Contains("bounded text sample", StringComparison.OrdinalIgnoreCase)
+                && window.PreviewSelectedFileButtonAutomationHelpTextValue.Contains("Credential Data", StringComparison.OrdinalIgnoreCase)
+                && window.PreviewSelectedFileButtonAutomationHelpTextValue.Contains("modify files", StringComparison.OrdinalIgnoreCase),
+                "Preview file automation help text should explain bounded read-only behavior.");
             Assert(
                 window.OpenSelectedPathInExplorerButtonToolTipValue.Contains("File Explorer", StringComparison.OrdinalIgnoreCase)
                 && window.OpenSelectedPathInExplorerButtonToolTipValue.Contains("manual inspection", StringComparison.OrdinalIgnoreCase)
                 && window.OpenSelectedPathInExplorerButtonToolTipValue.Contains("not cleanup approval", StringComparison.OrdinalIgnoreCase)
                 && window.OpenSelectedPathInExplorerButtonToolTipValue.Contains("does not modify files", StringComparison.OrdinalIgnoreCase),
                 "Open in Explorer tooltip should explain inspection-only behavior.");
+            Assert(
+                window.OpenSelectedPathInExplorerButtonAutomationHelpTextValue.Contains("File Explorer", StringComparison.OrdinalIgnoreCase)
+                && window.OpenSelectedPathInExplorerButtonAutomationHelpTextValue.Contains("manual inspection", StringComparison.OrdinalIgnoreCase)
+                && window.OpenSelectedPathInExplorerButtonAutomationHelpTextValue.Contains("not cleanup approval", StringComparison.OrdinalIgnoreCase)
+                && window.OpenSelectedPathInExplorerButtonAutomationHelpTextValue.Contains("does not modify files", StringComparison.OrdinalIgnoreCase),
+                "Open in Explorer automation help text should explain inspection-only behavior.");
             Assert(window.BrowseQuarantineRootButtonText.Contains("Browse", StringComparison.OrdinalIgnoreCase), "Quarantine root browse action should be visible in the review toolbar.");
             Assert(
                 window.BrowseQuarantineRootButtonToolTipValue.Contains("Quarantine Root", StringComparison.OrdinalIgnoreCase)

@@ -1329,7 +1329,7 @@ It is a table-level follow-up to Child Breakdown: the detail pane shows a bounde
 - Use `StorageReviewSearchField.Parent` for parent-prefixed search.
 - Use `ShowSelectedFolderChildren` for the WPF selected-row action.
 - Keep the action disabled for files and before a scan result exists.
-- Tooltip wording should say this is read-only `parent:` focus that does not rescan, modify files, or approve cleanup.
+- Tooltip and automation help text should say this is read-only `parent:` focus that does not rescan, modify files, or approve cleanup.
 - Keep the action read-only and avoid rescanning, opening Explorer, previewing file content, or modifying files.
 
 ### Selected Folder Descendant Focus
@@ -1377,7 +1377,7 @@ It is the recursive counterpart to Selected Folder Child Focus. It lets the user
 - Use `ShowSelectedFolderDescendants` for the WPF selected-row action.
 - Exclude the selected folder itself from matches.
 - Keep the action disabled for files and before a scan result exists.
-- Tooltip wording should say this is read-only `under:` focus that does not rescan, modify files, or approve cleanup.
+- Tooltip and automation help text should say this is read-only `under:` focus that does not rescan, modify files, or approve cleanup.
 - Keep the action read-only and avoid rescanning, opening Explorer, previewing file content, or modifying files.
 
 ### Selected Path Inspection
@@ -1419,7 +1419,7 @@ Initial actions are copying the selected path and opening the selected path in F
 
 - Use `PathInspectionPlanBuilder` for Explorer launch details.
 - Keep inspection actions separate from Cleanup Actions.
-- Tooltip wording should keep Copy path and Open in Explorer framed as manual inspection, not cleanup approval or file modification by the app.
+- Tooltip and automation help text should keep Copy path and Open in Explorer framed as manual inspection, not cleanup approval or file modification by the app.
 - Status messages should state that no files were modified.
 
 ### Selected Path Hierarchy Context
@@ -1559,7 +1559,7 @@ It exists to help the user understand unfamiliar file rows before deciding wheth
 - Keep default reads bounded to a small text sample.
 - Do not render binary-looking content as text.
 - Do not render Credential Data content.
-- Keep status wording explicit that no files were modified.
+- Keep status wording, tooltip wording, and automation help text explicit that no files were modified.
 
 ### Selected Path Review Guidance
 
@@ -1646,7 +1646,7 @@ It is not a cleanup approval and does not modify files.
 
 - Use `StorageReviewShortlist` for the in-memory selection model.
 - Bulk additions and removals should use only currently displayed rows, not hidden matched rows beyond the Storage Review Display Limit.
-- Visible-row bulk control tooltips should keep the display-window scope, no-file-modified behavior, and not-cleanup-approval boundary visible.
+- Selected-row and visible-row control tooltips and automation help text should keep row/display-window scope, no-file-modified behavior, and not-cleanup-approval boundaries available.
 - Export and clear control tooltips and automation help text should keep report-only and in-memory-only behavior available before use.
 - Keep shortlisted paths separate from Cleanup Actions and Quarantine manifests.
 - Do not persist or execute the Review Shortlist as an action without a future explicit approval workflow.

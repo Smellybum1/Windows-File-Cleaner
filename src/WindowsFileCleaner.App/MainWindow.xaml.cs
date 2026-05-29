@@ -283,25 +283,39 @@ public partial class MainWindow : Window
 
     public string AddSelectedRowToReviewShortlistButtonToolTipValue => AddToShortlistButton.ToolTip?.ToString() ?? "";
 
+    public string AddSelectedRowToReviewShortlistButtonAutomationHelpTextValue => AutomationProperties.GetHelpText(AddToShortlistButton);
+
     public bool CanRemoveSelectedRowFromReviewShortlist => RemoveFromShortlistButton.IsEnabled;
 
     public string RemoveSelectedRowFromReviewShortlistButtonToolTipValue => RemoveFromShortlistButton.ToolTip?.ToString() ?? "";
+
+    public string RemoveSelectedRowFromReviewShortlistButtonAutomationHelpTextValue => AutomationProperties.GetHelpText(RemoveFromShortlistButton);
 
     public bool CanPreviewSelectedFile => PreviewFileButton.IsEnabled;
 
     public string PreviewSelectedFileButtonToolTipValue => PreviewFileButton.ToolTip?.ToString() ?? "";
 
+    public string PreviewSelectedFileButtonAutomationHelpTextValue => AutomationProperties.GetHelpText(PreviewFileButton);
+
     public bool CanShowSelectedFolderChildren => ShowChildrenButton.IsEnabled;
 
     public string ShowSelectedFolderChildrenButtonToolTipValue => ShowChildrenButton.ToolTip?.ToString() ?? "";
+
+    public string ShowSelectedFolderChildrenButtonAutomationHelpTextValue => AutomationProperties.GetHelpText(ShowChildrenButton);
 
     public bool CanShowSelectedFolderDescendants => ShowDescendantsButton.IsEnabled;
 
     public string ShowSelectedFolderDescendantsButtonToolTipValue => ShowDescendantsButton.ToolTip?.ToString() ?? "";
 
+    public string ShowSelectedFolderDescendantsButtonAutomationHelpTextValue => AutomationProperties.GetHelpText(ShowDescendantsButton);
+
     public string CopySelectedPathButtonToolTipValue => CopyPathButton.ToolTip?.ToString() ?? "";
 
+    public string CopySelectedPathButtonAutomationHelpTextValue => AutomationProperties.GetHelpText(CopyPathButton);
+
     public string OpenSelectedPathInExplorerButtonToolTipValue => OpenInExplorerButton.ToolTip?.ToString() ?? "";
+
+    public string OpenSelectedPathInExplorerButtonAutomationHelpTextValue => AutomationProperties.GetHelpText(OpenInExplorerButton);
 
     public bool CanAddShownRowsToReviewShortlist => AddShownToShortlistButton.IsEnabled;
 

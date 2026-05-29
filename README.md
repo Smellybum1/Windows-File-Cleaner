@@ -46,7 +46,7 @@ Fresh-thread handoff notes live in `docs/codex/thread-handoff.md`.
 - Real-profile scans require an explicit acknowledgement that MVP preflight and fixture review were run.
 - Scan-gate ready wording is scope-specific: fixture scopes point later cleanup actions back to preview and exact confirmation, while real-profile/custom scopes keep cleanup execution unavailable.
 - Cleanup Scope and Quarantine Root browse controls use tooltips to keep path-selection, scan-gate, preview-only, and no-folder-creation boundaries visible.
-- Selected-row review actions use tooltips to keep shortlist, focus, file-preview, copy, and Explorer inspection boundaries visible.
+- Selected-row review actions use tooltips and automation help text to keep shortlist, focus, file-preview, copy, and Explorer inspection boundaries available.
 - User-typed Storage Review Search is debounced for large real-profile scans; the status bar is the only pending-search indicator for now.
 
 ## Requirements
@@ -120,7 +120,7 @@ This only fills the Cleanup Scope box. Click `Scan` yourself after the app opens
 
 Use `-SkipChecklist` only when you intentionally want the launcher output without the reminder checklist.
 
-The automated `WindowsFileCleaner.App.Tests` project also scans a synthetic fixture through the WPF shell, exercises read-only review interactions, proves fixture-only Quarantine execution and undo, verifies manifest discovery, selected manifest review, selected restore confirmation gate, fixture-only selected restore execution, and all-manifest readiness preview, verifies custom non-fixture execution remains blocked, checks review navigation/export and report/preview tooltip and automation help text boundaries, and checks that the review toolbars use wrapping layout, but it does not replace checking the visible layout and controls by eye.
+The automated `WindowsFileCleaner.App.Tests` project also scans a synthetic fixture through the WPF shell, exercises read-only review interactions, proves fixture-only Quarantine execution and undo, verifies manifest discovery, selected manifest review, selected restore confirmation gate, fixture-only selected restore execution, and all-manifest readiness preview, verifies custom non-fixture execution remains blocked, checks review navigation/export, report/preview, and selected-row tooltip and automation help text boundaries, and checks that the review toolbars use wrapping layout, but it does not replace checking the visible layout and controls by eye.
 
 ## Run The App
 
