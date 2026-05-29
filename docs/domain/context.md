@@ -2886,7 +2886,7 @@ Restore Manifest Summary is a compact read-only status view of one discovered Re
 ### Selected Restore Manifest Review
 
 Status: draft
-Last reviewed: 2026-05-29
+Last reviewed: 2026-05-30
 
 #### Definition
 
@@ -2931,6 +2931,7 @@ It is not approval to restore and does not restore files.
 - Keep selection read-only and derived from current discovery results.
 - Keep selected manifest readiness separate from approval and execution.
 - Keep the WPF selection control tooltip and automation help text explicit that selection focuses one discovered Restore Manifest for read-only review and does not move, restore, delete, write manifests, or clean up folders.
+- Keep the WPF selection `?` help cue visible beside the selected-manifest control and mirror the same selection tooltip/help text.
 - Keep the WPF selected manifest readiness tooltip and automation help text explicit that the action is selected-only and not restore approval.
 - Do not call `UndoQuarantineExecutor.Undo`.
 

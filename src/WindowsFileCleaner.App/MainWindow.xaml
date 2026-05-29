@@ -1147,6 +1147,27 @@
                                            VerticalAlignment="Center"
                                            Foreground="#526171"
                                            Margin="0,0,8,0" />
+                                <Border x:Name="RestoreManifestSelectionHelpCue"
+                                        Width="18"
+                                        Height="18"
+                                        Margin="0,0,8,0"
+                                        VerticalAlignment="Center"
+                                        Background="#F4F7FA"
+                                        BorderBrush="#8A99A8"
+                                        BorderThickness="1"
+                                        CornerRadius="9"
+                                        Cursor="Help"
+                                        ToolTipService.InitialShowDelay="250"
+                                        ToolTip="Selects one discovered Restore Manifest for read-only review; selection is not restore approval and does not move, restore, delete, write manifests, or clean up folders."
+                                        AutomationProperties.Name="Restore Manifest selection help cue"
+                                        AutomationProperties.HelpText="Selects one discovered Restore Manifest for read-only review; selection is not restore approval and does not move, restore, delete, write manifests, or clean up folders.">
+                                    <TextBlock Text="?"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"
+                                               FontSize="11"
+                                               FontWeight="Bold"
+                                               Foreground="#526171" />
+                                </Border>
                                 <ComboBox x:Name="RestoreManifestSelectionBox"
                                           Width="520"
                                           MinHeight="30"

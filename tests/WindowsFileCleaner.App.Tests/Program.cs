@@ -205,6 +205,9 @@ internal sealed class MainWindowSmokeTests
                 && window.RestoreManifestSelectionBoxAutomationHelpTextValue.Contains("does not move", StringComparison.OrdinalIgnoreCase)
                 && window.RestoreManifestSelectionBoxAutomationHelpTextValue.Contains("write manifests", StringComparison.OrdinalIgnoreCase),
                 "Restore Manifest selection automation help text should explain selected review and approval boundaries.");
+            AssertRestoreManifestSelectionHelpCue(
+                window,
+                "Startup");
             Assert(!window.CanPreviewSelectedRestoreManifestReadiness, "MainWindow should not enable selected Restore Manifest review before discovery.");
             Assert(
                 window.PreviewSelectedRestoreManifestReadinessButtonText == "Preview selected manifest readiness",
@@ -2389,7 +2392,7 @@ internal sealed class MainWindowSmokeTests
     private static void AssertHoverableHelpCueAffordances(MainWindow window, string message)
     {
         var affordances = window.HoverableHelpCueAffordances;
-        Assert(affordances.Count == 15, message + " Expected all fifteen circular help cues to be tracked.");
+        Assert(affordances.Count == 16, message + " Expected all sixteen circular help cues to be tracked.");
 
         foreach (var affordance in affordances)
         {
@@ -2421,6 +2424,27 @@ internal sealed class MainWindowSmokeTests
         Assert(
             string.Equals(window.QuarantineConfirmationHelpCueAutomationHelpTextValue, window.QuarantineConfirmationAutomationHelpTextValue, StringComparison.Ordinal),
             message + " Help cue automation help text should mirror the confirmation help text.");
+    }
+
+    private static void AssertRestoreManifestSelectionHelpCue(MainWindow window, string message)
+    {
+        Assert(
+            window.RestoreManifestSelectionBoxToolTipValue.Contains("one discovered Restore Manifest", StringComparison.OrdinalIgnoreCase)
+            && window.RestoreManifestSelectionBoxToolTipValue.Contains("not restore approval", StringComparison.OrdinalIgnoreCase)
+            && window.RestoreManifestSelectionBoxToolTipValue.Contains("write manifests", StringComparison.OrdinalIgnoreCase),
+            message + " Restore Manifest selection tooltip should expose selected review and approval boundaries.");
+        Assert(
+            string.Equals(window.RestoreManifestSelectionBoxAutomationHelpTextValue, window.RestoreManifestSelectionBoxToolTipValue, StringComparison.Ordinal),
+            message + " Restore Manifest selection automation help text should mirror the tooltip.");
+        Assert(
+            window.RestoreManifestSelectionHelpCueAutomationNameValue.Contains("Restore Manifest selection help cue", StringComparison.OrdinalIgnoreCase),
+            message + " Help cue should have a specific automation name.");
+        Assert(
+            string.Equals(window.RestoreManifestSelectionHelpCueToolTipValue, window.RestoreManifestSelectionBoxToolTipValue, StringComparison.Ordinal),
+            message + " Help cue tooltip should mirror the selection tooltip.");
+        Assert(
+            string.Equals(window.RestoreManifestSelectionHelpCueAutomationHelpTextValue, window.RestoreManifestSelectionBoxAutomationHelpTextValue, StringComparison.Ordinal),
+            message + " Help cue automation help text should mirror the selection help text.");
     }
 
     private static void AssertSelectedRestoreConfirmationHelpCue(MainWindow window, string message)

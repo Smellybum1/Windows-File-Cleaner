@@ -183,12 +183,13 @@ ADRs added or skipped:
 
 Follow-up work:
 
-- Confirm in visible fixture/real-profile review whether these controls need always-visible help icons.
+- Restore Manifest selection later gained a visible `?` help cue that mirrors the selection tooltip/help text.
+- Confirm in visible fixture/real-profile review whether `Discover manifests` also needs an always-visible help icon.
 - Continue polishing Quarantine Preview/readiness clarity before any real-profile cleanup execution.
 
 Open questions:
 
-- Are tooltip and automation help text enough for manifest discovery/selection, or should a visible help affordance be added later?
+- Does `Discover manifests` also need a visible help affordance, or is its button tooltip enough?
 
 Risky assumptions:
 
