@@ -160,6 +160,8 @@
                                 BorderBrush="#8A99A8"
                                 BorderThickness="1"
                                 CornerRadius="9"
+                                Cursor="Help"
+                                ToolTipService.InitialShowDelay="250"
                                 ToolTip="Safety Summary: waiting for scan. Header state: neutral. Header summary is read-only review context, not cleanup approval."
                                 AutomationProperties.Name="Safety Summary header help cue"
                                 AutomationProperties.HelpText="Safety Summary: waiting for scan. Header state: neutral. Header summary is read-only review context, not cleanup approval.">
@@ -192,6 +194,8 @@
                                 BorderBrush="#8A99A8"
                                 BorderThickness="1"
                                 VerticalAlignment="Top"
+                                Cursor="Help"
+                                ToolTipService.InitialShowDelay="250"
                                 ToolTip="Review mix appears after a scan. Review Mix is read-only whole-scan review context; it does not rescan, modify files, prove storage savings, or approve cleanup. Largest rows are triage clues because recursive parent and child rows can overlap."
                                 AutomationProperties.Name="Review Mix help cue"
                                 AutomationProperties.HelpText="Review mix appears after a scan. Review Mix is read-only whole-scan review context; it does not rescan, modify files, prove storage savings, or approve cleanup. Largest rows are triage clues because recursive parent and child rows can overlap.">
@@ -340,6 +344,8 @@
                             BorderBrush="#8A99A8"
                             BorderThickness="1"
                             VerticalAlignment="Top"
+                            Cursor="Help"
+                            ToolTipService.InitialShowDelay="250"
                             ToolTip="Matched review mix appears after a scan. Matched Review Mix is read-only active-review-lens context; it does not rescan, modify files, prove storage savings, or approve cleanup. Counts cover all matched rows, not only the visible display window."
                             AutomationProperties.Name="Matched Review Mix help cue"
                             AutomationProperties.HelpText="Matched review mix appears after a scan. Matched Review Mix is read-only active-review-lens context; it does not rescan, modify files, prove storage savings, or approve cleanup. Counts cover all matched rows, not only the visible display window.">
@@ -514,6 +520,8 @@
                             BorderBrush="#8A99A8"
                             BorderThickness="1"
                             VerticalAlignment="Top"
+                            Cursor="Help"
+                            ToolTipService.InitialShowDelay="250"
                             ToolTip="Review Shortlist is empty. Shortlist safety mix appears after rows are shortlisted. Review Shortlist Safety Mix is read-only review context; it does not rescan, modify files, prove Quarantine readiness, prove storage savings, or approve cleanup."
                             AutomationProperties.Name="Review Shortlist Safety Mix help cue"
                             AutomationProperties.HelpText="Review Shortlist is empty. Shortlist safety mix appears after rows are shortlisted. Review Shortlist Safety Mix is read-only review context; it does not rescan, modify files, prove Quarantine readiness, prove storage savings, or approve cleanup.">
@@ -551,6 +559,8 @@
                                     BorderBrush="#8A99A8"
                                     BorderThickness="1"
                                     CornerRadius="9"
+                                    Cursor="Help"
+                                    ToolTipService.InitialShowDelay="250"
                                     ToolTip="Quarantine Shortlist: 0 shortlisted | no preview | no current quarantine | undo unavailable. Header state: neutral. Header summary is read-only review context, not cleanup approval."
                                     AutomationProperties.Name="Quarantine Shortlist header help cue"
                                     AutomationProperties.HelpText="Quarantine Shortlist: 0 shortlisted | no preview | no current quarantine | undo unavailable. Header state: neutral. Header summary is read-only review context, not cleanup approval.">
@@ -655,6 +665,8 @@
                                     BorderBrush="#8A99A8"
                                     BorderThickness="1"
                                     CornerRadius="9"
+                                    Cursor="Help"
+                                    ToolTipService.InitialShowDelay="250"
                                     ToolTip="Quarantine Preview readiness appears after Review Shortlist rows are added. No files were modified. Status state: neutral. Inline preview status is read-only review context; it does not create folders, move files, restore files, delete files, or approve cleanup."
                                     AutomationProperties.Name="Inline Quarantine Preview status help cue"
                                     AutomationProperties.HelpText="Quarantine Preview readiness appears after Review Shortlist rows are added. No files were modified. Status state: neutral. Inline preview status is read-only review context; it does not create folders, move files, restore files, delete files, or approve cleanup.">
@@ -731,6 +743,8 @@
                             BorderBrush="#8A99A8"
                             BorderThickness="1"
                             VerticalAlignment="Top"
+                            Cursor="Help"
+                            ToolTipService.InitialShowDelay="250"
                             ToolTip="Main grid: Storage Scan rows appear after a scan. No files were modified. Status state: neutral. Grid mode status is read-only review context; it does not rescan, modify files, restore files, or approve cleanup."
                             AutomationProperties.Name="Review Grid Mode Status help cue"
                             AutomationProperties.HelpText="Main grid: Storage Scan rows appear after a scan. No files were modified. Status state: neutral. Grid mode status is read-only review context; it does not rescan, modify files, restore files, or approve cleanup.">
