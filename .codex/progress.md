@@ -6,7 +6,7 @@ Use it to preserve what was completed, what was verified, what was rejected, and
 
 ## Current status
 
-Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. The app has a broad read-only review workflow, manual fixture Show children/Clipboard crash fix, scan cancel help text, real-profile acknowledgement help text, Review Mix and Matched Review Mix tooltip/help text, Safety Summary shortcut help text, Safety Summary collapsed-header state styling, review-lens filter help text, manifest discovery/selection help text, debounced Storage Review Search for large real-profile scans, Storage Review Search input automation help text, scan-gate automation help text, Cleanup Scope input/browse automation help text, Quarantine Root input/browse automation help text, selected-row action automation help text, visible-row shortlist automation help text, execution/readiness automation help text, review report/preview automation help text, review toolbar automation help text, review navigation/export tooltip clarity, Review Grid Mode Status tooltip/help text, scope-specific Cleanup Scope Scan Gate discoverability polish, Cleanup Scope and Quarantine Root browse tooltip clarity, selected-row action tooltip clarity, Matched Review Mix, Review Shortlist Safety Mix, visible-row Review Shortlist bulk labels/tooltips, review toolbar report/preview tooltip clarity, Selected Folder Subtree Summary, Storage Hotspot Trail, Selected Folder Child Focus, Selected Folder Descendant Focus, fixture launch/preflight tooling with checklist output, checklist-only mode, approval-boundary prompt coverage, selected-restore scope-status checklist coverage, all-manifest restore boundary checklist coverage, execution-control tooltip clarity, readiness scope tooltip clarity, Undo Quarantine domain consistency, Restore Manifest wording polish, Selected Manifest Readiness label polish, and All-Manifest Readiness label polish, Quarantine Preview, Quarantine approval-boundary wording, Quarantine Execution Scope Status, Restore Manifest Draft, Quarantine Confirmation Draft, confirmation label wording polish, Quarantine Action Draft, write-ahead Restore Manifest persistence, core Quarantine execution, core Undo Quarantine, fixture-only WPF Quarantine execution, WPF undo for the current fixture execution, Current quarantined grid switching for current-session moved entries, Quarantine Manifest Discovery with all-manifest restore wording, Selected Restore Manifest Review with readiness-evidence wording, Selected Restore Confirmation Gate with scope-status/approval-boundary wording, Fixture-only Selected Restore Execution, and Restore Readiness Preview with all-manifest restore wording. Real-profile WPF Quarantine execution, real-profile WPF Undo Quarantine, permanent deletion, and persisted cleanup history remain unavailable. Fresh-thread handoff notes and a startup prompt live in `docs/codex/thread-handoff.md`.
+Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. The app has a broad read-only review workflow, manual fixture Show children/Clipboard crash fix, scan cancel help text, real-profile acknowledgement help text, Review Mix and Matched Review Mix `?` help cues with tooltip/help text, Safety Summary shortcut help text, Safety Summary collapsed-header state styling, review-lens filter help text, manifest discovery/selection help text, debounced Storage Review Search for large real-profile scans, Storage Review Search input automation help text, scan-gate automation help text, Cleanup Scope input/browse automation help text, Quarantine Root input/browse automation help text, selected-row action automation help text, visible-row shortlist automation help text, execution/readiness automation help text, review report/preview automation help text, review toolbar automation help text, review navigation/export tooltip clarity, Review Grid Mode Status tooltip/help text, scope-specific Cleanup Scope Scan Gate discoverability polish, Cleanup Scope and Quarantine Root browse tooltip clarity, selected-row action tooltip clarity, Matched Review Mix, Review Shortlist Safety Mix, visible-row Review Shortlist bulk labels/tooltips, review toolbar report/preview tooltip clarity, Selected Folder Subtree Summary, Storage Hotspot Trail, Selected Folder Child Focus, Selected Folder Descendant Focus, fixture launch/preflight tooling with checklist output, checklist-only mode, approval-boundary prompt coverage, selected-restore scope-status checklist coverage, all-manifest restore boundary checklist coverage, execution-control tooltip clarity, readiness scope tooltip clarity, Undo Quarantine domain consistency, Restore Manifest wording polish, Selected Manifest Readiness label polish, and All-Manifest Readiness label polish, Quarantine Preview, Quarantine approval-boundary wording, Quarantine Execution Scope Status, Restore Manifest Draft, Quarantine Confirmation Draft, confirmation label wording polish, Quarantine Action Draft, write-ahead Restore Manifest persistence, core Quarantine execution, core Undo Quarantine, fixture-only WPF Quarantine execution, WPF undo for the current fixture execution, Current quarantined grid switching for current-session moved entries, Quarantine Manifest Discovery with all-manifest restore wording, Selected Restore Manifest Review with readiness-evidence wording, Selected Restore Confirmation Gate with scope-status/approval-boundary wording, Fixture-only Selected Restore Execution, and Restore Readiness Preview with all-manifest restore wording. Real-profile WPF Quarantine execution, real-profile WPF Undo Quarantine, permanent deletion, and persisted cleanup history remain unavailable. Fresh-thread handoff notes and a startup prompt live in `docs/codex/thread-handoff.md`.
 
 ## Next recommended work
 
@@ -19,6 +19,56 @@ Storage Scan MVP packet implemented and tested by the user against `C:\Users\mox
 7. Revisit .NET 10 before packaging or long-term distribution.
 
 ## Completed packets
+
+### 2026-05-30: Add Review Mix Help Cues
+
+Status: completed
+
+Evidence:
+
+- User said visible circular `?` help cues would be better than relying on hidden hover over Review Mix and Matched Review Mix text.
+- Review Mix Help Text already mirrored dynamic summary wording into tooltip/help text.
+- The gap was discoverability, not the underlying safety wording.
+
+Implementation:
+
+- Added visible circular `?` help cues beside Review Mix and Matched Review Mix.
+- Mirrored the dynamic tooltip and automation help text onto both help cues.
+- Added WPF smoke assertions for help-cue automation names, cue tooltips, and cue automation help text across the existing startup, completed-scan, descendant-focus, and prefixed-search states.
+- Did not change scan behavior, filters, search, Review Shortlist, Quarantine Preview, fixture execution, undo, selected restore, manifests, or real-profile cleanup availability.
+
+Verification:
+
+- `dotnet build tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj "-p:BaseOutputPath=D:/Codex/Windows File Cleaner/.local/test-bin/app-tests/"` passed.
+- `D:\Codex\Windows File Cleaner\.local\test-bin\app-tests\Debug\net8.0-windows\WindowsFileCleaner.App.Tests.exe` passed.
+- `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\Start-MvpFixtureReview.ps1 -ChecklistOnly` passed and printed the updated Review Mix / Matched Review Mix `?` help-cue prompt without preflight, fixture creation, or WPF launch.
+- `dotnet build WindowsFileCleaner.sln --no-restore "-p:BaseOutputPath=D:/Codex/Windows File Cleaner/.local/test-bin/solution/"` passed.
+- `git -c safe.directory='D:/Codex/Windows File Cleaner' diff --check` passed with line-ending normalization warnings only.
+
+Docs updated:
+
+- `README.md`
+- `docs/domain/context.md`
+- `docs/domain/glossary.md`
+- `docs/features/2026-05-28-review-mix-summary.md`
+- `docs/features/2026-05-29-matched-review-mix.md`
+- `docs/features/2026-05-29-fixture-review-checklist-output.md`
+- `docs/features/2026-05-30-review-mix-help-text.md`
+- `docs/features/2026-05-30-review-mix-help-cues.md`
+- `docs/codex/thread-handoff.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No ADR added. This is reversible WPF help-cue polish with no persistence, cleanup execution, restore rule, data-model, or security change.
+
+Open questions:
+
+- During the next visible fixture pass, confirm the `?` cues are noticeable without crowding the dense review surface.
+
+Rejected ideas buffer:
+
+- Do not add a popup, modal, or extra help row for these summary lines unless the compact cues are still insufficient.
 
 ### 2026-05-30: Add Review Mix Help Text
 

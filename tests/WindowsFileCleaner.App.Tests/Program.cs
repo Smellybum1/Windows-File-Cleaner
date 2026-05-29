@@ -2273,6 +2273,27 @@ internal sealed class MainWindowSmokeTests
             && window.ReviewMixAutomationHelpTextValue.Contains("approve cleanup", StringComparison.OrdinalIgnoreCase)
             && window.ReviewMixAutomationHelpTextValue.Contains("triage clues", StringComparison.OrdinalIgnoreCase),
             message + " Automation help text should mirror the current Review Mix and whole-scan boundary.");
+        Assert(
+            window.ReviewMixHelpCueAutomationNameValue.Contains("Review Mix help cue", StringComparison.OrdinalIgnoreCase),
+            message + " Help cue should have a specific automation name.");
+        Assert(
+            window.ReviewMixHelpCueToolTipValue.Contains(window.ReviewMixTextValue, StringComparison.OrdinalIgnoreCase)
+            && window.ReviewMixHelpCueToolTipValue.Contains("read-only whole-scan review context", StringComparison.OrdinalIgnoreCase)
+            && window.ReviewMixHelpCueToolTipValue.Contains("does not rescan", StringComparison.OrdinalIgnoreCase)
+            && window.ReviewMixHelpCueToolTipValue.Contains("modify files", StringComparison.OrdinalIgnoreCase)
+            && window.ReviewMixHelpCueToolTipValue.Contains("storage savings", StringComparison.OrdinalIgnoreCase)
+            && window.ReviewMixHelpCueToolTipValue.Contains("approve cleanup", StringComparison.OrdinalIgnoreCase)
+            && window.ReviewMixHelpCueToolTipValue.Contains("triage clues", StringComparison.OrdinalIgnoreCase),
+            message + " Help cue tooltip should mirror the current Review Mix and whole-scan boundary.");
+        Assert(
+            window.ReviewMixHelpCueAutomationHelpTextValue.Contains(window.ReviewMixTextValue, StringComparison.OrdinalIgnoreCase)
+            && window.ReviewMixHelpCueAutomationHelpTextValue.Contains("read-only whole-scan review context", StringComparison.OrdinalIgnoreCase)
+            && window.ReviewMixHelpCueAutomationHelpTextValue.Contains("does not rescan", StringComparison.OrdinalIgnoreCase)
+            && window.ReviewMixHelpCueAutomationHelpTextValue.Contains("modify files", StringComparison.OrdinalIgnoreCase)
+            && window.ReviewMixHelpCueAutomationHelpTextValue.Contains("storage savings", StringComparison.OrdinalIgnoreCase)
+            && window.ReviewMixHelpCueAutomationHelpTextValue.Contains("approve cleanup", StringComparison.OrdinalIgnoreCase)
+            && window.ReviewMixHelpCueAutomationHelpTextValue.Contains("triage clues", StringComparison.OrdinalIgnoreCase),
+            message + " Help cue automation help text should mirror the current Review Mix and whole-scan boundary.");
     }
 
     private static void AssertMatchedReviewMixHelpText(MainWindow window, string message)
@@ -2297,6 +2318,29 @@ internal sealed class MainWindowSmokeTests
             && window.MatchedReviewMixAutomationHelpTextValue.Contains("all matched rows", StringComparison.OrdinalIgnoreCase)
             && window.MatchedReviewMixAutomationHelpTextValue.Contains("visible display window", StringComparison.OrdinalIgnoreCase),
             message + " Automation help text should mirror the current Matched Review Mix and active-lens boundary.");
+        Assert(
+            window.MatchedReviewMixHelpCueAutomationNameValue.Contains("Matched Review Mix help cue", StringComparison.OrdinalIgnoreCase),
+            message + " Help cue should have a specific automation name.");
+        Assert(
+            window.MatchedReviewMixHelpCueToolTipValue.Contains(window.MatchedReviewMixTextValue, StringComparison.OrdinalIgnoreCase)
+            && window.MatchedReviewMixHelpCueToolTipValue.Contains("read-only active-review-lens context", StringComparison.OrdinalIgnoreCase)
+            && window.MatchedReviewMixHelpCueToolTipValue.Contains("does not rescan", StringComparison.OrdinalIgnoreCase)
+            && window.MatchedReviewMixHelpCueToolTipValue.Contains("modify files", StringComparison.OrdinalIgnoreCase)
+            && window.MatchedReviewMixHelpCueToolTipValue.Contains("storage savings", StringComparison.OrdinalIgnoreCase)
+            && window.MatchedReviewMixHelpCueToolTipValue.Contains("approve cleanup", StringComparison.OrdinalIgnoreCase)
+            && window.MatchedReviewMixHelpCueToolTipValue.Contains("all matched rows", StringComparison.OrdinalIgnoreCase)
+            && window.MatchedReviewMixHelpCueToolTipValue.Contains("visible display window", StringComparison.OrdinalIgnoreCase),
+            message + " Help cue tooltip should mirror the current Matched Review Mix and active-lens boundary.");
+        Assert(
+            window.MatchedReviewMixHelpCueAutomationHelpTextValue.Contains(window.MatchedReviewMixTextValue, StringComparison.OrdinalIgnoreCase)
+            && window.MatchedReviewMixHelpCueAutomationHelpTextValue.Contains("read-only active-review-lens context", StringComparison.OrdinalIgnoreCase)
+            && window.MatchedReviewMixHelpCueAutomationHelpTextValue.Contains("does not rescan", StringComparison.OrdinalIgnoreCase)
+            && window.MatchedReviewMixHelpCueAutomationHelpTextValue.Contains("modify files", StringComparison.OrdinalIgnoreCase)
+            && window.MatchedReviewMixHelpCueAutomationHelpTextValue.Contains("storage savings", StringComparison.OrdinalIgnoreCase)
+            && window.MatchedReviewMixHelpCueAutomationHelpTextValue.Contains("approve cleanup", StringComparison.OrdinalIgnoreCase)
+            && window.MatchedReviewMixHelpCueAutomationHelpTextValue.Contains("all matched rows", StringComparison.OrdinalIgnoreCase)
+            && window.MatchedReviewMixHelpCueAutomationHelpTextValue.Contains("visible display window", StringComparison.OrdinalIgnoreCase),
+            message + " Help cue automation help text should mirror the current Matched Review Mix and active-lens boundary.");
     }
 
     private static QuarantineExecutionResult CreateExecutedRestoreManifest(

@@ -251,6 +251,12 @@ public partial class MainWindow : Window
 
     public string ReviewMixAutomationHelpTextValue => AutomationProperties.GetHelpText(ReviewMixText);
 
+    public string ReviewMixHelpCueToolTipValue => ReviewMixHelpCue.ToolTip?.ToString() ?? "";
+
+    public string ReviewMixHelpCueAutomationNameValue => AutomationProperties.GetName(ReviewMixHelpCue);
+
+    public string ReviewMixHelpCueAutomationHelpTextValue => AutomationProperties.GetHelpText(ReviewMixHelpCue);
+
     public string SafetySummaryTextValue => SafetySummaryText.Text;
 
     public string SafetySummaryHeaderTextValue => SafetySummaryHeaderText.Text;
@@ -292,6 +298,12 @@ public partial class MainWindow : Window
     public string MatchedReviewMixToolTipValue => MatchedReviewMixText.ToolTip?.ToString() ?? "";
 
     public string MatchedReviewMixAutomationHelpTextValue => AutomationProperties.GetHelpText(MatchedReviewMixText);
+
+    public string MatchedReviewMixHelpCueToolTipValue => MatchedReviewMixHelpCue.ToolTip?.ToString() ?? "";
+
+    public string MatchedReviewMixHelpCueAutomationNameValue => AutomationProperties.GetName(MatchedReviewMixHelpCue);
+
+    public string MatchedReviewMixHelpCueAutomationHelpTextValue => AutomationProperties.GetHelpText(MatchedReviewMixHelpCue);
 
     public string ReviewSizeNoteTextValue => ReviewSizeNoteText.Text;
 
@@ -2490,6 +2502,8 @@ public partial class MainWindow : Window
         var helpText = FormatMatchedReviewMixHelpText(text);
         MatchedReviewMixText.ToolTip = helpText;
         AutomationProperties.SetHelpText(MatchedReviewMixText, helpText);
+        MatchedReviewMixHelpCue.ToolTip = helpText;
+        AutomationProperties.SetHelpText(MatchedReviewMixHelpCue, helpText);
     }
 
     private static string FormatMatchedReviewMixHelpText(string text)
@@ -3641,6 +3655,8 @@ public partial class MainWindow : Window
         var helpText = FormatReviewMixHelpText(text);
         ReviewMixText.ToolTip = helpText;
         AutomationProperties.SetHelpText(ReviewMixText, helpText);
+        ReviewMixHelpCue.ToolTip = helpText;
+        AutomationProperties.SetHelpText(ReviewMixHelpCue, helpText);
     }
 
     private static string FormatReviewMixHelpText(string text)

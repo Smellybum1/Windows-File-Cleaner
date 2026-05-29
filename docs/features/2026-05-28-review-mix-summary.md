@@ -76,6 +76,7 @@ What changed:
 - Updated filter summary wording to largest row.
 - Added test coverage for largest quarantine candidate row.
 - Later packet `2026-05-30-review-mix-help-text.md` mirrored Review Mix into tooltip and automation help text with no-rescan/no-file-modified/no-storage-savings-proof/not-cleanup-approval wording.
+- Later packet `2026-05-30-review-mix-help-cues.md` added a visible `?` help cue for this mirrored help text.
 
 Files changed:
 

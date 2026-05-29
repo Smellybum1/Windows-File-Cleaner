@@ -989,7 +989,7 @@ Review Mix is a read-only summary of how Storage Scan results are distributed ac
 
 It shows counts and largest-row sizes for Likely safe, Caution, High risk, and Quarantine candidates. It also shows the Access issues count so incomplete scan coverage is visible.
 
-Its WPF tooltip and automation help text mirror the current visible summary and keep clear that Review Mix is whole-scan review context only, not a rescan, file modification, storage-savings proof, or cleanup approval.
+Its visible WPF `?` help cue mirrors the current summary into tooltip and automation help text and keeps clear that Review Mix is whole-scan review context only, not a rescan, file modification, storage-savings proof, or cleanup approval.
 
 #### Examples
 
@@ -1010,7 +1010,7 @@ Its WPF tooltip and automation help text mirror the current visible summary and 
 - Generated after a Storage Scan completes.
 - Updates with the scan result.
 - Remains read-only.
-- Tooltip and automation help text update with the current visible summary.
+- The visible help cue tooltip and automation help text update with the current visible summary.
 
 #### Relationships
 
@@ -1025,7 +1025,8 @@ Its WPF tooltip and automation help text mirror the current visible summary and 
 - Do not sum recursive row sizes across flattened scan results; folders and their children overlap.
 - Use largest-row sizes for triage until the app has an explicit non-overlapping selection model.
 - Show Access issues as a count because unreadable rows may not have meaningful size data.
-- WPF tooltip and automation help text should mirror the current Review Mix and say it is read-only whole-scan review context that does not rescan, modify files, prove storage savings, or approve cleanup.
+- WPF should show a compact `?` help cue near the Review Mix readout.
+- WPF tooltip and automation help text on both the readout and cue should mirror the current Review Mix and say it is read-only whole-scan review context that does not rescan, modify files, prove storage savings, or approve cleanup.
 
 ### Matched Review Mix
 
@@ -1038,7 +1039,7 @@ Matched Review Mix is a read-only summary of the currently matched Storage Scan 
 
 The active review lens can include Storage Review Filter, Bloat Category Filter, Storage Entry Type Filter, Storage Size Threshold Filter, Storage Review Search, Storage Review Display Window position, Selected Folder Child Focus, or Selected Folder Descendant Focus. Matched Review Mix counts the full matched set, not only the currently displayed 2,000-row window.
 
-Its WPF tooltip and automation help text mirror the current visible summary and keep clear that Matched Review Mix is active-review-lens context only, not a rescan, file modification, storage-savings proof, or cleanup approval.
+Its visible WPF `?` help cue mirrors the current summary into tooltip and automation help text and keeps clear that Matched Review Mix is active-review-lens context only, not a rescan, file modification, storage-savings proof, or cleanup approval.
 
 #### Examples
 
@@ -1060,7 +1061,7 @@ Its WPF tooltip and automation help text mirror the current visible summary and 
 - Recomputes when the active review lens changes.
 - Resets when a new Storage Scan completes.
 - Does not modify files.
-- Tooltip and automation help text update with the current visible summary.
+- The visible help cue tooltip and automation help text update with the current visible summary.
 
 #### Relationships
 
@@ -1074,7 +1075,8 @@ Its WPF tooltip and automation help text mirror the current visible summary and 
 - Use `MatchedReviewMixText` for the WPF readout.
 - Count matched rows across the full active lens, not just the display window.
 - Include wording that the summary is review context, not cleanup approval.
-- WPF tooltip and automation help text should mirror the current Matched Review Mix and say it is read-only active-review-lens context that does not rescan, modify files, prove storage savings, or approve cleanup.
+- WPF should show a compact `?` help cue near the Matched Review Mix readout.
+- WPF tooltip and automation help text on both the readout and cue should mirror the current Matched Review Mix and say it is read-only active-review-lens context that does not rescan, modify files, prove storage savings, or approve cleanup.
 
 ### Storage Review Size Note
 

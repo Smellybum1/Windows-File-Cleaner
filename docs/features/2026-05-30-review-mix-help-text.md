@@ -52,6 +52,7 @@ What changed:
 - Added static startup tooltip and automation help text to Review Mix and Matched Review Mix.
 - Added dynamic setters so post-scan, descendant-focus, and prefixed-search summary text is mirrored into tooltip/help text.
 - Added WPF smoke assertions for startup, completed scan, descendant focus, and prefixed search states.
+- Later packet `2026-05-30-review-mix-help-cues.md` added visible `?` help cues beside Review Mix and Matched Review Mix so the mirrored tooltip/help text is easier to discover.
 
 Files changed:
 
