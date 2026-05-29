@@ -74,6 +74,10 @@ public partial class MainWindow : Window
 
     public string CurrentCleanupScopePath => ScopePathBox.Text;
 
+    public string CleanupScopePathBoxToolTipValue => ScopePathBox.ToolTip?.ToString() ?? "";
+
+    public string CleanupScopePathBoxAutomationHelpTextValue => AutomationProperties.GetHelpText(ScopePathBox);
+
     public string CleanupScopeSafetyNoteTextValue => ScopeSafetyNoteText.Text;
 
     public string CurrentStatusText => StatusText.Text;

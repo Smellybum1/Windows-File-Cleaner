@@ -221,8 +221,9 @@ The path may be typed or chosen through the native folder browser. Selecting a f
 #### Code implications
 
 - Use `BrowseScopeButton` for the WPF folder browser action.
+- Use `ScopePathBox` for typed Cleanup Scope Selection.
 - Keep folder selection separate from `Scan`; never auto-scan after a folder is selected.
-- Browse tooltips and automation help text should say selection is path-only and does not start a scan, bypass the real-profile gate, or approve cleanup.
+- Typed-path and browse tooltips plus automation help text should say selection is path-only and does not start a scan, bypass the real-profile gate, or approve cleanup.
 - Keep the selected path in `ScopePathBox` so existing safety-note and scan-gate behavior remains authoritative.
 
 ### Cleanup Scope Safety Note

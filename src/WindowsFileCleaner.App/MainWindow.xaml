@@ -61,6 +61,8 @@
                              Height="34"
                              VerticalContentAlignment="Center"
                              Text="C:\Users\moxhe"
+                             ToolTip="Chooses a Cleanup Scope path only; editing does not start a scan, bypass the real-profile gate, or approve cleanup."
+                             AutomationProperties.HelpText="Chooses a Cleanup Scope path only; editing does not start a scan, bypass the real-profile gate, or approve cleanup."
                              TextChanged="ScopePathBox_TextChanged" />
                     <Button x:Name="BrowseScopeButton"
                             Content="Browse..."

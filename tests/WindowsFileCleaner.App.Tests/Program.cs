@@ -63,6 +63,18 @@ internal sealed class MainWindowSmokeTests
                 window.CurrentCleanupScopePath == StorageScanOptions.DefaultForCurrentUser().CleanupScopePath,
                 "MainWindow should default to the current user's Cleanup Scope.");
             Assert(
+                window.CleanupScopePathBoxToolTipValue.Contains("Cleanup Scope path only", StringComparison.OrdinalIgnoreCase)
+                && window.CleanupScopePathBoxToolTipValue.Contains("does not start a scan", StringComparison.OrdinalIgnoreCase)
+                && window.CleanupScopePathBoxToolTipValue.Contains("real-profile gate", StringComparison.OrdinalIgnoreCase)
+                && window.CleanupScopePathBoxToolTipValue.Contains("approve cleanup", StringComparison.OrdinalIgnoreCase),
+                "Cleanup Scope text box tooltip should explain path-only selection and scan-gate boundaries.");
+            Assert(
+                window.CleanupScopePathBoxAutomationHelpTextValue.Contains("Cleanup Scope path only", StringComparison.OrdinalIgnoreCase)
+                && window.CleanupScopePathBoxAutomationHelpTextValue.Contains("does not start a scan", StringComparison.OrdinalIgnoreCase)
+                && window.CleanupScopePathBoxAutomationHelpTextValue.Contains("real-profile gate", StringComparison.OrdinalIgnoreCase)
+                && window.CleanupScopePathBoxAutomationHelpTextValue.Contains("approve cleanup", StringComparison.OrdinalIgnoreCase),
+                "Cleanup Scope text box automation help text should explain path-only selection and scan-gate boundaries.");
+            Assert(
                 window.CleanupScopeSafetyNoteTextValue.Contains("Real Profile Cleanup Scope", StringComparison.OrdinalIgnoreCase),
                 "MainWindow should show a real-profile Cleanup Scope safety note at startup.");
             Assert(
