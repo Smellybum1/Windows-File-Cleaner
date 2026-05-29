@@ -64,6 +64,7 @@ Tests run:
 - `dotnet run --project tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj` passed.
 - `cmd.exe /c tools\Start-MvpFixtureReview.cmd -ChecklistOnly` passed and printed the updated shortlist confirmation and selected restore confirmation `?` help-cue prompts without preflight, fixture creation, WPF launch, scan, or file modification.
 - `git -c safe.directory='D:/Codex/Windows File Cleaner' diff --check` passed with line-ending normalization warnings only.
+- Later verification packet: `cmd.exe /c tools\Invoke-MvpPreflight.cmd` passed; restore, build, core tests, WPF app tests, fixture `-WhatIf`, fixture checklist-only output with the new confirmation field `?` help cues, and whitespace diff check all passed without scanning or modifying real user files.
 
 ADRs added or skipped:
 

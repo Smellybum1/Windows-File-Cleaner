@@ -20,6 +20,42 @@ Storage Scan MVP packet implemented and tested by the user against `C:\Users\mox
 
 ## Completed packets
 
+### 2026-05-30: Full Local MVP Preflight After Confirmation Field Help Cues
+
+Status: completed
+
+Evidence:
+
+- Confirmation Field Help Cues changed WPF XAML, test-facing cue affordance coverage, WPF app smoke assertions, README/manual checklist wording, domain docs, handoff, and progress.
+- A full local preflight through the preferred `.cmd` wrapper verifies the complete restore/build/test/fixture/checklist/diff path after that help-cue packet.
+
+Implementation:
+
+- Ran `cmd.exe /c tools\Invoke-MvpPreflight.cmd`.
+- Updated the confirmation field help-cue feature brief and thread handoff with full preflight evidence.
+- Corrected `docs/codex/thread-handoff.md` so the latest completed packet points to this full preflight packet.
+- No WPF behavior, scan behavior, Quarantine behavior, selected restore behavior, real-profile/custom execution availability, permanent deletion, or cleanup history changed.
+
+Verification:
+
+- `cmd.exe /c tools\Invoke-MvpPreflight.cmd` passed.
+- Preflight steps passed: restore, build, core tests, WPF app tests, fixture generator `-WhatIf`, fixture checklist-only output, and whitespace diff check.
+- The preflight output confirmed no real user files were scanned or modified.
+
+Docs updated:
+
+- `docs/features/2026-05-30-confirmation-field-help-cues.md`
+- `docs/codex/thread-handoff.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No ADR added. This is verification evidence and handoff correction only.
+
+Open questions:
+
+- During visible fixture review, confirm the extra confirmation-field cues improve discovery without crowding the Quarantine Shortlist or selected restore rows.
+
 ### 2026-05-30: Confirmation Field Help Cues
 
 Status: completed
