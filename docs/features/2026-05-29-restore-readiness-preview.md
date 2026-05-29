@@ -223,7 +223,7 @@ Follow-up work:
 
 - Add WPF selection for one discovered Restore Manifest.
 - Add explicit confirmation and restore execution for selected manifests only after readiness preview is manually reviewed.
-- Later selected-restore packets added fixture-only selected restore; readiness pane wording now says no broad restore action is available from readiness preview and routes fixture selected restore through selected readiness and the selected restore gate.
+- Later selected-restore packets added fixture-only selected restore; readiness pane wording now says no all-manifest restore action is available from readiness preview and routes fixture selected restore through selected readiness and the selected restore gate.
 - Decide whether successful restore should offer empty action-folder cleanup.
 
 Open questions:

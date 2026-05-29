@@ -30,7 +30,7 @@ function Write-FixtureReviewChecklist {
     Write-Host "  5. Select folders and try Show children, Show descendants, hotspot trail, subtree summary, and file preview."
     Write-Host "  6. Shortlist the fixture cleanup candidate, create Quarantine Preview, and check Approval boundary plus Execution scope status."
     Write-Host "  7. For fixture only, type QUARANTINE, execute quarantine, then Undo fixture quarantine and rescan before more review."
-    Write-Host "  8. Use Discover manifests, selected readiness/gate, and restore-readiness preview; check no broad restore action plus selected restore Approval boundary and Execution scope status."
+    Write-Host "  8. Use Discover manifests, selected readiness/gate, and restore-readiness preview; check no all-manifest restore action plus selected restore Approval boundary and Execution scope status."
     Write-Host "  9. Confirm real-profile/custom Quarantine and selected restore execution remain unavailable in wording before any later real-profile work."
 }
 

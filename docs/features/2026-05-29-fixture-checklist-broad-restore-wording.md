@@ -112,6 +112,7 @@ ADRs added or skipped:
 Follow-up work:
 
 - Use the checklist during visible fixture review and decide whether line 8 should be split for readability.
+- Later packet `2026-05-29-all-manifest-restore-wording.md` refined checklist wording from `no broad restore action` to `no all-manifest restore action`.
 
 Open questions:
 

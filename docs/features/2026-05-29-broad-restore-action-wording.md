@@ -179,6 +179,7 @@ Follow-up work:
 
 - Check during visible fixture review whether `broad restore action` is understandable.
 - Later packet `2026-05-29-fixture-checklist-broad-restore-wording.md` added the broad-restore boundary to the launcher checklist.
+- Later packet `2026-05-29-all-manifest-restore-wording.md` refined user-facing wording from `broad restore action` to `all-manifest restore action`.
 
 Open questions:
 

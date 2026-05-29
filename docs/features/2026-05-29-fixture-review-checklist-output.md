@@ -76,6 +76,7 @@ What changed:
 - Later packet `2026-05-29-fixture-checklist-approval-boundary.md` updated the checklist to include Quarantine approval-boundary wording.
 - Later packet `2026-05-29-fixture-checklist-selected-restore-scope.md` updated the checklist to include Selected Restore gate scope-status and approval-boundary wording.
 - Later packet `2026-05-29-fixture-checklist-broad-restore-wording.md` updated the checklist to include broad-restore boundary wording for discovery/readiness panes.
+- Later packet `2026-05-29-all-manifest-restore-wording.md` refined that checklist wording to `all-manifest restore action`.
 
 Tests run:
 

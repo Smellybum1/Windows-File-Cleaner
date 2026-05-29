@@ -2675,7 +2675,7 @@ It is discovery and status review only, not Undo Quarantine execution and not pe
 - Looking under `<quarantine-root>\actions\*\restore-manifest.json`.
 - Showing that one discovered Restore Manifest is Completed and has Moved entries.
 - Reporting an invalid or unreadable manifest file as a discovery issue.
-- Showing that no broad restore action is available from discovery and that fixture selected restore must go through selected readiness and the selected restore gate.
+- Showing that no all-manifest restore action is available from discovery and that fixture selected restore must go through selected readiness and the selected restore gate.
 
 #### Non-examples
 
@@ -2706,7 +2706,7 @@ It is discovery and status review only, not Undo Quarantine execution and not pe
 - Use `QuarantineManifestDiscovery`, `QuarantineManifestDiscoveryBuilder`, and `QuarantineManifestDiscoveryIssue`.
 - Keep discovery limited to `<quarantine-root>\actions\*\restore-manifest.json`.
 - Keep discovery itself status-only; Selected Restore Manifest Review and selected readiness are separate read-only workflows until a restore execution design exists.
-- WPF discovery output should distinguish discovery from broad restore execution while pointing fixture-only restore toward the selected restore gate.
+- WPF discovery output should distinguish discovery from all-manifest restore execution while pointing fixture-only restore toward the selected restore gate.
 - Do not call this cleanup history.
 
 ### Restore Manifest Summary
@@ -2958,7 +2958,7 @@ It is not approval to restore and does not restore files.
 - Show that a restore would be blocked because the original path already exists.
 - Show that a restore would be blocked because the quarantine path is missing.
 - Show that a Restored entry has no restore work left.
-- Show that no broad restore action is available from readiness preview and that fixture selected restore must go through selected readiness and the selected restore gate.
+- Show that no all-manifest restore action is available from readiness preview and that fixture selected restore must go through selected readiness and the selected restore gate.
 
 #### Non-examples
 
@@ -2989,7 +2989,7 @@ It is not approval to restore and does not restore files.
 
 - Use `RestoreReadinessPreview`, `RestoreReadinessPreviewBuilder`, `RestoreReadinessManifestPreview`, and `RestoreReadinessEntryPreview`.
 - Keep it read-only. Do not call `UndoQuarantineExecutor.Undo`.
-- WPF readiness output should distinguish read-only blocker evidence from broad restore execution while pointing fixture-only restore toward the selected restore gate.
+- WPF readiness output should distinguish read-only blocker evidence from all-manifest restore execution while pointing fixture-only restore toward the selected restore gate.
 - Recompute readiness immediately before any future restore execution because filesystem state can change.
 
 ### Restore Readiness Entry
@@ -3115,7 +3115,7 @@ The current core implementation is fixture-tested through Undo Quarantine Execut
 - Has a current-fixture WPF path for the immediately executed fixture action.
 - Has read-only Quarantine Manifest Discovery for older action-scoped manifests.
 - Has read-only Restore Readiness Preview for discovered manifest blockers.
-- Has read-only Selected Restore Manifest Review for focusing one discovered manifest before any broad restore action exists.
+- Has read-only Selected Restore Manifest Review for focusing one discovered manifest before any all-manifest restore action exists.
 - Has read-only Selected Restore Confirmation Draft and Selected Restore Execution Gate for exact-confirmation semantics before any selected restore action exists.
 - Has Fixture-only Selected Restore Execution for selected discovered fixture manifests.
 - Reverses a quarantine Cleanup Action.
