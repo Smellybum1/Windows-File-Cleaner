@@ -93,6 +93,7 @@ public sealed record StorageScanReview(
         {
             StorageReviewSearchField.Path => ContainsSearchText(entry.FullPath, query, normalizedQuery),
             StorageReviewSearchField.Parent => ContainsSearchText(GetParentPath(entry.FullPath), query, normalizedQuery),
+            StorageReviewSearchField.Under => IsUnderPath(query, entry.FullPath),
             StorageReviewSearchField.Name => ContainsSearchText(entry.Name, query, normalizedQuery),
             StorageReviewSearchField.Category => MatchesCategorySearch(entry, query, normalizedQuery),
             StorageReviewSearchField.Rating => ContainsSearchText(entry.ImportanceRating.ToString(), query, normalizedQuery),
@@ -109,6 +110,25 @@ public sealed record StorageScanReview(
                 || ContainsSearchText(entry.DeletionRecommendation.ToString(), query, normalizedQuery)
                 || MatchesCategorySearch(entry, query, normalizedQuery)
         };
+    }
+
+    private static bool IsUnderPath(string ancestorPath, string candidatePath)
+    {
+        try
+        {
+            var ancestor = PathSafety.GetFullPath(ancestorPath);
+            var candidate = PathSafety.GetFullPath(candidatePath);
+            return !candidate.Equals(ancestor, StringComparison.OrdinalIgnoreCase)
+                && PathSafety.IsWithinScope(ancestor, candidate);
+        }
+        catch (ArgumentException)
+        {
+            return false;
+        }
+        catch (NotSupportedException)
+        {
+            return false;
+        }
     }
 
     private static string? GetParentPath(string fullPath)

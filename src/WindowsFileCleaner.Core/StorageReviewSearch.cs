@@ -35,6 +35,7 @@ public sealed record StorageReviewSearch(string Query, StorageReviewSearchField 
         {
             "path" => StorageReviewSearchField.Path,
             "parent" => StorageReviewSearchField.Parent,
+            "under" or "descendant" or "descendants" => StorageReviewSearchField.Under,
             "name" => StorageReviewSearchField.Name,
             "category" or "cat" => StorageReviewSearchField.Category,
             "rating" or "importance" => StorageReviewSearchField.Rating,

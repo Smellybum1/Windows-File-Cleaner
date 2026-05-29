@@ -80,6 +80,7 @@ internal sealed class MainWindowSmokeTests
             Assert(!window.CanEnterSelectedRestoreConfirmation, "MainWindow should not allow selected restore confirmation before gate preview.");
             Assert(!window.CanExecuteSelectedRestore, "MainWindow should not allow selected restore execution before gate preview.");
             Assert(!window.CanShowSelectedFolderChildren, "MainWindow should not allow selected-folder child focus before a scan result is selected.");
+            Assert(!window.CanShowSelectedFolderDescendants, "MainWindow should not allow selected-folder descendant focus before a scan result is selected.");
             Assert(window.BrowseQuarantineRootButtonText.Contains("Browse", StringComparison.OrdinalIgnoreCase), "Quarantine root browse action should be visible in the review toolbar.");
             Assert(
                 window.CurrentQuarantineRootPath == QuarantinePreviewBuilder.DefaultQuarantineRootPath,
@@ -123,6 +124,7 @@ internal sealed class MainWindowSmokeTests
                 "Quarantine execution gate should explain the preview dependency at startup.");
             Assert(window.SearchHelpToolTipValue.Contains("path:", StringComparison.OrdinalIgnoreCase), "Search tooltip should show field-prefix examples.");
             Assert(window.SearchHelpToolTipValue.Contains("parent:", StringComparison.OrdinalIgnoreCase), "Search tooltip should include parent-prefix guidance.");
+            Assert(window.SearchHelpToolTipValue.Contains("under:", StringComparison.OrdinalIgnoreCase), "Search tooltip should include under-prefix descendant guidance.");
             Assert(window.SearchHelpToolTipValue.Contains("category:", StringComparison.OrdinalIgnoreCase), "Search tooltip should include category-prefix guidance.");
             Assert(window.SearchHelpToolTipValue.Contains("access:readable", StringComparison.OrdinalIgnoreCase), "Search tooltip should include readable access-prefix guidance.");
             Assert(window.SearchHelpToolTipValue.Contains("issue:denied", StringComparison.OrdinalIgnoreCase), "Search tooltip should include access issue message-prefix guidance.");
@@ -256,6 +258,7 @@ internal sealed class MainWindowSmokeTests
             Assert(downloads.ContainedTotalCount == 1, "Fixture Downloads contents sort value should total contained files and folders.");
             Assert(window.SelectDisplayedPath(downloads.FullPath), "Fixture Downloads folder should be selectable for contents context.");
             Assert(window.CanShowSelectedFolderChildren, "Selected folder rows should enable selected-folder child focus.");
+            Assert(window.CanShowSelectedFolderDescendants, "Selected folder rows should enable selected-folder descendant focus.");
             Assert(downloads.Contents.Contains("1 file", StringComparison.OrdinalIgnoreCase), "Folder row should expose contained file count.");
             Assert(
                 window.DetailPathContextTextValue.Contains("Contents:", StringComparison.OrdinalIgnoreCase)
@@ -291,6 +294,27 @@ internal sealed class MainWindowSmokeTests
                 "Selected-folder child focus should include the fixture installer child.");
             window.ResetReviewView();
 
+            var appDataPath = Path.Combine(fixture.RootPath, "AppData");
+            window.ApplyStorageReviewFilter(StorageReviewFilter.Caution);
+            Assert(window.SelectDisplayedPath(appDataPath), "Fixture AppData folder should remain selectable while the Caution lens is active.");
+            window.ShowSelectedFolderDescendants();
+            Assert(window.CurrentSearchText.StartsWith("under:", StringComparison.OrdinalIgnoreCase), "Selected-folder descendant focus should apply an under-prefixed search.");
+            Assert(window.FilterSummaryTextValue.StartsWith("All + Search \"under:", StringComparison.OrdinalIgnoreCase), "Selected-folder descendant focus should reset review lenses to All before applying under-search.");
+            Assert(window.CurrentEntryTypeFilterLabel.Contains("All types", StringComparison.OrdinalIgnoreCase), "Selected-folder descendant focus should reset the type lens to All.");
+            Assert(window.CurrentSizeThresholdFilterLabel.Contains("All sizes", StringComparison.OrdinalIgnoreCase), "Selected-folder descendant focus should reset the size lens to All.");
+            Assert(window.CurrentStatusText.Contains("Focused review on descendants", StringComparison.OrdinalIgnoreCase), "Selected-folder descendant focus should report a read-only focus action.");
+            Assert(window.CurrentStatusText.Contains("No files were modified", StringComparison.OrdinalIgnoreCase), "Selected-folder descendant focus status should preserve the read-only boundary.");
+            Assert(window.DisplayedRows.Count > 1, "Fixture AppData descendant focus should show nested descendant rows.");
+            Assert(
+                window.DisplayedRows.All(row =>
+                    !row.FullPath.Equals(appDataPath, StringComparison.OrdinalIgnoreCase)
+                    && PathSafety.IsWithinScope(appDataPath, row.FullPath)),
+                "Selected-folder descendant focus should show only descendants under the selected folder.");
+            Assert(
+                window.DisplayedRows.Any(row => row.FullPath.EndsWith(@"pip\Cache\http-v2\response.body", StringComparison.OrdinalIgnoreCase)),
+                "Selected-folder descendant focus should include deeply nested fixture descendants.");
+            window.ResetReviewView();
+
             var exportCsv = window.CurrentScanReportExportCsv;
             Assert(
                 exportCsv.Contains("\"Full path\",\"Relative path\",\"Parent path\"", StringComparison.Ordinal),
@@ -301,6 +325,7 @@ internal sealed class MainWindowSmokeTests
 
             Assert(window.SelectDisplayedPath(fixture.MarkerPath), "Fixture note file should be selectable for preview.");
             Assert(!window.CanShowSelectedFolderChildren, "Selected files should not enable selected-folder child focus.");
+            Assert(!window.CanShowSelectedFolderDescendants, "Selected files should not enable selected-folder descendant focus.");
             Assert(
                 window.DetailSubtreeSummaryTextValue.Contains("Files do not have descendant subtree summaries", StringComparison.OrdinalIgnoreCase),
                 "Selected files should explain that subtree summaries apply to folders.");

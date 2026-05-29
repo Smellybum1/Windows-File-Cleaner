@@ -237,7 +237,7 @@
                                  Height="30"
                                  VerticalContentAlignment="Center"
                                  IsEnabled="False"
-                                 ToolTip="Examples: pip, path:pip, parent:C:\Users\moxhe\AppData, category:Python package cache, rating:High risk, recommendation:Quarantine candidate, access:readable, access:access issue, issue:denied"
+                                 ToolTip="Examples: pip, path:pip, parent:C:\Users\moxhe\AppData, under:C:\Users\moxhe\AppData, category:Python package cache, rating:High risk, recommendation:Quarantine candidate, access:readable, access:access issue, issue:denied"
                                  TextChanged="SearchBox_TextChanged" />
                     </StackPanel>
                     <Button x:Name="ClearSearchButton"
@@ -458,6 +458,11 @@
                                 MinWidth="115"
                                 IsEnabled="False"
                                 Click="ShowChildrenButton_Click" />
+                        <Button x:Name="ShowDescendantsButton"
+                                Content="Show descendants"
+                                MinWidth="135"
+                                IsEnabled="False"
+                                Click="ShowDescendantsButton_Click" />
                         <Button x:Name="PreviewFileButton"
                                 Content="Preview file"
                                 MinWidth="110"

@@ -26,6 +26,7 @@ As the project owner, I want searches like `path:pip` and `category:Python packa
 - Recognized prefixes restrict matching to one field:
   - `path:`
   - `parent:`
+  - `under:`
   - `name:`
   - `category:` / `cat:`
   - `rating:` / `importance:`
@@ -33,7 +34,7 @@ As the project owner, I want searches like `path:pip` and `category:Python packa
   - `evidence:`
   - `issue:` / `access:`
 - A later Access Status Search packet made `access:` match both Access Status values such as `Readable` and `Access issue`, and scan access issue text.
-- The WPF search box tooltip shows examples, including access-prefix examples after the Access Status Search packet and a parent-prefix example after the Selected Folder Child Focus packet.
+- The WPF search box tooltip shows examples, including access-prefix examples after the Access Status Search packet, a parent-prefix example after the Selected Folder Child Focus packet, and an under-prefix example after the Selected Folder Descendant Focus packet.
 - Filter summary and report filenames preserve the typed query, including the prefix.
 - All behavior remains in-memory and read-only.
 
@@ -70,6 +71,7 @@ What changed:
 - Added WPF tooltip examples.
 - Added core and WPF smoke coverage for prefixed search.
 - Later Selected Folder Child Focus packet added `parent:` for immediate-parent matching.
+- Later Selected Folder Descendant Focus packet added `under:` for recursive descendant matching that excludes the selected ancestor row.
 
 ADRs added or skipped:
 
@@ -77,5 +79,5 @@ ADRs added or skipped:
 
 Follow-up work:
 
-- Try `path:`, `parent:`, `category:`, `rating:`, and `recommendation:` in the next manual fixture/real scan UI pass.
+- Try `path:`, `parent:`, `under:`, `category:`, `rating:`, and `recommendation:` in the next manual fixture/real scan UI pass.
 - Try `access:readable` and `access:access issue` in the next manual fixture/real scan UI pass.

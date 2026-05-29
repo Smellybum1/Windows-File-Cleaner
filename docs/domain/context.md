@@ -552,6 +552,7 @@ Recognized field prefixes restrict search to one field:
 
 - `path:`
 - `parent:`
+- `under:`
 - `name:`
 - `category:` or `cat:`
 - `rating:` or `importance:`
@@ -566,6 +567,7 @@ Recognized field prefixes restrict search to one field:
 - Search for `high risk` to find rows with the High risk Importance Rating.
 - Search for `path:pip` to search only full paths.
 - Search for `parent:C:\Users\moxhe\AppData` to search only immediate children whose parent is `AppData`.
+- Search for `under:C:\Users\moxhe\AppData` to search all descendants under `AppData` without matching `AppData` itself.
 - Search for `category:Python package cache` to search only Bloat Category labels.
 - Search for `recommendation:Quarantine candidate` to search only Deletion Recommendation labels.
 - Search for `access:readable` to search only rows that were readable during scan.
@@ -596,6 +598,7 @@ Recognized field prefixes restrict search to one field:
 - Use `StorageReviewSearch` for the search query.
 - Parse recognized field prefixes into `StorageReviewSearchField`.
 - Treat `parent:` as an immediate-parent lens, not a recursive descendant tree.
+- Treat `under:` as a descendant lens that excludes the selected ancestor row.
 - Keep search in-memory and read-only.
 - Do not use search text to change Bloat Categories, Importance Ratings, Deletion Recommendations, or cleanup eligibility.
 
@@ -1268,6 +1271,53 @@ It is a table-level follow-up to Child Breakdown: the detail pane shows a bounde
 
 - Use `StorageReviewSearchField.Parent` for parent-prefixed search.
 - Use `ShowSelectedFolderChildren` for the WPF selected-row action.
+- Keep the action disabled for files and before a scan result exists.
+- Keep the action read-only and avoid rescanning, opening Explorer, previewing file content, or modifying files.
+
+### Selected Folder Descendant Focus
+
+Status: draft
+Last reviewed: 2026-05-29
+
+#### Definition
+
+Selected Folder Descendant Focus is a read-only review action that narrows the Storage Scan results to every descendant row under the currently selected folder.
+
+It is the recursive counterpart to Selected Folder Child Focus. It lets the user inspect all scanned rows inside a large folder while preserving normal filters, sorting, paging, search, and export behavior.
+
+#### Examples
+
+- Select `AppData`, then show every scanned row under `AppData`, excluding the `AppData` row itself.
+- Select `NVIDIA`, then narrow the grid to all scanned cache folders and files under that folder.
+- Select `pip`, then inspect all nested cache buckets and files in one review lens.
+
+#### Non-examples
+
+- A Cleanup Action.
+- A filesystem rescan.
+- Cleanup approval.
+- A tree expansion.
+- A confirmed storage savings estimate.
+
+#### Lifecycle
+
+- Available only after a Storage Scan completes and the selected row is a folder.
+- Applies an under-prefixed Storage Review Search for the selected folder path.
+- Resets other review lenses to All so the selected folder's descendant rows are visible.
+- Remains in-memory and read-only.
+- Clears or changes when the user edits search, changes filters, resets the review view, selects another focus, or starts a new scan.
+
+#### Relationships
+
+- Depends on Storage Review Search.
+- Complements Selected Folder Subtree Summary, Child Breakdown, Storage Hotspot Trail, Selected Folder Child Focus, Storage Review Display Window, and Review Shortlist.
+- Does not change Bloat Categories, Importance Ratings, Deletion Recommendations, Review Shortlist, Quarantine Preview, or cleanup eligibility.
+
+#### Code implications
+
+- Use `StorageReviewSearchField.Under` for under-prefixed search.
+- Use `ShowSelectedFolderDescendants` for the WPF selected-row action.
+- Exclude the selected folder itself from matches.
 - Keep the action disabled for files and before a scan result exists.
 - Keep the action read-only and avoid rescanning, opening Explorer, previewing file content, or modifying files.
 

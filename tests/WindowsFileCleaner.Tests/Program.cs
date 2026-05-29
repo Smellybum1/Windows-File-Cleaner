@@ -600,6 +600,7 @@ internal sealed class StorageScanTests
         Assert(StorageReviewSearch.FromText("unknown:setup").Field == StorageReviewSearchField.Any, "Unrecognized prefixes should stay broad search.");
         Assert(StorageReviewSearch.FromText("unknown:setup").Term == "unknown:setup", "Unrecognized prefixes should remain literal search text.");
         Assert(StorageReviewSearch.FromText("parent:Downloads").Field == StorageReviewSearchField.Parent, "Parent-prefixed search should record the parent field.");
+        Assert(StorageReviewSearch.FromText("under:AppData").Field == StorageReviewSearchField.Under, "Under-prefixed search should record the descendant field.");
 
         var categoryRows = review.ApplyFilter(
             StorageReviewFilter.All,
@@ -629,6 +630,22 @@ internal sealed class StorageScanTests
         Assert(
             parentRows.All(row => Path.GetDirectoryName(row.Entry.FullPath)?.Equals(downloadsPath, StringComparison.OrdinalIgnoreCase) == true),
             "Parent-prefixed search should only match immediate parent path text.");
+
+        var appDataPath = Path.Combine(fixture.RootPath, "AppData");
+        var underRows = review.ApplyFilter(
+            StorageReviewFilter.All,
+            StorageCategoryFilter.All,
+            StorageReviewSearch.FromText($"under:{appDataPath}"));
+        Assert(underRows.Count > 0, "Under-prefixed search should match descendants of the requested ancestor path.");
+        Assert(
+            underRows.All(row => !row.Entry.FullPath.Equals(appDataPath, StringComparison.OrdinalIgnoreCase)),
+            "Under-prefixed search should exclude the ancestor row itself.");
+        Assert(
+            underRows.All(row => PathSafety.IsWithinScope(appDataPath, row.Entry.FullPath)),
+            "Under-prefixed search should only match rows under the requested ancestor path.");
+        Assert(
+            underRows.Any(row => row.Entry.FullPath.EndsWith(@"pip\Cache\http-v2\response.body", StringComparison.OrdinalIgnoreCase)),
+            "Under-prefixed search should include deeply nested descendants.");
 
         var categoryTextInPathField = review.ApplyFilter(
             StorageReviewFilter.All,
