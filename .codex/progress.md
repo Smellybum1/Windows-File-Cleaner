@@ -20,6 +20,47 @@ Storage Scan MVP packet implemented and tested by the user against `C:\Users\mox
 
 ## Completed packets
 
+### 2026-05-30: Run Full Local MVP Preflight After Cleanup Scope Cue
+
+Status: completed
+
+Evidence:
+
+- Cleanup Scope Safety Note Help Cue changed WPF header layout, dynamic help text, WPF smoke assertions, fixture checklist wording, README, domain docs, feature notes, progress, and handoff.
+- A full local preflight through the preferred `.cmd` wrapper gives stronger evidence that restore, build, test, fixture dry-run, and whitespace gates still pass after the Cleanup Scope Safety Note cue packet.
+
+Implementation:
+
+- Ran `Invoke-MvpPreflight.cmd` from the repository root after the Cleanup Scope Safety Note help-cue packet was pushed.
+- The first sandboxed attempt failed during restore because the sandbox could not read `C:\Users\moxhe\AppData\Roaming\NuGet\NuGet.Config`.
+- Reran the same `.cmd` preflight with approved access so `dotnet restore` could read the normal user NuGet config.
+- Preflight restored packages, built the solution, ran core tests, ran WPF app tests, ran the synthetic fixture generator in `-WhatIf` mode, and ran whitespace diff checking.
+- No real user files were scanned or modified.
+
+Verification:
+
+- `cmd.exe /c tools\Invoke-MvpPreflight.cmd` passed after approved access.
+- Preflight output ended with `MVP preflight passed. No real user files were scanned or modified.`
+- Preflight suggested `.\tools\Start-MvpFixtureReview.cmd -SkipPreflight` as the next manual fixture step.
+
+Docs updated:
+
+- `docs/codex/thread-handoff.md`
+- `.codex/progress.md`
+- `docs/features/2026-05-30-cleanup-scope-safety-note-help-cue.md`
+
+ADRs:
+
+- No ADR added. This is verification evidence only, with no architecture, persistence, cleanup execution, restore rule, data-model, or security change.
+
+Open questions:
+
+- The next useful product signal remains a visible fixture or real-profile review pass against the Cleanup Scope Safety Note `?` cue, scan-gate summary `?` cue, and the rest of the hoverable help cues.
+
+Rejected ideas buffer:
+
+- Do not treat preflight as a replacement for visible UI review; it proves automated gates only.
+
 ### 2026-05-30: Cleanup Scope Safety Note Help Cue
 
 Status: completed

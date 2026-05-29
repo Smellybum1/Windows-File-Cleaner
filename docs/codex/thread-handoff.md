@@ -9,7 +9,7 @@ Use this when starting a fresh Codex thread for this repository.
 - Repo: `D:\Codex\Windows File Cleaner`
 - GitHub: `Smellybum1/Windows-File-Cleaner`
 - Branch: `main`
-- Latest completed packet: Cleanup Scope Safety Note Help Cue
+- Latest completed packet: Run Full Local MVP Preflight After Cleanup Scope Cue
 - Current app stack: C# / WPF / .NET 8
 - Desktop shortcut target: `D:\Codex\Windows File Cleaner\src\WindowsFileCleaner.App\bin\Debug\net8.0-windows\WindowsFileCleaner.App.exe`
 
@@ -44,6 +44,7 @@ Fixture-only cleanup execution exists for synthetic Cleanup Scopes. Real-profile
 - Scan Gate Summary Help Cue added a visible hoverable `?` cue beside the locked/ready scan-gate summary, mirrors dynamic summary tooltip/help text, and expands WPF smoke affordance coverage to nine cues.
 - Quarantine Root Safety Note Help Cue added a visible hoverable `?` cue beside the Quarantine Root Safety Note, mirrors dynamic note tooltip/help text, and expands WPF smoke affordance coverage to ten cues.
 - Cleanup Scope Safety Note Help Cue added a visible hoverable `?` cue beside the Cleanup Scope Safety Note, mirrors dynamic note tooltip/help text, and expands WPF smoke affordance coverage to eleven cues.
+- Full Local MVP Preflight After Cleanup Scope Cue passed `cmd.exe /c tools\Invoke-MvpPreflight.cmd`; restore, build, core tests, WPF app tests, fixture `-WhatIf`, and whitespace diff check all passed without scanning or modifying real user files. The first sandboxed attempt failed on user-level NuGet config access, then the same command passed with approved access.
 - Quarantine Execution Scope Status added plain-language fixture-only versus preview-only scope wording to Quarantine Preview and Quarantine Execution Gate output.
 - Fixture Review Checklist Output added a compact terminal checklist to `Start-MvpFixtureReview.ps1`.
 - Fixture Review Checklist-Only Mode added `Start-MvpFixtureReview.ps1 -ChecklistOnly`, which prints the same checklist without preflight, fixture creation, or WPF launch.

@@ -39,6 +39,7 @@ Tests run:
 - `D:\Codex\Windows File Cleaner\.local\test-bin\app-tests\Debug\net8.0-windows\WindowsFileCleaner.App.Tests.exe` passed.
 - `cmd.exe /c tools\Start-MvpFixtureReview.cmd -ChecklistOnly` passed.
 - `git diff --check` passed with line-ending normalization warnings only.
+- Later packet `2026-05-30-full-local-mvp-preflight-after-cleanup-scope-cue` ran `cmd.exe /c tools\Invoke-MvpPreflight.cmd`; restore, build, core tests, WPF app tests, fixture `-WhatIf`, and whitespace diff check all passed without scanning or modifying real user files.
 
 ADRs added or skipped:
 
