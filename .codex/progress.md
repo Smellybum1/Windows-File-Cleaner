@@ -6,11 +6,11 @@ Use it to preserve what was completed, what was verified, what was rejected, and
 
 ## Current status
 
-Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. The app has a broad read-only review workflow, debounced Storage Review Search for large real-profile scans, Matched Review Mix, Selected Folder Subtree Summary, Storage Hotspot Trail, Selected Folder Child Focus, Selected Folder Descendant Focus, fixture launch/preflight tooling, Quarantine Preview, Restore Manifest Draft, Quarantine Confirmation Draft, Quarantine Action Draft, write-ahead Restore Manifest persistence, core Quarantine execution, core Undo Quarantine, fixture-only WPF Quarantine execution, WPF undo for the current fixture execution, Quarantine Manifest Discovery, Selected Restore Manifest Review, Selected Restore Confirmation Gate, Fixture-only Selected Restore Execution, and Restore Readiness Preview. Real-profile WPF Quarantine execution, real-profile WPF Undo Quarantine, permanent deletion, and persisted cleanup history remain unavailable. Fresh-thread handoff notes and a startup prompt live in `docs/codex/thread-handoff.md`.
+Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. The app has a broad read-only review workflow, debounced Storage Review Search for large real-profile scans, Matched Review Mix, Review Shortlist Safety Mix, Selected Folder Subtree Summary, Storage Hotspot Trail, Selected Folder Child Focus, Selected Folder Descendant Focus, fixture launch/preflight tooling, Quarantine Preview, Restore Manifest Draft, Quarantine Confirmation Draft, Quarantine Action Draft, write-ahead Restore Manifest persistence, core Quarantine execution, core Undo Quarantine, fixture-only WPF Quarantine execution, WPF undo for the current fixture execution, Quarantine Manifest Discovery, Selected Restore Manifest Review, Selected Restore Confirmation Gate, Fixture-only Selected Restore Execution, and Restore Readiness Preview. Real-profile WPF Quarantine execution, real-profile WPF Undo Quarantine, permanent deletion, and persisted cleanup history remain unavailable. Fresh-thread handoff notes and a startup prompt live in `docs/codex/thread-handoff.md`.
 
 ## Next recommended work
 
-1. Start the next thread from `docs/codex/thread-handoff.md`, then run `.\tools\Start-MvpFixtureReview.ps1`, confirm the launched app shows Fixture Cleanup Scope, click `Scan`, and manually inspect layout, visible wording, Storage Review Search, `parent:` search, `under:` search, Matched Review Mix, Selected Folder Subtree Summary, Storage Hotspot Trail, Selected Folder Child Focus (`Show children`), Selected Folder Descendant Focus (`Show descendants`), Storage Review Display Window controls, the `Relative path` and `Parent` columns, Selected Path Hierarchy Context, Selected File Content Preview, Selected Path Review Guidance, export dialogs, Safety Summary shortcuts, Review Shortlist, Shortlist shown, Remove shown, typed/browsed Quarantine Root Selection, Quarantine Root Safety Note, Quarantine Preview, Quarantine Execution Gate, Quarantine Action Draft, fixture-only `Execute quarantine`, current-fixture `Undo fixture quarantine`, `Discover manifests`, `Preview selected readiness`, `Preview selected restore gate`, fixture-only `Restore selected fixture manifest`, `Preview restore readiness`, Review Mix, Access issues filter, category filter, No category filter, Size filter, and filter wording.
+1. Start the next thread from `docs/codex/thread-handoff.md`, then run `.\tools\Start-MvpFixtureReview.ps1`, confirm the launched app shows Fixture Cleanup Scope, click `Scan`, and manually inspect layout, visible wording, Storage Review Search, `parent:` search, `under:` search, Matched Review Mix, Review Shortlist Safety Mix, Selected Folder Subtree Summary, Storage Hotspot Trail, Selected Folder Child Focus (`Show children`), Selected Folder Descendant Focus (`Show descendants`), Storage Review Display Window controls, the `Relative path` and `Parent` columns, Selected Path Hierarchy Context, Selected File Content Preview, Selected Path Review Guidance, export dialogs, Safety Summary shortcuts, Review Shortlist, Shortlist shown, Remove shown, typed/browsed Quarantine Root Selection, Quarantine Root Safety Note, Quarantine Preview, Quarantine Execution Gate, Quarantine Action Draft, fixture-only `Execute quarantine`, current-fixture `Undo fixture quarantine`, `Discover manifests`, `Preview selected readiness`, `Preview selected restore gate`, fixture-only `Restore selected fixture manifest`, `Preview restore readiness`, Review Mix, Access issues filter, category filter, No category filter, Size filter, and filter wording.
 2. Use `README.md` and `docs/features/2026-05-28-mvp-readiness-audit.md` to rerun the WPF app against `C:\Users\moxhe`; confirm `Scan` is disabled until the real-profile preflight acknowledgement is checked.
 3. Run `.\tools\Invoke-MvpPreflight.ps1` before any later real-profile scan if the worktree changes.
 4. Rerun the real scan and check whether the cleanup scope root row, `Relative path`, `Parent`, `Contents`, and `Access` columns, Size filter, `parent:` / `under:` / `access:readable` / `access:access issue` search, Matched Review Mix, Selected Folder Subtree Summary, Storage Hotspot Trail, `Show children`, `Show descendants`, Previous rows / Next rows, Safety Summary candidate and no-category examples, selected-row relative/parent/depth/access context, cache-specific Review guidance, specific rebuildable cache candidates such as `DXCache` and `pip\Cache`, conservative game/mod-manager labels such as OptiFine/CurseForge/Vortex, Cloud sync data and Credential data labels, and `Preview file` action make unfamiliar rows easier to triage.
@@ -4214,6 +4214,9 @@ Implementation:
 Verification:
 
 - `dotnet run --project tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj` passed.
+- `dotnet build WindowsFileCleaner.sln --no-restore` passed with 0 warnings and 0 errors.
+- `dotnet run --project tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj --no-build` passed.
+- `git -c safe.directory='D:/Codex/Windows File Cleaner' diff --check` passed; Git printed line-ending normalization warnings for touched files but no whitespace errors.
 - `dotnet run --project tests\WindowsFileCleaner.Tests\WindowsFileCleaner.Tests.csproj` passed.
 - `dotnet build WindowsFileCleaner.sln --no-restore` passed with 0 warnings and 0 errors.
 - `dotnet run --project tests\WindowsFileCleaner.Tests\WindowsFileCleaner.Tests.csproj --no-build` passed.
@@ -4594,3 +4597,46 @@ Rejected ideas buffer:
 
 - Do not hide the real-profile cleanup execution gaps in the handoff prompt.
 - Do not ask the next thread to continue from memory; require it to inspect current files and git state.
+
+### 2026-05-29: Add Review Shortlist Safety Mix
+
+Status: completed
+
+Evidence:
+
+- User asked this thread to prefer Review Shortlist safety context before any real cleanup execution.
+- Review Shortlist is already an in-memory review aid, and Quarantine Preview remains the separate dry-run readiness step.
+- WPF app smoke tests already cover shortlist actions, making them the narrowest relevant verification surface.
+
+Implementation:
+
+- Added WPF `ShortlistSafetyMixText` beneath the Review Shortlist/Quarantine toolbar.
+- The readout summarizes shortlisted rows by Likely safe, Caution, High risk, Quarantine candidates, Protected, Access issues, No category, and largest shortlisted row.
+- Empty, removed, and cleared shortlist states return to empty wording.
+- Kept all behavior read-only and derived only from completed Storage Scan review rows.
+- Kept real-profile Quarantine execution, real-profile Undo Quarantine, permanent deletion, persisted cleanup history, and cleanup eligibility unchanged.
+
+Verification:
+
+- `dotnet run --project tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj` passed.
+
+Docs updated:
+
+- `README.md`
+- `docs/domain/context.md`
+- `docs/domain/glossary.md`
+- `docs/features/2026-05-29-review-shortlist-safety-mix.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No ADR added. This is a reversible read-only UI context improvement with no persistence, cleanup execution, restore, security, deployment, or data-model change.
+
+Open questions:
+
+- Should a later layout pass convert Review Shortlist Safety Mix into compact chips or a table if the visible line feels too dense?
+
+Rejected ideas buffer:
+
+- Do not treat Shortlist Safety Mix as Quarantine Preview readiness.
+- Do not show shortlisted row sizes as confirmed storage savings.

@@ -1593,7 +1593,7 @@ Selected Path Review Guidance is read-only wording shown for the currently selec
 ### Review Shortlist
 
 Status: draft
-Last reviewed: 2026-05-28
+Last reviewed: 2026-05-29
 
 #### Definition
 
@@ -1635,6 +1635,51 @@ It is not a cleanup approval and does not modify files.
 - Bulk additions and removals should use only currently displayed rows, not hidden matched rows beyond the Storage Review Display Limit.
 - Keep shortlisted paths separate from Cleanup Actions and Quarantine manifests.
 - Do not persist or execute the Review Shortlist as an action without a future explicit approval workflow.
+
+### Review Shortlist Safety Mix
+
+Status: draft
+Last reviewed: 2026-05-29
+
+#### Definition
+
+Review Shortlist Safety Mix is a read-only summary of the current Review Shortlist composition.
+
+It counts shortlisted rows by Importance Rating, Quarantine candidate recommendation, Protected Location flag, Access issue flag, Uncategorized Result flag, and largest shortlisted row size.
+
+It is not cleanup approval, Quarantine Preview readiness, or a storage-savings estimate.
+
+#### Examples
+
+- Show that a shortlist has one Likely safe Quarantine candidate and no Protected Location rows.
+- Show that a broad shortlisted parent still has review-only context before Quarantine Preview evaluates blockers.
+- Return to an empty message after the shortlist is cleared.
+
+#### Non-examples
+
+- A Cleanup Action.
+- A Quarantine Preview.
+- Confirmation that shortlisted rows should be moved or deleted.
+- A persisted cleanup history summary.
+
+#### Lifecycle
+
+- Appears after a Storage Scan.
+- Recomputes when Review Shortlist membership changes or when a new Storage Scan clears the shortlist.
+- Does not inspect the filesystem beyond completed scan results.
+- Does not modify files.
+
+#### Relationships
+
+- Depends on Review Shortlist and completed Storage Scan results.
+- Complements Matched Review Mix by summarizing selected review rows rather than the current filter/search lens.
+- Precedes Quarantine Preview but does not replace it.
+
+#### Code implications
+
+- Use `ShortlistSafetyMixText` for the WPF readout.
+- Compute from `StorageReviewShortlist.ApplyTo(_currentReview.Entries)` so the summary follows scan review ordering and completed scan data.
+- Keep the readout explicitly framed as review context only, not cleanup approval.
 
 ### Quarantine Preview
 

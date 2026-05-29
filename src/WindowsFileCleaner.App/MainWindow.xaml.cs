@@ -66,6 +66,7 @@ public partial class MainWindow : Window
         UpdateSizeThresholdFilterOptions();
         UpdateCleanupScopeSafetyNote();
         UpdateQuarantineRootSafetyNote();
+        UpdateShortlistSafetyMix();
         UpdateQuarantineExecutionGate();
         UpdateQuarantineManifestDiscoveryControls();
     }
@@ -230,6 +231,8 @@ public partial class MainWindow : Window
     public string? SelectedRowFullPath => _selectedRow?.FullPath;
 
     public int ReviewShortlistCount => _shortlist.Count;
+
+    public string ShortlistSafetyMixTextValue => ShortlistSafetyMixText.Text;
 
     public bool CanAddSelectedRowToReviewShortlist => AddToShortlistButton.IsEnabled;
 
@@ -1760,6 +1763,7 @@ public partial class MainWindow : Window
         {
             FilterSummaryText.Text = "No scan loaded";
             MatchedReviewMixText.Text = "Matched review mix appears after a scan.";
+            UpdateShortlistSafetyMix();
             UpdateReviewWindowControls(0);
             return;
         }
@@ -1803,6 +1807,47 @@ public partial class MainWindow : Window
             $"No category {uncategorizedCount:N0}. Review context only, not cleanup approval.";
     }
 
+    private void UpdateShortlistSafetyMix()
+    {
+        if (_currentReview is null)
+        {
+            ShortlistSafetyMixText.Text = "Review Shortlist is empty. Shortlist safety mix appears after rows are shortlisted.";
+            return;
+        }
+
+        var shortlistedRows = _shortlist.ApplyTo(_currentReview.Entries);
+        if (shortlistedRows.Count == 0)
+        {
+            ShortlistSafetyMixText.Text = "Review Shortlist is empty. Add only recognized rows after inspection; shortlist is not cleanup approval.";
+            return;
+        }
+
+        var likelySafeCount = shortlistedRows.Count(row => row.Entry.ImportanceRating == ImportanceRating.LikelySafe);
+        var cautionCount = shortlistedRows.Count(row => row.Entry.ImportanceRating == ImportanceRating.Caution);
+        var highRiskCount = shortlistedRows.Count(row => row.Entry.ImportanceRating == ImportanceRating.HighRisk);
+        var quarantineCandidateCount = shortlistedRows.Count(row => row.Entry.DeletionRecommendation == DeletionRecommendation.QuarantineCandidate);
+        var protectedLocationCount = shortlistedRows.Count(row => row.Entry.BloatCategories.Contains(BloatCategory.ProtectedLocation));
+        var accessIssueCount = shortlistedRows.Count(row => !row.Entry.IsAccessible || row.Entry.BloatCategories.Contains(BloatCategory.AccessIssue));
+        var uncategorizedCount = shortlistedRows.Count(row => row.Entry.BloatCategories.Count == 0);
+        var largestShortlistedBytes = shortlistedRows.Select(row => row.Entry.SizeBytes).DefaultIfEmpty(0).Max();
+
+        ShortlistSafetyMixText.Text =
+            $"Shortlist safety mix: {FormatRowCount(shortlistedRows.Count)} | " +
+            $"Likely safe {likelySafeCount:N0} | " +
+            $"Caution {cautionCount:N0} | " +
+            $"High risk {highRiskCount:N0} | " +
+            $"Quarantine candidates {quarantineCandidateCount:N0} | " +
+            $"Protected {protectedLocationCount:N0} | " +
+            $"Access issues {accessIssueCount:N0} | " +
+            $"No category {uncategorizedCount:N0} | " +
+            $"Largest shortlisted row {ByteSizeFormatter.Format(largestShortlistedBytes)}. Review context only, not cleanup approval.";
+    }
+
+    private static string FormatRowCount(int count)
+    {
+        return count == 1 ? "1 row" : $"{count:N0} rows";
+    }
+
     private string FormatScanCompletedStatus(int matchedCount)
     {
         return $"Storage Scan completed. Showing {FormatReviewWindowRange(matchedCount)}. No files were modified.";
@@ -1834,6 +1879,7 @@ public partial class MainWindow : Window
         ClearSearchButton.IsEnabled = _currentReview is not null && _currentSearch.IsActive && ScanButton.IsEnabled;
         SizeThresholdFilterBox.IsEnabled = _currentReview is not null && ScanButton.IsEnabled;
         ResetViewButton.IsEnabled = _currentReview is not null && IsReviewViewFiltered() && ScanButton.IsEnabled;
+        UpdateShortlistSafetyMix();
         UpdateQuarantineManifestDiscoveryControls();
     }
 

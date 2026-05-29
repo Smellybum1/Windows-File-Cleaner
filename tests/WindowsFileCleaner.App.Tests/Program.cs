@@ -604,6 +604,9 @@ internal sealed class MainWindowSmokeTests
             Assert(window.CanAddShownRowsToReviewShortlist, "Displayed quarantine candidates should be bulk-addable to Review Shortlist.");
             Assert(!window.CanRemoveShownRowsFromReviewShortlist, "Shown rows should not be removable before they are shortlisted.");
             Assert(!window.CanPreviewQuarantine, "Quarantine Preview should be disabled before a shortlist exists.");
+            Assert(
+                window.ShortlistSafetyMixTextValue.Contains("Review Shortlist is empty", StringComparison.OrdinalIgnoreCase),
+                "Shortlist Safety Mix should start empty before rows are shortlisted.");
 
             window.AddShownRowsToReviewShortlist();
             Assert(window.ReviewShortlistCount == 1, "Bulk shortlisting shown rows should update Review Shortlist count.");
@@ -617,6 +620,12 @@ internal sealed class MainWindowSmokeTests
             Assert(
                 window.DisplayedRows.Any(row => row.FullPath == installer.FullPath && row.Shortlist == "Yes"),
                 "Shortlisted row should be marked in the WPF grid.");
+            Assert(
+                window.ShortlistSafetyMixTextValue.Contains("Shortlist safety mix: 1 row", StringComparison.OrdinalIgnoreCase)
+                && window.ShortlistSafetyMixTextValue.Contains("Likely safe 1", StringComparison.OrdinalIgnoreCase)
+                && window.ShortlistSafetyMixTextValue.Contains("Quarantine candidates 1", StringComparison.OrdinalIgnoreCase)
+                && window.ShortlistSafetyMixTextValue.Contains("not cleanup approval", StringComparison.OrdinalIgnoreCase),
+                "Shortlist Safety Mix should summarize shortlisted rows without implying approval.");
 
             window.SetQuarantineRootForPreview(@"relative\quarantine");
             Assert(!window.CanPreviewQuarantine, "Relative Quarantine roots should disable Quarantine Preview.");
@@ -644,6 +653,9 @@ internal sealed class MainWindowSmokeTests
 
             window.RemoveShownRowsFromReviewShortlist();
             Assert(window.ReviewShortlistCount == 0, "Removing shown rows should update Review Shortlist count.");
+            Assert(
+                window.ShortlistSafetyMixTextValue.Contains("Review Shortlist is empty", StringComparison.OrdinalIgnoreCase),
+                "Removing shown rows should refresh Shortlist Safety Mix to empty.");
             Assert(
                 window.CurrentStatusText.Contains("Removed 1 shown", StringComparison.OrdinalIgnoreCase),
                 "Removing shown rows should report the visible-window removal.");
@@ -733,6 +745,9 @@ internal sealed class MainWindowSmokeTests
             Assert(window.ReviewShortlistCount == 1, "Selected-row shortlisting should still update Review Shortlist count.");
             window.ClearReviewShortlist();
             Assert(window.ReviewShortlistCount == 0, "Clearing after selected-row shortlisting should empty Review Shortlist.");
+            Assert(
+                window.ShortlistSafetyMixTextValue.Contains("Review Shortlist is empty", StringComparison.OrdinalIgnoreCase),
+                "Clearing should refresh Shortlist Safety Mix to empty.");
         }
         finally
         {
@@ -1078,6 +1093,10 @@ internal sealed class MainWindowSmokeTests
 
             window.AddSelectedPathToReviewShortlist();
             Assert(window.ReviewShortlistCount == 1, "Selected broad cache parent should be added to Review Shortlist.");
+            Assert(
+                window.ShortlistSafetyMixTextValue.Contains("Shortlist safety mix: 1 row", StringComparison.OrdinalIgnoreCase)
+                && window.ShortlistSafetyMixTextValue.Contains("Quarantine candidates 1", StringComparison.OrdinalIgnoreCase),
+                "Shortlist Safety Mix should summarize broad cache parents before preview blockers are evaluated.");
             Assert(window.CanPreviewQuarantine, "Quarantine Preview should be available for the shortlisted cache parent.");
 
             window.PreviewQuarantineForReviewShortlist();

@@ -372,6 +372,11 @@
                             IsEnabled="False"
                             Click="ExportQuarantinePreviewButton_Click" />
                 </WrapPanel>
+                <TextBlock x:Name="ShortlistSafetyMixText"
+                           Text="Review Shortlist is empty. Shortlist safety mix appears after rows are shortlisted."
+                           Foreground="#526171"
+                           Margin="0,6,0,0"
+                           TextWrapping="Wrap" />
             </StackPanel>
 
             <DataGrid x:Name="ResultsGrid"

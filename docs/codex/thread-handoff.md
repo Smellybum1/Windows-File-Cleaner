@@ -9,7 +9,7 @@ Use this when starting a fresh Codex thread for this repository.
 - Repo: `D:\Codex\Windows File Cleaner`
 - GitHub: `Smellybum1/Windows-File-Cleaner`
 - Branch: `main`
-- Latest pushed packet: `ce7c1db Debounce storage review search`
+- Latest completed packet: Review Shortlist Safety Mix (after `e79a811 Add fresh thread handoff notes`)
 - Current app stack: C# / WPF / .NET 8
 - Desktop shortcut target: `D:\Codex\Windows File Cleaner\src\WindowsFileCleaner.App\bin\Debug\net8.0-windows\WindowsFileCleaner.App.exe`
 
@@ -17,7 +17,7 @@ Use this when starting a fresh Codex thread for this repository.
 
 Windows File Cleaner is a local Windows-only desktop app for reviewing storage under `C:\Users\moxhe`.
 
-The current MVP has a read-only Storage Scan that can inspect large real-profile scans with filters, debounced search, Review Mix, Matched Review Mix, selected-folder child/descendant focus, selected-folder summaries, hotspot trail, file preview, CSV export, Review Shortlist, Quarantine Preview, Restore Manifest Draft, Quarantine Confirmation Draft, Quarantine Action Draft, manifest discovery, selected manifest review, selected restore gate, and restore-readiness preview.
+The current MVP has a read-only Storage Scan that can inspect large real-profile scans with filters, debounced search, Review Mix, Matched Review Mix, Review Shortlist Safety Mix, selected-folder child/descendant focus, selected-folder summaries, hotspot trail, file preview, CSV export, Review Shortlist, Quarantine Preview, Restore Manifest Draft, Quarantine Confirmation Draft, Quarantine Action Draft, manifest discovery, selected manifest review, selected restore gate, and restore-readiness preview.
 
 Fixture-only cleanup execution exists for synthetic Cleanup Scopes. Real-profile cleanup execution remains intentionally unavailable.
 
@@ -39,6 +39,7 @@ Fixture-only cleanup execution exists for synthetic Cleanup Scopes. Real-profile
 - User retested and confirmed Search typing feels much better.
 - User confirmed the status-bar pending-search message is enough; do not add another indicator unless future testing contradicts this.
 - GitHub Actions MVP Preflight passed for `ce7c1db`: `https://github.com/Smellybum1/Windows-File-Cleaner/actions/runs/26616156540`
+- Review Shortlist Safety Mix was added after the fresh-thread handoff docs so shortlist composition is visible before Quarantine Preview. It is read-only and not cleanup approval.
 
 ## Best next work
 
@@ -46,7 +47,7 @@ Prefer a small packet. Good candidates:
 
 1. Manual fixture visual polish pass using `.\tools\Start-MvpFixtureReview.ps1`, then update docs with any findings.
 2. Real-profile Quarantine Preview/readiness wording pass, still without enabling real-profile execution.
-3. Add Review Shortlist Safety Mix if the user is about to shortlist real scan rows.
+3. Retest Review Shortlist Safety Mix in the visible app during fixture or real-profile review.
 4. Improve the scan-gate discoverability if the checkbox remains easy to miss.
 5. Start real-profile Quarantine execution design only after the user explicitly wants to move beyond preview and the safety/undo story is reviewed again.
 
@@ -69,7 +70,7 @@ We are continuing Windows File Cleaner in D:\Codex\Windows File Cleaner.
 
 Read AGENTS.md, .codex/progress.md, README.md, docs/codex/thread-handoff.md, docs/domain/context.md, docs/domain/glossary.md, and relevant docs/features/ and docs/decisions/ before implementing.
 
-Current state: main is pushed through ce7c1db Debounce storage review search. The app is a C#/.NET 8 WPF local Windows cleanup reviewer for C:\Users\moxhe. Storage Scan is read-only. Fixture-only Quarantine execution and fixture-only selected restore exist, but real-profile Quarantine execution, real-profile Undo Quarantine, permanent deletion, and persisted cleanup history remain intentionally unavailable.
+Current state: main is pushed through the latest small read-only review polish packet. The app is a C#/.NET 8 WPF local Windows cleanup reviewer for C:\Users\moxhe. Storage Scan is read-only. Fixture-only Quarantine execution and fixture-only selected restore exist, but real-profile Quarantine execution, real-profile Undo Quarantine, permanent deletion, and persisted cleanup history remain intentionally unavailable.
 
 User verification: real-profile scan works; search typing was sluggish, then debounced search fixed it; the status-bar message is enough. Keep this as a local-first, safety-gated app. Do not move or delete real-profile files unless I explicitly ask after a Grill with Docs pass.
 
