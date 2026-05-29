@@ -151,7 +151,10 @@
                 <Expander.Header>
                     <TextBlock x:Name="SafetySummaryHeaderText"
                                Text="Scan safety summary: waiting for scan"
-                               FontWeight="SemiBold" />
+                               FontWeight="SemiBold"
+                               TextTrimming="CharacterEllipsis"
+                               ToolTip="Scan safety summary: waiting for scan. Header summary is read-only review context, not cleanup approval."
+                               AutomationProperties.HelpText="Scan safety summary: waiting for scan. Header summary is read-only review context, not cleanup approval." />
                 </Expander.Header>
                 <StackPanel Margin="0,6,0,0">
                     <TextBlock x:Name="ReviewMixText"
@@ -443,7 +446,10 @@
                     <Expander.Header>
                         <TextBlock x:Name="QuarantineShortlistHeaderText"
                                    Text="Quarantine shortlist: 0 shortlisted | no preview | no current quarantine"
-                                   FontWeight="SemiBold" />
+                                   FontWeight="SemiBold"
+                                   TextTrimming="CharacterEllipsis"
+                                   ToolTip="Quarantine shortlist: 0 shortlisted | no preview | no current quarantine. Header summary is read-only review context, not cleanup approval."
+                                   AutomationProperties.HelpText="Quarantine shortlist: 0 shortlisted | no preview | no current quarantine. Header summary is read-only review context, not cleanup approval." />
                     </Expander.Header>
                     <StackPanel Margin="0,6,0,0">
                         <WrapPanel>

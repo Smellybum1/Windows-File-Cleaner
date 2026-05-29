@@ -247,6 +247,10 @@ public partial class MainWindow : Window
 
     public string SafetySummaryHeaderTextValue => SafetySummaryHeaderText.Text;
 
+    public string SafetySummaryHeaderToolTipValue => SafetySummaryHeaderText.ToolTip?.ToString() ?? "";
+
+    public string SafetySummaryHeaderAutomationHelpTextValue => AutomationProperties.GetHelpText(SafetySummaryHeaderText);
+
     public string SafetyHighRiskButtonToolTipValue => SafetyHighRiskButton.ToolTip?.ToString() ?? "";
 
     public string SafetyHighRiskButtonAutomationHelpTextValue => AutomationProperties.GetHelpText(SafetyHighRiskButton);
@@ -440,6 +444,10 @@ public partial class MainWindow : Window
     public string ShortlistSafetyMixTextValue => ShortlistSafetyMixText.Text;
 
     public string QuarantineShortlistHeaderTextValue => QuarantineShortlistHeaderText.Text;
+
+    public string QuarantineShortlistHeaderToolTipValue => QuarantineShortlistHeaderText.ToolTip?.ToString() ?? "";
+
+    public string QuarantineShortlistHeaderAutomationHelpTextValue => AutomationProperties.GetHelpText(QuarantineShortlistHeaderText);
 
     public bool CanAddSelectedRowToReviewShortlist => AddToShortlistButton.IsEnabled;
 
@@ -2493,8 +2501,12 @@ public partial class MainWindow : Window
         var undoText = CanUndoCurrentQuarantineExecution()
             ? "undo available"
             : "undo unavailable";
-        QuarantineShortlistHeaderText.Text =
+        var headerText =
             $"Quarantine shortlist: {_shortlist.Count:N0} shortlisted | {previewText} | {currentQuarantineText} | {undoText}";
+        var helpText = $"{headerText}. Header summary is read-only review context, not cleanup approval.";
+        QuarantineShortlistHeaderText.Text = headerText;
+        QuarantineShortlistHeaderText.ToolTip = helpText;
+        AutomationProperties.SetHelpText(QuarantineShortlistHeaderText, helpText);
     }
 
     private void UpdateQuarantinePreviewStatus(string? message = null)
@@ -3514,18 +3526,26 @@ public partial class MainWindow : Window
 
         if (_currentSafetySummary is null)
         {
-            SafetySummaryHeaderText.Text = "Scan safety summary: waiting for scan";
+            const string waitingHeaderText = "Scan safety summary: waiting for scan";
+            const string waitingHelpText = waitingHeaderText + ". Header summary is read-only review context, not cleanup approval.";
+            SafetySummaryHeaderText.Text = waitingHeaderText;
+            SafetySummaryHeaderText.ToolTip = waitingHelpText;
+            AutomationProperties.SetHelpText(SafetySummaryHeaderText, waitingHelpText);
             return;
         }
 
         var summary = _currentSafetySummary;
-        SafetySummaryHeaderText.Text =
+        var headerText =
             $"Scan safety summary: {summary.StatusLabel} | " +
             $"High risk {summary.HighRiskCount:N0} | " +
             $"Protected {summary.ProtectedLocationCount:N0} | " +
             $"Access {summary.AccessIssueCount:N0} | " +
             $"Quarantine {summary.QuarantineCandidateCount:N0} | " +
             $"No category {summary.UncategorizedCount:N0}";
+        var helpText = $"{headerText}. Header summary is read-only review context, not cleanup approval.";
+        SafetySummaryHeaderText.Text = headerText;
+        SafetySummaryHeaderText.ToolTip = helpText;
+        AutomationProperties.SetHelpText(SafetySummaryHeaderText, helpText);
     }
 
     private static string FormatAccessIssueExamples(StorageScanSafetySummary summary)

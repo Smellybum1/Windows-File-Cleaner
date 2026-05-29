@@ -7050,6 +7050,55 @@ Rejected ideas buffer:
 
 - Do not let stale feature-brief follow-ups override newer completed packets.
 
+### 2026-05-30: Add Collapsed Panel Header Help Text
+
+Status: completed
+
+Evidence:
+
+- User verified the collapsible panels worked and confirmed that header panel summaries while closed are useful.
+- Safety Summary and Quarantine shortlist headers now carry compact dynamic summaries, but long summaries can be harder to inspect when horizontal space is tight.
+
+Implementation:
+
+- Added tooltip and `AutomationProperties.HelpText` to the Safety Summary header.
+- Added tooltip and `AutomationProperties.HelpText` to the Quarantine shortlist header.
+- Mirrored each dynamic header summary into its tooltip/help text whenever scan, preview, fixture execution, or undo state changes.
+- Added header text trimming so tight layouts keep panel headers compact instead of crowding the grid.
+- Updated the fixture checklist to prompt header tooltip/help-text review.
+- Kept Storage Scan, Quarantine Preview, fixture execution, undo, restore, real-profile execution availability, permanent deletion, and cleanup history behavior unchanged.
+
+Verification:
+
+- Initial `dotnet build tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj "-p:BaseOutputPath=D:/Codex/Windows File Cleaner/.local/test-bin/app-tests/"` failed on a local variable name shadowing error in `UpdateSafetySummaryHeader`; renamed the waiting-state locals and reran the same build.
+- `dotnet build tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj "-p:BaseOutputPath=D:/Codex/Windows File Cleaner/.local/test-bin/app-tests/"` passed.
+- `D:\Codex\Windows File Cleaner\.local\test-bin\app-tests\Debug\net8.0-windows\WindowsFileCleaner.App.Tests.exe` passed.
+- `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\Start-MvpFixtureReview.ps1 -ChecklistOnly` passed and printed the updated header tooltip/help-text prompts without preflight, fixture creation, or WPF launch.
+- `dotnet build WindowsFileCleaner.sln --no-restore "-p:BaseOutputPath=D:/Codex/Windows File Cleaner/.local/test-bin/solution/"` passed.
+- `git -c safe.directory='D:/Codex/Windows File Cleaner' diff --check` passed with line-ending normalization warnings only.
+
+Docs updated:
+
+- `README.md`
+- `docs/domain/context.md`
+- `docs/domain/glossary.md`
+- `docs/features/2026-05-29-quarantined-review-mode.md`
+- `docs/features/2026-05-30-collapsed-panel-header-help-text.md`
+- `docs/codex/thread-handoff.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No ADR added. This is reversible WPF help text and layout polish with no cleanup execution, persistence, restore rule, data-model, or security change.
+
+Open questions:
+
+- During the next visible fixture pass, is header tooltip/help text enough, or should safety-critical panel headers get a small always-visible help affordance?
+
+Rejected ideas buffer:
+
+- Do not add another visible help icon until manual fixture review shows header tooltip/help text is insufficient.
+
 ### 2026-05-29: Harden Quarantine Preview Error Style Coverage
 
 Status: completed

@@ -121,6 +121,7 @@ Post-completion UI polish:
 - User verified the collapsible panel pass worked and asked for useful closed-panel summaries.
 - Collapsed Safety Summary now shows compact risk counts.
 - Collapsed Quarantine shortlist now shows shortlist, preview, current quarantined, and undo state.
+- Later header-help packet mirrors those collapsed-header summaries into tooltip and automation help text with read-only/not-cleanup-approval wording.
 
 Docs updated:
 
