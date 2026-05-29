@@ -25,7 +25,7 @@ Fresh-thread handoff notes live in `docs/codex/thread-handoff.md`.
 - CSV exports write only to a path selected by the user.
 - Scan Report Export and review navigation controls use tooltips and automation help text to keep report-only, in-memory, no-rescan, and no-file-modified boundaries available.
 - Storage Review Filter buttons and Type, Size, and Category filters use tooltips and automation help text to keep review-only, no-rescan, no-file-modified, no-permission-change for Access issues, and not-cleanup-approval boundaries available.
-- Safety Summary is collapsible, and its review shortcuts use disabled-state tooltips and automation help text to keep read-only shortcut scope, no-rescan, no-file-modified, no-permission-change, no-link-following, and not-cleanup-approval boundaries available.
+- Safety Summary is collapsible, its header summarizes compact risk counts, and its review shortcuts use disabled-state tooltips and automation help text to keep read-only shortcut scope, no-rescan, no-file-modified, no-permission-change, no-link-following, and not-cleanup-approval boundaries available.
 - Review Shortlist is an in-memory review aid, not cleanup approval.
 - Review Shortlist export and clear controls use tooltips and automation help text to keep report-only and in-memory-only boundaries available.
 - Review Shortlist bulk actions label their scope as visible rows and include tooltips and automation help text so they apply only to the current displayed review window, not cleanup approval.
@@ -33,7 +33,7 @@ Fresh-thread handoff notes live in `docs/codex/thread-handoff.md`.
 - Quarantine Preview is a dry run only, and its preview/gate panes keep Review Shortlist and Quarantine Preview separate from cleanup approval.
 - Quarantine Preview and preview export controls use tooltips and automation help text to keep dry-run and report-only boundaries available.
 - Restore Manifest Draft and Quarantine Confirmation Draft are in-memory readiness evidence only.
-- Quarantine Root Selection, Quarantine Preview, Quarantine Execution Gate, fixture execution, and current-fixture undo are grouped in a collapsible Quarantine shortlist area above the main grid; verbose gate details stay in a constrained scroll area so the review grid remains usable.
+- Quarantine Root Selection, Quarantine Preview, Quarantine Execution Gate, fixture execution, and current-fixture undo are grouped in a collapsible Quarantine shortlist area above the main grid; its header summarizes shortlist, preview, current quarantined, and undo state, while verbose gate details stay in a constrained scroll area so the review grid remains usable.
 - Quarantine Execution Gate enables execution only for fixture Cleanup Scopes after preview readiness and exact `QUARANTINE` confirmation, and its scope-status wording keeps real-profile/custom execution visibly preview-only. The visible fixture action is `Quarantine included shortlist`, meaning all included rows from the current Review Shortlist preview are moved together.
 - Current-Session Quarantined Review can switch the main grid to entries still in `Moved` state from the current fixture Restore Manifest. It is read-only and does not discover older manifests, restore, move, delete, or create cleanup history.
 - Quarantine and selected-restore execution controls have disabled-state tooltips and automation help text that keep fixture-only gates and real-profile/custom blockers visible.

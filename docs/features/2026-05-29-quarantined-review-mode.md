@@ -118,6 +118,9 @@ Post-completion UI polish:
 - User review showed the main grid became too short after the Quarantine shortlist area moved above it.
 - The Quarantine shortlist and Safety Summary sections are now collapsible.
 - The Quarantine Execution Gate detail text remains available but constrained to a small scroll viewport.
+- User verified the collapsible panel pass worked and asked for useful closed-panel summaries.
+- Collapsed Safety Summary now shows compact risk counts.
+- Collapsed Quarantine shortlist now shows shortlist, preview, current quarantined, and undo state.
 
 Docs updated:
 

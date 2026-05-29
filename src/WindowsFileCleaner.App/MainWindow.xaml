@@ -147,8 +147,12 @@
                 Padding="12"
                 Margin="0,0,0,12">
             <Expander x:Name="SafetySummaryExpander"
-                      Header="Scan safety summary"
                       IsExpanded="True">
+                <Expander.Header>
+                    <TextBlock x:Name="SafetySummaryHeaderText"
+                               Text="Scan safety summary: waiting for scan"
+                               FontWeight="SemiBold" />
+                </Expander.Header>
                 <StackPanel Margin="0,6,0,0">
                     <TextBlock x:Name="ReviewMixText"
                                Text="Review mix appears after a scan."
@@ -435,8 +439,12 @@
                         Padding="12"
                         Margin="0,10,0,0">
                     <Expander x:Name="QuarantineShortlistExpander"
-                              Header="Quarantine shortlist"
                               IsExpanded="True">
+                    <Expander.Header>
+                        <TextBlock x:Name="QuarantineShortlistHeaderText"
+                                   Text="Quarantine shortlist: 0 shortlisted | no preview | no current quarantine"
+                                   FontWeight="SemiBold" />
+                    </Expander.Header>
                     <StackPanel Margin="0,6,0,0">
                         <WrapPanel>
                             <StackPanel Margin="0,0,8,6"

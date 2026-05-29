@@ -237,6 +237,8 @@ public partial class MainWindow : Window
 
     public string SafetySummaryTextValue => SafetySummaryText.Text;
 
+    public string SafetySummaryHeaderTextValue => SafetySummaryHeaderText.Text;
+
     public string SafetyHighRiskButtonToolTipValue => SafetyHighRiskButton.ToolTip?.ToString() ?? "";
 
     public string SafetyHighRiskButtonAutomationHelpTextValue => AutomationProperties.GetHelpText(SafetyHighRiskButton);
@@ -420,6 +422,8 @@ public partial class MainWindow : Window
     public int ReviewShortlistCount => _shortlist.Count;
 
     public string ShortlistSafetyMixTextValue => ShortlistSafetyMixText.Text;
+
+    public string QuarantineShortlistHeaderTextValue => QuarantineShortlistHeaderText.Text;
 
     public bool CanAddSelectedRowToReviewShortlist => AddToShortlistButton.IsEnabled;
 
@@ -1608,6 +1612,7 @@ public partial class MainWindow : Window
             _currentRestoreManifest,
             _currentQuarantineExecutionResult,
             _currentUndoQuarantineResult);
+        UpdateQuarantineShortlistHeader();
     }
 
     public void ApplyStorageReviewFilter(StorageReviewFilter filter)
@@ -2307,6 +2312,7 @@ public partial class MainWindow : Window
         if (_currentReview is null)
         {
             ShortlistSafetyMixText.Text = "Review Shortlist is empty. Shortlist safety mix appears after rows are shortlisted.";
+            UpdateQuarantineShortlistHeader();
             return;
         }
 
@@ -2314,6 +2320,7 @@ public partial class MainWindow : Window
         if (shortlistedRows.Count == 0)
         {
             ShortlistSafetyMixText.Text = "Review Shortlist is empty. Add only recognized rows after inspection; shortlist is not cleanup approval.";
+            UpdateQuarantineShortlistHeader();
             return;
         }
 
@@ -2336,6 +2343,30 @@ public partial class MainWindow : Window
             $"Access issues {accessIssueCount:N0} | " +
             $"No category {uncategorizedCount:N0} | " +
             $"Largest shortlisted row {ByteSizeFormatter.Format(largestShortlistedBytes)}. Review context only, not cleanup approval.";
+        UpdateQuarantineShortlistHeader();
+    }
+
+    private void UpdateQuarantineShortlistHeader()
+    {
+        if (QuarantineShortlistHeaderText is null)
+        {
+            return;
+        }
+
+        var previewText = _currentQuarantinePreview is null
+            ? "no preview"
+            : $"preview {_currentQuarantinePreview.IncludedCount:N0} included, {_currentQuarantinePreview.BlockedCount:N0} blocked";
+        var movedCount = BuildCurrentQuarantinedRows().Count;
+        var currentQuarantineText = movedCount > 0
+            ? $"{movedCount:N0} current quarantined"
+            : _currentUndoQuarantineResult is not null
+                ? "undo completed"
+                : "no current quarantine";
+        var undoText = CanUndoCurrentQuarantineExecution()
+            ? "undo available"
+            : "undo unavailable";
+        QuarantineShortlistHeaderText.Text =
+            $"Quarantine shortlist: {_shortlist.Count:N0} shortlisted | {previewText} | {currentQuarantineText} | {undoText}";
     }
 
     private static string FormatRowCount(int count)
@@ -3234,6 +3265,7 @@ public partial class MainWindow : Window
         if (_currentSafetySummary is null)
         {
             SafetySummaryText.Text = "Safety summary appears after a scan.";
+            UpdateSafetySummaryHeader();
             UpdateSafetyShortcutButtons();
             return;
         }
@@ -3251,7 +3283,31 @@ public partial class MainWindow : Window
             FormatQuarantineCandidateExamples(summary) +
             FormatUncategorizedExamples(summary) +
             string.Join(" ", summary.Notes);
+        UpdateSafetySummaryHeader();
         UpdateSafetyShortcutButtons();
+    }
+
+    private void UpdateSafetySummaryHeader()
+    {
+        if (SafetySummaryHeaderText is null)
+        {
+            return;
+        }
+
+        if (_currentSafetySummary is null)
+        {
+            SafetySummaryHeaderText.Text = "Scan safety summary: waiting for scan";
+            return;
+        }
+
+        var summary = _currentSafetySummary;
+        SafetySummaryHeaderText.Text =
+            $"Scan safety summary: {summary.StatusLabel} | " +
+            $"High risk {summary.HighRiskCount:N0} | " +
+            $"Protected {summary.ProtectedLocationCount:N0} | " +
+            $"Access {summary.AccessIssueCount:N0} | " +
+            $"Quarantine {summary.QuarantineCandidateCount:N0} | " +
+            $"No category {summary.UncategorizedCount:N0}";
     }
 
     private static string FormatAccessIssueExamples(StorageScanSafetySummary summary)

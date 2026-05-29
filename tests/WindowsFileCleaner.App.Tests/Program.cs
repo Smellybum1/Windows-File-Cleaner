@@ -1407,6 +1407,11 @@ internal sealed class MainWindowSmokeTests
         try
         {
             RunDispatcherTask(() => window.RunStorageScanForCurrentScopeAsync());
+            Assert(
+                window.SafetySummaryHeaderTextValue.Contains("Scan safety summary:", StringComparison.OrdinalIgnoreCase)
+                && window.SafetySummaryHeaderTextValue.Contains("High risk", StringComparison.OrdinalIgnoreCase)
+                && window.SafetySummaryHeaderTextValue.Contains("Quarantine", StringComparison.OrdinalIgnoreCase),
+                "Collapsed Safety Summary header should preserve compact scan risk counts.");
 
             var installer = window.DisplayedRows.Single(row =>
                 row.FullPath.EndsWith(@"Downloads\old-installer.msi", StringComparison.OrdinalIgnoreCase));
@@ -1423,6 +1428,11 @@ internal sealed class MainWindowSmokeTests
             window.PreviewQuarantineForReviewShortlist();
 
             Assert(!window.CanExecuteQuarantine, "Fixture execution should stay closed before exact confirmation.");
+            Assert(
+                window.QuarantineShortlistHeaderTextValue.Contains("2 shortlisted", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineShortlistHeaderTextValue.Contains("preview 2 included", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineShortlistHeaderTextValue.Contains("no current quarantine", StringComparison.OrdinalIgnoreCase),
+                "Collapsed Quarantine shortlist header should summarize shortlist and preview state.");
             Assert(
                 window.CurrentStatusText.Contains("Quarantine Preview created from Review Shortlist", StringComparison.OrdinalIgnoreCase)
                 && window.CurrentStatusText.Contains("2 included", StringComparison.OrdinalIgnoreCase),
@@ -1464,6 +1474,10 @@ internal sealed class MainWindowSmokeTests
             Assert(!window.CanEnterQuarantineConfirmation, "Confirmation text should disable after the fixture execution attempt.");
             Assert(window.CanUndoQuarantine, "Fixture undo should become available after a successful fixture execution.");
             Assert(window.CanShowQuarantinedRows, "Current-session quarantined rows should be available after successful fixture execution.");
+            Assert(
+                window.QuarantineShortlistHeaderTextValue.Contains("2 current quarantined", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineShortlistHeaderTextValue.Contains("undo available", StringComparison.OrdinalIgnoreCase),
+                "Collapsed Quarantine shortlist header should summarize current quarantined entries and undo availability.");
             Assert(!window.CanExportQuarantinePreview, "Preview export should disable after execution because preview state is stale.");
             Assert(window.ReviewShortlistCount == 0, "Fixture execution should clear Review Shortlist to prevent stale re-execution.");
             Assert(window.CurrentRestoreManifestStatus == RestoreManifestActionStatus.Completed.ToString(), "Successful fixture execution should complete the Restore Manifest.");
@@ -1527,6 +1541,9 @@ internal sealed class MainWindowSmokeTests
             Assert(!window.CanUndoQuarantine, "Fixture undo should disable after the undo attempt.");
             Assert(window.DisplayedQuarantinedRows.Count == 0, "Quarantined view should clear current-session moved entries after undo.");
             Assert(!window.CanShowQuarantinedRows, "Quarantined button should disable after undo leaves no current-session moved entries.");
+            Assert(
+                window.QuarantineShortlistHeaderTextValue.Contains("undo completed", StringComparison.OrdinalIgnoreCase),
+                "Collapsed Quarantine shortlist header should summarize completed undo state.");
             Assert(window.CurrentRestoreManifestStatus == RestoreManifestActionStatus.Restored.ToString(), "Successful fixture undo should mark the Restore Manifest restored.");
             Assert(File.Exists(installer.FullPath), "Fixture undo should restore the selected source file.");
             Assert(File.Exists(pipCacheBody.FullPath), "Fixture undo should restore every included Review Shortlist row.");

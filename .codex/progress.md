@@ -6701,3 +6701,41 @@ Open questions:
 Rejected ideas buffer:
 
 - Do not hide the Quarantine Execution Gate details entirely; keep them available in a constrained view.
+
+### 2026-05-29: Add Collapsed Panel Summaries
+
+Status: completed
+
+Evidence:
+
+- User verified the collapsible panel pass worked.
+- User asked for useful panel header summaries while panels are closed.
+
+Implementation:
+
+- Replaced static Expander header text with dynamic Safety Summary and Quarantine shortlist header text.
+- Safety Summary header now keeps compact risk counts visible while collapsed.
+- Quarantine shortlist header now summarizes Review Shortlist count, preview included/blocked state, current quarantined count, and undo availability/completion.
+- Added WPF smoke assertions for these collapsed-header summaries across scan, preview, fixture execution, and undo.
+
+Verification:
+
+- `dotnet build tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj "-p:BaseOutputPath=D:/Codex/Windows File Cleaner/.local/test-bin/app-tests/"` passed.
+- `D:\Codex\Windows File Cleaner\.local\test-bin\app-tests\Debug\net8.0-windows\WindowsFileCleaner.App.Tests.exe` passed.
+- `dotnet build WindowsFileCleaner.sln --no-restore "-p:BaseOutputPath=D:/Codex/Windows File Cleaner/.local/test-bin/solution/"` passed.
+- `git -c safe.directory='D:/Codex/Windows File Cleaner' diff --check` passed with line-ending normalization warnings only.
+
+Docs updated:
+
+- `README.md`
+- `docs/domain/context.md`
+- `docs/features/2026-05-29-quarantined-review-mode.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No ADR added. This is reversible WPF header text and test coverage with no cleanup execution, persistence, restore, or data-model change.
+
+Open questions:
+
+- Should the closed Quarantine header also include the selected Quarantine Root, or is that too visually noisy?
