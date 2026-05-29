@@ -2204,6 +2204,27 @@ internal sealed class MainWindowSmokeTests
             && window.ReviewGridModeAutomationHelpTextValue.Contains("restore files", StringComparison.OrdinalIgnoreCase)
             && window.ReviewGridModeAutomationHelpTextValue.Contains("approve cleanup", StringComparison.OrdinalIgnoreCase),
             message + " Automation help text should mirror the current status text and safety boundary.");
+        Assert(
+            window.ReviewGridModeHelpCueAutomationNameValue.Contains("Review Grid Mode Status help cue", StringComparison.OrdinalIgnoreCase),
+            message + " Help cue should have a specific automation name.");
+        Assert(
+            window.ReviewGridModeHelpCueToolTipValue.Contains(window.ReviewGridModeTextValue, StringComparison.OrdinalIgnoreCase)
+            && window.ReviewGridModeHelpCueToolTipValue.Contains(expectedStatusState, StringComparison.OrdinalIgnoreCase)
+            && window.ReviewGridModeHelpCueToolTipValue.Contains("read-only review context", StringComparison.OrdinalIgnoreCase)
+            && window.ReviewGridModeHelpCueToolTipValue.Contains("does not rescan", StringComparison.OrdinalIgnoreCase)
+            && window.ReviewGridModeHelpCueToolTipValue.Contains("modify files", StringComparison.OrdinalIgnoreCase)
+            && window.ReviewGridModeHelpCueToolTipValue.Contains("restore files", StringComparison.OrdinalIgnoreCase)
+            && window.ReviewGridModeHelpCueToolTipValue.Contains("approve cleanup", StringComparison.OrdinalIgnoreCase),
+            message + " Help cue tooltip should mirror the current status text and safety boundary.");
+        Assert(
+            window.ReviewGridModeHelpCueAutomationHelpTextValue.Contains(window.ReviewGridModeTextValue, StringComparison.OrdinalIgnoreCase)
+            && window.ReviewGridModeHelpCueAutomationHelpTextValue.Contains(expectedStatusState, StringComparison.OrdinalIgnoreCase)
+            && window.ReviewGridModeHelpCueAutomationHelpTextValue.Contains("read-only review context", StringComparison.OrdinalIgnoreCase)
+            && window.ReviewGridModeHelpCueAutomationHelpTextValue.Contains("does not rescan", StringComparison.OrdinalIgnoreCase)
+            && window.ReviewGridModeHelpCueAutomationHelpTextValue.Contains("modify files", StringComparison.OrdinalIgnoreCase)
+            && window.ReviewGridModeHelpCueAutomationHelpTextValue.Contains("restore files", StringComparison.OrdinalIgnoreCase)
+            && window.ReviewGridModeHelpCueAutomationHelpTextValue.Contains("approve cleanup", StringComparison.OrdinalIgnoreCase),
+            message + " Help cue automation help text should mirror the current status text and safety boundary.");
     }
 
     private static void AssertQuarantinePreviewStatusHelpText(MainWindow window, string message)

@@ -31,6 +31,7 @@ What changed:
 - Added textual `Status state:` wording to Review Grid Mode Status tooltip/help text.
 - Added textual `Status state:` wording to inline Quarantine Preview readiness/status tooltip/help text.
 - Strengthened shared WPF smoke assertions so every exercised grid-mode and preview-status state must expose matching state text.
+- Later packet `2026-05-30-review-grid-mode-status-help-cue.md` mirrored the Review Grid Mode Status state wording onto a visible circular `?` help cue.
 
 Tests run:
 

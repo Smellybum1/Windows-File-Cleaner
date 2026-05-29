@@ -653,13 +653,35 @@
                     </StackPanel>
                     </Expander>
                 </Border>
-                <TextBlock x:Name="ReviewGridModeText"
-                           Text="Main grid: Storage Scan rows appear after a scan. No files were modified."
-                           Foreground="#526171"
-                           Margin="0,8,0,0"
-                           TextWrapping="Wrap"
-                           ToolTip="Main grid: Storage Scan rows appear after a scan. No files were modified. Status state: neutral. Grid mode status is read-only review context; it does not rescan, modify files, restore files, or approve cleanup."
-                           AutomationProperties.HelpText="Main grid: Storage Scan rows appear after a scan. No files were modified. Status state: neutral. Grid mode status is read-only review context; it does not rescan, modify files, restore files, or approve cleanup." />
+                <DockPanel Margin="0,8,0,0"
+                           LastChildFill="True">
+                    <Border x:Name="ReviewGridModeHelpCue"
+                            DockPanel.Dock="Right"
+                            Width="18"
+                            Height="18"
+                            Margin="8,1,0,0"
+                            CornerRadius="9"
+                            Background="#F4F7FA"
+                            BorderBrush="#8A99A8"
+                            BorderThickness="1"
+                            VerticalAlignment="Top"
+                            ToolTip="Main grid: Storage Scan rows appear after a scan. No files were modified. Status state: neutral. Grid mode status is read-only review context; it does not rescan, modify files, restore files, or approve cleanup."
+                            AutomationProperties.Name="Review Grid Mode Status help cue"
+                            AutomationProperties.HelpText="Main grid: Storage Scan rows appear after a scan. No files were modified. Status state: neutral. Grid mode status is read-only review context; it does not rescan, modify files, restore files, or approve cleanup.">
+                        <TextBlock Text="?"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"
+                                   FontSize="11"
+                                   FontWeight="Bold"
+                                   Foreground="#526171" />
+                    </Border>
+                    <TextBlock x:Name="ReviewGridModeText"
+                               Text="Main grid: Storage Scan rows appear after a scan. No files were modified."
+                               Foreground="#526171"
+                               TextWrapping="Wrap"
+                               ToolTip="Main grid: Storage Scan rows appear after a scan. No files were modified. Status state: neutral. Grid mode status is read-only review context; it does not rescan, modify files, restore files, or approve cleanup."
+                               AutomationProperties.HelpText="Main grid: Storage Scan rows appear after a scan. No files were modified. Status state: neutral. Grid mode status is read-only review context; it does not rescan, modify files, restore files, or approve cleanup." />
+                </DockPanel>
             </StackPanel>
 
             <DataGrid x:Name="ResultsGrid"

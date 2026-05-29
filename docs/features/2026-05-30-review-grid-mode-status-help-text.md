@@ -54,6 +54,7 @@ What changed:
 - Mirrored dynamic Review Grid Mode Status text into tooltip and automation help text whenever the status updates.
 - Added WPF smoke coverage for startup, normal scan rows, stale scan rows after fixture execution, Current-Session Quarantined Review rows, returning to scan rows, and empty current-session view after undo.
 - Later packet `2026-05-30-status-state-help-text.md` added textual status-state wording to the tooltip/help text so neutral/information/warning state is not color-only.
+- Later packet `2026-05-30-review-grid-mode-status-help-cue.md` added a visible circular `?` help cue that mirrors the same dynamic tooltip and automation help text.
 
 Docs updated:
 
@@ -65,7 +66,7 @@ ADRs added or skipped:
 
 Open questions:
 
-- During the next visible fixture pass, confirm whether Review Grid Mode Status help text is discoverable enough without a visible help icon.
+- During the next visible fixture pass, confirm whether the `?` help cue makes Review Grid Mode Status help discoverable without crowding the grid.
 
 Risky assumptions:
 

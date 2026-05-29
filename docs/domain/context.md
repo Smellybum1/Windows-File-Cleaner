@@ -2773,7 +2773,7 @@ It is reached with the `Current quarantined` button and returns to Storage Scan 
 - Keep Review Grid Mode Status visible above the main grid so users can tell whether they are reviewing Storage Scan rows or current-session quarantined entries.
 - When Storage Scan rows may be stale after fixture Quarantine execution, Review Grid Mode Status should point to available current-session quarantined entries instead of implying refreshed scan evidence.
 - Keep Review Grid Mode Status styling semantic and lightweight: neutral for ordinary scan rows, informational for current-session quarantined rows, and warning for stale or empty moved-entry states; styling must not imply cleanup approval.
-- Keep Review Grid Mode Status tooltip and automation help text synchronized with the dynamic status text, name the current status state, and make explicit that the status is read-only review context; it must not rescan, modify files, restore files, or approve cleanup.
+- Keep Review Grid Mode Status tooltip and automation help text synchronized on both the status text and the visible non-clickable `?` help cue, name the current status state, and make explicit that the status is read-only review context; it must not rescan, modify files, restore files, or approve cleanup.
 - Keep `Current quarantined` and `Back to scan rows` tooltips and automation help text dynamic enough to explain disabled states, current-session-only scope, read-only behavior, older-manifest discovery boundaries, and that returning to scan rows does not rescan or undo.
 - Keep this view read-only and current-session-only until a separate discovered-manifest design exists.
 

@@ -87,6 +87,7 @@ What changed:
 - Fixture undo state stops advertising moved current-session entries once no moved entries remain.
 - Later packet `2026-05-29-review-grid-mode-status-styling.md` added neutral/informational/warning styling to the same status line without adding layout.
 - Later packet `2026-05-30-review-grid-mode-status-help-text.md` mirrored the dynamic status into tooltip and automation help text with read-only, no-rescan, no-restore, and not-cleanup-approval boundaries.
+- Later packet `2026-05-30-review-grid-mode-status-help-cue.md` added a visible circular `?` help cue that mirrors the same dynamic tooltip and automation help text.
 
 Files changed:
 
@@ -123,8 +124,8 @@ Follow-up work:
 
 Open questions:
 
-- Lightweight styled text is implemented. After manual fixture review, decide whether a small badge would help more than styled text alone.
+- Lightweight styled text and a visible `?` help cue are implemented. After manual fixture review, decide whether a badge is still needed or whether the current line is clear enough.
 
 Risky assumptions:
 
-- The extra line is acceptable now that the Safety Summary and Quarantine shortlist panels are collapsible.
+- The extra status line plus compact help cue is acceptable now that the Safety Summary and Quarantine shortlist panels are collapsible.

@@ -228,6 +228,12 @@ public partial class MainWindow : Window
 
     public string ReviewGridModeAutomationHelpTextValue => AutomationProperties.GetHelpText(ReviewGridModeText);
 
+    public string ReviewGridModeHelpCueToolTipValue => ReviewGridModeHelpCue.ToolTip?.ToString() ?? "";
+
+    public string ReviewGridModeHelpCueAutomationNameValue => AutomationProperties.GetName(ReviewGridModeHelpCue);
+
+    public string ReviewGridModeHelpCueAutomationHelpTextValue => AutomationProperties.GetHelpText(ReviewGridModeHelpCue);
+
     public string? ContentsColumnSortMemberPath => ResultsGrid.Columns
         .OfType<DataGridTextColumn>()
         .FirstOrDefault(column => string.Equals(column.Header?.ToString(), "Contents", StringComparison.OrdinalIgnoreCase))
@@ -2114,6 +2120,8 @@ public partial class MainWindow : Window
         var helpText = FormatReviewGridModeHelpText(text, style);
         ReviewGridModeText.ToolTip = helpText;
         AutomationProperties.SetHelpText(ReviewGridModeText, helpText);
+        ReviewGridModeHelpCue.ToolTip = helpText;
+        AutomationProperties.SetHelpText(ReviewGridModeHelpCue, helpText);
         ReviewGridModeText.Foreground = style switch
         {
             ReviewGridModeStatusStyle.Information => System.Windows.Media.Brushes.DarkCyan,
