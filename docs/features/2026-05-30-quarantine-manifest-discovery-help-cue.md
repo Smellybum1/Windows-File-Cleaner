@@ -42,6 +42,7 @@ What changed:
 - Added a visible circular `?` help cue beside the WPF `Discover manifests` action.
 - Added test-facing accessors and WPF smoke assertions that the cue mirrors the discovery tooltip/help text.
 - Expanded the tracked hoverable help-cue affordance snapshot from sixteen to seventeen cues.
+- Later packet `2026-05-30-all-manifest-readiness-help-cue.md` added the companion all-manifest readiness cue and expanded the snapshot to eighteen cues.
 
 Tests run:
 
@@ -53,7 +54,7 @@ ADRs added or skipped:
 
 Open questions:
 
-- During visible fixture review, confirm the manifest discovery/readiness row still fits comfortably with the new cue.
+- During visible fixture review, confirm the manifest discovery/readiness row still fits comfortably with the discovery and all-manifest readiness cues.
 
 Risky assumptions:
 

@@ -195,6 +195,9 @@ internal sealed class MainWindowSmokeTests
                 window.PreviewRestoreReadinessButtonAutomationHelpTextValue.Contains("Read-only all-manifest readiness", StringComparison.OrdinalIgnoreCase)
                 && window.PreviewRestoreReadinessButtonAutomationHelpTextValue.Contains("no files are restored", StringComparison.OrdinalIgnoreCase),
                 "All-manifest readiness automation help text should explain read-only scope and no-restore behavior.");
+            AssertAllManifestReadinessHelpCue(
+                window,
+                "Startup");
             Assert(!window.CanSelectDiscoveredRestoreManifest, "MainWindow should not enable Restore Manifest selection before discovery.");
             Assert(
                 window.RestoreManifestSelectionBoxToolTipValue.Contains("one discovered Restore Manifest", StringComparison.OrdinalIgnoreCase)
@@ -2395,7 +2398,7 @@ internal sealed class MainWindowSmokeTests
     private static void AssertHoverableHelpCueAffordances(MainWindow window, string message)
     {
         var affordances = window.HoverableHelpCueAffordances;
-        Assert(affordances.Count == 17, message + " Expected all seventeen circular help cues to be tracked.");
+        Assert(affordances.Count == 18, message + " Expected all eighteen circular help cues to be tracked.");
 
         foreach (var affordance in affordances)
         {
@@ -2449,6 +2452,27 @@ internal sealed class MainWindowSmokeTests
         Assert(
             string.Equals(window.QuarantineManifestDiscoveryHelpCueAutomationHelpTextValue, window.DiscoverQuarantineManifestsButtonAutomationHelpTextValue, StringComparison.Ordinal),
             message + " Help cue automation help text should mirror the discovery help text.");
+    }
+
+    private static void AssertAllManifestReadinessHelpCue(MainWindow window, string message)
+    {
+        Assert(
+            window.PreviewRestoreReadinessButtonToolTipValue.Contains("Read-only all-manifest readiness", StringComparison.OrdinalIgnoreCase)
+            && window.PreviewRestoreReadinessButtonToolTipValue.Contains("discovered Restore Manifests", StringComparison.OrdinalIgnoreCase)
+            && window.PreviewRestoreReadinessButtonToolTipValue.Contains("no files are restored", StringComparison.OrdinalIgnoreCase),
+            message + " All-manifest readiness tooltip should expose read-only no-restore boundaries.");
+        Assert(
+            string.Equals(window.PreviewRestoreReadinessButtonAutomationHelpTextValue, window.PreviewRestoreReadinessButtonToolTipValue, StringComparison.Ordinal),
+            message + " All-manifest readiness automation help text should mirror the tooltip.");
+        Assert(
+            window.AllManifestReadinessHelpCueAutomationNameValue.Contains("All-manifest readiness help cue", StringComparison.OrdinalIgnoreCase),
+            message + " Help cue should have a specific automation name.");
+        Assert(
+            string.Equals(window.AllManifestReadinessHelpCueToolTipValue, window.PreviewRestoreReadinessButtonToolTipValue, StringComparison.Ordinal),
+            message + " Help cue tooltip should mirror the readiness tooltip.");
+        Assert(
+            string.Equals(window.AllManifestReadinessHelpCueAutomationHelpTextValue, window.PreviewRestoreReadinessButtonAutomationHelpTextValue, StringComparison.Ordinal),
+            message + " Help cue automation help text should mirror the readiness help text.");
     }
 
     private static void AssertRestoreManifestSelectionHelpCue(MainWindow window, string message)

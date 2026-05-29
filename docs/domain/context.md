@@ -470,7 +470,7 @@ It may be large, duplicated, or stale-looking, but it should be treated as high-
 ### Credential Data
 
 Status: draft
-Last reviewed: 2026-05-29
+Last reviewed: 2026-05-30
 
 #### Definition
 
@@ -3085,7 +3085,7 @@ It is the fixture proof for selected discovered Restore Manifest restore, not re
 ### Restore Readiness Preview
 
 Status: draft
-Last reviewed: 2026-05-29
+Last reviewed: 2026-05-30
 
 #### Definition
 
@@ -3132,6 +3132,7 @@ It is not approval to restore and does not restore files.
 - Keep it read-only. Do not call `UndoQuarantineExecutor.Undo`.
 - The WPF action label should make the all-manifest readiness scope visible so it is distinct from selected manifest readiness.
 - The WPF action tooltip and automation help text should repeat the read-only all-manifest scope and no-restore boundary.
+- Keep the WPF all-manifest readiness `?` help cue visible beside `Preview all-manifest readiness` and mirror the same no-restore tooltip/help text.
 - WPF readiness output should distinguish read-only blocker evidence from all-manifest restore execution while pointing fixture-only restore toward the selected restore gate.
 - Recompute readiness immediately before any future restore execution because filesystem state can change.
 

@@ -181,6 +181,7 @@ What changed:
 - Added WPF `Preview all-manifest readiness` status-only action and pane.
 - Added core coverage for restorable, blocked, missing quarantine path, and already-restored readiness states.
 - Added WPF smoke coverage proving readiness preview shows restorable discovered-manifest evidence without restoring files.
+- Later packet `2026-05-30-all-manifest-readiness-help-cue.md` added a visible `?` help cue beside `Preview all-manifest readiness`.
 
 Files changed:
 
