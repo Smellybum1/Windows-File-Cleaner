@@ -6831,3 +6831,45 @@ Open questions:
 Rejected ideas buffer:
 
 - Do not use the grid mode status as cleanup history or as proof that Storage Scan rows are refreshed after fixture execution.
+
+### 2026-05-29: Align Fixture Checklist With Review Polish
+
+Status: completed
+
+Evidence:
+
+- The WPF app now has collapsible Safety Summary and Quarantine shortlist panels, inline Quarantine Preview readiness, Review Grid Mode Status, and `Quarantined` / `Back to scan rows` grid switching.
+- The terminal fixture checklist still used older generic wording for Safety Summary, Quarantine Preview, and fixture execution/undo flow.
+
+Implementation:
+
+- Updated `Start-MvpFixtureReview.ps1` checklist item 3 to prompt collapsible Safety Summary header/details review.
+- Updated checklist item 6 to prompt collapsible Quarantine shortlist header/details, inline preview readiness, preview/export tooltip, approval-boundary, execution-scope, and execution tooltip review.
+- Updated checklist item 7 to prompt `Quarantined` / `Back to scan rows` plus Review Grid Mode Status during fixture execution/undo review.
+- Kept checklist-only mode read-only: no preflight, fixture creation, WPF launch, scan, move, restore, delete, or cleanup history.
+
+Verification:
+
+- `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\Start-MvpFixtureReview.ps1 -ChecklistOnly` passed and printed the updated checklist without preflight, fixture creation, or WPF launch.
+- `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\Start-MvpFixtureReview.ps1 -WhatIf -SkipPreflight -SkipLaunch` passed and preserved the updated checklist in dry-run launcher output.
+- `git -c safe.directory='D:/Codex/Windows File Cleaner' diff --check` passed with line-ending normalization warnings only.
+
+Docs updated:
+
+- `README.md`
+- `docs/features/2026-05-29-fixture-review-checklist-output.md`
+- `docs/features/2026-05-29-review-grid-mode-status.md`
+- `docs/codex/thread-handoff.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No ADR added. This is local manual-review checklist wording with no persistence, cleanup execution, restore rule, data-model, or security change.
+
+Open questions:
+
+- Should the checklist be split into shorter grouped prompts if it becomes too dense during the next manual pass?
+
+Rejected ideas buffer:
+
+- Do not make checklist-only mode run preflight, create fixtures, launch WPF, or scan.

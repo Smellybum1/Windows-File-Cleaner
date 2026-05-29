@@ -107,6 +107,7 @@ Tests run:
 Docs updated:
 
 - README, domain context, glossary, this feature brief, progress log, and handoff.
+- Later checklist alignment also updated `tools/Start-MvpFixtureReview.ps1` and `docs/features/2026-05-29-fixture-review-checklist-output.md` so the terminal fixture checklist prompts Review Grid Mode Status.
 
 ADRs added or skipped:
 

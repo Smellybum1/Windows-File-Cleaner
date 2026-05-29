@@ -77,11 +77,13 @@ What changed:
 - Later packet `2026-05-29-fixture-checklist-selected-restore-scope.md` updated the checklist to include Selected Restore gate scope-status and approval-boundary wording.
 - Later packet `2026-05-29-fixture-checklist-broad-restore-wording.md` updated the checklist to include broad-restore boundary wording for discovery/readiness panes.
 - Later packet `2026-05-29-all-manifest-restore-wording.md` refined that checklist wording to `all-manifest restore action`.
+- Later packet `2026-05-29-review-grid-mode-status.md` updated the checklist to include collapsible Safety Summary and Quarantine shortlist review, inline Quarantine Preview readiness, `Quarantined` / `Back to scan rows`, and Review Grid Mode Status.
 
 Tests run:
 
 - `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\Start-MvpFixtureReview.ps1 -WhatIf -SkipPreflight -SkipLaunch`
 - `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\Start-MvpFixtureReview.ps1 -WhatIf -SkipPreflight -SkipLaunch -SkipChecklist`
+- `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\Start-MvpFixtureReview.ps1 -ChecklistOnly`
 - `git -c safe.directory='D:/Codex/Windows File Cleaner' diff --check`
 
 Docs updated:
