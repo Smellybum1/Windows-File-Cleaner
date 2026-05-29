@@ -132,6 +132,96 @@ internal sealed class MainWindowSmokeTests
                 && window.ExportScanCsvButtonAutomationHelpTextValue.Contains("no scanned files are modified", StringComparison.OrdinalIgnoreCase),
                 "Scan Report Export automation help text should explain report-only behavior.");
             Assert(
+                window.AllFilterButtonToolTipValue.Contains("completed Storage Scan", StringComparison.OrdinalIgnoreCase)
+                && window.AllFilterButtonToolTipValue.Contains("does not rescan", StringComparison.OrdinalIgnoreCase)
+                && window.AllFilterButtonToolTipValue.Contains("approve cleanup", StringComparison.OrdinalIgnoreCase),
+                "All filter tooltip should explain read-only review-lens behavior.");
+            Assert(
+                window.AllFilterButtonAutomationHelpTextValue.Contains("completed Storage Scan", StringComparison.OrdinalIgnoreCase)
+                && window.AllFilterButtonAutomationHelpTextValue.Contains("does not rescan", StringComparison.OrdinalIgnoreCase)
+                && window.AllFilterButtonAutomationHelpTextValue.Contains("approve cleanup", StringComparison.OrdinalIgnoreCase),
+                "All filter automation help text should explain read-only review-lens behavior.");
+            Assert(
+                window.LikelySafeFilterButtonToolTipValue.Contains("Likely safe", StringComparison.OrdinalIgnoreCase)
+                && window.LikelySafeFilterButtonToolTipValue.Contains("not cleanup approval", StringComparison.OrdinalIgnoreCase)
+                && window.LikelySafeFilterButtonToolTipValue.Contains("no files are modified", StringComparison.OrdinalIgnoreCase),
+                "Likely safe filter tooltip should keep rating separate from cleanup approval.");
+            Assert(
+                window.LikelySafeFilterButtonAutomationHelpTextValue.Contains("Likely safe", StringComparison.OrdinalIgnoreCase)
+                && window.LikelySafeFilterButtonAutomationHelpTextValue.Contains("not cleanup approval", StringComparison.OrdinalIgnoreCase)
+                && window.LikelySafeFilterButtonAutomationHelpTextValue.Contains("no files are modified", StringComparison.OrdinalIgnoreCase),
+                "Likely safe filter automation help text should keep rating separate from cleanup approval.");
+            Assert(
+                window.CautionFilterButtonToolTipValue.Contains("Caution", StringComparison.OrdinalIgnoreCase)
+                && window.CautionFilterButtonToolTipValue.Contains("inspection", StringComparison.OrdinalIgnoreCase)
+                && window.CautionFilterButtonToolTipValue.Contains("does not rescan", StringComparison.OrdinalIgnoreCase),
+                "Caution filter tooltip should explain inspection-only behavior.");
+            Assert(
+                window.CautionFilterButtonAutomationHelpTextValue.Contains("Caution", StringComparison.OrdinalIgnoreCase)
+                && window.CautionFilterButtonAutomationHelpTextValue.Contains("inspection", StringComparison.OrdinalIgnoreCase)
+                && window.CautionFilterButtonAutomationHelpTextValue.Contains("does not rescan", StringComparison.OrdinalIgnoreCase),
+                "Caution filter automation help text should explain inspection-only behavior.");
+            Assert(
+                window.HighRiskFilterButtonToolTipValue.Contains("High risk", StringComparison.OrdinalIgnoreCase)
+                && window.HighRiskFilterButtonToolTipValue.Contains("inspection first", StringComparison.OrdinalIgnoreCase)
+                && window.HighRiskFilterButtonToolTipValue.Contains("approve cleanup", StringComparison.OrdinalIgnoreCase),
+                "High risk filter tooltip should explain inspection-first behavior.");
+            Assert(
+                window.HighRiskFilterButtonAutomationHelpTextValue.Contains("High risk", StringComparison.OrdinalIgnoreCase)
+                && window.HighRiskFilterButtonAutomationHelpTextValue.Contains("inspection first", StringComparison.OrdinalIgnoreCase)
+                && window.HighRiskFilterButtonAutomationHelpTextValue.Contains("approve cleanup", StringComparison.OrdinalIgnoreCase),
+                "High risk filter automation help text should explain inspection-first behavior.");
+            Assert(
+                window.QuarantineCandidateFilterButtonToolTipValue.Contains("Quarantine candidates", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineCandidateFilterButtonToolTipValue.Contains("not Quarantine approval", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineCandidateFilterButtonToolTipValue.Contains("no files are modified", StringComparison.OrdinalIgnoreCase),
+                "Quarantine candidate filter tooltip should separate review from Quarantine approval.");
+            Assert(
+                window.QuarantineCandidateFilterButtonAutomationHelpTextValue.Contains("Quarantine candidates", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineCandidateFilterButtonAutomationHelpTextValue.Contains("not Quarantine approval", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineCandidateFilterButtonAutomationHelpTextValue.Contains("no files are modified", StringComparison.OrdinalIgnoreCase),
+                "Quarantine candidate filter automation help text should separate review from Quarantine approval.");
+            Assert(
+                window.AccessIssuesFilterButtonToolTipValue.Contains("Access issues", StringComparison.OrdinalIgnoreCase)
+                && window.AccessIssuesFilterButtonToolTipValue.Contains("does not retry", StringComparison.OrdinalIgnoreCase)
+                && window.AccessIssuesFilterButtonToolTipValue.Contains("change permissions", StringComparison.OrdinalIgnoreCase),
+                "Access issues filter tooltip should explain no-retry/no-permission-change behavior.");
+            Assert(
+                window.AccessIssuesFilterButtonAutomationHelpTextValue.Contains("Access issues", StringComparison.OrdinalIgnoreCase)
+                && window.AccessIssuesFilterButtonAutomationHelpTextValue.Contains("does not retry", StringComparison.OrdinalIgnoreCase)
+                && window.AccessIssuesFilterButtonAutomationHelpTextValue.Contains("change permissions", StringComparison.OrdinalIgnoreCase),
+                "Access issues filter automation help text should explain no-retry/no-permission-change behavior.");
+            Assert(
+                window.EntryTypeFilterToolTipValue.Contains("files only", StringComparison.OrdinalIgnoreCase)
+                && window.EntryTypeFilterToolTipValue.Contains("does not rescan", StringComparison.OrdinalIgnoreCase)
+                && window.EntryTypeFilterToolTipValue.Contains("approve cleanup", StringComparison.OrdinalIgnoreCase),
+                "Entry type filter tooltip should explain read-only file/folder filtering.");
+            Assert(
+                window.EntryTypeFilterAutomationHelpTextValue.Contains("files only", StringComparison.OrdinalIgnoreCase)
+                && window.EntryTypeFilterAutomationHelpTextValue.Contains("does not rescan", StringComparison.OrdinalIgnoreCase)
+                && window.EntryTypeFilterAutomationHelpTextValue.Contains("approve cleanup", StringComparison.OrdinalIgnoreCase),
+                "Entry type filter automation help text should explain read-only file/folder filtering.");
+            Assert(
+                window.SizeThresholdFilterToolTipValue.Contains("row-size threshold", StringComparison.OrdinalIgnoreCase)
+                && window.SizeThresholdFilterToolTipValue.Contains("not storage savings", StringComparison.OrdinalIgnoreCase)
+                && window.SizeThresholdFilterToolTipValue.Contains("cleanup approval", StringComparison.OrdinalIgnoreCase),
+                "Size filter tooltip should explain size is triage context.");
+            Assert(
+                window.SizeThresholdFilterAutomationHelpTextValue.Contains("row-size threshold", StringComparison.OrdinalIgnoreCase)
+                && window.SizeThresholdFilterAutomationHelpTextValue.Contains("not storage savings", StringComparison.OrdinalIgnoreCase)
+                && window.SizeThresholdFilterAutomationHelpTextValue.Contains("cleanup approval", StringComparison.OrdinalIgnoreCase),
+                "Size filter automation help text should explain size is triage context.");
+            Assert(
+                window.CategoryFilterToolTipValue.Contains("Bloat Category", StringComparison.OrdinalIgnoreCase)
+                && window.CategoryFilterToolTipValue.Contains("No category", StringComparison.OrdinalIgnoreCase)
+                && window.CategoryFilterToolTipValue.Contains("approve cleanup", StringComparison.OrdinalIgnoreCase),
+                "Category filter tooltip should explain read-only category filtering.");
+            Assert(
+                window.CategoryFilterAutomationHelpTextValue.Contains("Bloat Category", StringComparison.OrdinalIgnoreCase)
+                && window.CategoryFilterAutomationHelpTextValue.Contains("No category", StringComparison.OrdinalIgnoreCase)
+                && window.CategoryFilterAutomationHelpTextValue.Contains("approve cleanup", StringComparison.OrdinalIgnoreCase),
+                "Category filter automation help text should explain read-only category filtering.");
+            Assert(
                 window.ClearSearchButtonToolTipValue.Contains("Storage Review Search", StringComparison.OrdinalIgnoreCase)
                 && window.ClearSearchButtonToolTipValue.Contains("does not rescan", StringComparison.OrdinalIgnoreCase)
                 && window.ClearSearchButtonToolTipValue.Contains("modify files", StringComparison.OrdinalIgnoreCase)

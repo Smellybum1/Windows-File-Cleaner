@@ -505,7 +505,7 @@ It must be treated as high-risk even when it appears small, duplicated, hidden, 
 ### Storage Review Filter
 
 Status: draft  
-Last reviewed: 2026-05-28
+Last reviewed: 2026-05-29
 
 #### Definition
 
@@ -543,6 +543,7 @@ Initial filters are All, Likely safe, Caution, High risk, Quarantine candidates,
 - Use `StorageReviewFilter` for filter values.
 - Keep filters read-only.
 - Show counts so the user can understand scan composition.
+- Filter button tooltips and automation help text should say the filter narrows completed Storage Scan rows for review only, does not rescan or modify files, and does not approve cleanup.
 - Access issues are informational and must not trigger permission changes or cleanup actions.
 
 ### Storage Review Search
@@ -661,7 +662,7 @@ Initial user-facing values are `Readable` and `Access issue`.
 ### Storage Entry Type Filter
 
 Status: draft
-Last reviewed: 2026-05-28
+Last reviewed: 2026-05-29
 
 #### Definition
 
@@ -701,12 +702,13 @@ It helps the user separate actual files from container folders in a recursive sc
 - Use `StorageEntryTypeFilter`.
 - Apply type filtering in `StorageScanReview` before search.
 - Keep type filtering read-only and in-memory.
+- Tooltip and automation help text should say the control filters completed Storage Scan rows to all rows, files only, or folders only; it does not rescan, modify files, or approve cleanup.
 - Do not use type filters as cleanup approval.
 
 ### Storage Size Threshold Filter
 
 Status: draft
-Last reviewed: 2026-05-28
+Last reviewed: 2026-05-29
 
 #### Definition
 
@@ -746,6 +748,7 @@ It helps the user focus a large recursive scan on the biggest review targets wit
 - Use `StorageSizeThresholdFilter`.
 - Apply size-threshold filtering in `StorageScanReview` before search.
 - Keep size-threshold filtering read-only and in-memory.
+- Tooltip and automation help text should say row size is a triage clue, not Storage Savings or cleanup approval.
 - Do not use size thresholds as cleanup approval or importance scoring.
 
 ### Review View Reset
@@ -890,7 +893,7 @@ The initial window starts at row `1`. Previous rows and Next rows move the windo
 ### Bloat Category Filter
 
 Status: draft
-Last reviewed: 2026-05-28
+Last reviewed: 2026-05-29
 
 #### Definition
 
@@ -932,6 +935,7 @@ It is a read-only lens that can be combined with the active Storage Review Filte
 - Use `StorageCategorySummaryEntry` for category counts and largest-row size.
 - Use `StorageCategoryFilter` to represent All categories, a named Bloat Category, or No category.
 - Do not sum recursive row sizes across category summaries.
+- Tooltip and automation help text should say category filtering is a read-only lens over completed Storage Scan rows and does not rescan, modify files, or approve cleanup.
 - Keep category filtering separate from Cleanup Actions.
 
 ### Uncategorized Result

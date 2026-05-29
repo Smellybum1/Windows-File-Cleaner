@@ -200,23 +200,35 @@
                 <WrapPanel x:Name="ReviewFilterToolbar">
                     <Button x:Name="AllFilterButton"
                             Content="All"
+                            ToolTip="Shows all completed Storage Scan review rows in the active review lens; this does not rescan, modify files, or approve cleanup."
+                            AutomationProperties.HelpText="Shows all completed Storage Scan review rows in the active review lens; this does not rescan, modify files, or approve cleanup."
                             Click="AllFilterButton_Click" />
                     <Button x:Name="LikelySafeFilterButton"
                             Content="Likely safe"
+                            ToolTip="Shows rows rated Likely safe for review only; rating is not cleanup approval and no files are modified."
+                            AutomationProperties.HelpText="Shows rows rated Likely safe for review only; rating is not cleanup approval and no files are modified."
                             Click="LikelySafeFilterButton_Click" />
                     <Button x:Name="CautionFilterButton"
                             Content="Caution"
+                            ToolTip="Shows rows rated Caution for inspection; this does not rescan, modify files, or approve cleanup."
+                            AutomationProperties.HelpText="Shows rows rated Caution for inspection; this does not rescan, modify files, or approve cleanup."
                             Click="CautionFilterButton_Click" />
                     <Button x:Name="HighRiskFilterButton"
                             Content="High risk"
+                            ToolTip="Shows rows rated High risk for inspection first; this does not rescan, modify files, or approve cleanup."
+                            AutomationProperties.HelpText="Shows rows rated High risk for inspection first; this does not rescan, modify files, or approve cleanup."
                             Click="HighRiskFilterButton_Click" />
                     <Button x:Name="QuarantineCandidateFilterButton"
                             Content="Quarantine candidates"
                             MinWidth="150"
+                            ToolTip="Shows rows recommended as Quarantine candidates for review only; this is not Quarantine approval and no files are modified."
+                            AutomationProperties.HelpText="Shows rows recommended as Quarantine candidates for review only; this is not Quarantine approval and no files are modified."
                             Click="QuarantineCandidateFilterButton_Click" />
                     <Button x:Name="AccessIssuesFilterButton"
                             Content="Access issues"
                             MinWidth="125"
+                            ToolTip="Shows rows with scan Access issues for review only; this does not retry, elevate, change permissions, modify files, or approve cleanup."
+                            AutomationProperties.HelpText="Shows rows with scan Access issues for review only; this does not retry, elevate, change permissions, modify files, or approve cleanup."
                             Click="AccessIssuesFilterButton_Click" />
                     <Button x:Name="ExportCsvButton"
                             Content="Export CSV"
@@ -310,6 +322,8 @@
                                   Height="30"
                                   DisplayMemberPath="Label"
                                   IsEnabled="False"
+                                  ToolTip="Filters completed Storage Scan rows to all rows, files only, or folders only; this is read-only and does not rescan, modify files, or approve cleanup."
+                                  AutomationProperties.HelpText="Filters completed Storage Scan rows to all rows, files only, or folders only; this is read-only and does not rescan, modify files, or approve cleanup."
                                   SelectionChanged="EntryTypeFilterBox_SelectionChanged" />
                     </StackPanel>
                     <StackPanel Orientation="Horizontal"
@@ -324,6 +338,8 @@
                                   Height="30"
                                   DisplayMemberPath="Label"
                                   IsEnabled="False"
+                                  ToolTip="Filters completed Storage Scan rows by row-size threshold; size is a triage clue, not storage savings or cleanup approval, and no files are modified."
+                                  AutomationProperties.HelpText="Filters completed Storage Scan rows by row-size threshold; size is a triage clue, not storage savings or cleanup approval, and no files are modified."
                                   SelectionChanged="SizeThresholdFilterBox_SelectionChanged" />
                     </StackPanel>
                     <StackPanel Orientation="Horizontal"
@@ -338,6 +354,8 @@
                                   Height="30"
                                   DisplayMemberPath="Label"
                                   IsEnabled="False"
+                                  ToolTip="Filters completed Storage Scan rows by Bloat Category or No category; this is read-only and does not rescan, modify files, or approve cleanup."
+                                  AutomationProperties.HelpText="Filters completed Storage Scan rows by Bloat Category or No category; this is read-only and does not rescan, modify files, or approve cleanup."
                                   SelectionChanged="CategoryFilterBox_SelectionChanged" />
                     </StackPanel>
                 </WrapPanel>

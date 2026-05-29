@@ -134,6 +134,42 @@ public partial class MainWindow : Window
 
     public bool CanResetReviewView => ResetViewButton.IsEnabled;
 
+    public string AllFilterButtonToolTipValue => AllFilterButton.ToolTip?.ToString() ?? "";
+
+    public string AllFilterButtonAutomationHelpTextValue => AutomationProperties.GetHelpText(AllFilterButton);
+
+    public string LikelySafeFilterButtonToolTipValue => LikelySafeFilterButton.ToolTip?.ToString() ?? "";
+
+    public string LikelySafeFilterButtonAutomationHelpTextValue => AutomationProperties.GetHelpText(LikelySafeFilterButton);
+
+    public string CautionFilterButtonToolTipValue => CautionFilterButton.ToolTip?.ToString() ?? "";
+
+    public string CautionFilterButtonAutomationHelpTextValue => AutomationProperties.GetHelpText(CautionFilterButton);
+
+    public string HighRiskFilterButtonToolTipValue => HighRiskFilterButton.ToolTip?.ToString() ?? "";
+
+    public string HighRiskFilterButtonAutomationHelpTextValue => AutomationProperties.GetHelpText(HighRiskFilterButton);
+
+    public string QuarantineCandidateFilterButtonToolTipValue => QuarantineCandidateFilterButton.ToolTip?.ToString() ?? "";
+
+    public string QuarantineCandidateFilterButtonAutomationHelpTextValue => AutomationProperties.GetHelpText(QuarantineCandidateFilterButton);
+
+    public string AccessIssuesFilterButtonToolTipValue => AccessIssuesFilterButton.ToolTip?.ToString() ?? "";
+
+    public string AccessIssuesFilterButtonAutomationHelpTextValue => AutomationProperties.GetHelpText(AccessIssuesFilterButton);
+
+    public string EntryTypeFilterToolTipValue => EntryTypeFilterBox.ToolTip?.ToString() ?? "";
+
+    public string EntryTypeFilterAutomationHelpTextValue => AutomationProperties.GetHelpText(EntryTypeFilterBox);
+
+    public string SizeThresholdFilterToolTipValue => SizeThresholdFilterBox.ToolTip?.ToString() ?? "";
+
+    public string SizeThresholdFilterAutomationHelpTextValue => AutomationProperties.GetHelpText(SizeThresholdFilterBox);
+
+    public string CategoryFilterToolTipValue => CategoryFilterBox.ToolTip?.ToString() ?? "";
+
+    public string CategoryFilterAutomationHelpTextValue => AutomationProperties.GetHelpText(CategoryFilterBox);
+
     public string ClearSearchButtonToolTipValue => ClearSearchButton.ToolTip?.ToString() ?? "";
 
     public string ClearSearchButtonAutomationHelpTextValue => AutomationProperties.GetHelpText(ClearSearchButton);
