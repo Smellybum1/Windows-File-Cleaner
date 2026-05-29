@@ -28,6 +28,7 @@ What changed:
 
 - Added `Cursor="Help"` and a short tooltip initial delay to the seven existing circular `?` help cues.
 - Preserved the existing dynamic tooltip/help-text wiring and all safety wording.
+- Later packet `2026-05-30-fixture-checklist-hoverable-help-cues.md` aligned the manual fixture checklist wording with the hoverable cue behavior.
 
 Tests run:
 

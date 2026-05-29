@@ -93,6 +93,7 @@ What changed:
 - Later packet `2026-05-30-review-mix-help-cues.md` updated the checklist to call out Review Mix and Matched Review Mix `?` help cues.
 - Later packet `2026-05-30-review-shortlist-safety-mix-help-cue.md` updated the checklist to call out the Review Shortlist Safety Mix `?` help cue.
 - Later packet `2026-05-30-execution-policy-friendly-fixture-launcher.md` added `Start-MvpFixtureReview.cmd`, so the same checklist can be launched when direct `.ps1` execution is blocked by local policy.
+- Later packet `2026-05-30-fixture-checklist-hoverable-help-cues.md` aligned the checklist wording with the hoverable `?` cue affordance and prompt tooltip behavior.
 
 Tests run:
 
