@@ -1259,6 +1259,13 @@ internal sealed class MainWindowSmokeTests
             Assert(
                 window.QuarantineRootSafetyNoteTextValue.Contains("fully qualified", StringComparison.OrdinalIgnoreCase),
                 "Relative Quarantine roots should show a fully qualified path warning.");
+            window.PreviewQuarantineForReviewShortlist();
+            Assert(
+                window.QuarantinePreviewStatusTextValue.Contains("Quarantine Preview could not be created", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantinePreviewStatusTextValue.Contains("No files were modified", StringComparison.OrdinalIgnoreCase),
+                "Invalid Quarantine Root preview attempts should keep no-file-modified error wording visible.");
+            Assert(window.QuarantinePreviewStatusStyleValue == "Error", "Invalid Quarantine Root preview attempts should use error styling.");
+            Assert(window.QuarantinePreviewStatusFontWeightValue == "SemiBold", "Invalid Quarantine Root preview attempts should be visually emphasized.");
 
             window.ApplyEntryTypeFilter(StorageEntryTypeFilter.Files);
             window.ApplySizeThresholdFilter(StorageSizeThresholdFilter.AtLeast1Mb);

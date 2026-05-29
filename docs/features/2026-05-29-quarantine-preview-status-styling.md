@@ -156,7 +156,7 @@ What changed:
 - Ready preview plus successful fixture execution/undo evidence use success styling.
 - Shortlisted-but-not-previewed, stale preview, blocked preview, and recovery-review states use warning styling.
 - Preview creation failure uses error styling.
-- Added WPF smoke assertions for neutral, warning, success, fixture execution, fixture undo, and blocked-preview styling.
+- Added WPF smoke assertions for neutral, warning, success, invalid-root error, fixture execution, fixture undo, and blocked-preview styling.
 - Aligned the fixture review launcher checklist so the next manual pass prompts neutral/success/warning/error inline status review.
 
 Files changed:
@@ -180,6 +180,7 @@ Tests run:
 - `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\Start-MvpFixtureReview.ps1 -ChecklistOnly`
 - `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\Start-MvpFixtureReview.ps1 -WhatIf -SkipPreflight -SkipLaunch`
 - `git -c safe.directory='D:/Codex/Windows File Cleaner' diff --check`
+- Later verification-hardening packet reran the app test project build, `WindowsFileCleaner.App.Tests.exe`, solution build, and `git diff --check` after adding invalid-root error-style smoke coverage.
 
 Docs updated:
 

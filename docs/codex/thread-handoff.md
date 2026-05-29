@@ -9,7 +9,7 @@ Use this when starting a fresh Codex thread for this repository.
 - Repo: `D:\Codex\Windows File Cleaner`
 - GitHub: `Smellybum1/Windows-File-Cleaner`
 - Branch: `main`
-- Latest completed packet: Fixture Checklist Preview Status Styling Alignment
+- Latest completed packet: Quarantine Preview Error Style Coverage
 - Current app stack: C# / WPF / .NET 8
 - Desktop shortcut target: `D:\Codex\Windows File Cleaner\src\WindowsFileCleaner.App\bin\Debug\net8.0-windows\WindowsFileCleaner.App.exe`
 
@@ -95,6 +95,7 @@ Fixture-only cleanup execution exists for synthetic Cleanup Scopes. Real-profile
 - Quarantined View Control Help Text added dynamic disabled/enabled tooltip and automation help text for `Quarantined` and `Back to scan rows`.
 - Quarantine Preview Status Styling added lightweight semantic styling to the inline Quarantine Preview status: neutral waiting, success ready/completed, warning blockers/stale, and error preview failure.
 - Fixture Checklist Preview Status Styling Alignment updated `Start-MvpFixtureReview.ps1 -ChecklistOnly` prompts to include styled inline Quarantine Preview readiness states.
+- Quarantine Preview Error Style Coverage added WPF smoke coverage for invalid Quarantine Root preview attempts using the inline error status style.
 
 ## Best next work
 

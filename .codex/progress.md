@@ -7010,3 +7010,43 @@ Open questions:
 Rejected ideas buffer:
 
 - Do not make checklist-only mode perform visual verification or launch WPF; it stays terminal-output-only.
+
+### 2026-05-29: Harden Quarantine Preview Error Style Coverage
+
+Status: completed
+
+Evidence:
+
+- Quarantine Preview Status Styling documented an error style for preview creation failures.
+- Existing WPF smoke assertions covered neutral, warning, success, execution, undo, and blocked-preview styling, but did not directly exercise the invalid Quarantine Root error path.
+
+Implementation:
+
+- Added WPF smoke coverage that attempts Quarantine Preview with a relative Quarantine Root after shortlisting a fixture row.
+- Asserted the inline Quarantine Preview status says the preview could not be created, keeps no-file-modified wording visible, uses `Error` styling, and remains visually emphasized.
+- Kept Quarantine Preview dry-run behavior unchanged; no files or folders are created, moved, restored, deleted, or added to cleanup history.
+
+Verification:
+
+- `dotnet build tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj "-p:BaseOutputPath=D:/Codex/Windows File Cleaner/.local/test-bin/app-tests/"` passed.
+- `D:\Codex\Windows File Cleaner\.local\test-bin\app-tests\Debug\net8.0-windows\WindowsFileCleaner.App.Tests.exe` passed.
+- `dotnet build WindowsFileCleaner.sln --no-restore "-p:BaseOutputPath=D:/Codex/Windows File Cleaner/.local/test-bin/solution/"` passed.
+- `git -c safe.directory='D:/Codex/Windows File Cleaner' diff --check` passed with line-ending normalization warnings only.
+
+Docs updated:
+
+- `docs/features/2026-05-29-quarantine-preview-status-styling.md`
+- `docs/codex/thread-handoff.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No ADR added. This is test coverage for existing WPF styling behavior with no persistence, cleanup execution, restore rule, data-model, or security change.
+
+Open questions:
+
+- Does the next visible fixture pass show that the styled inline preview status is noticeable enough without a popup?
+
+Rejected ideas buffer:
+
+- Do not rely on documentation alone for semantic status states; keep each state covered by focused WPF smoke assertions when practical.
