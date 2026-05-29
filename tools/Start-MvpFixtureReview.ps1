@@ -27,7 +27,7 @@ function Write-FixtureReviewChecklist {
     Write-Host "  2. Click Scan manually; confirm the status says no files were modified."
     Write-Host "  3. Check Review Mix, Matched Review Mix, Safety Summary, Review Shortlist Safety Mix, and Review Shortlist labels/tooltips."
     Write-Host "  4. Try search examples: old-installer, parent:$FixturePath\Downloads, under:$FixturePath\AppData."
-    Write-Host "  5. Select folders and try Show children, Show descendants, hotspot trail, subtree summary, and file preview."
+    Write-Host "  5. Select folders and try selected-row tooltips, Show children, Show descendants, hotspot trail, subtree summary, and file preview."
     Write-Host "  6. Shortlist the fixture cleanup candidate, check Quarantine Root browse tooltip, create Quarantine Preview, and check preview/export tooltips, Approval boundary, Execution scope status, and execution tooltips."
     Write-Host "  7. For fixture only, type QUARANTINE, execute quarantine, then Undo fixture quarantine and rescan before more review."
     Write-Host "  8. Use Discover manifests, selected manifest readiness/gate, and all-manifest readiness preview; check no all-manifest restore action plus readiness scope tooltips, selected restore Approval boundary, Execution scope status, and restore tooltips."

@@ -260,13 +260,27 @@ public partial class MainWindow : Window
 
     public bool CanAddSelectedRowToReviewShortlist => AddToShortlistButton.IsEnabled;
 
+    public string AddSelectedRowToReviewShortlistButtonToolTipValue => AddToShortlistButton.ToolTip?.ToString() ?? "";
+
     public bool CanRemoveSelectedRowFromReviewShortlist => RemoveFromShortlistButton.IsEnabled;
+
+    public string RemoveSelectedRowFromReviewShortlistButtonToolTipValue => RemoveFromShortlistButton.ToolTip?.ToString() ?? "";
 
     public bool CanPreviewSelectedFile => PreviewFileButton.IsEnabled;
 
+    public string PreviewSelectedFileButtonToolTipValue => PreviewFileButton.ToolTip?.ToString() ?? "";
+
     public bool CanShowSelectedFolderChildren => ShowChildrenButton.IsEnabled;
 
+    public string ShowSelectedFolderChildrenButtonToolTipValue => ShowChildrenButton.ToolTip?.ToString() ?? "";
+
     public bool CanShowSelectedFolderDescendants => ShowDescendantsButton.IsEnabled;
+
+    public string ShowSelectedFolderDescendantsButtonToolTipValue => ShowDescendantsButton.ToolTip?.ToString() ?? "";
+
+    public string CopySelectedPathButtonToolTipValue => CopyPathButton.ToolTip?.ToString() ?? "";
+
+    public string OpenSelectedPathInExplorerButtonToolTipValue => OpenInExplorerButton.ToolTip?.ToString() ?? "";
 
     public bool CanAddShownRowsToReviewShortlist => AddShownToShortlistButton.IsEnabled;
 

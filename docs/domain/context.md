@@ -1326,6 +1326,7 @@ It is a table-level follow-up to Child Breakdown: the detail pane shows a bounde
 - Use `StorageReviewSearchField.Parent` for parent-prefixed search.
 - Use `ShowSelectedFolderChildren` for the WPF selected-row action.
 - Keep the action disabled for files and before a scan result exists.
+- Tooltip wording should say this is read-only `parent:` focus that does not rescan, modify files, or approve cleanup.
 - Keep the action read-only and avoid rescanning, opening Explorer, previewing file content, or modifying files.
 
 ### Selected Folder Descendant Focus
@@ -1373,6 +1374,7 @@ It is the recursive counterpart to Selected Folder Child Focus. It lets the user
 - Use `ShowSelectedFolderDescendants` for the WPF selected-row action.
 - Exclude the selected folder itself from matches.
 - Keep the action disabled for files and before a scan result exists.
+- Tooltip wording should say this is read-only `under:` focus that does not rescan, modify files, or approve cleanup.
 - Keep the action read-only and avoid rescanning, opening Explorer, previewing file content, or modifying files.
 
 ### Selected Path Inspection
@@ -1414,6 +1416,7 @@ Initial actions are copying the selected path and opening the selected path in F
 
 - Use `PathInspectionPlanBuilder` for Explorer launch details.
 - Keep inspection actions separate from Cleanup Actions.
+- Tooltip wording should keep Copy path and Open in Explorer framed as manual inspection, not cleanup approval or file modification by the app.
 - Status messages should state that no files were modified.
 
 ### Selected Path Hierarchy Context
