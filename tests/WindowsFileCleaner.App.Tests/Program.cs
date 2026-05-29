@@ -97,11 +97,22 @@ internal sealed class MainWindowSmokeTests
                 && window.ExportScanCsvButtonToolTipValue.Contains("no scanned files are modified", StringComparison.OrdinalIgnoreCase),
                 "Scan Report Export tooltip should explain report-only behavior.");
             Assert(
+                window.ExportScanCsvButtonAutomationHelpTextValue.Contains("CSV report", StringComparison.OrdinalIgnoreCase)
+                && window.ExportScanCsvButtonAutomationHelpTextValue.Contains("not cleanup approval", StringComparison.OrdinalIgnoreCase)
+                && window.ExportScanCsvButtonAutomationHelpTextValue.Contains("no scanned files are modified", StringComparison.OrdinalIgnoreCase),
+                "Scan Report Export automation help text should explain report-only behavior.");
+            Assert(
                 window.ClearSearchButtonToolTipValue.Contains("Storage Review Search", StringComparison.OrdinalIgnoreCase)
                 && window.ClearSearchButtonToolTipValue.Contains("does not rescan", StringComparison.OrdinalIgnoreCase)
                 && window.ClearSearchButtonToolTipValue.Contains("modify files", StringComparison.OrdinalIgnoreCase)
                 && window.ClearSearchButtonToolTipValue.Contains("Review Shortlist", StringComparison.OrdinalIgnoreCase),
                 "Clear search tooltip should explain read-only search clearing.");
+            Assert(
+                window.ClearSearchButtonAutomationHelpTextValue.Contains("Storage Review Search", StringComparison.OrdinalIgnoreCase)
+                && window.ClearSearchButtonAutomationHelpTextValue.Contains("does not rescan", StringComparison.OrdinalIgnoreCase)
+                && window.ClearSearchButtonAutomationHelpTextValue.Contains("modify files", StringComparison.OrdinalIgnoreCase)
+                && window.ClearSearchButtonAutomationHelpTextValue.Contains("Review Shortlist", StringComparison.OrdinalIgnoreCase),
+                "Clear search automation help text should explain read-only search clearing.");
             Assert(
                 window.ResetReviewViewButtonToolTipValue.Contains("filters and search", StringComparison.OrdinalIgnoreCase)
                 && window.ResetReviewViewButtonToolTipValue.Contains("keeping Review Shortlist", StringComparison.OrdinalIgnoreCase)
@@ -109,17 +120,35 @@ internal sealed class MainWindowSmokeTests
                 && window.ResetReviewViewButtonToolTipValue.Contains("modify files", StringComparison.OrdinalIgnoreCase),
                 "Reset view tooltip should explain read-only reset behavior.");
             Assert(
+                window.ResetReviewViewButtonAutomationHelpTextValue.Contains("filters and search", StringComparison.OrdinalIgnoreCase)
+                && window.ResetReviewViewButtonAutomationHelpTextValue.Contains("keeping Review Shortlist", StringComparison.OrdinalIgnoreCase)
+                && window.ResetReviewViewButtonAutomationHelpTextValue.Contains("does not rescan", StringComparison.OrdinalIgnoreCase)
+                && window.ResetReviewViewButtonAutomationHelpTextValue.Contains("modify files", StringComparison.OrdinalIgnoreCase),
+                "Reset view automation help text should explain read-only reset behavior.");
+            Assert(
                 window.PreviousReviewWindowButtonToolTipValue.Contains("previous in-memory", StringComparison.OrdinalIgnoreCase)
                 && window.PreviousReviewWindowButtonToolTipValue.Contains("Storage Review Display Window", StringComparison.OrdinalIgnoreCase)
                 && window.PreviousReviewWindowButtonToolTipValue.Contains("does not rescan", StringComparison.OrdinalIgnoreCase)
                 && window.PreviousReviewWindowButtonToolTipValue.Contains("modify files", StringComparison.OrdinalIgnoreCase),
                 "Previous rows tooltip should explain read-only display-window navigation.");
             Assert(
+                window.PreviousReviewWindowButtonAutomationHelpTextValue.Contains("previous in-memory", StringComparison.OrdinalIgnoreCase)
+                && window.PreviousReviewWindowButtonAutomationHelpTextValue.Contains("Storage Review Display Window", StringComparison.OrdinalIgnoreCase)
+                && window.PreviousReviewWindowButtonAutomationHelpTextValue.Contains("does not rescan", StringComparison.OrdinalIgnoreCase)
+                && window.PreviousReviewWindowButtonAutomationHelpTextValue.Contains("modify files", StringComparison.OrdinalIgnoreCase),
+                "Previous rows automation help text should explain read-only display-window navigation.");
+            Assert(
                 window.NextReviewWindowButtonToolTipValue.Contains("next in-memory", StringComparison.OrdinalIgnoreCase)
                 && window.NextReviewWindowButtonToolTipValue.Contains("Storage Review Display Window", StringComparison.OrdinalIgnoreCase)
                 && window.NextReviewWindowButtonToolTipValue.Contains("does not rescan", StringComparison.OrdinalIgnoreCase)
                 && window.NextReviewWindowButtonToolTipValue.Contains("modify files", StringComparison.OrdinalIgnoreCase),
                 "Next rows tooltip should explain read-only display-window navigation.");
+            Assert(
+                window.NextReviewWindowButtonAutomationHelpTextValue.Contains("next in-memory", StringComparison.OrdinalIgnoreCase)
+                && window.NextReviewWindowButtonAutomationHelpTextValue.Contains("Storage Review Display Window", StringComparison.OrdinalIgnoreCase)
+                && window.NextReviewWindowButtonAutomationHelpTextValue.Contains("does not rescan", StringComparison.OrdinalIgnoreCase)
+                && window.NextReviewWindowButtonAutomationHelpTextValue.Contains("modify files", StringComparison.OrdinalIgnoreCase),
+                "Next rows automation help text should explain read-only display-window navigation.");
             Assert(
                 window.AddShownRowsToReviewShortlistButtonToolTipValue.Contains("currently visible review rows", StringComparison.OrdinalIgnoreCase)
                 && window.AddShownRowsToReviewShortlistButtonToolTipValue.Contains("not cleanup approval", StringComparison.OrdinalIgnoreCase)

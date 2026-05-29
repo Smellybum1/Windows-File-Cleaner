@@ -219,6 +219,7 @@
                             MinWidth="110"
                             IsEnabled="False"
                             ToolTip="Exports the current active review lens as a CSV report; this is not cleanup approval and no scanned files are modified."
+                            AutomationProperties.HelpText="Exports the current active review lens as a CSV report; this is not cleanup approval and no scanned files are modified."
                             ToolTipService.ShowOnDisabled="True"
                             Click="ExportCsvButton_Click" />
                 </WrapPanel>
@@ -260,6 +261,7 @@
                             MinWidth="110"
                             IsEnabled="False"
                             ToolTip="Clears only Storage Review Search for the completed scan; this does not rescan, modify files, or clear Review Shortlist."
+                            AutomationProperties.HelpText="Clears only Storage Review Search for the completed scan; this does not rescan, modify files, or clear Review Shortlist."
                             ToolTipService.ShowOnDisabled="True"
                             Click="ClearSearchButton_Click" />
                     <Button x:Name="ResetViewButton"
@@ -267,6 +269,7 @@
                             MinWidth="100"
                             IsEnabled="False"
                             ToolTip="Clears active review filters and search while keeping Review Shortlist; this does not rescan or modify files."
+                            AutomationProperties.HelpText="Clears active review filters and search while keeping Review Shortlist; this does not rescan or modify files."
                             ToolTipService.ShowOnDisabled="True"
                             Click="ResetViewButton_Click" />
                     <Button x:Name="PreviousReviewWindowButton"
@@ -274,6 +277,7 @@
                             MinWidth="125"
                             IsEnabled="False"
                             ToolTip="Moves to the previous in-memory Storage Review Display Window; this does not rescan or modify files."
+                            AutomationProperties.HelpText="Moves to the previous in-memory Storage Review Display Window; this does not rescan or modify files."
                             ToolTipService.ShowOnDisabled="True"
                             Click="PreviousReviewWindowButton_Click" />
                     <TextBlock x:Name="ReviewWindowText"
@@ -286,6 +290,7 @@
                             MinWidth="105"
                             IsEnabled="False"
                             ToolTip="Moves to the next in-memory Storage Review Display Window; this does not rescan or modify files."
+                            AutomationProperties.HelpText="Moves to the next in-memory Storage Review Display Window; this does not rescan or modify files."
                             ToolTipService.ShowOnDisabled="True"
                             Click="NextReviewWindowButton_Click" />
                     <StackPanel Orientation="Horizontal"

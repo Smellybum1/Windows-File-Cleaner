@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Windows;
+using System.Windows.Automation;
 using System.Windows.Controls;
 using System.Windows.Threading;
 using Microsoft.Win32;
@@ -99,6 +100,8 @@ public partial class MainWindow : Window
 
     public string ExportScanCsvButtonToolTipValue => ExportCsvButton.ToolTip?.ToString() ?? "";
 
+    public string ExportScanCsvButtonAutomationHelpTextValue => AutomationProperties.GetHelpText(ExportCsvButton);
+
     public int CurrentScanReportExportRowCount => BuildCurrentScanReportExportRows().Count;
 
     public IReadOnlyList<string> CurrentScanReportExportPaths => BuildCurrentScanReportExportRows()
@@ -125,7 +128,11 @@ public partial class MainWindow : Window
 
     public string ClearSearchButtonToolTipValue => ClearSearchButton.ToolTip?.ToString() ?? "";
 
+    public string ClearSearchButtonAutomationHelpTextValue => AutomationProperties.GetHelpText(ClearSearchButton);
+
     public string ResetReviewViewButtonToolTipValue => ResetViewButton.ToolTip?.ToString() ?? "";
+
+    public string ResetReviewViewButtonAutomationHelpTextValue => AutomationProperties.GetHelpText(ResetViewButton);
 
     public string CurrentEntryTypeFilterLabel => EntryTypeFilterBox.SelectedItem is EntryTypeFilterOption option
         ? option.Label
@@ -174,9 +181,13 @@ public partial class MainWindow : Window
 
     public string PreviousReviewWindowButtonToolTipValue => PreviousReviewWindowButton.ToolTip?.ToString() ?? "";
 
+    public string PreviousReviewWindowButtonAutomationHelpTextValue => AutomationProperties.GetHelpText(PreviousReviewWindowButton);
+
     public bool CanShowNextReviewWindow => NextReviewWindowButton.IsEnabled;
 
     public string NextReviewWindowButtonToolTipValue => NextReviewWindowButton.ToolTip?.ToString() ?? "";
+
+    public string NextReviewWindowButtonAutomationHelpTextValue => AutomationProperties.GetHelpText(NextReviewWindowButton);
 
     public string CurrentSearchText => SearchBox.Text;
 

@@ -608,7 +608,7 @@ Recognized field prefixes restrict search to one field:
 - Treat `parent:` as an immediate-parent lens, not a recursive descendant tree.
 - Treat `under:` as a descendant lens that excludes the selected ancestor row.
 - Keep search in-memory and read-only.
-- Clear search tooltip wording should say it clears only Storage Review Search, keeps Review Shortlist, and does not rescan or modify files.
+- Clear search tooltip and automation help text should say it clears only Storage Review Search, keeps Review Shortlist, and does not rescan or modify files.
 - Keep direct/programmatic search application immediate for shortcuts and tests, but debounce textbox typing before refreshing large review result sets.
 - Do not use search text to change Bloat Categories, Importance Ratings, Deletion Recommendations, or cleanup eligibility.
 
@@ -794,7 +794,7 @@ It does not clear Review Shortlist and does not modify files.
 
 - Use `ResetReviewView` in WPF.
 - Preserve `StorageReviewShortlist`.
-- Tooltip wording should say Reset view clears filters/search, keeps Review Shortlist, and does not rescan or modify files.
+- Tooltip and automation help text should say Reset view clears filters/search, keeps Review Shortlist, and does not rescan or modify files.
 - Keep reset status wording explicit that no files were modified and the shortlist was kept.
 
 ### Storage Review Display Limit
@@ -838,7 +838,7 @@ The current display limit is 2,000 rows. It is a UI review boundary, not a scann
 - Keep the limit in the WPF review layer.
 - Show the current row range and matched count when the limit is reached.
 - Provide read-only Previous rows and Next rows controls over matched in-memory review results.
-- Previous/Next rows tooltips should say display-window navigation is in-memory and does not rescan or modify files.
+- Previous/Next rows tooltips and automation help text should say display-window navigation is in-memory and does not rescan or modify files.
 - Do not treat displayed rows as the complete scan result when exporting, documenting scan scope, or describing review behavior.
 
 ### Storage Review Display Window
@@ -1914,7 +1914,7 @@ The initial export format is CSV for the currently active Storage Review Filter,
 - Export parent path and depth from the flattened Storage Review row.
 - Export Access Status separately from access issue text.
 - Keep generated report filenames descriptive and filesystem-safe when filters, type, size, or search are active.
-- Export tooltip wording should keep report-only, not-cleanup-approval, and no-scanned-file-modified boundaries visible.
+- Export tooltip and automation help text should keep report-only, not-cleanup-approval, and no-scanned-file-modified boundaries available.
 - Keep exports separate from Quarantine manifests.
 
 ### Importance Rating

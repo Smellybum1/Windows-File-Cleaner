@@ -23,7 +23,7 @@ Fresh-thread handoff notes live in `docs/codex/thread-handoff.md`.
 - Real-profile WPF Quarantine execution and broad WPF Undo Quarantine remain unavailable.
 - The visible WPF app does not delete files.
 - CSV exports write only to a path selected by the user.
-- Scan Report Export and review navigation controls use tooltips to keep report-only, in-memory, no-rescan, and no-file-modified boundaries visible.
+- Scan Report Export and review navigation controls use tooltips and automation help text to keep report-only, in-memory, no-rescan, and no-file-modified boundaries available.
 - Review Shortlist is an in-memory review aid, not cleanup approval.
 - Review Shortlist export and clear controls use tooltips to keep report-only and in-memory-only boundaries visible.
 - Review Shortlist bulk actions label their scope as visible rows and include tooltips so they apply only to the current displayed review window, not cleanup approval.
@@ -120,7 +120,7 @@ This only fills the Cleanup Scope box. Click `Scan` yourself after the app opens
 
 Use `-SkipChecklist` only when you intentionally want the launcher output without the reminder checklist.
 
-The automated `WindowsFileCleaner.App.Tests` project also scans a synthetic fixture through the WPF shell, exercises read-only review interactions, proves fixture-only Quarantine execution and undo, verifies manifest discovery, selected manifest review, selected restore confirmation gate, fixture-only selected restore execution, and all-manifest readiness preview, verifies custom non-fixture execution remains blocked, and checks that the review toolbars use wrapping layout, but it does not replace checking the visible layout and controls by eye.
+The automated `WindowsFileCleaner.App.Tests` project also scans a synthetic fixture through the WPF shell, exercises read-only review interactions, proves fixture-only Quarantine execution and undo, verifies manifest discovery, selected manifest review, selected restore confirmation gate, fixture-only selected restore execution, and all-manifest readiness preview, verifies custom non-fixture execution remains blocked, checks review navigation/export tooltip and automation help text boundaries, and checks that the review toolbars use wrapping layout, but it does not replace checking the visible layout and controls by eye.
 
 ## Run The App
 
