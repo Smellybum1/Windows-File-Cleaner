@@ -1437,6 +1437,18 @@ internal sealed class MainWindowSmokeTests
             Assert(
                 window.QuarantineExecutionGateTextValue.Contains("Execution target: all included Review Shortlist rows", StringComparison.OrdinalIgnoreCase),
                 "Fixture execution gate should name the included-shortlist execution target.");
+            Assert(
+                window.QuarantineExecutionGateViewportMaxHeight <= 120,
+                "Quarantine shortlist gate details should stay height-constrained so the main grid remains usable.");
+            Assert(window.IsQuarantineShortlistExpanded, "Quarantine shortlist area should start expanded for discoverability.");
+            window.SetQuarantineShortlistExpanded(false);
+            Assert(!window.IsQuarantineShortlistExpanded, "Quarantine shortlist area should be collapsible to recover grid height.");
+            window.SetQuarantineShortlistExpanded(true);
+            Assert(window.IsQuarantineShortlistExpanded, "Quarantine shortlist area should expand again without losing gate state.");
+            Assert(window.IsSafetySummaryExpanded, "Scan safety summary should start expanded for discoverability.");
+            window.SetSafetySummaryExpanded(false);
+            Assert(!window.IsSafetySummaryExpanded, "Scan safety summary should be collapsible to recover grid height.");
+            window.SetSafetySummaryExpanded(true);
 
             window.SetQuarantineConfirmationText("QUARANTINE");
             Assert(window.CanExecuteQuarantine, "Fixture execution should open after exact confirmation.");

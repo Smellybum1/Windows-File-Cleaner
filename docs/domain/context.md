@@ -1159,6 +1159,7 @@ It summarizes safety-relevant scan signals such as high-risk rows, Protected Loc
 - Keep Uncategorized Result examples bounded, size-labeled, cleanup-scope-relative, and derived from scan rows.
 - Keep summary notes derived from scan results only.
 - Safety Summary review shortcut tooltips and automation help text should keep shortcut scope, read-only behavior, no-rescan/no-file-modified boundaries, no-permission-change behavior for Access issues, no-link-following behavior for reparse points, and not-cleanup-approval wording available.
+- In WPF, keep Safety Summary collapsible so the main review grid can recover vertical space during focused review.
 - Do not trigger permission changes, cleanup actions, quarantine actions, or rescans from the summary.
 
 ### Child Breakdown
@@ -2552,6 +2553,8 @@ In the current build the gate can open only for recognized fixture Cleanup Scope
 - `CanExecute` must require no blockers, exact confirmation text, and implemented execution support.
 - Keep `CanExecute` false for real-profile and custom non-fixture Cleanup Scopes.
 - Keep Quarantine Execution Scope Status visible in the gate readout.
+- In WPF, keep verbose gate details height-constrained when shown in the Quarantine shortlist area so the main review grid remains usable.
+- In WPF, keep the Quarantine shortlist area collapsible so the user can recover grid height after reviewing the gate.
 - Keep confirmation and execution control tooltips and automation help text aligned with fixture-only execution and real-profile/custom blockers.
 - Do not create folders, move files, delete files, write manifests, or persist cleanup jobs from gate builder code.
 

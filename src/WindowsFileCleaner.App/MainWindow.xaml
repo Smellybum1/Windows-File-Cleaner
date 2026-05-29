@@ -146,67 +146,71 @@
                 BorderThickness="1"
                 Padding="12"
                 Margin="0,0,0,12">
-            <StackPanel>
-                <TextBlock x:Name="ReviewMixText"
-                           Text="Review mix appears after a scan."
-                           Foreground="#526171"
-                           TextWrapping="Wrap" />
-                <TextBlock x:Name="SafetySummaryText"
-                           Text="Safety summary appears after a scan."
-                           Foreground="#526171"
-                           Margin="0,8,0,0"
-                           TextWrapping="Wrap" />
-                <WrapPanel Margin="0,8,0,0">
-                    <Button x:Name="SafetyHighRiskButton"
-                            Content="Review high risk"
-                            MinWidth="125"
-                            IsEnabled="False"
-                            ToolTip="Applies a read-only review shortcut to High risk rows from the completed Storage Scan; this does not rescan, modify files, or approve cleanup."
-                            AutomationProperties.HelpText="Applies a read-only review shortcut to High risk rows from the completed Storage Scan; this does not rescan, modify files, or approve cleanup."
-                            ToolTipService.ShowOnDisabled="True"
-                            Click="SafetyHighRiskButton_Click" />
-                    <Button x:Name="SafetyProtectedButton"
-                            Content="Review protected"
-                            MinWidth="135"
-                            IsEnabled="False"
-                            ToolTip="Applies a read-only review shortcut to Protected Location rows; this does not rescan, modify files, or approve cleanup."
-                            AutomationProperties.HelpText="Applies a read-only review shortcut to Protected Location rows; this does not rescan, modify files, or approve cleanup."
-                            ToolTipService.ShowOnDisabled="True"
-                            Click="SafetyProtectedButton_Click" />
-                    <Button x:Name="SafetyAccessIssuesButton"
-                            Content="Review access"
-                            MinWidth="120"
-                            IsEnabled="False"
-                            ToolTip="Applies a read-only review shortcut to Access issue rows; this does not retry, elevate, change permissions, modify files, or approve cleanup."
-                            AutomationProperties.HelpText="Applies a read-only review shortcut to Access issue rows; this does not retry, elevate, change permissions, modify files, or approve cleanup."
-                            ToolTipService.ShowOnDisabled="True"
-                            Click="SafetyAccessIssuesButton_Click" />
-                    <Button x:Name="SafetyReparsePointsButton"
-                            Content="Review reparse"
-                            MinWidth="125"
-                            IsEnabled="False"
-                            ToolTip="Applies a read-only review shortcut to reparse point rows; this does not follow links, rescan, modify files, or approve cleanup."
-                            AutomationProperties.HelpText="Applies a read-only review shortcut to reparse point rows; this does not follow links, rescan, modify files, or approve cleanup."
-                            ToolTipService.ShowOnDisabled="True"
-                            Click="SafetyReparsePointsButton_Click" />
-                    <Button x:Name="SafetyQuarantineCandidatesButton"
-                            Content="Review quarantine"
-                            MinWidth="145"
-                            IsEnabled="False"
-                            ToolTip="Applies a read-only review shortcut to Quarantine candidate rows; this is not Quarantine approval and no files are modified."
-                            AutomationProperties.HelpText="Applies a read-only review shortcut to Quarantine candidate rows; this is not Quarantine approval and no files are modified."
-                            ToolTipService.ShowOnDisabled="True"
-                            Click="SafetyQuarantineCandidatesButton_Click" />
-                    <Button x:Name="SafetyNoCategoryButton"
-                            Content="Review no category"
-                            MinWidth="145"
-                            IsEnabled="False"
-                            ToolTip="Applies a read-only review shortcut to No category rows that need classification; this does not rescan, modify files, or approve cleanup."
-                            AutomationProperties.HelpText="Applies a read-only review shortcut to No category rows that need classification; this does not rescan, modify files, or approve cleanup."
-                            ToolTipService.ShowOnDisabled="True"
-                            Click="SafetyNoCategoryButton_Click" />
-                </WrapPanel>
-            </StackPanel>
+            <Expander x:Name="SafetySummaryExpander"
+                      Header="Scan safety summary"
+                      IsExpanded="True">
+                <StackPanel Margin="0,6,0,0">
+                    <TextBlock x:Name="ReviewMixText"
+                               Text="Review mix appears after a scan."
+                               Foreground="#526171"
+                               TextWrapping="Wrap" />
+                    <TextBlock x:Name="SafetySummaryText"
+                               Text="Safety summary appears after a scan."
+                               Foreground="#526171"
+                               Margin="0,8,0,0"
+                               TextWrapping="Wrap" />
+                    <WrapPanel Margin="0,8,0,0">
+                        <Button x:Name="SafetyHighRiskButton"
+                                Content="Review high risk"
+                                MinWidth="125"
+                                IsEnabled="False"
+                                ToolTip="Applies a read-only review shortcut to High risk rows from the completed Storage Scan; this does not rescan, modify files, or approve cleanup."
+                                AutomationProperties.HelpText="Applies a read-only review shortcut to High risk rows from the completed Storage Scan; this does not rescan, modify files, or approve cleanup."
+                                ToolTipService.ShowOnDisabled="True"
+                                Click="SafetyHighRiskButton_Click" />
+                        <Button x:Name="SafetyProtectedButton"
+                                Content="Review protected"
+                                MinWidth="135"
+                                IsEnabled="False"
+                                ToolTip="Applies a read-only review shortcut to Protected Location rows; this does not rescan, modify files, or approve cleanup."
+                                AutomationProperties.HelpText="Applies a read-only review shortcut to Protected Location rows; this does not rescan, modify files, or approve cleanup."
+                                ToolTipService.ShowOnDisabled="True"
+                                Click="SafetyProtectedButton_Click" />
+                        <Button x:Name="SafetyAccessIssuesButton"
+                                Content="Review access"
+                                MinWidth="120"
+                                IsEnabled="False"
+                                ToolTip="Applies a read-only review shortcut to Access issue rows; this does not retry, elevate, change permissions, modify files, or approve cleanup."
+                                AutomationProperties.HelpText="Applies a read-only review shortcut to Access issue rows; this does not retry, elevate, change permissions, modify files, or approve cleanup."
+                                ToolTipService.ShowOnDisabled="True"
+                                Click="SafetyAccessIssuesButton_Click" />
+                        <Button x:Name="SafetyReparsePointsButton"
+                                Content="Review reparse"
+                                MinWidth="125"
+                                IsEnabled="False"
+                                ToolTip="Applies a read-only review shortcut to reparse point rows; this does not follow links, rescan, modify files, or approve cleanup."
+                                AutomationProperties.HelpText="Applies a read-only review shortcut to reparse point rows; this does not follow links, rescan, modify files, or approve cleanup."
+                                ToolTipService.ShowOnDisabled="True"
+                                Click="SafetyReparsePointsButton_Click" />
+                        <Button x:Name="SafetyQuarantineCandidatesButton"
+                                Content="Review quarantine"
+                                MinWidth="145"
+                                IsEnabled="False"
+                                ToolTip="Applies a read-only review shortcut to Quarantine candidate rows; this is not Quarantine approval and no files are modified."
+                                AutomationProperties.HelpText="Applies a read-only review shortcut to Quarantine candidate rows; this is not Quarantine approval and no files are modified."
+                                ToolTipService.ShowOnDisabled="True"
+                                Click="SafetyQuarantineCandidatesButton_Click" />
+                        <Button x:Name="SafetyNoCategoryButton"
+                                Content="Review no category"
+                                MinWidth="145"
+                                IsEnabled="False"
+                                ToolTip="Applies a read-only review shortcut to No category rows that need classification; this does not rescan, modify files, or approve cleanup."
+                                AutomationProperties.HelpText="Applies a read-only review shortcut to No category rows that need classification; this does not rescan, modify files, or approve cleanup."
+                                ToolTipService.ShowOnDisabled="True"
+                                Click="SafetyNoCategoryButton_Click" />
+                    </WrapPanel>
+                </StackPanel>
+            </Expander>
         </Border>
 
         <Grid Grid.Row="3">
@@ -430,10 +434,10 @@
                         BorderThickness="1"
                         Padding="12"
                         Margin="0,10,0,0">
-                    <StackPanel>
-                        <TextBlock Text="Quarantine shortlist"
-                                   FontWeight="SemiBold"
-                                   Margin="0,0,0,6" />
+                    <Expander x:Name="QuarantineShortlistExpander"
+                              Header="Quarantine shortlist"
+                              IsExpanded="True">
+                    <StackPanel Margin="0,6,0,0">
                         <WrapPanel>
                             <StackPanel Margin="0,0,8,6"
                                         VerticalAlignment="Center">
@@ -467,6 +471,8 @@
                             <Button x:Name="PreviewQuarantineButton"
                                     Content="Preview shortlist quarantine"
                                     MinWidth="205"
+                                    Height="34"
+                                    VerticalAlignment="Top"
                                     IsEnabled="False"
                                     ToolTip="Builds a read-only Quarantine Preview from every row in the Review Shortlist; preview does not create folders, move files, or approve cleanup."
                                     AutomationProperties.HelpText="Builds a read-only Quarantine Preview from every row in the Review Shortlist; preview does not create folders, move files, or approve cleanup."
@@ -475,6 +481,8 @@
                             <Button x:Name="ExportQuarantinePreviewButton"
                                     Content="Export preview"
                                     MinWidth="120"
+                                    Height="34"
+                                    VerticalAlignment="Top"
                                     IsEnabled="False"
                                     ToolTip="Exports the current Quarantine Preview as a CSV report only; it does not execute Quarantine or modify scanned files."
                                     AutomationProperties.HelpText="Exports the current Quarantine Preview as a CSV report only; it does not execute Quarantine or modify scanned files."
@@ -483,6 +491,8 @@
                             <Button x:Name="ShowQuarantinedButton"
                                     Content="Quarantined"
                                     MinWidth="120"
+                                    Height="34"
+                                    VerticalAlignment="Top"
                                     IsEnabled="False"
                                     ToolTip="Shows current-session quarantined Restore Manifest entries in the main grid; this is read-only and does not restore, move, or delete files."
                                     AutomationProperties.HelpText="Shows current-session quarantined Restore Manifest entries in the main grid; this is read-only and does not restore, move, or delete files."
@@ -491,6 +501,8 @@
                             <Button x:Name="BackToScanRowsButton"
                                     Content="Back to scan rows"
                                     MinWidth="145"
+                                    Height="34"
+                                    VerticalAlignment="Top"
                                     IsEnabled="False"
                                     ToolTip="Returns the main grid to completed Storage Scan rows without rescanning or modifying files."
                                     AutomationProperties.HelpText="Returns the main grid to completed Storage Scan rows without rescanning or modifying files."
@@ -514,6 +526,7 @@
                             <Button x:Name="ExecuteQuarantineButton"
                                     Content="Quarantine included shortlist"
                                     MinWidth="220"
+                                    Height="34"
                                     IsEnabled="False"
                                     ToolTip="Fixture-only button that moves all included rows from the current Review Shortlist preview after exact QUARANTINE; real-profile/custom execution remains unavailable."
                                     AutomationProperties.HelpText="Fixture-only button that moves all included rows from the current Review Shortlist preview after exact QUARANTINE; real-profile/custom execution remains unavailable."
@@ -522,19 +535,26 @@
                             <Button x:Name="UndoQuarantineButton"
                                     Content="Undo fixture quarantine"
                                     MinWidth="170"
+                                    Height="34"
                                     IsEnabled="False"
                                     ToolTip="Current fixture execution only; discovered Restore Manifests and real-profile/custom undo remain unavailable."
                                     AutomationProperties.HelpText="Current fixture execution only; discovered Restore Manifests and real-profile/custom undo remain unavailable."
                                     ToolTipService.ShowOnDisabled="True"
                                     Click="UndoQuarantineButton_Click" />
                         </WrapPanel>
-                        <TextBlock x:Name="QuarantineExecutionGateText"
-                                   Text="Execution gate appears after using Preview quarantine."
-                                   FontFamily="Consolas"
-                                   FontSize="12"
-                                   Margin="0,6,0,0"
-                                   TextWrapping="Wrap" />
+                        <ScrollViewer x:Name="QuarantineExecutionGateScroll"
+                                      MaxHeight="96"
+                                      Margin="0,6,0,0"
+                                      VerticalScrollBarVisibility="Auto"
+                                      HorizontalScrollBarVisibility="Disabled">
+                            <TextBlock x:Name="QuarantineExecutionGateText"
+                                       Text="Execution gate appears after using Preview quarantine."
+                                       FontFamily="Consolas"
+                                       FontSize="12"
+                                       TextWrapping="Wrap" />
+                        </ScrollViewer>
                     </StackPanel>
+                    </Expander>
                 </Border>
             </StackPanel>
 

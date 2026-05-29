@@ -6658,3 +6658,46 @@ Rejected ideas buffer:
 
 - Do not make moved source rows persist in refreshed Storage Scan results.
 - Do not use the `Quarantined` button as cleanup history or broad manifest restore.
+
+### 2026-05-29: Make Review Panels Collapsible
+
+Status: completed
+
+Evidence:
+
+- User review showed the new Quarantine shortlist area made the main grid tiny because the verbose Quarantine Execution Gate text was always expanded above the grid.
+- User suggested making the Quarantine list/panel collapsible and possibly doing the same for other vertical sections.
+
+Implementation:
+
+- Made the Quarantine shortlist area collapsible while preserving the grouped Quarantine root, preview, execution, undo, and current-session quarantined controls.
+- Kept verbose Quarantine Execution Gate details in a constrained scroll viewport when the panel is expanded.
+- Made the Safety Summary section collapsible so the grid can recover additional vertical space during focused review.
+- Kept all cleanup execution boundaries unchanged.
+
+Verification:
+
+- `dotnet build tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj "-p:BaseOutputPath=D:/Codex/Windows File Cleaner/.local/test-bin/app-tests/"` passed.
+- `D:\Codex\Windows File Cleaner\.local\test-bin\app-tests\Debug\net8.0-windows\WindowsFileCleaner.App.Tests.exe` passed.
+- `dotnet build WindowsFileCleaner.sln --no-restore "-p:BaseOutputPath=D:/Codex/Windows File Cleaner/.local/test-bin/solution/"` passed.
+- `git -c safe.directory='D:/Codex/Windows File Cleaner' diff --check` passed with line-ending normalization warnings only.
+
+Docs updated:
+
+- `README.md`
+- `docs/domain/context.md`
+- `docs/features/2026-05-29-quarantined-review-mode.md`
+- `docs/codex/thread-handoff.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No ADR added. This is reversible WPF layout behavior with no persistence, cleanup execution, restore, data-model, or security change.
+
+Open questions:
+
+- Should additional review sections, such as filters or selected-row detail panes, become collapsible after the next manual pass?
+
+Rejected ideas buffer:
+
+- Do not hide the Quarantine Execution Gate details entirely; keep them available in a constrained view.

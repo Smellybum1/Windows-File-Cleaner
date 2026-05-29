@@ -305,6 +305,12 @@ public partial class MainWindow : Window
 
     public string QuarantineExecutionGateTextValue => QuarantineExecutionGateText.Text;
 
+    public double QuarantineExecutionGateViewportMaxHeight => QuarantineExecutionGateScroll.MaxHeight;
+
+    public bool IsQuarantineShortlistExpanded => QuarantineShortlistExpander.IsExpanded;
+
+    public bool IsSafetySummaryExpanded => SafetySummaryExpander.IsExpanded;
+
     public string QuarantineManifestDiscoveryTextValue => QuarantineManifestDiscoveryText.Text;
 
     public string RestoreReadinessPreviewTextValue => RestoreReadinessPreviewText.Text;
@@ -1856,6 +1862,16 @@ public partial class MainWindow : Window
         StatusText.Text = _currentReview is null
             ? "Storage Scan rows appear after a scan. No files were modified."
             : "Showing Storage Scan rows. No files were modified.";
+    }
+
+    public void SetQuarantineShortlistExpanded(bool isExpanded)
+    {
+        QuarantineShortlistExpander.IsExpanded = isExpanded;
+    }
+
+    public void SetSafetySummaryExpanded(bool isExpanded)
+    {
+        SafetySummaryExpander.IsExpanded = isExpanded;
     }
 
     public void ApplySafetyReviewShortcut(StorageScanSafetyShortcut shortcut)

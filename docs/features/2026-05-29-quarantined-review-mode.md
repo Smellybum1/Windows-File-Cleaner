@@ -87,6 +87,8 @@ Completed on: 2026-05-29
 What changed:
 
 - Moved Quarantine Root Selection, preview/export, confirmation text, fixture execution, current-fixture undo, and Quarantine Execution Gate text into a dedicated Quarantine shortlist area above the grid.
+- Made the Quarantine shortlist area collapsible and kept verbose gate details in a constrained scroll area so the main grid remains usable.
+- Made the Safety Summary section collapsible to recover more review-grid height during focused review.
 - Added a `Quarantined` button that switches the main grid to current-session `Moved` Restore Manifest entries.
 - Added `Back to scan rows` to return to normal Storage Scan rows.
 - Added WPF smoke coverage for the current-session quarantined view after execution, after post-execution rescan, and after undo.
@@ -110,6 +112,12 @@ Tests run:
 - `D:\Codex\Windows File Cleaner\.local\test-bin\app-tests\Debug\net8.0-windows\WindowsFileCleaner.App.Tests.exe`
 - `dotnet build WindowsFileCleaner.sln --no-restore "-p:BaseOutputPath=D:/Codex/Windows File Cleaner/.local/test-bin/solution/"`
 - `git -c safe.directory='D:/Codex/Windows File Cleaner' diff --check`
+
+Post-completion UI polish:
+
+- User review showed the main grid became too short after the Quarantine shortlist area moved above it.
+- The Quarantine shortlist and Safety Summary sections are now collapsible.
+- The Quarantine Execution Gate detail text remains available but constrained to a small scroll viewport.
 
 Docs updated:
 
