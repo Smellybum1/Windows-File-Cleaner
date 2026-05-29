@@ -120,6 +120,7 @@ internal sealed class MainWindowSmokeTests
                 "Collapsed Quarantine shortlist header should start with neutral styling before shortlist, preview, or current quarantine state exists.");
             AssertQuarantineShortlistHeaderHelpCue(window, "Startup Quarantine Shortlist header cue should expose the same help text as the header.");
             AssertReviewGridModeHelpText(window, "Review Grid Mode Status help text should expose the startup grid-mode boundary.");
+            AssertHoverableHelpCueAffordances(window, "Startup circular help cues should expose hover affordances.");
             Assert(!window.CanStartStorageScan, "MainWindow should require preflight acknowledgement before scanning the real profile.");
             Assert(!window.CanCancelStorageScan, "MainWindow should not enable Cancel before a Storage Scan starts.");
             Assert(
@@ -2219,6 +2220,22 @@ internal sealed class MainWindowSmokeTests
         Assert(
             string.Equals(window.QuarantineShortlistHeaderHelpCueAutomationHelpTextValue, window.QuarantineShortlistHeaderAutomationHelpTextValue, StringComparison.Ordinal),
             message + " Help cue automation help text should mirror the Quarantine Shortlist header help text.");
+    }
+
+    private static void AssertHoverableHelpCueAffordances(MainWindow window, string message)
+    {
+        var affordances = window.HoverableHelpCueAffordances;
+        Assert(affordances.Count == 7, message + " Expected all seven circular help cues to be tracked.");
+
+        foreach (var affordance in affordances)
+        {
+            Assert(
+                string.Equals(affordance.Cursor, "Help", StringComparison.Ordinal),
+                $"{message} {affordance.Name} should use the Windows help cursor.");
+            Assert(
+                affordance.InitialShowDelay == 250,
+                $"{message} {affordance.Name} should use a prompt tooltip initial delay.");
+        }
     }
 
     private static void AssertReviewGridModeHelpText(MainWindow window, string message)

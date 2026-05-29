@@ -202,6 +202,11 @@ public partial class MainWindow : Window
         ? option.Label
         : "";
 
+    private static (string Name, string Cursor, int InitialShowDelay) GetHelpCueAffordance(string name, FrameworkElement cue)
+    {
+        return (name, cue.Cursor?.ToString() ?? "", ToolTipService.GetInitialShowDelay(cue));
+    }
+
     public int DisplayedRowCount => DisplayedRows.Count;
 
     public IReadOnlyList<StorageEntryRow> DisplayedRows => ResultsGrid.ItemsSource is IEnumerable<StorageEntryRow> rows
@@ -233,6 +238,17 @@ public partial class MainWindow : Window
     public string ReviewGridModeHelpCueAutomationNameValue => AutomationProperties.GetName(ReviewGridModeHelpCue);
 
     public string ReviewGridModeHelpCueAutomationHelpTextValue => AutomationProperties.GetHelpText(ReviewGridModeHelpCue);
+
+    public IReadOnlyList<(string Name, string Cursor, int InitialShowDelay)> HoverableHelpCueAffordances =>
+    [
+        GetHelpCueAffordance("Safety Summary header", SafetySummaryHeaderHelpCue),
+        GetHelpCueAffordance("Review Mix", ReviewMixHelpCue),
+        GetHelpCueAffordance("Matched Review Mix", MatchedReviewMixHelpCue),
+        GetHelpCueAffordance("Review Shortlist Safety Mix", ShortlistSafetyMixHelpCue),
+        GetHelpCueAffordance("Quarantine Shortlist header", QuarantineShortlistHeaderHelpCue),
+        GetHelpCueAffordance("Inline Quarantine Preview status", QuarantinePreviewStatusHelpCue),
+        GetHelpCueAffordance("Review Grid Mode Status", ReviewGridModeHelpCue)
+    ];
 
     public string? ContentsColumnSortMemberPath => ResultsGrid.Columns
         .OfType<DataGridTextColumn>()
