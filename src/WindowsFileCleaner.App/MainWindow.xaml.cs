@@ -280,7 +280,15 @@ public partial class MainWindow : Window
 
     public bool CanPreviewQuarantine => PreviewQuarantineButton.IsEnabled;
 
+    public string ExportShortlistButtonToolTipValue => ExportShortlistCsvButton.ToolTip?.ToString() ?? "";
+
+    public string ClearShortlistButtonToolTipValue => ClearShortlistButton.ToolTip?.ToString() ?? "";
+
+    public string PreviewQuarantineButtonToolTipValue => PreviewQuarantineButton.ToolTip?.ToString() ?? "";
+
     public bool CanExportQuarantinePreview => ExportQuarantinePreviewButton.IsEnabled;
+
+    public string ExportQuarantinePreviewButtonToolTipValue => ExportQuarantinePreviewButton.ToolTip?.ToString() ?? "";
 
     public bool CanEnterQuarantineConfirmation => QuarantineConfirmationBox.IsEnabled;
 

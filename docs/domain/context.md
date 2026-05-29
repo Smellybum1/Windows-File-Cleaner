@@ -1640,6 +1640,7 @@ It is not a cleanup approval and does not modify files.
 - Use `StorageReviewShortlist` for the in-memory selection model.
 - Bulk additions and removals should use only currently displayed rows, not hidden matched rows beyond the Storage Review Display Limit.
 - Visible-row bulk control tooltips should keep the display-window scope, no-file-modified behavior, and not-cleanup-approval boundary visible.
+- Export and clear control tooltips should keep report-only and in-memory-only behavior visible before use.
 - Keep shortlisted paths separate from Cleanup Actions and Quarantine manifests.
 - Do not persist or execute the Review Shortlist as an action without a future explicit approval workflow.
 
@@ -1699,6 +1700,7 @@ A Quarantine Preview is a read-only dry run showing which shortlisted Storage Sc
 
 It does not create folders, write manifests, move files, delete files, or approve cleanup.
 The WPF preview and execution gate panes should keep the approval boundary visible: Review Shortlist and Quarantine Preview are review evidence, not cleanup approval.
+Preview and preview export control tooltips should keep dry-run and report-only boundaries visible before use.
 
 #### Examples
 

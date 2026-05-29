@@ -101,6 +101,26 @@ internal sealed class MainWindowSmokeTests
                 && window.RemoveShownRowsFromReviewShortlistButtonToolTipValue.Contains("not cleanup approval", StringComparison.OrdinalIgnoreCase)
                 && window.RemoveShownRowsFromReviewShortlistButtonToolTipValue.Contains("no files are modified", StringComparison.OrdinalIgnoreCase),
                 "Visible-row shortlist remove tooltip should explain scope, approval boundary, and no-file-modified behavior.");
+            Assert(
+                window.ExportShortlistButtonToolTipValue.Contains("CSV report only", StringComparison.OrdinalIgnoreCase)
+                && window.ExportShortlistButtonToolTipValue.Contains("not cleanup approval", StringComparison.OrdinalIgnoreCase)
+                && window.ExportShortlistButtonToolTipValue.Contains("no scanned files are modified", StringComparison.OrdinalIgnoreCase),
+                "Export shortlist tooltip should explain report-only behavior and the non-approval boundary.");
+            Assert(
+                window.ClearShortlistButtonToolTipValue.Contains("in-memory Review Shortlist", StringComparison.OrdinalIgnoreCase)
+                && window.ClearShortlistButtonToolTipValue.Contains("does not delete", StringComparison.OrdinalIgnoreCase)
+                && window.ClearShortlistButtonToolTipValue.Contains("restore files", StringComparison.OrdinalIgnoreCase),
+                "Clear shortlist tooltip should explain that only in-memory review state changes.");
+            Assert(
+                window.PreviewQuarantineButtonToolTipValue.Contains("read-only Quarantine Preview", StringComparison.OrdinalIgnoreCase)
+                && window.PreviewQuarantineButtonToolTipValue.Contains("does not create folders", StringComparison.OrdinalIgnoreCase)
+                && window.PreviewQuarantineButtonToolTipValue.Contains("approve cleanup", StringComparison.OrdinalIgnoreCase),
+                "Preview quarantine tooltip should explain dry-run preview behavior.");
+            Assert(
+                window.ExportQuarantinePreviewButtonToolTipValue.Contains("CSV report only", StringComparison.OrdinalIgnoreCase)
+                && window.ExportQuarantinePreviewButtonToolTipValue.Contains("does not execute Quarantine", StringComparison.OrdinalIgnoreCase)
+                && window.ExportQuarantinePreviewButtonToolTipValue.Contains("modify scanned files", StringComparison.OrdinalIgnoreCase),
+                "Export preview tooltip should explain report-only behavior.");
             Assert(!window.CanPreviewSelectedRestoreGate, "MainWindow should not enable selected restore gate preview before selected manifest readiness.");
             Assert(!window.CanEnterSelectedRestoreConfirmation, "MainWindow should not allow selected restore confirmation before gate preview.");
             Assert(!window.CanExecuteSelectedRestore, "MainWindow should not allow selected restore execution before gate preview.");
