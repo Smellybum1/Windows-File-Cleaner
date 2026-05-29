@@ -1250,6 +1250,7 @@ internal sealed class MainWindowSmokeTests
             Assert(!window.CanPreviewQuarantine, "Quarantine Preview should be disabled before a shortlist exists.");
             Assert(window.QuarantinePreviewStatusStyleValue == "Neutral", "Inline preview status should start with quiet neutral styling before shortlist rows exist.");
             Assert(window.QuarantinePreviewStatusFontWeightValue == "Normal", "Neutral inline preview status should not visually compete with actionable readiness states.");
+            AssertQuarantinePreviewStatusHelpText(window, "Inline Quarantine Preview status help text should expose the startup preview boundary.");
             Assert(
                 window.ShortlistSafetyMixTextValue.Contains("Review Shortlist is empty", StringComparison.OrdinalIgnoreCase),
                 "Shortlist Safety Mix should start empty before rows are shortlisted.");
@@ -1265,6 +1266,7 @@ internal sealed class MainWindowSmokeTests
             Assert(window.CanPreviewQuarantine, "Quarantine Preview should be available after shortlisting a row.");
             Assert(window.QuarantinePreviewStatusStyleValue == "Warning", "Inline preview status should use warning styling while shortlisted rows still need preview.");
             Assert(window.QuarantinePreviewStatusFontWeightValue == "SemiBold", "Actionable inline preview status should be visually emphasized.");
+            AssertQuarantinePreviewStatusHelpText(window, "Inline Quarantine Preview status help text should mirror shortlisted-but-not-previewed state.");
             Assert(
                 window.DisplayedRows.Any(row => row.FullPath == installer.FullPath && row.Shortlist == "Yes"),
                 "Shortlisted row should be marked in the WPF grid.");
@@ -1287,6 +1289,7 @@ internal sealed class MainWindowSmokeTests
                 "Invalid Quarantine Root preview attempts should keep no-file-modified error wording visible.");
             Assert(window.QuarantinePreviewStatusStyleValue == "Error", "Invalid Quarantine Root preview attempts should use error styling.");
             Assert(window.QuarantinePreviewStatusFontWeightValue == "SemiBold", "Invalid Quarantine Root preview attempts should be visually emphasized.");
+            AssertQuarantinePreviewStatusHelpText(window, "Inline Quarantine Preview status help text should mirror invalid-root error state.");
 
             window.ApplyEntryTypeFilter(StorageEntryTypeFilter.Files);
             window.ApplySizeThresholdFilter(StorageSizeThresholdFilter.AtLeast1Mb);
@@ -1398,6 +1401,7 @@ internal sealed class MainWindowSmokeTests
                 "Inline preview status should make readiness visible in the Quarantine shortlist panel.");
             Assert(window.QuarantinePreviewStatusStyleValue == "Success", "Ready inline preview status should use success styling.");
             Assert(window.QuarantinePreviewStatusFontWeightValue == "SemiBold", "Ready inline preview status should be visually emphasized.");
+            AssertQuarantinePreviewStatusHelpText(window, "Inline Quarantine Preview status help text should mirror ready preview state.");
             Assert(File.Exists(installer.FullPath), "Shortlisted fixture installer should still exist after preview.");
             Assert(File.Exists(fixture.MarkerPath), "Fixture marker file should still exist after review interactions.");
             Assert(!Directory.Exists(customQuarantineRoot), "Quarantine Preview should not create the typed quarantine root.");
@@ -1420,6 +1424,7 @@ internal sealed class MainWindowSmokeTests
                 && window.QuarantinePreviewStatusTextValue.Contains("No files were modified", StringComparison.OrdinalIgnoreCase),
                 "Changing the quarantine root should show inline preview invalidation in the Quarantine shortlist panel.");
             Assert(window.QuarantinePreviewStatusStyleValue == "Warning", "Stale inline preview status should use warning styling.");
+            AssertQuarantinePreviewStatusHelpText(window, "Inline Quarantine Preview status help text should mirror stale preview state.");
             Assert(!Directory.Exists(changedQuarantineRoot), "Changing the preview root should not create folders.");
 
             window.RemoveSelectedPathFromReviewShortlist();
@@ -1434,6 +1439,7 @@ internal sealed class MainWindowSmokeTests
                 && window.QuarantinePreviewStatusTextValue.Contains("No files were modified", StringComparison.OrdinalIgnoreCase),
                 "Removing the shortlisted row should reset inline preview status.");
             Assert(window.QuarantinePreviewStatusStyleValue == "Neutral", "Empty-shortlist inline preview status should return to neutral styling.");
+            AssertQuarantinePreviewStatusHelpText(window, "Inline Quarantine Preview status help text should mirror empty-shortlist state.");
 
             Assert(window.CanAddSelectedRowToReviewShortlist, "Removed selected row should be addable again through the selected-row action.");
             window.AddSelectedPathToReviewShortlist();
@@ -1533,6 +1539,7 @@ internal sealed class MainWindowSmokeTests
                 && window.QuarantinePreviewStatusTextValue.Contains("not cleanup approval", StringComparison.OrdinalIgnoreCase),
                 "Inline preview status should summarize multi-row preview readiness before confirmation.");
             Assert(window.QuarantinePreviewStatusStyleValue == "Success", "Multi-row ready inline preview status should use success styling.");
+            AssertQuarantinePreviewStatusHelpText(window, "Inline Quarantine Preview status help text should mirror multi-row ready preview state.");
             Assert(
                 window.QuarantinePreviewTextValue.Contains("Source: Review Shortlist", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantinePreviewTextValue.Contains("Only included rows can be quarantined", StringComparison.OrdinalIgnoreCase),
@@ -1616,6 +1623,7 @@ internal sealed class MainWindowSmokeTests
                 && window.QuarantinePreviewStatusTextValue.Contains("Undo fixture quarantine", StringComparison.OrdinalIgnoreCase),
                 "Inline preview status should change to fixture execution evidence after execution.");
             Assert(window.QuarantinePreviewStatusStyleValue == "Success", "Successful fixture execution inline status should use success styling.");
+            AssertQuarantinePreviewStatusHelpText(window, "Inline Quarantine Preview status help text should mirror fixture execution evidence.");
             Assert(
                 window.QuarantinePreviewTextValue.Contains("Fixture Quarantine execution result", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantinePreviewTextValue.Contains("Current scan and review rows are stale", StringComparison.OrdinalIgnoreCase),
@@ -1723,6 +1731,7 @@ internal sealed class MainWindowSmokeTests
                 && window.QuarantinePreviewStatusTextValue.Contains("2 restored", StringComparison.OrdinalIgnoreCase),
                 "Inline preview status should change to fixture undo evidence after undo.");
             Assert(window.QuarantinePreviewStatusStyleValue == "Success", "Successful fixture undo inline status should use success styling.");
+            AssertQuarantinePreviewStatusHelpText(window, "Inline Quarantine Preview status help text should mirror fixture undo evidence.");
             Assert(
                 window.QuarantinePreviewTextValue.Contains("Fixture Undo Quarantine result", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantinePreviewTextValue.Contains("Current scan and review rows are stale", StringComparison.OrdinalIgnoreCase),
@@ -2064,6 +2073,7 @@ internal sealed class MainWindowSmokeTests
             Assert(window.QuarantinePreviewTextValue.Contains("Preview rows:", StringComparison.OrdinalIgnoreCase), "Preview pane should label row-level preview details.");
             Assert(window.QuarantinePreviewTextValue.Contains("Preview row | Blocked", StringComparison.OrdinalIgnoreCase), "Blocked row details should be labeled as preview rows.");
             Assert(window.QuarantinePreviewStatusStyleValue == "Warning", "Blocked inline preview status should use warning styling.");
+            AssertQuarantinePreviewStatusHelpText(window, "Inline Quarantine Preview status help text should mirror blocked preview state.");
             Assert(window.QuarantinePreviewTextValue.Contains(@".cache\codex-runtimes", StringComparison.OrdinalIgnoreCase), "Preview pane should show relative protected descendant evidence.");
             var protectedDescendantReasonLine = window.QuarantinePreviewTextValue
                 .Split(Environment.NewLine)
@@ -2138,6 +2148,28 @@ internal sealed class MainWindowSmokeTests
             && window.ReviewGridModeAutomationHelpTextValue.Contains("modify files", StringComparison.OrdinalIgnoreCase)
             && window.ReviewGridModeAutomationHelpTextValue.Contains("restore files", StringComparison.OrdinalIgnoreCase)
             && window.ReviewGridModeAutomationHelpTextValue.Contains("approve cleanup", StringComparison.OrdinalIgnoreCase),
+            message + " Automation help text should mirror the current status text and safety boundary.");
+    }
+
+    private static void AssertQuarantinePreviewStatusHelpText(MainWindow window, string message)
+    {
+        Assert(
+            window.QuarantinePreviewStatusToolTipValue.Contains(window.QuarantinePreviewStatusTextValue, StringComparison.OrdinalIgnoreCase)
+            && window.QuarantinePreviewStatusToolTipValue.Contains("read-only review context", StringComparison.OrdinalIgnoreCase)
+            && window.QuarantinePreviewStatusToolTipValue.Contains("does not create folders", StringComparison.OrdinalIgnoreCase)
+            && window.QuarantinePreviewStatusToolTipValue.Contains("move files", StringComparison.OrdinalIgnoreCase)
+            && window.QuarantinePreviewStatusToolTipValue.Contains("restore files", StringComparison.OrdinalIgnoreCase)
+            && window.QuarantinePreviewStatusToolTipValue.Contains("delete files", StringComparison.OrdinalIgnoreCase)
+            && window.QuarantinePreviewStatusToolTipValue.Contains("approve cleanup", StringComparison.OrdinalIgnoreCase),
+            message + " Tooltip should mirror the current status text and safety boundary.");
+        Assert(
+            window.QuarantinePreviewStatusAutomationHelpTextValue.Contains(window.QuarantinePreviewStatusTextValue, StringComparison.OrdinalIgnoreCase)
+            && window.QuarantinePreviewStatusAutomationHelpTextValue.Contains("read-only review context", StringComparison.OrdinalIgnoreCase)
+            && window.QuarantinePreviewStatusAutomationHelpTextValue.Contains("does not create folders", StringComparison.OrdinalIgnoreCase)
+            && window.QuarantinePreviewStatusAutomationHelpTextValue.Contains("move files", StringComparison.OrdinalIgnoreCase)
+            && window.QuarantinePreviewStatusAutomationHelpTextValue.Contains("restore files", StringComparison.OrdinalIgnoreCase)
+            && window.QuarantinePreviewStatusAutomationHelpTextValue.Contains("delete files", StringComparison.OrdinalIgnoreCase)
+            && window.QuarantinePreviewStatusAutomationHelpTextValue.Contains("approve cleanup", StringComparison.OrdinalIgnoreCase),
             message + " Automation help text should mirror the current status text and safety boundary.");
     }
 

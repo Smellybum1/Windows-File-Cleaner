@@ -83,6 +83,7 @@ What changed:
 - Preview success now shows included, blocked, redundant, bytes previewed, blocker count, not-cleanup-approval wording, and no-file-modified wording near the Preview button.
 - Quarantine Root changes now show inline preview invalidation.
 - Fixture execution and undo now replace the inline preview status with fixture execution/undo evidence.
+- Later packet `2026-05-30-quarantine-preview-status-help-text.md` mirrored the dynamic inline status into tooltip and automation help text with no-create/no-move/no-restore/no-delete/not-cleanup-approval boundaries.
 
 Files changed:
 
@@ -122,3 +123,4 @@ Open questions:
 Risky assumptions:
 
 - Plain text is enough to resolve the missed-preview-success issue without adding a modal popup.
+- Later visual review and help-text packets kept the inline status non-modal while making the current state easier to find.

@@ -527,7 +527,9 @@
                                    Text="Quarantine Preview readiness appears after Review Shortlist rows are added. No files were modified."
                                    Foreground="#526171"
                                    Margin="0,6,0,0"
-                                   TextWrapping="Wrap" />
+                                   TextWrapping="Wrap"
+                                   ToolTip="Quarantine Preview readiness appears after Review Shortlist rows are added. No files were modified. Inline preview status is read-only review context; it does not create folders, move files, restore files, delete files, or approve cleanup."
+                                   AutomationProperties.HelpText="Quarantine Preview readiness appears after Review Shortlist rows are added. No files were modified. Inline preview status is read-only review context; it does not create folders, move files, restore files, delete files, or approve cleanup." />
                         <WrapPanel Margin="0,6,0,0">
                             <TextBlock Text="Shortlist confirmation"
                                        VerticalAlignment="Center"

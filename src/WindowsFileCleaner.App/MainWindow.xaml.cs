@@ -329,6 +329,10 @@ public partial class MainWindow : Window
 
     public string QuarantinePreviewStatusFontWeightValue => QuarantinePreviewStatusText.FontWeight.ToString();
 
+    public string QuarantinePreviewStatusToolTipValue => QuarantinePreviewStatusText.ToolTip?.ToString() ?? "";
+
+    public string QuarantinePreviewStatusAutomationHelpTextValue => AutomationProperties.GetHelpText(QuarantinePreviewStatusText);
+
     public string QuarantineExecutionGateTextValue => QuarantineExecutionGateText.Text;
 
     public double QuarantineExecutionGateViewportMaxHeight => QuarantineExecutionGateScroll.MaxHeight;
@@ -2589,6 +2593,9 @@ public partial class MainWindow : Window
     {
         QuarantinePreviewStatusText.Text = text;
         QuarantinePreviewStatusText.Tag = style.ToString();
+        var helpText = FormatQuarantinePreviewStatusHelpText(text);
+        QuarantinePreviewStatusText.ToolTip = helpText;
+        AutomationProperties.SetHelpText(QuarantinePreviewStatusText, helpText);
         QuarantinePreviewStatusText.Foreground = style switch
         {
             QuarantinePreviewStatusStyle.Success => System.Windows.Media.Brushes.DarkGreen,
@@ -2599,6 +2606,11 @@ public partial class MainWindow : Window
         QuarantinePreviewStatusText.FontWeight = style == QuarantinePreviewStatusStyle.Neutral
             ? FontWeights.Normal
             : FontWeights.SemiBold;
+    }
+
+    private static string FormatQuarantinePreviewStatusHelpText(string text)
+    {
+        return $"{text} Inline preview status is read-only review context; it does not create folders, move files, restore files, delete files, or approve cleanup.";
     }
 
     private enum QuarantinePreviewStatusStyle

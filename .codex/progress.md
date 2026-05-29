@@ -7011,6 +7011,47 @@ Rejected ideas buffer:
 
 - Do not make checklist-only mode perform visual verification or launch WPF; it stays terminal-output-only.
 
+### 2026-05-30: Add Quarantine Preview Status Help Text
+
+Status: completed
+
+Evidence:
+
+- User ran the latest manual fixture review checklist through steps 1-11 and reported that all checked behavior worked.
+- Collapsed panel header summaries already exist and remain useful while closed.
+- The inline Quarantine Preview status is safety-relevant and dynamic, but its exact state/boundary was not mirrored into tooltip or automation help text.
+
+Implementation:
+
+- Added tooltip and automation help text to `QuarantinePreviewStatusText`.
+- Updated dynamic status updates so the tooltip/help text mirrors the current inline status and repeats read-only, no-create, no-move, no-restore, no-delete, and not-cleanup-approval boundaries.
+- Added WPF smoke assertions across waiting, shortlisted, invalid-root, ready, stale, fixture execution, fixture undo, and blocked-preview states.
+- Updated the fixture checklist to prompt manual review of the inline status tooltip/help text.
+
+Verification:
+
+- `dotnet build tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj "-p:BaseOutputPath=D:/Codex/Windows File Cleaner/.local/test-bin/app-tests/"` passed.
+- `D:\Codex\Windows File Cleaner\.local\test-bin\app-tests\Debug\net8.0-windows\WindowsFileCleaner.App.Tests.exe` passed.
+
+Docs updated:
+
+- `README.md`
+- `docs/domain/context.md`
+- `docs/domain/glossary.md`
+- `docs/features/2026-05-29-fixture-review-checklist-output.md`
+- `docs/features/2026-05-29-quarantine-preview-inline-status.md`
+- `docs/features/2026-05-29-quarantine-preview-status-styling.md`
+- `docs/features/2026-05-30-quarantine-preview-status-help-text.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No ADR added. This is reversible WPF help-text polish with no persistence, cleanup execution, restore rule, data-model, or security change.
+
+Open questions:
+
+- In the next manual fixture visual pass, confirm whether the collapsed panel header summaries are visible enough when panels are closed.
+
 ### 2026-05-30: Record Manual Fixture Checklist Progress
 
 Status: completed

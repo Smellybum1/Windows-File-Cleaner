@@ -81,6 +81,7 @@ What changed:
 - Later packet `2026-05-29-quarantine-preview-status-styling.md` updated the checklist to call out styled inline preview readiness states: neutral, success, warning, and error.
 - Later packet `2026-05-29-review-grid-mode-status-styling.md` updated the checklist to call out styled Review Grid Mode Status states: neutral, informational, and warning.
 - Later packet `2026-05-30-review-grid-mode-status-help-text.md` updated the checklist to call out Review Grid Mode Status tooltip/help text.
+- Later packet `2026-05-30-quarantine-preview-status-help-text.md` updated the checklist to call out inline Quarantine Preview status tooltip/help text.
 
 Tests run:
 

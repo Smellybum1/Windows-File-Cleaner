@@ -158,6 +158,7 @@ What changed:
 - Preview creation failure uses error styling.
 - Added WPF smoke assertions for neutral, warning, success, invalid-root error, fixture execution, fixture undo, and blocked-preview styling.
 - Aligned the fixture review launcher checklist so the next manual pass prompts neutral/success/warning/error inline status review.
+- Later packet `2026-05-30-quarantine-preview-status-help-text.md` mirrored the dynamic styled status into tooltip and automation help text.
 
 Files changed:
 
