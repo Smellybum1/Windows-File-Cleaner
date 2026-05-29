@@ -2608,6 +2608,8 @@ public partial class MainWindow : Window
             $"Required confirmation text: {gate.RequiredConfirmationText}",
             $"Entered confirmation matches: {FormatYesNo(gate.IsConfirmationTextMatched)}",
             $"Execution implemented: {FormatYesNo(gate.IsExecutionImplemented)}",
+            $"Execution scope status: {FormatSelectedRestoreExecutionScopeStatus(gate.IsExecutionImplemented)}",
+            $"Approval boundary: {FormatSelectedRestoreApprovalBoundary(gate.IsExecutionImplemented)}",
             $"Can execute: {FormatYesNo(gate.CanExecute)}",
             selectedRestoreResult is null
                 ? "No files were modified by this selected restore gate."
@@ -2654,6 +2656,20 @@ public partial class MainWindow : Window
         }
 
         return string.Join(Environment.NewLine, lines);
+    }
+
+    private static string FormatSelectedRestoreExecutionScopeStatus(bool isExecutionImplemented)
+    {
+        return isExecutionImplemented
+            ? "Fixture-only selected restore is available only after selected readiness and exact RESTORE confirmation."
+            : "Preview only for this selected Restore Manifest; real-profile and custom selected restore remain unavailable.";
+    }
+
+    private static string FormatSelectedRestoreApprovalBoundary(bool isExecutionImplemented)
+    {
+        return isExecutionImplemented
+            ? "Selected Restore Manifest Review and readiness preview are not restore approval; exact RESTORE can open only fixture selected restore in this build."
+            : "Selected Restore Manifest Review and readiness preview are not restore approval; real-profile and custom selected restore remain unavailable.";
     }
 
     private static void AddRestoreReadinessManifestLines(

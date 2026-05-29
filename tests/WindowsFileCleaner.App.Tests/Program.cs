@@ -977,6 +977,11 @@ internal sealed class MainWindowSmokeTests
                 && !selectedGateText.Contains("Required future text", StringComparison.OrdinalIgnoreCase)
                 && selectedGateText.Contains("Selected Restore Execution Gate: read-only", StringComparison.OrdinalIgnoreCase)
                 && selectedGateText.Contains("Execution implemented: yes", StringComparison.OrdinalIgnoreCase)
+                && selectedGateText.Contains("Execution scope status:", StringComparison.OrdinalIgnoreCase)
+                && selectedGateText.Contains("Fixture-only selected restore is available", StringComparison.OrdinalIgnoreCase)
+                && selectedGateText.Contains("Approval boundary:", StringComparison.OrdinalIgnoreCase)
+                && selectedGateText.Contains("not restore approval", StringComparison.OrdinalIgnoreCase)
+                && selectedGateText.Contains("only fixture selected restore", StringComparison.OrdinalIgnoreCase)
                 && selectedGateText.Contains("Can execute: no", StringComparison.OrdinalIgnoreCase)
                 && selectedGateText.Contains("No files were modified", StringComparison.OrdinalIgnoreCase),
                 "Selected restore gate pane should show fixture confirmation evidence before exact RESTORE. Text: " + selectedGateText);
@@ -1116,8 +1121,13 @@ internal sealed class MainWindowSmokeTests
             window.PreviewSelectedRestoreGateForCurrentSelection();
 
             Assert(
-                window.SelectedRestoreExecutionGateTextValue.Contains("Execution implemented: no", StringComparison.OrdinalIgnoreCase),
-                "Custom-scope selected restore gate should keep execution unavailable.");
+                window.SelectedRestoreExecutionGateTextValue.Contains("Execution implemented: no", StringComparison.OrdinalIgnoreCase)
+                && window.SelectedRestoreExecutionGateTextValue.Contains("Execution scope status:", StringComparison.OrdinalIgnoreCase)
+                && window.SelectedRestoreExecutionGateTextValue.Contains("Preview only for this selected Restore Manifest", StringComparison.OrdinalIgnoreCase)
+                && window.SelectedRestoreExecutionGateTextValue.Contains("real-profile and custom selected restore remain unavailable", StringComparison.OrdinalIgnoreCase)
+                && window.SelectedRestoreExecutionGateTextValue.Contains("Approval boundary:", StringComparison.OrdinalIgnoreCase)
+                && window.SelectedRestoreExecutionGateTextValue.Contains("not restore approval", StringComparison.OrdinalIgnoreCase),
+                "Custom-scope selected restore gate should keep execution unavailable with visible scope wording.");
             window.SetSelectedRestoreConfirmationText("RESTORE");
             Assert(
                 window.SelectedRestoreExecutionGateTextValue.Contains("Entered confirmation matches: yes", StringComparison.OrdinalIgnoreCase)

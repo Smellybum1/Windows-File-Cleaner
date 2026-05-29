@@ -17,6 +17,7 @@ Fresh-thread handoff notes live in `docs/codex/thread-handoff.md`.
 - The visible WPF app can select one discovered Restore Manifest and preview selected readiness without restoring it.
 - The visible WPF app can restore a selected discovered fixture Restore Manifest after selected readiness and exact `RESTORE` confirmation.
 - The visible WPF app keeps selected restore execution unavailable for real-profile and custom non-fixture Restore Manifests.
+- Selected restore gate panes show fixture-only versus preview-only scope status and keep selected readiness separate from restore approval.
 - The visible WPF app can preview restore readiness for discovered manifests without restoring them.
 - Real-profile WPF Quarantine execution and broad WPF Undo Quarantine remain unavailable.
 - The visible WPF app does not delete files.
@@ -156,9 +157,9 @@ After the app opens:
 23. On that same fixture execution, clicking `Undo fixture quarantine` should restore the synthetic file/folder from quarantine, update the Restore Manifest, disable repeat undo, and keep stale-state wording visible.
 24. Use `Discover manifests` against the selected Quarantine Root; it should show read-only Restore Manifest summaries or discovery issues and should not expose an old-manifest restore action.
 25. Select a discovered Restore Manifest and use `Preview selected readiness`; it should show readiness for that manifest only without moving files.
-26. Use `Preview selected restore gate`, then type `RESTORE`; for a fixture Restore Manifest it should show `Can execute: yes`, and `Restore selected fixture manifest` should restore the synthetic file while telling you to rediscover and rescan.
+26. Use `Preview selected restore gate`, then type `RESTORE`; for a fixture Restore Manifest it should show fixture-only scope status, approval-boundary wording, and `Can execute: yes`, and `Restore selected fixture manifest` should restore the synthetic file while telling you to rediscover and rescan.
 27. Use `Preview restore readiness` against the selected Quarantine Root; it should show restorable, blocked, already-restored, or recovery-review rows across discovered manifests without moving files.
-28. On `C:\Users\moxhe` or a custom non-fixture Cleanup Scope, typing `QUARANTINE` should still leave `Execute quarantine` disabled with a scope-specific blocker and no undo action; selected restore should also stay unavailable for non-fixture manifests even when `RESTORE` is typed.
+28. On `C:\Users\moxhe` or a custom non-fixture Cleanup Scope, typing `QUARANTINE` should still leave `Execute quarantine` disabled with a scope-specific blocker and no undo action; selected restore should also show preview-only scope status and stay unavailable for non-fixture manifests even when `RESTORE` is typed.
 29. Export CSV reports only when you intentionally choose an output file; the main report export follows the active filters/type/size/search, includes relative path, parent/depth, and access-status context for recursive rows, and the suggested filename includes the search term when one is active.
 
 ## Current Workflow

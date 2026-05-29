@@ -2859,6 +2859,8 @@ In the current WPF app, selected restore execution availability can be true only
 - Showing `Entered confirmation matches: yes` after the user types `RESTORE`.
 - Showing `Execution implemented: yes` and `Can execute: yes` for a selected fixture Restore Manifest after exact `RESTORE` confirmation.
 - Showing `Execution implemented: no` and `Can execute: no` for real-profile or custom non-fixture selected Restore Manifests.
+- Showing an execution scope status that distinguishes fixture-only selected restore from preview-only real-profile/custom selected restore.
+- Showing an approval boundary that says selected readiness is not restore approval.
 - Reporting confirmation-readiness blockers before any future restore action can open.
 
 #### Non-examples
@@ -2885,6 +2887,7 @@ In the current WPF app, selected restore execution availability can be true only
 - Use `SelectedRestoreExecutionGate` and `SelectedRestoreExecutionGateBuilder`.
 - Keep `CanExecute` false unless the exact `RESTORE` text matches, selected restore execution is implemented, and blockers are clear.
 - WPF must keep selected restore execution unavailable for real-profile and custom non-fixture manifests.
+- WPF should show `Execution scope status` and `Approval boundary` lines so users do not have to infer fixture-only versus preview-only behavior from `Execution implemented`.
 
 ### Fixture-only Selected Restore Execution
 
