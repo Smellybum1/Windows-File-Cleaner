@@ -759,9 +759,10 @@ internal sealed class MainWindowSmokeTests
                 && window.ExecuteSelectedRestoreButtonAutomationHelpTextValue.Contains("real-profile/custom selected restore remains unavailable", StringComparison.OrdinalIgnoreCase),
                 "Restore selected fixture manifest automation help text should explain fixture-only selected restore.");
             Assert(
-                window.QuarantineExecutionGateTextValue.Contains("Create a Quarantine Preview", StringComparison.OrdinalIgnoreCase)
+                window.QuarantineExecutionGateTextValue.Contains("Use Preview shortlist quarantine before entering confirmation text", StringComparison.OrdinalIgnoreCase)
+                && !window.QuarantineExecutionGateTextValue.Contains("Create a Quarantine Preview before entering confirmation text", StringComparison.OrdinalIgnoreCase)
                 && !window.QuarantineExecutionGateTextValue.Contains("Preview quarantine.", StringComparison.OrdinalIgnoreCase),
-                "Quarantine execution gate startup text should explain the preview dependency without using the old preview button wording.");
+                "Quarantine execution gate startup text should point to the visible preview button label.");
             Assert(
                 window.QuarantinePreviewTextValue.Contains("Preview shortlist quarantine", StringComparison.OrdinalIgnoreCase)
                 && !window.QuarantinePreviewTextValue.Contains("Preview quarantine.", StringComparison.OrdinalIgnoreCase),
@@ -1545,9 +1546,10 @@ internal sealed class MainWindowSmokeTests
             Assert(!window.CanEnterQuarantineConfirmation, "Changing the quarantine root should disable stale confirmation text.");
             Assert(window.CurrentQuarantineConfirmationText == "", "Changing the quarantine root should clear stale confirmation text.");
             Assert(
-                window.QuarantineExecutionGateTextValue.Contains("Create a Quarantine Preview", StringComparison.OrdinalIgnoreCase)
+                window.QuarantineExecutionGateTextValue.Contains("Use Preview shortlist quarantine before entering confirmation text", StringComparison.OrdinalIgnoreCase)
+                && !window.QuarantineExecutionGateTextValue.Contains("Create a Quarantine Preview before entering confirmation text", StringComparison.OrdinalIgnoreCase)
                 && !window.QuarantineExecutionGateTextValue.Contains("Preview quarantine.", StringComparison.OrdinalIgnoreCase),
-                "Changing the quarantine root should reset execution gate wording without using the old preview button wording.");
+                "Changing the quarantine root should reset execution gate wording to the visible preview button label.");
             Assert(
                 window.QuarantinePreviewTextValue.Contains("Preview and draft readiness appear", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantinePreviewTextValue.Contains("Preview shortlist quarantine", StringComparison.OrdinalIgnoreCase)

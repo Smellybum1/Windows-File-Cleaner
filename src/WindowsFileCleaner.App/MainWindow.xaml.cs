@@ -3431,7 +3431,7 @@ public partial class MainWindow : Window
 
         foreach (var blocker in gate.Blockers.Take(6))
         {
-            lines.Add($"Execution gate blocker | {blocker}");
+            lines.Add($"Execution gate blocker | {FormatQuarantineExecutionGateBlocker(blocker)}");
         }
 
         if (gate.Blockers.Count > 6)
@@ -3440,6 +3440,16 @@ public partial class MainWindow : Window
         }
 
         return string.Join(Environment.NewLine, lines);
+    }
+
+    private static string FormatQuarantineExecutionGateBlocker(string blocker)
+    {
+        return string.Equals(
+            blocker,
+            "Create a Quarantine Preview before entering confirmation text.",
+            StringComparison.Ordinal)
+            ? "Use Preview shortlist quarantine before entering confirmation text."
+            : blocker;
     }
 
     private static string FormatQuarantineExecutionScopeStatus(bool isExecutionImplemented)
