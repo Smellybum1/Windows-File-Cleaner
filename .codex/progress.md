@@ -6510,3 +6510,55 @@ Open questions:
 Rejected ideas buffer:
 
 - Do not add a navigation stack, change `Show children` search semantics, remove Copy path, or add cleanup behavior while fixing this manual fixture finding.
+
+### 2026-05-29: Preserve Current Fixture Undo After Rescan
+
+Status: completed
+
+Evidence:
+
+- During manual fixture review, the user executed fixture Quarantine, rescanned, and found the moved synthetic file no longer appeared in the main Storage Scan rows.
+- The user correctly pointed out that undo was no longer reachable from the disappeared row context.
+- Code inspection showed `ApplyStorageScanResult` called `ClearQuarantinePreview`, which cleared `_currentRestoreManifest` and `_currentQuarantineExecutionResult`, losing current-fixture undo state after rescan.
+- The user suggested a separate quarantined-files area; that is recorded as follow-up because it is a larger UI packet than the immediate safety bugfix.
+- The user also expected Quarantine Preview success to be more visible than the status-bar line; that remains a follow-up polish candidate.
+
+Implementation:
+
+- Preserved the current in-memory Restore Manifest and execution result when clearing stale Quarantine Preview state if current-fixture undo is still available.
+- Updated fixture execution status text to say `Undo fixture quarantine` can restore and that rescan refreshes review rows.
+- Updated post-execution rescan status text to point to the preserved undo action in the Quarantine execution area.
+- Extended WPF smoke coverage so fixture execution is followed by a post-execution rescan, then confirms `Undo fixture quarantine` remains available before undo.
+- Updated README, domain context, glossary, handoff, and the feature brief.
+- Kept real-profile Quarantine execution, real-profile Undo Quarantine, permanent deletion, cleanup history, and broad manifest restore unavailable.
+
+Verification:
+
+- Initial `dotnet run --project tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj` was blocked because the manually launched WPF app was still running and locking `WindowsFileCleaner.App.exe`.
+- `dotnet build tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj "-p:BaseOutputPath=D:/Codex/Windows File Cleaner/.local/test-bin/app-tests/"` passed.
+- `D:\Codex\Windows File Cleaner\.local\test-bin\app-tests\Debug\net8.0-windows\WindowsFileCleaner.App.Tests.exe` passed.
+- `dotnet build WindowsFileCleaner.sln --no-restore "-p:BaseOutputPath=D:/Codex/Windows File Cleaner/.local/test-bin/solution/"` passed.
+- `git -c safe.directory='D:/Codex/Windows File Cleaner' diff --check` passed with line-ending normalization warnings only.
+
+Docs updated:
+
+- `README.md`
+- `docs/domain/context.md`
+- `docs/domain/glossary.md`
+- `docs/features/2026-05-29-preserve-current-fixture-undo-after-rescan.md`
+- `docs/codex/thread-handoff.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No ADR added. This is a bounded lifecycle bugfix for current-fixture undo under ADR 0010, with no new persistence, real-profile cleanup execution, restore architecture, or deletion behavior.
+
+Open questions:
+
+- Should the next UI packet add a dedicated quarantined-files area independent of the currently visible Storage Scan rows?
+- Should Quarantine Preview success appear in a more prominent pane or callout instead of relying on the status bar?
+
+Rejected ideas buffer:
+
+- Do not keep moved source rows artificially visible after a rescan; the refreshed Storage Scan should reflect the filesystem.
+- Do not add real-profile cleanup execution, real-profile Undo Quarantine, all-manifest restore, persisted cleanup history, or permanent deletion while fixing current-fixture undo reachability.

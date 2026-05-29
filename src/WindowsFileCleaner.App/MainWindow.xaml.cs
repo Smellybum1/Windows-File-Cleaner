@@ -649,7 +649,9 @@ public partial class MainWindow : Window
         FolderCountText.Text = result.FolderCount.ToString("N0");
         FileCountText.Text = result.FileCount.ToString("N0");
         AccessIssueCountText.Text = result.InaccessibleCount.ToString("N0");
-        StatusText.Text = FormatScanCompletedStatus(matchedEntries.Count);
+        StatusText.Text = CanUndoCurrentQuarantineExecution()
+            ? $"{FormatScanCompletedStatus(matchedEntries.Count)} Undo fixture quarantine remains available in the Quarantine execution area."
+            : FormatScanCompletedStatus(matchedEntries.Count);
         UpdateFilterButtons();
         UpdateFilterSummary(matchedEntries);
         UpdateReviewMix();
@@ -2263,11 +2265,20 @@ public partial class MainWindow : Window
         _currentQuarantineConfirmationDraft = null;
         _currentQuarantineExecutionGate = null;
         _currentQuarantineActionDraft = null;
-        _currentRestoreManifest = null;
-        _currentQuarantineExecutionResult = null;
-        _currentUndoQuarantineResult = null;
+        var preserveCurrentFixtureUndo = CanUndoCurrentQuarantineExecution();
+        if (!preserveCurrentFixtureUndo)
+        {
+            _currentRestoreManifest = null;
+            _currentQuarantineExecutionResult = null;
+            _currentUndoQuarantineResult = null;
+        }
+
         SetQuarantineConfirmationTextSilently("");
-        QuarantinePreviewText.Text = "Preview and draft readiness appear after using Preview quarantine.";
+        if (!preserveCurrentFixtureUndo)
+        {
+            QuarantinePreviewText.Text = "Preview and draft readiness appear after using Preview quarantine.";
+        }
+
         ExportQuarantinePreviewButton.IsEnabled = false;
         UpdateQuarantineExecutionGate();
     }
@@ -2447,8 +2458,8 @@ public partial class MainWindow : Window
 
         var result = _currentQuarantineExecutionResult;
         StatusText.Text = result.Succeeded
-            ? $"Fixture Quarantine execution completed: {result.MovedCount:N0} moved, {result.RestoreManifest.TotalSizeDisplay} quarantined. Rescan before further review."
-            : $"Fixture Quarantine execution needs recovery review: {result.MovedCount:N0} moved, {result.FailedCount:N0} failed. Rescan before further review.";
+            ? $"Fixture Quarantine execution completed: {result.MovedCount:N0} moved, {result.RestoreManifest.TotalSizeDisplay} quarantined. Use Undo fixture quarantine to restore; rescan refreshes review rows."
+            : $"Fixture Quarantine execution needs recovery review: {result.MovedCount:N0} moved, {result.FailedCount:N0} failed. Use Undo fixture quarantine when available; rescan refreshes review rows.";
     }
 
     public void ExecuteSelectedRestoreForCurrentSelection()

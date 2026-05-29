@@ -2628,7 +2628,7 @@ It lets the WPF app call the core Quarantine Executor after Quarantine Preview r
 - Requires the exact confirmation text `QUARANTINE`.
 - Calls `QuarantineExecutor.Execute` with the planned Restore Manifest.
 - Displays execution results and recovery-review need.
-- Clears stale Review Shortlist state and tells the user to rescan before further review.
+- Clears stale Review Shortlist state, points the user to `Undo fixture quarantine`, and explains that rescan refreshes review rows.
 
 #### Relationships
 
@@ -2643,6 +2643,7 @@ It lets the WPF app call the core Quarantine Executor after Quarantine Preview r
 - Use `QuarantineExecutor.Execute`; do not implement file movement in WPF code.
 - Keep real-profile and custom non-fixture execution blocked in WPF.
 - After execution, disable re-execution for the current preview and mark scan state stale.
+- Preserve current-fixture undo state if a post-execution rescan clears stale preview state before undo is attempted.
 
 ### WPF Current Fixture Undo Quarantine
 
@@ -2676,6 +2677,7 @@ It is not a manifest discovery or history workflow.
 - Displays restored and failed restore counts.
 - Disables repeat undo for the current execution attempt.
 - Keeps stale-state wording visible and tells the user to rescan before further review.
+- Remains available after a post-execution rescan until undo is attempted, because the moved source row can disappear from refreshed Storage Scan rows.
 
 #### Relationships
 
@@ -2689,6 +2691,7 @@ It is not a manifest discovery or history workflow.
 - Use `UndoQuarantineForCurrentExecution` for the WPF current-execution undo action.
 - Use `UndoQuarantineExecutor.Undo`; do not implement restore movement in WPF code.
 - Keep undo unavailable before execution, after an undo attempt, and for real-profile/custom non-fixture scopes.
+- Do not tie current-fixture undo availability to the moved source row remaining visible after rescan.
 - Do not clean up quarantine folders in this action.
 
 ### Quarantine Manifest Discovery

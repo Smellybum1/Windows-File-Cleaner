@@ -1433,8 +1433,9 @@ internal sealed class MainWindowSmokeTests
             Assert(File.Exists(fixture.MarkerPath), "Fixture execution should leave unselected fixture files alone.");
             Assert(
                 window.CurrentStatusText.Contains("Fixture Quarantine execution completed", StringComparison.OrdinalIgnoreCase)
-                && window.CurrentStatusText.Contains("Rescan", StringComparison.OrdinalIgnoreCase),
-                "Fixture execution status should report completion and stale scan state.");
+                && window.CurrentStatusText.Contains("Undo fixture quarantine", StringComparison.OrdinalIgnoreCase)
+                && window.CurrentStatusText.Contains("rescan refreshes review rows", StringComparison.OrdinalIgnoreCase),
+                "Fixture execution status should report completion, undo availability, and stale scan state.");
             Assert(
                 window.QuarantinePreviewTextValue.Contains("Fixture Quarantine execution result", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantinePreviewTextValue.Contains("Current scan and review rows are stale", StringComparison.OrdinalIgnoreCase),
@@ -1443,6 +1444,15 @@ internal sealed class MainWindowSmokeTests
                 window.QuarantineExecutionGateTextValue.Contains("Execution result:", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantineExecutionGateTextValue.Contains("Current scan results are stale", StringComparison.OrdinalIgnoreCase),
                 "Execution gate should retain execution evidence after the gate closes.");
+
+            RunDispatcherTask(() => window.RunStorageScanForCurrentScopeAsync());
+            Assert(!File.Exists(installer.FullPath), "Post-execution rescan should reflect that the original fixture file moved.");
+            Assert(window.CanUndoQuarantine, "Fixture undo should remain available after a post-execution rescan.");
+            Assert(window.CurrentRestoreManifestStatus == RestoreManifestActionStatus.Completed.ToString(), "Post-execution rescan should keep current Restore Manifest evidence for undo.");
+            Assert(
+                window.CurrentStatusText.Contains("Undo fixture quarantine remains available", StringComparison.OrdinalIgnoreCase)
+                && window.CurrentStatusText.Contains("Quarantine execution area", StringComparison.OrdinalIgnoreCase),
+                "Post-execution rescan status should point to the preserved current-fixture undo action.");
 
             window.UndoQuarantineForCurrentExecution();
 
