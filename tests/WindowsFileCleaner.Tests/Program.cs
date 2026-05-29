@@ -37,6 +37,7 @@ tests.QuarantineManifestDiscoveryRejectsManifestPathMismatch();
 tests.RestoreReadinessPreviewReportsRestorableDiscoveredManifest();
 tests.RestoreReadinessPreviewReportsCollisionAndMissingQuarantinePath();
 tests.RestoreReadinessPreviewReportsAlreadyRestoredManifestWithoutRestoring();
+tests.SelectedRestoreManifestReviewBuildsReadinessForSelectedManifestOnly();
 tests.QuarantineExecutorMovesFixtureFilesWithWriteAheadManifest();
 tests.QuarantineExecutorRecordsPartialFailureWithoutOverwritingDestination();
 tests.QuarantineExecutorFailsMissingSourceWithoutCreatingDestination();
@@ -1688,6 +1689,45 @@ internal sealed class StorageScanTests
         Assert(preview.Manifests.Single().Entries.Single().Disposition == RestoreReadinessDisposition.AlreadyRestored, "Entry disposition should show already restored.");
         Assert(File.Exists(entry.OriginalPath), "Readiness preview should leave restored original file in place.");
         Assert(!File.Exists(entry.QuarantinePath), "Readiness preview should not recreate quarantine files.");
+    }
+
+    public void SelectedRestoreManifestReviewBuildsReadinessForSelectedManifestOnly()
+    {
+        using var fixture = TestFixture.Create();
+        fixture.WriteFile(@"Downloads\old-one.msi", 1024 * 1024, DateTimeOffset.UtcNow.AddDays(-120));
+        fixture.WriteFile(@"Downloads\old-two.msi", 1024 * 1024 * 2, DateTimeOffset.UtcNow.AddDays(-130));
+        var planOne = BuildPlannedRestoreManifest(fixture, [@"Downloads\old-one.msi"], "selected-one");
+        var planTwo = BuildPlannedRestoreManifest(fixture, [@"Downloads\old-two.msi"], "selected-two");
+        var executionOne = QuarantineExecutor.Execute(planOne.Manifest);
+        var executionTwo = QuarantineExecutor.Execute(planTwo.Manifest);
+        var selectedEntry = executionTwo.RestoreManifest.Entries.Single();
+        var unselectedEntry = executionOne.RestoreManifest.Entries.Single();
+
+        var discovery = QuarantineManifestDiscoveryBuilder.Discover(planOne.Manifest.QuarantineRootPath);
+        var review = SelectedRestoreManifestReviewBuilder.Build(
+            discovery,
+            executionTwo.RestoreManifest.ManifestPath);
+        var missingSelection = SelectedRestoreManifestReviewBuilder.Build(
+            discovery,
+            Path.Combine(fixture.RootPath, "not-discovered", RestoreManifestFileStore.RestoreManifestFileName));
+
+        Assert(executionOne.Succeeded, "Fixture setup should move the first file.");
+        Assert(executionTwo.Succeeded, "Fixture setup should move the second file.");
+        Assert(discovery.ManifestCount == 2, "Discovery should find both action-scoped Restore Manifests.");
+        Assert(review.HasSelectedManifest, "Selected review should bind to the requested Restore Manifest.");
+        Assert(review.SelectedManifestPath == executionTwo.RestoreManifest.ManifestPath, "Selected review should expose the selected manifest path.");
+        Assert(review.HasReadinessPreview, "Selected review should include readiness for the selected manifest.");
+        Assert(review.Readiness!.ManifestPath == executionTwo.RestoreManifest.ManifestPath, "Selected readiness should be for the selected manifest only.");
+        Assert(review.Readiness.Entries.Count == 1, "Selected readiness should include only the selected manifest entries.");
+        Assert(review.Readiness.Entries.Single().OriginalPath == selectedEntry.OriginalPath, "Selected readiness should not include unselected manifest entries.");
+        Assert(review.RestorableEntryCount == 1, "Selected moved entry should be restorable.");
+        Assert(review.BlockedEntryCount == 0, "Selected review should not report blockers for restorable fixture state.");
+        Assert(missingSelection.HasSelectionIssues, "A stale selected path should report a selection issue.");
+        Assert(!missingSelection.HasReadinessPreview, "A stale selected path should not create a readiness preview.");
+        Assert(File.Exists(selectedEntry.QuarantinePath), "Selected review should leave selected quarantined file in place.");
+        Assert(!File.Exists(selectedEntry.OriginalPath), "Selected review should not restore selected original path.");
+        Assert(File.Exists(unselectedEntry.QuarantinePath), "Selected review should leave unselected quarantined file in place.");
+        Assert(!File.Exists(unselectedEntry.OriginalPath), "Selected review should not restore unselected original path.");
     }
 
     public void QuarantineExecutorMovesFixtureFilesWithWriteAheadManifest()

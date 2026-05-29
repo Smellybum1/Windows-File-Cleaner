@@ -2362,13 +2362,14 @@ It is discovery and status review only, not Undo Quarantine execution and not pe
 - Depends on Quarantine Root Selection.
 - Depends on Restore Manifest and the action-scoped layout from ADR 0004.
 - Implements ADR 0011.
+- Feeds Selected Restore Manifest Review.
 - Precedes broad WPF Undo Quarantine for discovered manifests.
 
 #### Code implications
 
 - Use `QuarantineManifestDiscovery`, `QuarantineManifestDiscoveryBuilder`, and `QuarantineManifestDiscoveryIssue`.
 - Keep discovery limited to `<quarantine-root>\actions\*\restore-manifest.json`.
-- Keep discovered manifests status-only until a separate Undo Quarantine selection/execution design exists.
+- Keep discovery itself status-only; Selected Restore Manifest Review and selected readiness are separate read-only workflows until a restore execution design exists.
 - Do not call this cleanup history.
 
 ### Restore Manifest Summary
@@ -2411,6 +2412,54 @@ Restore Manifest Summary is a compact read-only status view of one discovered Re
 - Use `RestoreManifestSummary`.
 - Keep it read-only and derived from manifest metadata.
 
+### Selected Restore Manifest Review
+
+Status: draft
+Last reviewed: 2026-05-29
+
+#### Definition
+
+Selected Restore Manifest Review is the read-only workflow that focuses on one discovered Restore Manifest and previews readiness for that manifest only.
+
+It is not approval to restore and does not restore files.
+
+#### Examples
+
+- Selecting one discovered Restore Manifest after `Discover manifests`.
+- Showing the selected manifest path and readiness rows for that manifest.
+- Reporting that a selected path is no longer part of the current Quarantine Manifest Discovery result.
+
+#### Non-examples
+
+- Broad WPF Undo Quarantine execution.
+- Real-profile WPF Undo Quarantine.
+- Approval to restore.
+- Writing an updated Restore Manifest.
+- Moving files out of quarantine.
+- Cleaning up empty action folders.
+
+#### Lifecycle
+
+- Uses the current Quarantine Manifest Discovery result.
+- Populates selection from discovered Restore Manifest Summary rows.
+- Recomputes Restore Readiness Preview for the selected Restore Manifest when the user requests selected readiness.
+- Is discarded when the Quarantine Root changes, discovery is rerun, or another manifest is selected.
+- Does not create, move, delete, restore, write, or clean up files or folders.
+
+#### Relationships
+
+- Depends on Quarantine Manifest Discovery.
+- Depends on Restore Manifest Summary and Restore Readiness Preview.
+- Implements ADR 0013.
+- Precedes broad WPF Undo Quarantine for discovered manifests.
+
+#### Code implications
+
+- Use `SelectedRestoreManifestReview` and `SelectedRestoreManifestReviewBuilder`.
+- Keep selection read-only and derived from current discovery results.
+- Keep selected readiness separate from approval and execution.
+- Do not call `UndoQuarantineExecutor.Undo`.
+
 ### Restore Readiness Preview
 
 Status: draft
@@ -2432,7 +2481,7 @@ It is not approval to restore and does not restore files.
 #### Non-examples
 
 - Broad WPF Undo Quarantine execution.
-- Manifest selection for restore.
+- Approval to restore or selected restore execution.
 - Writing an updated Restore Manifest.
 - Creating original parent folders.
 - Moving files out of quarantine.
@@ -2583,6 +2632,7 @@ The current core implementation is fixture-tested through Undo Quarantine Execut
 - Has a current-fixture WPF path for the immediately executed fixture action.
 - Has read-only Quarantine Manifest Discovery for older action-scoped manifests.
 - Has read-only Restore Readiness Preview for discovered manifest blockers.
+- Has read-only Selected Restore Manifest Review for focusing one discovered manifest before any broad restore action exists.
 - Reverses a quarantine Cleanup Action.
 
 #### Code implications

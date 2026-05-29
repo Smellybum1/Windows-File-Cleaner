@@ -547,8 +547,31 @@
                                         MinWidth="185"
                                         Click="PreviewRestoreReadinessButton_Click" />
                             </WrapPanel>
+                            <WrapPanel Margin="0,6,0,0">
+                                <TextBlock Text="Selected manifest"
+                                           VerticalAlignment="Center"
+                                           Foreground="#526171"
+                                           Margin="0,0,8,0" />
+                                <ComboBox x:Name="RestoreManifestSelectionBox"
+                                          Width="520"
+                                          MinHeight="30"
+                                          DisplayMemberPath="Label"
+                                          IsEnabled="False"
+                                          SelectionChanged="RestoreManifestSelectionBox_SelectionChanged" />
+                                <Button x:Name="PreviewSelectedRestoreManifestReadinessButton"
+                                        Content="Preview selected readiness"
+                                        MinWidth="205"
+                                        IsEnabled="False"
+                                        Click="PreviewSelectedRestoreManifestReadinessButton_Click" />
+                            </WrapPanel>
                             <TextBlock x:Name="QuarantineManifestDiscoveryText"
                                        Text="Read-only manifest discovery appears after using Discover manifests."
+                                       FontFamily="Consolas"
+                                       FontSize="12"
+                                       Margin="0,6,0,0"
+                                       TextWrapping="Wrap" />
+                            <TextBlock x:Name="SelectedRestoreManifestReviewText"
+                                       Text="Selected Restore Manifest Review appears after discovery and Preview selected readiness."
                                        FontFamily="Consolas"
                                        FontSize="12"
                                        Margin="0,6,0,0"

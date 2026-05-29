@@ -4078,3 +4078,58 @@ Rejected ideas buffer:
 - Do not treat readiness as approval to restore.
 - Do not add manifest selection yet.
 - Do not clean up empty action folders.
+
+### 2026-05-29: Add Selected Restore Manifest Review
+
+Status: completed
+
+Evidence:
+
+- Quarantine Manifest Discovery can find older action-scoped Restore Manifests.
+- Restore Readiness Preview can evaluate all discovered manifests, but future broad Undo Quarantine needs explicit one-manifest selection.
+- ADR 0013 selects read-only Selected Restore Manifest Review before any selected old-manifest restore execution.
+
+Implementation:
+
+- Added ADR 0013 for read-only Selected Restore Manifest Review.
+- Added `SelectedRestoreManifestReview` and `SelectedRestoreManifestReviewBuilder`.
+- WPF now populates `RestoreManifestSelectionBox` after `Discover manifests`, auto-selects the newest discovered Restore Manifest, and exposes `Preview selected readiness`.
+- Selected readiness evaluates only the selected Restore Manifest and reports selection issues for missing discovery, blank selection, or stale paths.
+- Kept discovered-manifest restore, real-profile execution, permanent deletion, cleanup history, manifest writes, and quarantine-folder cleanup unavailable.
+
+Verification:
+
+- `dotnet run --project tests\WindowsFileCleaner.Tests\WindowsFileCleaner.Tests.csproj` passed.
+- `dotnet run --project tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj` passed.
+- `dotnet build WindowsFileCleaner.sln --no-restore` passed with 0 warnings and 0 errors.
+- `dotnet run --project tests\WindowsFileCleaner.Tests\WindowsFileCleaner.Tests.csproj --no-build` passed.
+- `dotnet run --project tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj --no-build` passed.
+- `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\Invoke-MvpPreflight.ps1` passed.
+- Preflight restored, built, ran core tests, ran WPF app tests, ran fixture `-WhatIf`, ran `git diff --check`, and reported that no real user files were scanned or modified.
+
+Docs updated:
+
+- `README.md`
+- `docs/domain/context.md`
+- `docs/domain/glossary.md`
+- `docs/decisions/0013-use-read-only-selected-restore-manifest-review.md`
+- `docs/features/2026-05-28-mvp-readiness-audit.md`
+- `docs/features/2026-05-29-selected-restore-manifest-review.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- Added `docs/decisions/0013-use-read-only-selected-restore-manifest-review.md`.
+
+Open questions:
+
+- What exact confirmation phrase should selected broad Undo Quarantine require?
+- Should future restore execution allow only manifests with zero readiness blockers?
+- Should successful restore offer empty action-folder cleanup?
+
+Rejected ideas buffer:
+
+- Do not restore selected old manifests in this packet.
+- Do not treat selected readiness as approval to restore.
+- Do not add cleanup history in this packet.
+- Do not remove all-manifest Restore Readiness Preview.

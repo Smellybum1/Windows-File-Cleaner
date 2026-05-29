@@ -73,6 +73,8 @@ internal sealed class MainWindowSmokeTests
             Assert(window.CanBrowseQuarantineRoot, "MainWindow should allow browsing for the read-only Quarantine Preview root before scanning.");
             Assert(window.CanDiscoverQuarantineManifests, "MainWindow should allow read-only Quarantine Manifest Discovery before scanning.");
             Assert(window.CanPreviewRestoreReadiness, "MainWindow should allow read-only Restore Readiness Preview before scanning.");
+            Assert(!window.CanSelectDiscoveredRestoreManifest, "MainWindow should not enable Restore Manifest selection before discovery.");
+            Assert(!window.CanPreviewSelectedRestoreManifestReadiness, "MainWindow should not enable selected Restore Manifest review before discovery.");
             Assert(window.BrowseQuarantineRootButtonText.Contains("Browse", StringComparison.OrdinalIgnoreCase), "Quarantine root browse action should be visible in the review toolbar.");
             Assert(
                 window.CurrentQuarantineRootPath == QuarantinePreviewBuilder.DefaultQuarantineRootPath,
@@ -87,6 +89,9 @@ internal sealed class MainWindowSmokeTests
             Assert(
                 window.RestoreReadinessPreviewTextValue.Contains("Read-only restore readiness", StringComparison.OrdinalIgnoreCase),
                 "Restore Readiness Preview pane should start in a read-only placeholder state.");
+            Assert(
+                window.SelectedRestoreManifestReviewTextValue.Contains("Selected Restore Manifest Review", StringComparison.OrdinalIgnoreCase),
+                "Selected Restore Manifest Review pane should start in a read-only placeholder state.");
             Assert(window.BrowseCleanupScopeButtonText.Contains("Browse", StringComparison.OrdinalIgnoreCase), "Cleanup Scope browse action should be visible in the header.");
             Assert(window.IsRealProfilePreflightConfirmationVisible, "MainWindow should show the real-profile preflight acknowledgement.");
             Assert(!window.IsRealProfilePreflightConfirmed, "Real-profile preflight acknowledgement should start unchecked.");
@@ -766,8 +771,29 @@ internal sealed class MainWindowSmokeTests
             Assert(
                 discoveryText.Contains("No restore action is available", StringComparison.OrdinalIgnoreCase),
                 "Discovery pane should not imply old-manifest restore is available.");
+            Assert(discoveryWindow.DiscoveredRestoreManifestCount == 1, "Discovery should populate one selectable Restore Manifest.");
+            Assert(discoveryWindow.CanSelectDiscoveredRestoreManifest, "Discovery should enable Restore Manifest selection when a manifest exists.");
+            Assert(discoveryWindow.CanPreviewSelectedRestoreManifestReadiness, "Discovery should enable selected Restore Manifest readiness preview when a manifest is selected.");
+            Assert(discoveryWindow.SelectedRestoreManifestPath == manifestPath, "Discovery should select the newest discovered Restore Manifest by default.");
+            Assert(discoveryWindow.SelectDiscoveredRestoreManifestByPath(manifestPath), "Persisted Restore Manifest should be selectable by path.");
             Assert(File.Exists(quarantinePath), "Discovery should not move quarantined files.");
             Assert(!File.Exists(originalPath), "Discovery should not restore original paths.");
+
+            discoveryWindow.PreviewSelectedRestoreManifestReadiness();
+            var selectedReviewText = discoveryWindow.SelectedRestoreManifestReviewTextValue;
+
+            Assert(
+                discoveryWindow.CurrentStatusText.Contains("Selected Restore Manifest Review completed", StringComparison.OrdinalIgnoreCase)
+                && discoveryWindow.CurrentStatusText.Contains("No files were modified", StringComparison.OrdinalIgnoreCase),
+                "Selected Restore Manifest Review status should report a read-only result.");
+            Assert(
+                selectedReviewText.Contains("Selected Restore Manifest Review: read-only", StringComparison.OrdinalIgnoreCase)
+                && selectedReviewText.Contains("Selected manifest: " + manifestPath, StringComparison.OrdinalIgnoreCase)
+                && selectedReviewText.Contains("Restore readiness row | Restorable", StringComparison.OrdinalIgnoreCase)
+                && selectedReviewText.Contains("No restore action is available", StringComparison.OrdinalIgnoreCase),
+                "Selected Restore Manifest Review pane should show only selected readiness evidence. Text: " + selectedReviewText);
+            Assert(File.Exists(quarantinePath), "Selected Restore Manifest Review should not move quarantined files.");
+            Assert(!File.Exists(originalPath), "Selected Restore Manifest Review should not restore original paths.");
 
             discoveryWindow.PreviewRestoreReadinessForCurrentRoot();
             var readinessText = discoveryWindow.RestoreReadinessPreviewTextValue;
