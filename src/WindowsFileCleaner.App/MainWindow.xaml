@@ -71,6 +71,7 @@
                             Click="BrowseScopeButton_Click" />
                     <Button x:Name="ScanButton"
                             Content="Scan"
+                            ToolTipService.ShowOnDisabled="True"
                             Click="ScanButton_Click" />
                     <Button x:Name="CancelButton"
                             Content="Cancel"

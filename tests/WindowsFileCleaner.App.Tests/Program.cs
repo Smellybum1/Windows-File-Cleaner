@@ -359,6 +359,10 @@ internal sealed class MainWindowSmokeTests
                 && window.ScanButtonToolTipValue.Contains("acknowledged", StringComparison.OrdinalIgnoreCase),
                 "Disabled real-profile Scan button tooltip should explain the lock.");
             Assert(
+                window.ScanButtonAutomationHelpTextValue.Contains("locked", StringComparison.OrdinalIgnoreCase)
+                && window.ScanButtonAutomationHelpTextValue.Contains("acknowledged", StringComparison.OrdinalIgnoreCase),
+                "Disabled real-profile Scan button automation help text should explain the lock.");
+            Assert(
                 window.ScanGateTextValue.Contains("Confirm MVP preflight", StringComparison.OrdinalIgnoreCase),
                 "Real-profile scan gate should explain why Scan is disabled.");
             window.ConfirmRealProfilePreflightForRealProfileScan();
@@ -375,6 +379,10 @@ internal sealed class MainWindowSmokeTests
                 window.ScanButtonToolTipValue.Contains("read-only Storage Scan", StringComparison.OrdinalIgnoreCase)
                 && window.ScanButtonToolTipValue.Contains("cleanup execution remains unavailable", StringComparison.OrdinalIgnoreCase),
                 "Enabled real-profile Scan button tooltip should keep the read-only and unavailable-execution boundary visible.");
+            Assert(
+                window.ScanButtonAutomationHelpTextValue.Contains("read-only Storage Scan", StringComparison.OrdinalIgnoreCase)
+                && window.ScanButtonAutomationHelpTextValue.Contains("cleanup execution remains unavailable", StringComparison.OrdinalIgnoreCase),
+                "Enabled real-profile Scan button automation help text should keep the read-only and unavailable-execution boundary visible.");
             Assert(
                 window.ScanGateTextValue.Contains("read-only", StringComparison.OrdinalIgnoreCase),
                 "Confirmed real-profile scan gate should preserve read-only wording.");
@@ -484,6 +492,10 @@ internal sealed class MainWindowSmokeTests
                 window.ScanButtonToolTipValue.Contains("read-only Storage Scan", StringComparison.OrdinalIgnoreCase)
                 && window.ScanButtonToolTipValue.Contains("preview and exact confirmation", StringComparison.OrdinalIgnoreCase),
                 "Fixture Scan button tooltip should preserve the read-only boundary and later cleanup gates.");
+            Assert(
+                window.ScanButtonAutomationHelpTextValue.Contains("read-only Storage Scan", StringComparison.OrdinalIgnoreCase)
+                && window.ScanButtonAutomationHelpTextValue.Contains("preview and exact confirmation", StringComparison.OrdinalIgnoreCase),
+                "Fixture Scan button automation help text should preserve the read-only boundary and later cleanup gates.");
             Assert(window.CanBrowseCleanupScope, "Launch Cleanup Scope should still allow choosing a different Cleanup Scope before scanning.");
             Assert(!window.IsRealProfilePreflightConfirmationVisible, "Fixture Cleanup Scope should not show real-profile acknowledgement.");
             Assert(!window.CanExportScanCsv, "Launch Cleanup Scope should not create exportable scan data.");
@@ -519,6 +531,10 @@ internal sealed class MainWindowSmokeTests
                 window.ScanButtonToolTipValue.Contains("read-only Storage Scan", StringComparison.OrdinalIgnoreCase)
                 && window.ScanButtonToolTipValue.Contains("cleanup execution remains unavailable", StringComparison.OrdinalIgnoreCase),
                 "Custom Scan button tooltip should keep the read-only and unavailable-execution boundary visible.");
+            Assert(
+                window.ScanButtonAutomationHelpTextValue.Contains("read-only Storage Scan", StringComparison.OrdinalIgnoreCase)
+                && window.ScanButtonAutomationHelpTextValue.Contains("cleanup execution remains unavailable", StringComparison.OrdinalIgnoreCase),
+                "Custom Scan button automation help text should keep the read-only and unavailable-execution boundary visible.");
             Assert(!window.IsRealProfilePreflightConfirmationVisible, "Custom Cleanup Scope should not show real-profile acknowledgement.");
         }
         finally

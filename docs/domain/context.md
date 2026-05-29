@@ -314,7 +314,7 @@ For real-profile scopes under `C:\Users\moxhe`, the gate requires explicit ackno
 - Keep the gate local and read-only.
 - Reset the acknowledgement when the Cleanup Scope changes.
 - Continue to enforce the gate in the scan-start method, not only through button state.
-- Keep the gate discoverable through visible summary text and the `Scan` button tooltip, especially when the button is disabled.
+- Keep the gate discoverable through visible summary text, the `Scan` button tooltip, and `Scan` button automation help text, especially when the button is disabled.
 - Keep ready-state wording scope-specific: fixture scopes may later use fixture-only gated cleanup actions, while real-profile and custom scopes remain preview-only.
 
 ### Cleanup Candidate

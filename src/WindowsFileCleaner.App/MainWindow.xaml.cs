@@ -98,6 +98,8 @@ public partial class MainWindow : Window
 
     public string ScanButtonToolTipValue => ScanButton.ToolTip?.ToString() ?? "";
 
+    public string ScanButtonAutomationHelpTextValue => AutomationProperties.GetHelpText(ScanButton);
+
     public bool CanExportScanCsv => ExportCsvButton.IsEnabled;
 
     public string ExportScanCsvButtonToolTipValue => ExportCsvButton.ToolTip?.ToString() ?? "";
@@ -1302,7 +1304,9 @@ public partial class MainWindow : Window
             ? System.Windows.Media.Brushes.DarkGreen
             : System.Windows.Media.Brushes.DarkGoldenrod;
         ScanGateText.Text = scanGate.Message;
-        ScanButton.ToolTip = FormatScanButtonToolTip(note, scanGate);
+        var scanButtonHelpText = FormatScanButtonToolTip(note, scanGate);
+        ScanButton.ToolTip = scanButtonHelpText;
+        AutomationProperties.SetHelpText(ScanButton, scanButtonHelpText);
         RealProfilePreflightCheckBox.Visibility = note.IsRealUserProfileScope ? Visibility.Visible : Visibility.Collapsed;
         RealProfilePreflightCheckBox.IsEnabled = !_isScanning && note.IsRealUserProfileScope;
         ScanButton.IsEnabled = !_isScanning && scanGate.CanScan;
