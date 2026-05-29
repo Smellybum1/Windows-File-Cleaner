@@ -2288,7 +2288,7 @@ public partial class MainWindow : Window
             $"Included: {preview.IncludedCount:N0} | Blocked: {preview.BlockedCount:N0} | Redundant: {preview.RedundantCount:N0}",
             $"Previewed size: {preview.IncludedSizeDisplay}",
             $"Restore Manifest Draft: {restoreManifestDraft.DraftId} | Entries: {restoreManifestDraft.EntryCount:N0} | Bytes: {restoreManifestDraft.TotalSizeDisplay} | Executed manifest: {FormatYesNo(restoreManifestDraft.IsExecutedManifest)}",
-            $"Quarantine Confirmation Draft: {confirmationDraft.ConfirmationId} | Required future text: {confirmationDraft.RequiredConfirmationText} | Execution implemented: {FormatYesNo(confirmationDraft.IsExecutionImplemented)}",
+            $"Quarantine Confirmation Draft: {confirmationDraft.ConfirmationId} | Required confirmation text: {confirmationDraft.RequiredConfirmationText} | Execution implemented: {FormatYesNo(confirmationDraft.IsExecutionImplemented)}",
             $"Execution scope status: {FormatQuarantineExecutionScopeStatus(confirmationDraft.IsExecutionImplemented)}",
             $"Approval boundary: {FormatQuarantineApprovalBoundary(confirmationDraft.IsExecutionImplemented)}",
             confirmationDraft.HasDataBlockers
@@ -2601,7 +2601,7 @@ public partial class MainWindow : Window
             : confirmationDraft.SelectedManifestPath;
         var lines = new List<string>
         {
-            $"Selected Restore Confirmation Draft: {confirmationDraft.ConfirmationId} | Required future text: {confirmationDraft.RequiredConfirmationText} | Execution implemented: {FormatYesNo(confirmationDraft.IsExecutionImplemented)}",
+            $"Selected Restore Confirmation Draft: {confirmationDraft.ConfirmationId} | Required confirmation text: {confirmationDraft.RequiredConfirmationText} | Execution implemented: {FormatYesNo(confirmationDraft.IsExecutionImplemented)}",
             $"Selected manifest: {selectedPath}",
             $"Restorable entries: {confirmationDraft.RestorableEntryCount:N0} | Restorable size: {confirmationDraft.RestorableSizeDisplay} | Blocked rows: {confirmationDraft.BlockedEntryCount:N0} | Recovery review rows: {confirmationDraft.RecoveryReviewEntryCount:N0} | Not moved rows: {confirmationDraft.NotMovedEntryCount:N0} | Already restored rows: {confirmationDraft.AlreadyRestoredEntryCount:N0}",
             $"Selected Restore Execution Gate: read-only",

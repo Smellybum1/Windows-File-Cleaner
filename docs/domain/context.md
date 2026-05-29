@@ -2805,11 +2805,11 @@ Last reviewed: 2026-05-29
 
 Selected Restore Confirmation Draft is the read-only confirmation readiness check for one Selected Restore Manifest Review.
 
-It summarizes the selected Restore Manifest, restorable entries, restorable bytes, required future confirmation text, and readiness blockers before any selected restore execution exists.
+It summarizes the selected Restore Manifest, restorable entries, restorable bytes, required confirmation text, and readiness blockers before any selected restore execution.
 
 #### Examples
 
-- Showing required future confirmation text `RESTORE` for one selected Restore Manifest.
+- Showing required confirmation text `RESTORE` for one selected Restore Manifest.
 - Showing that one selected manifest has one restorable entry and no readiness blockers.
 - Showing that selected restore confirmation is blocked by original-path collisions or recovery-review rows.
 
@@ -2839,7 +2839,7 @@ It summarizes the selected Restore Manifest, restorable entries, restorable byte
 #### Code implications
 
 - Use `SelectedRestoreConfirmationDraft` and `SelectedRestoreConfirmationDraftBuilder`.
-- Required future confirmation text is `RESTORE`.
+- Required confirmation text is `RESTORE`.
 - Keep readiness blockers separate from execution availability.
 - Do not call `UndoQuarantineExecutor.Undo`.
 

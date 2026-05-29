@@ -701,6 +701,10 @@ internal sealed class MainWindowSmokeTests
             Assert(window.QuarantinePreviewTextValue.Contains("Included: 1", StringComparison.OrdinalIgnoreCase), "Preview pane should show one included fixture row.");
             Assert(window.QuarantinePreviewTextValue.Contains("Restore Manifest Draft", StringComparison.OrdinalIgnoreCase), "Preview pane should show Restore Manifest Draft readiness.");
             Assert(window.QuarantinePreviewTextValue.Contains("Quarantine Confirmation Draft", StringComparison.OrdinalIgnoreCase), "Preview pane should show Quarantine Confirmation Draft readiness.");
+            Assert(
+                window.QuarantinePreviewTextValue.Contains("Required confirmation text: QUARANTINE", StringComparison.OrdinalIgnoreCase)
+                && !window.QuarantinePreviewTextValue.Contains("Required future text", StringComparison.OrdinalIgnoreCase),
+                "Quarantine preview pane should use current confirmation wording rather than stale future wording.");
             Assert(window.QuarantinePreviewTextValue.Contains("Execution implemented: yes", StringComparison.OrdinalIgnoreCase), "Fixture preview pane should state fixture execution is available.");
             Assert(
                 window.QuarantinePreviewTextValue.Contains("Execution scope status", StringComparison.OrdinalIgnoreCase)
@@ -969,7 +973,8 @@ internal sealed class MainWindowSmokeTests
             Assert(!discoveryWindow.CanExecuteSelectedRestore, "Selected restore execution should stay closed before exact RESTORE.");
             Assert(
                 selectedGateText.Contains("Selected Restore Confirmation Draft:", StringComparison.OrdinalIgnoreCase)
-                && selectedGateText.Contains("Required future text: RESTORE", StringComparison.OrdinalIgnoreCase)
+                && selectedGateText.Contains("Required confirmation text: RESTORE", StringComparison.OrdinalIgnoreCase)
+                && !selectedGateText.Contains("Required future text", StringComparison.OrdinalIgnoreCase)
                 && selectedGateText.Contains("Selected Restore Execution Gate: read-only", StringComparison.OrdinalIgnoreCase)
                 && selectedGateText.Contains("Execution implemented: yes", StringComparison.OrdinalIgnoreCase)
                 && selectedGateText.Contains("Can execute: no", StringComparison.OrdinalIgnoreCase)

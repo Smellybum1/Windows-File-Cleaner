@@ -1091,7 +1091,7 @@ internal sealed class StorageScanTests
         Assert(confirmation.RedundantCount == 0, "Clean confirmation draft should have no redundant preview rows.");
         Assert(!confirmation.HasDataBlockers, "Matching preview and manifest draft should have no data blockers.");
         Assert(!confirmation.IsExecutionImplemented, "Confirmation draft must not imply execution exists.");
-        Assert(confirmation.RequiredConfirmationText == QuarantineConfirmationDraft.DefaultRequiredConfirmationText, "Confirmation draft should expose the future confirmation phrase.");
+        Assert(confirmation.RequiredConfirmationText == QuarantineConfirmationDraft.DefaultRequiredConfirmationText, "Confirmation draft should expose the required confirmation phrase.");
         Assert(confirmation.ReviewNotes.Any(note => note.Contains("No files were modified", StringComparison.OrdinalIgnoreCase)), "Confirmation notes should preserve the read-only boundary.");
         Assert(confirmation.ReviewNotes.Any(note => note.Contains("not available", StringComparison.OrdinalIgnoreCase)), "Confirmation notes should state execution is not available by default.");
         Assert(!Directory.Exists(quarantineRoot), "Building a Quarantine Confirmation Draft should not create the quarantine root folder.");

@@ -30,7 +30,7 @@ The WPF app can discover Restore Manifests, select one, and preview readiness fo
 ## Desired behavior
 
 - After `Preview selected readiness`, WPF can build a Selected Restore Confirmation Draft.
-- The draft shows selected manifest path, restorable entries, restorable bytes, readiness blockers, and required future confirmation text `RESTORE`.
+- The draft shows selected manifest path, restorable entries, restorable bytes, readiness blockers, and required confirmation text `RESTORE`.
 - The Selected Restore Execution Gate shows whether the typed confirmation matches.
 - WPF keeps selected restore execution unavailable even when `RESTORE` is typed.
 - No restore button is exposed and no files are modified.
@@ -165,7 +165,7 @@ Risks:
 
 Assumptions:
 
-- `RESTORE` is a clear enough future confirmation phrase for selected restore.
+- `RESTORE` is a clear enough confirmation phrase for selected restore.
 - Future restore execution will recompute readiness immediately before moving files.
 
 ## Completion notes
@@ -226,5 +226,5 @@ Open questions:
 
 Risky assumptions:
 
-- `RESTORE` is a clear enough future confirmation phrase for selected restore.
+- `RESTORE` is a clear enough confirmation phrase for selected restore.
 - Future restore execution will recompute readiness immediately before moving files.

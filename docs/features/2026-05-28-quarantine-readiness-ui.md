@@ -30,7 +30,7 @@ After clicking `Preview quarantine`, the detail pane shows:
 
 - Quarantine Preview included, blocked, redundant, and previewed bytes.
 - Restore Manifest Draft id, entry count, total bytes, and executed-manifest status.
-- Quarantine Confirmation Draft id, required future confirmation text, execution-implemented status, and readiness blockers.
+- Quarantine Confirmation Draft id, required confirmation text, execution-implemented status, and readiness blockers.
 - A clear no-files-modified line.
 
 ## Domain language changes
@@ -152,7 +152,7 @@ Completed on: 2026-05-28
 What changed:
 
 - WPF `Preview quarantine` now builds Restore Manifest Draft and Quarantine Confirmation Draft in memory.
-- The detail pane shows draft ids, entry counts, bytes, required future confirmation text, execution status, readiness blocker count, and blocker details.
+- The detail pane shows draft ids, entry counts, bytes, required confirmation text, execution status, readiness blocker count, and blocker details.
 - Clearing scan or shortlist state clears preview and draft state.
 - No execution, folder creation, file moving, deletion, or manifest writing was added.
 

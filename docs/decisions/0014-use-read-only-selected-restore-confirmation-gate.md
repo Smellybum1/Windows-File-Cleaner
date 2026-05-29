@@ -22,7 +22,7 @@ Constraints:
 
 Add a read-only Selected Restore Confirmation Draft and Selected Restore Execution Gate.
 
-The draft summarizes the selected manifest, restorable entry counts, restorable bytes, required future confirmation text, readiness blockers, and execution availability. The gate combines that draft with typed confirmation text and implementation availability. The required future confirmation text is `RESTORE`.
+The draft summarizes the selected manifest, restorable entry counts, restorable bytes, required confirmation text, readiness blockers, and execution availability. The gate combines that draft with typed confirmation text and implementation availability. The required confirmation text is `RESTORE`.
 
 In this packet, WPF must pass selected restore execution as unavailable. Therefore, the gate can show whether the exact `RESTORE` text matches, but it must keep execution closed and must not expose a restore button.
 

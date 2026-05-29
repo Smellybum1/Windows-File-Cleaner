@@ -22,7 +22,7 @@ As the project owner, I want the app to prove the exact confirmation gate before
 
 ## Current behavior
 
-Quarantine Preview creates Restore Manifest Draft and Quarantine Confirmation Draft readiness output. The WPF app shows the future required text but has no typed confirmation gate.
+Quarantine Preview creates Restore Manifest Draft and Quarantine Confirmation Draft readiness output. The WPF app shows the required confirmation text but has no typed confirmation gate.
 
 ## Desired behavior
 

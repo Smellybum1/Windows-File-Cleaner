@@ -6,7 +6,7 @@ Use it to preserve what was completed, what was verified, what was rejected, and
 
 ## Current status
 
-Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. The app has a broad read-only review workflow, debounced Storage Review Search for large real-profile scans, Cleanup Scope Scan Gate discoverability polish, Matched Review Mix, Review Shortlist Safety Mix, Selected Folder Subtree Summary, Storage Hotspot Trail, Selected Folder Child Focus, Selected Folder Descendant Focus, fixture launch/preflight tooling with checklist output, checklist-only mode, and approval-boundary prompt coverage, Quarantine Preview, Quarantine approval-boundary wording, Quarantine Execution Scope Status, Restore Manifest Draft, Quarantine Confirmation Draft, Quarantine Action Draft, write-ahead Restore Manifest persistence, core Quarantine execution, core Undo Quarantine, fixture-only WPF Quarantine execution, WPF undo for the current fixture execution, Quarantine Manifest Discovery, Selected Restore Manifest Review, Selected Restore Confirmation Gate, Fixture-only Selected Restore Execution, and Restore Readiness Preview. Real-profile WPF Quarantine execution, real-profile WPF Undo Quarantine, permanent deletion, and persisted cleanup history remain unavailable. Fresh-thread handoff notes and a startup prompt live in `docs/codex/thread-handoff.md`.
+Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. The app has a broad read-only review workflow, debounced Storage Review Search for large real-profile scans, Cleanup Scope Scan Gate discoverability polish, Matched Review Mix, Review Shortlist Safety Mix, Selected Folder Subtree Summary, Storage Hotspot Trail, Selected Folder Child Focus, Selected Folder Descendant Focus, fixture launch/preflight tooling with checklist output, checklist-only mode, and approval-boundary prompt coverage, Quarantine Preview, Quarantine approval-boundary wording, Quarantine Execution Scope Status, Restore Manifest Draft, Quarantine Confirmation Draft, confirmation label wording polish, Quarantine Action Draft, write-ahead Restore Manifest persistence, core Quarantine execution, core Undo Quarantine, fixture-only WPF Quarantine execution, WPF undo for the current fixture execution, Quarantine Manifest Discovery, Selected Restore Manifest Review, Selected Restore Confirmation Gate, Fixture-only Selected Restore Execution, and Restore Readiness Preview. Real-profile WPF Quarantine execution, real-profile WPF Undo Quarantine, permanent deletion, and persisted cleanup history remain unavailable. Fresh-thread handoff notes and a startup prompt live in `docs/codex/thread-handoff.md`.
 
 ## Next recommended work
 
@@ -4911,3 +4911,54 @@ Open questions:
 Rejected ideas buffer:
 
 - Do not add more checklist items for every WPF line; keep the terminal prompt compact.
+
+### 2026-05-29: Add Confirmation Label Wording
+
+Status: completed
+
+Evidence:
+
+- Fixture-only Quarantine execution and fixture-only selected restore now exist.
+- WPF Quarantine Preview and Selected Restore panes still said `Required future text`, which was stale and could make current fixture-only gates harder to understand.
+- Existing WPF smoke tests already cover Quarantine Preview/Gate and Selected Restore Gate wording.
+
+Implementation:
+
+- Changed WPF Quarantine Confirmation Draft output to `Required confirmation text: QUARANTINE`.
+- Changed WPF Selected Restore Confirmation Draft output to `Required confirmation text: RESTORE`.
+- Added WPF smoke assertions that the stale `Required future text` label is absent from those panes.
+- Updated current docs and test wording to use required confirmation text.
+- Kept confirmation phrases, execution gates, fixture-only execution, real-profile blockers, restore behavior, permanent deletion, and cleanup history unchanged.
+
+Verification:
+
+- `dotnet run --project tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj` passed.
+- `dotnet build WindowsFileCleaner.sln --no-restore` passed with 0 warnings and 0 errors.
+- `dotnet run --project tests\WindowsFileCleaner.Tests\WindowsFileCleaner.Tests.csproj --no-build` passed.
+- `git -c safe.directory='D:/Codex/Windows File Cleaner' diff --check` passed; Git printed line-ending normalization warnings for touched files but no whitespace errors.
+- Initial parallel core test attempts hit transient Windows build-output file locks while another .NET command was building; sequential verification passed.
+
+Docs updated:
+
+- `docs/domain/context.md`
+- `docs/domain/glossary.md`
+- `docs/decisions/0014-use-read-only-selected-restore-confirmation-gate.md`
+- `docs/features/2026-05-28-quarantine-confirmation-draft.md`
+- `docs/features/2026-05-28-quarantine-readiness-ui.md`
+- `docs/features/2026-05-29-confirmation-label-wording.md`
+- `docs/features/2026-05-29-quarantine-execution-gate.md`
+- `docs/features/2026-05-29-selected-restore-confirmation-gate.md`
+- `docs/codex/thread-handoff.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No ADR added. This is reversible wording alignment with no architecture, persistence, cleanup execution, restore, security, deployment, or data-model change.
+
+Open questions:
+
+- None for this packet.
+
+Rejected ideas buffer:
+
+- Do not rename model properties or change gate semantics for a visible-label polish packet.

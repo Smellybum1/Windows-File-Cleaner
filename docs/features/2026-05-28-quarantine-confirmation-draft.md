@@ -26,7 +26,7 @@ The app can create a Quarantine Preview and an in-memory Restore Manifest Draft.
 
 ## Desired behavior
 
-The core library can build an in-memory Quarantine Confirmation Draft from a Quarantine Preview and Restore Manifest Draft. The draft records included counts and bytes, blocked and redundant row counts, the Restore Manifest Draft id, the future confirmation phrase, review notes, and data blockers when preview and manifest metadata disagree.
+The core library can build an in-memory Quarantine Confirmation Draft from a Quarantine Preview and Restore Manifest Draft. The draft records included counts and bytes, blocked and redundant row counts, the Restore Manifest Draft id, the required confirmation phrase, review notes, and data blockers when preview and manifest metadata disagree.
 
 The draft remains read-only and states that Quarantine execution is not implemented.
 
@@ -93,7 +93,7 @@ Rejected ideas buffer:
 Small feature-level decisions:
 
 - Add `QuarantineConfirmationDraft` and `QuarantineConfirmationDraftBuilder`.
-- Use `QUARANTINE` as the default future confirmation phrase.
+- Use `QUARANTINE` as the default required confirmation phrase.
 - Separate data blockers from review notes.
 - Keep `IsExecutionImplemented` false.
 
