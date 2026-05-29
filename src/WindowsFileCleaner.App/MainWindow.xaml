@@ -155,8 +155,8 @@
                                Foreground="#526171"
                                Tag="Neutral"
                                TextTrimming="CharacterEllipsis"
-                               ToolTip="Scan safety summary: waiting for scan. Header summary is read-only review context, not cleanup approval."
-                               AutomationProperties.HelpText="Scan safety summary: waiting for scan. Header summary is read-only review context, not cleanup approval." />
+                               ToolTip="Scan safety summary: waiting for scan. Header state: neutral. Header summary is read-only review context, not cleanup approval."
+                               AutomationProperties.HelpText="Scan safety summary: waiting for scan. Header state: neutral. Header summary is read-only review context, not cleanup approval." />
                 </Expander.Header>
                 <StackPanel Margin="0,6,0,0">
                     <TextBlock x:Name="ReviewMixText"
@@ -452,8 +452,8 @@
                                    Foreground="#526171"
                                    Tag="Neutral"
                                    TextTrimming="CharacterEllipsis"
-                                   ToolTip="Quarantine shortlist: 0 shortlisted | no preview | no current quarantine. Header summary is read-only review context, not cleanup approval."
-                                   AutomationProperties.HelpText="Quarantine shortlist: 0 shortlisted | no preview | no current quarantine. Header summary is read-only review context, not cleanup approval." />
+                                   ToolTip="Quarantine shortlist: 0 shortlisted | no preview | no current quarantine. Header state: neutral. Header summary is read-only review context, not cleanup approval."
+                                   AutomationProperties.HelpText="Quarantine shortlist: 0 shortlisted | no preview | no current quarantine. Header state: neutral. Header summary is read-only review context, not cleanup approval." />
                     </Expander.Header>
                     <StackPanel Margin="0,6,0,0">
                         <WrapPanel>

@@ -2525,8 +2525,8 @@ public partial class MainWindow : Window
             : "undo unavailable";
         var headerText =
             $"Quarantine shortlist: {_shortlist.Count:N0} shortlisted | {previewText} | {currentQuarantineText} | {undoText}";
-        var helpText = $"{headerText}. Header summary is read-only review context, not cleanup approval.";
         var style = GetQuarantineShortlistHeaderStatusStyle(movedCount);
+        var helpText = $"{headerText}. Header state: {FormatQuarantineShortlistHeaderState(style)}. Header summary is read-only review context, not cleanup approval.";
         QuarantineShortlistHeaderText.Text = headerText;
         QuarantineShortlistHeaderText.Tag = style.ToString();
         QuarantineShortlistHeaderText.ToolTip = helpText;
@@ -2574,6 +2574,17 @@ public partial class MainWindow : Window
         Success,
         Information,
         Warning
+    }
+
+    private static string FormatQuarantineShortlistHeaderState(QuarantineShortlistHeaderStatusStyle style)
+    {
+        return style switch
+        {
+            QuarantineShortlistHeaderStatusStyle.Success => "ready or completed",
+            QuarantineShortlistHeaderStatusStyle.Information => "current-session quarantined review",
+            QuarantineShortlistHeaderStatusStyle.Warning => "needs review",
+            _ => "neutral"
+        };
     }
 
     private void UpdateQuarantinePreviewStatus(string? message = null)
@@ -3622,7 +3633,7 @@ public partial class MainWindow : Window
 
     private void SetSafetySummaryHeader(string headerText, SafetySummaryHeaderStatusStyle style)
     {
-        var helpText = $"{headerText}. Header summary is read-only review context, not cleanup approval.";
+        var helpText = $"{headerText}. Header state: {FormatSafetySummaryHeaderState(style)}. Header summary is read-only review context, not cleanup approval.";
         SafetySummaryHeaderText.Text = headerText;
         SafetySummaryHeaderText.Tag = style.ToString();
         SafetySummaryHeaderText.ToolTip = helpText;
@@ -3638,6 +3649,15 @@ public partial class MainWindow : Window
     {
         Neutral,
         Warning
+    }
+
+    private static string FormatSafetySummaryHeaderState(SafetySummaryHeaderStatusStyle style)
+    {
+        return style switch
+        {
+            SafetySummaryHeaderStatusStyle.Warning => "needs review",
+            _ => "neutral"
+        };
     }
 
     private static string FormatAccessIssueExamples(StorageScanSafetySummary summary)

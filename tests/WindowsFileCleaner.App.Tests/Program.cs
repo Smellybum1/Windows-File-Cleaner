@@ -83,11 +83,13 @@ internal sealed class MainWindowSmokeTests
             Assert(window.CurrentStatusText == "Ready", "MainWindow should not start scanning when constructed.");
             Assert(
                 window.SafetySummaryHeaderToolTipValue.Contains("waiting for scan", StringComparison.OrdinalIgnoreCase)
+                && window.SafetySummaryHeaderToolTipValue.Contains("Header state: neutral", StringComparison.OrdinalIgnoreCase)
                 && window.SafetySummaryHeaderToolTipValue.Contains("read-only review context", StringComparison.OrdinalIgnoreCase)
                 && window.SafetySummaryHeaderToolTipValue.Contains("not cleanup approval", StringComparison.OrdinalIgnoreCase),
                 "Safety Summary header tooltip should expose the collapsed summary and safety boundary before scanning.");
             Assert(
                 window.SafetySummaryHeaderAutomationHelpTextValue.Contains("waiting for scan", StringComparison.OrdinalIgnoreCase)
+                && window.SafetySummaryHeaderAutomationHelpTextValue.Contains("Header state: neutral", StringComparison.OrdinalIgnoreCase)
                 && window.SafetySummaryHeaderAutomationHelpTextValue.Contains("read-only review context", StringComparison.OrdinalIgnoreCase)
                 && window.SafetySummaryHeaderAutomationHelpTextValue.Contains("not cleanup approval", StringComparison.OrdinalIgnoreCase),
                 "Safety Summary header automation help text should expose the collapsed summary and safety boundary before scanning.");
@@ -96,11 +98,13 @@ internal sealed class MainWindowSmokeTests
                 "Collapsed Safety Summary header should start with neutral styling before scan safety signals exist.");
             Assert(
                 window.QuarantineShortlistHeaderToolTipValue.Contains("0 shortlisted", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineShortlistHeaderToolTipValue.Contains("Header state: neutral", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantineShortlistHeaderToolTipValue.Contains("read-only review context", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantineShortlistHeaderToolTipValue.Contains("not cleanup approval", StringComparison.OrdinalIgnoreCase),
                 "Quarantine shortlist header tooltip should expose the collapsed summary and safety boundary before scanning.");
             Assert(
                 window.QuarantineShortlistHeaderAutomationHelpTextValue.Contains("0 shortlisted", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineShortlistHeaderAutomationHelpTextValue.Contains("Header state: neutral", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantineShortlistHeaderAutomationHelpTextValue.Contains("read-only review context", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantineShortlistHeaderAutomationHelpTextValue.Contains("not cleanup approval", StringComparison.OrdinalIgnoreCase),
                 "Quarantine shortlist header automation help text should expose the collapsed summary and safety boundary before scanning.");
@@ -1271,6 +1275,9 @@ internal sealed class MainWindowSmokeTests
             Assert(window.CanRemoveSelectedRowFromReviewShortlist, "Shortlisted row should be removable.");
             Assert(window.CanPreviewQuarantine, "Quarantine Preview should be available after shortlisting a row.");
             Assert(window.QuarantineShortlistHeaderStatusStyleValue == "Warning", "Collapsed Quarantine shortlist header should use warning styling while shortlisted rows still need preview.");
+            Assert(
+                window.QuarantineShortlistHeaderAutomationHelpTextValue.Contains("Header state: needs review", StringComparison.OrdinalIgnoreCase),
+                "Collapsed Quarantine shortlist header help text should name warning state for non-visual review.");
             Assert(window.QuarantinePreviewStatusStyleValue == "Warning", "Inline preview status should use warning styling while shortlisted rows still need preview.");
             Assert(window.QuarantinePreviewStatusFontWeightValue == "SemiBold", "Actionable inline preview status should be visually emphasized.");
             AssertQuarantinePreviewStatusHelpText(window, "Inline Quarantine Preview status help text should mirror shortlisted-but-not-previewed state.");
@@ -1481,11 +1488,13 @@ internal sealed class MainWindowSmokeTests
                 "Collapsed Safety Summary header should preserve compact scan risk counts.");
             Assert(
                 window.SafetySummaryHeaderToolTipValue.Contains(window.SafetySummaryHeaderTextValue, StringComparison.OrdinalIgnoreCase)
+                && window.SafetySummaryHeaderToolTipValue.Contains("Header state: needs review", StringComparison.OrdinalIgnoreCase)
                 && window.SafetySummaryHeaderToolTipValue.Contains("read-only review context", StringComparison.OrdinalIgnoreCase)
                 && window.SafetySummaryHeaderToolTipValue.Contains("not cleanup approval", StringComparison.OrdinalIgnoreCase),
                 "Collapsed Safety Summary header tooltip should mirror the dynamic header and safety boundary.");
             Assert(
                 window.SafetySummaryHeaderAutomationHelpTextValue.Contains(window.SafetySummaryHeaderTextValue, StringComparison.OrdinalIgnoreCase)
+                && window.SafetySummaryHeaderAutomationHelpTextValue.Contains("Header state: needs review", StringComparison.OrdinalIgnoreCase)
                 && window.SafetySummaryHeaderAutomationHelpTextValue.Contains("read-only review context", StringComparison.OrdinalIgnoreCase)
                 && window.SafetySummaryHeaderAutomationHelpTextValue.Contains("not cleanup approval", StringComparison.OrdinalIgnoreCase),
                 "Collapsed Safety Summary header automation help text should mirror the dynamic header and safety boundary.");
@@ -1538,11 +1547,13 @@ internal sealed class MainWindowSmokeTests
                 "Collapsed Quarantine shortlist header should use success styling for clean multi-row preview readiness.");
             Assert(
                 window.QuarantineShortlistHeaderToolTipValue.Contains(window.QuarantineShortlistHeaderTextValue, StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineShortlistHeaderToolTipValue.Contains("Header state: ready or completed", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantineShortlistHeaderToolTipValue.Contains("read-only review context", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantineShortlistHeaderToolTipValue.Contains("not cleanup approval", StringComparison.OrdinalIgnoreCase),
                 "Collapsed Quarantine shortlist header tooltip should mirror preview state and safety boundary.");
             Assert(
                 window.QuarantineShortlistHeaderAutomationHelpTextValue.Contains(window.QuarantineShortlistHeaderTextValue, StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineShortlistHeaderAutomationHelpTextValue.Contains("Header state: ready or completed", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantineShortlistHeaderAutomationHelpTextValue.Contains("read-only review context", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantineShortlistHeaderAutomationHelpTextValue.Contains("not cleanup approval", StringComparison.OrdinalIgnoreCase),
                 "Collapsed Quarantine shortlist header automation help text should mirror preview state and safety boundary.");
@@ -1621,6 +1632,7 @@ internal sealed class MainWindowSmokeTests
                 "Collapsed Quarantine shortlist header should use informational styling while current-session quarantined rows exist.");
             Assert(
                 window.QuarantineShortlistHeaderToolTipValue.Contains(window.QuarantineShortlistHeaderTextValue, StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineShortlistHeaderToolTipValue.Contains("Header state: current-session quarantined review", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantineShortlistHeaderToolTipValue.Contains("not cleanup approval", StringComparison.OrdinalIgnoreCase),
                 "Collapsed Quarantine shortlist header tooltip should mirror fixture execution state.");
             Assert(!window.CanExportQuarantinePreview, "Preview export should disable after execution because preview state is stale.");
@@ -1738,6 +1750,7 @@ internal sealed class MainWindowSmokeTests
                 "Collapsed Quarantine shortlist header should use success styling after fixture undo completes.");
             Assert(
                 window.QuarantineShortlistHeaderAutomationHelpTextValue.Contains(window.QuarantineShortlistHeaderTextValue, StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineShortlistHeaderAutomationHelpTextValue.Contains("Header state: ready or completed", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantineShortlistHeaderAutomationHelpTextValue.Contains("not cleanup approval", StringComparison.OrdinalIgnoreCase),
                 "Collapsed Quarantine shortlist header automation help text should mirror undo state.");
             Assert(window.CurrentRestoreManifestStatus == RestoreManifestActionStatus.Restored.ToString(), "Successful fixture undo should mark the Restore Manifest restored.");

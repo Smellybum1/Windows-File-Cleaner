@@ -33,6 +33,7 @@ What changed:
 - Added semantic state to `QuarantineShortlistHeaderText`.
 - Styled the header using the existing neutral/success/information/warning color vocabulary.
 - Added WPF smoke assertions for startup, needs-preview, invalid-root, clean preview, stale preview, blocked preview, current quarantined, and undo-completed header states.
+- Later packet `2026-05-30-collapsed-header-state-help-text.md` added textual header-state wording to the tooltip/help text so these states are not color-only.
 
 Tests run:
 

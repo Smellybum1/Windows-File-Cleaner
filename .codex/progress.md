@@ -20,6 +20,56 @@ Storage Scan MVP packet implemented and tested by the user against `C:\Users\mox
 
 ## Completed packets
 
+### 2026-05-30: Add Collapsed Header State Help Text
+
+Status: completed
+
+Evidence:
+
+- Safety Summary and Quarantine shortlist headers now use visual state styling, but tooltip/help text only mirrored the compact summaries and safety boundary.
+- Color-only state cues are less useful for tooltip inspection and automation/screen-reader review.
+
+Implementation:
+
+- Added textual `Header state:` wording to Safety Summary header tooltip/help text.
+- Added textual `Header state:` wording to Quarantine shortlist header tooltip/help text.
+- Used safety-preserving labels: neutral, needs review, ready or completed, and current-session quarantined review.
+- Kept the headers compact; no new row, badge, modal, cleanup execution, restore behavior, persisted history, scan gate change, or real-profile file movement was added.
+- Added WPF smoke assertions for neutral startup state, Safety Summary needs-review state, Quarantine shortlist needs-review state, preview-ready/completed state, and current-session quarantined review state.
+
+Verification:
+
+- `dotnet build tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj "-p:BaseOutputPath=D:/Codex/Windows File Cleaner/.local/test-bin/app-tests/"` passed.
+- `D:\Codex\Windows File Cleaner\.local\test-bin\app-tests\Debug\net8.0-windows\WindowsFileCleaner.App.Tests.exe` passed.
+- `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\Start-MvpFixtureReview.ps1 -ChecklistOnly` passed and printed the updated state-naming header tooltip/help-text prompts without preflight, fixture creation, or WPF launch.
+- `dotnet build WindowsFileCleaner.sln --no-restore "-p:BaseOutputPath=D:/Codex/Windows File Cleaner/.local/test-bin/solution/"` passed.
+- `git -c safe.directory='D:/Codex/Windows File Cleaner' diff --check` passed with line-ending normalization warnings only.
+
+Docs updated:
+
+- `README.md`
+- `docs/domain/context.md`
+- `docs/domain/glossary.md`
+- `docs/features/2026-05-29-fixture-review-checklist-output.md`
+- `docs/features/2026-05-30-collapsed-header-state-help-text.md`
+- `docs/features/2026-05-30-collapsed-panel-header-help-text.md`
+- `docs/features/2026-05-30-quarantine-shortlist-header-styling.md`
+- `docs/features/2026-05-30-safety-summary-header-styling.md`
+- `docs/codex/thread-handoff.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No ADR added. This is reversible WPF help-text polish with no persistence, cleanup execution, restore rule, data-model, or security change.
+
+Open questions:
+
+- In the next visible fixture pass, confirm whether state-naming header tooltip/help text is enough or whether safety-critical panel headers still need a small always-visible help affordance.
+
+Rejected ideas buffer:
+
+- Do not add another visible help icon until manual fixture review shows the header tooltip/help text is insufficient.
+
 ### 2026-05-30: Run Full Local MVP Preflight After Safety Header Styling
 
 Status: completed

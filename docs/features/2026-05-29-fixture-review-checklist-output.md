@@ -84,6 +84,7 @@ What changed:
 - Later packet `2026-05-30-quarantine-preview-status-help-text.md` updated the checklist to call out inline Quarantine Preview status tooltip/help text.
 - Later packet `2026-05-30-quarantine-shortlist-header-styling.md` updated the checklist to call out Quarantine shortlist header state styling.
 - Later packet `2026-05-30-safety-summary-header-styling.md` updated the checklist to call out Safety Summary header state styling.
+- Later packet `2026-05-30-collapsed-header-state-help-text.md` updated the checklist to call out state-naming header tooltip/help text.
 
 Tests run:
 

@@ -33,6 +33,7 @@ What changed:
 - Added lightweight neutral/warning state to `SafetySummaryHeaderText`.
 - Styled the header with the existing neutral/warning color vocabulary.
 - Added WPF smoke assertions for startup neutral styling and post-scan warning styling when fixture safety signals need review.
+- Later packet `2026-05-30-collapsed-header-state-help-text.md` added textual header-state wording to the tooltip/help text so neutral/warning state is not color-only.
 
 Tests run:
 

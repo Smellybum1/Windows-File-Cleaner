@@ -1160,7 +1160,7 @@ It summarizes safety-relevant scan signals such as high-risk rows, Protected Loc
 - Keep summary notes derived from scan results only.
 - Safety Summary review shortcut tooltips and automation help text should keep shortcut scope, read-only behavior, no-rescan/no-file-modified boundaries, no-permission-change behavior for Access issues, no-link-following behavior for reparse points, and not-cleanup-approval wording available.
 - In WPF, keep Safety Summary collapsible so the main review grid can recover vertical space during focused review.
-- In WPF, keep the collapsed Safety Summary header useful with compact risk counts, and mirror that header summary into tooltip and automation help text with read-only/not-cleanup-approval wording.
+- In WPF, keep the collapsed Safety Summary header useful with compact risk counts, and mirror that header summary and current header state into tooltip and automation help text with read-only/not-cleanup-approval wording.
 - In WPF, lightweight Safety Summary header styling may distinguish waiting/neutral from warning states when scan safety signals need review, but must not imply cleanup approval, safety clearance, or a changed scan gate.
 - Do not trigger permission changes, cleanup actions, quarantine actions, or rescans from the summary.
 
@@ -2557,7 +2557,7 @@ In the current build the gate can open only for recognized fixture Cleanup Scope
 - Keep Quarantine Execution Scope Status visible in the gate readout.
 - In WPF, keep verbose gate details height-constrained when shown in the Quarantine shortlist area so the main review grid remains usable.
 - In WPF, keep the Quarantine shortlist area collapsible so the user can recover grid height after reviewing the gate.
-- In WPF, keep the collapsed Quarantine shortlist header useful with shortlist, preview, current quarantined, and undo state, and mirror that header summary into tooltip and automation help text with read-only/not-cleanup-approval wording.
+- In WPF, keep the collapsed Quarantine shortlist header useful with shortlist, preview, current quarantined, and undo state, and mirror that header summary plus current header state into tooltip and automation help text with read-only/not-cleanup-approval wording.
 - In WPF, lightweight Quarantine shortlist header styling may distinguish neutral, success, information, and warning states, but must not imply cleanup approval or change preview/execution gates.
 - In WPF, show a compact inline Quarantine Preview readiness status in the Quarantine shortlist area so successful previews are visible without relying only on the status bar.
 - Keep inline preview readiness text aligned with preview/gate state: before preview it explains what to do next, after preview it summarizes included/blocked/redundant counts and blockers, and after fixture execution or undo it switches to fixture execution/undo evidence.
