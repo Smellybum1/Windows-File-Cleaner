@@ -2587,6 +2587,7 @@ In the current build the gate can open only for recognized fixture Cleanup Scope
 - Keep inline preview readiness styling semantic and lightweight: neutral for waiting, success for ready/completed fixture evidence, warning for blockers or stale preview state, and error for preview creation failures; styling must not imply cleanup approval.
 - Keep inline preview readiness tooltip and automation help text synchronized with the dynamic status and explicit no-create/no-move/no-restore/no-delete/not-cleanup-approval boundaries.
 - Keep confirmation and execution control tooltips and automation help text aligned with fixture-only execution and real-profile/custom blockers.
+- In WPF, show a visible non-clickable `?` help cue beside the shortlist confirmation field that mirrors the exact `QUARANTINE` tooltip/help text without making the field look like cleanup approval.
 - In WPF, mirror concise Quarantine Execution Gate tooltip/help text onto both the gate readout and visible non-clickable `?` help cue, including current gate state, exact `QUARANTINE`, fixture-only execution, real-profile/custom blockers, and not-cleanup-approval wording.
 - Do not create folders, move files, delete files, write manifests, or persist cleanup jobs from gate builder code.
 
@@ -3026,6 +3027,7 @@ In the current WPF app, selected restore execution availability can be true only
 - Keep `CanExecute` false unless the exact `RESTORE` text matches, selected restore execution is implemented, and blockers are clear.
 - WPF must keep selected restore execution unavailable for real-profile and custom non-fixture manifests.
 - WPF should show `Execution scope status`, `Approval boundary`, and `Can execute` lines instead of asking users to infer fixture-only versus preview-only behavior from technical implementation fields.
+- In WPF, show a visible non-clickable `?` help cue beside the selected restore confirmation field that mirrors the exact `RESTORE` tooltip/help text without making the field look like restore approval.
 - In WPF, mirror concise Selected Restore Execution Gate tooltip/help text onto both the gate readout and visible non-clickable `?` help cue, including current gate state, exact `RESTORE`, fixture-only selected restore, real-profile/custom blockers, no-create/no-move/no-restore/no-delete/no-manifest-write/no-cleanup-folder wording, and not-restore-approval wording.
 
 ### Fixture-only Selected Restore Execution

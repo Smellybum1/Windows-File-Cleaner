@@ -282,7 +282,9 @@ public partial class MainWindow : Window
         GetHelpCueAffordance("Real-profile preflight acknowledgement", RealProfilePreflightHelpCue),
         GetHelpCueAffordance("Scan gate summary", ScanGateSummaryHelpCue),
         GetHelpCueAffordance("Cleanup Scope Safety Note", CleanupScopeSafetyNoteHelpCue),
-        GetHelpCueAffordance("Quarantine Root Safety Note", QuarantineRootSafetyNoteHelpCue)
+        GetHelpCueAffordance("Quarantine Root Safety Note", QuarantineRootSafetyNoteHelpCue),
+        GetHelpCueAffordance("Shortlist confirmation", QuarantineConfirmationHelpCue),
+        GetHelpCueAffordance("Selected restore confirmation", SelectedRestoreConfirmationHelpCue)
     ];
 
     public string? ContentsColumnSortMemberPath => ResultsGrid.Columns
@@ -504,6 +506,12 @@ public partial class MainWindow : Window
 
     public string QuarantineConfirmationAutomationHelpTextValue => AutomationProperties.GetHelpText(QuarantineConfirmationBox);
 
+    public string QuarantineConfirmationHelpCueToolTipValue => QuarantineConfirmationHelpCue.ToolTip?.ToString() ?? "";
+
+    public string QuarantineConfirmationHelpCueAutomationNameValue => AutomationProperties.GetName(QuarantineConfirmationHelpCue);
+
+    public string QuarantineConfirmationHelpCueAutomationHelpTextValue => AutomationProperties.GetHelpText(QuarantineConfirmationHelpCue);
+
     public string ExecuteQuarantineButtonToolTipValue => ExecuteQuarantineButton.ToolTip?.ToString() ?? "";
 
     public string ExecuteQuarantineButtonAutomationHelpTextValue => AutomationProperties.GetHelpText(ExecuteQuarantineButton);
@@ -553,6 +561,12 @@ public partial class MainWindow : Window
     public string SelectedRestoreConfirmationToolTipValue => SelectedRestoreConfirmationBox.ToolTip?.ToString() ?? "";
 
     public string SelectedRestoreConfirmationAutomationHelpTextValue => AutomationProperties.GetHelpText(SelectedRestoreConfirmationBox);
+
+    public string SelectedRestoreConfirmationHelpCueToolTipValue => SelectedRestoreConfirmationHelpCue.ToolTip?.ToString() ?? "";
+
+    public string SelectedRestoreConfirmationHelpCueAutomationNameValue => AutomationProperties.GetName(SelectedRestoreConfirmationHelpCue);
+
+    public string SelectedRestoreConfirmationHelpCueAutomationHelpTextValue => AutomationProperties.GetHelpText(SelectedRestoreConfirmationHelpCue);
 
     public string CurrentSelectedRestoreConfirmationText => SelectedRestoreConfirmationBox.Text;
 

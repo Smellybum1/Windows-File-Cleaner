@@ -133,6 +133,12 @@ internal sealed class MainWindowSmokeTests
                 "Startup Selected Restore Execution Gate cue should expose preview-gate guidance.",
                 "Preview selected restore gate",
                 "Real-profile/custom selected restore remains unavailable");
+            AssertQuarantineConfirmationHelpCue(
+                window,
+                "Startup shortlist confirmation cue should mirror exact QUARANTINE boundaries.");
+            AssertSelectedRestoreConfirmationHelpCue(
+                window,
+                "Startup selected restore confirmation cue should mirror exact RESTORE boundaries.");
             AssertHoverableHelpCueAffordances(window, "Startup circular help cues should expose hover affordances.");
             Assert(!window.CanStartStorageScan, "MainWindow should require preflight acknowledgement before scanning the real profile.");
             Assert(!window.CanCancelStorageScan, "MainWindow should not enable Cancel before a Storage Scan starts.");
@@ -2383,7 +2389,7 @@ internal sealed class MainWindowSmokeTests
     private static void AssertHoverableHelpCueAffordances(MainWindow window, string message)
     {
         var affordances = window.HoverableHelpCueAffordances;
-        Assert(affordances.Count == 13, message + " Expected all thirteen circular help cues to be tracked.");
+        Assert(affordances.Count == 15, message + " Expected all fifteen circular help cues to be tracked.");
 
         foreach (var affordance in affordances)
         {
@@ -2394,6 +2400,48 @@ internal sealed class MainWindowSmokeTests
                 affordance.InitialShowDelay == 250,
                 $"{message} {affordance.Name} should use a prompt tooltip initial delay.");
         }
+    }
+
+    private static void AssertQuarantineConfirmationHelpCue(MainWindow window, string message)
+    {
+        Assert(
+            window.QuarantineConfirmationToolTipValue.Contains("Type QUARANTINE", StringComparison.OrdinalIgnoreCase)
+            && window.QuarantineConfirmationToolTipValue.Contains("fixture-only quarantine", StringComparison.OrdinalIgnoreCase)
+            && window.QuarantineConfirmationToolTipValue.Contains("real-profile", StringComparison.OrdinalIgnoreCase),
+            message + " Confirmation tooltip should expose fixture-only exact-confirmation boundaries.");
+        Assert(
+            string.Equals(window.QuarantineConfirmationAutomationHelpTextValue, window.QuarantineConfirmationToolTipValue, StringComparison.Ordinal),
+            message + " Confirmation automation help text should mirror the tooltip.");
+        Assert(
+            window.QuarantineConfirmationHelpCueAutomationNameValue.Contains("Shortlist confirmation help cue", StringComparison.OrdinalIgnoreCase),
+            message + " Help cue should have a specific automation name.");
+        Assert(
+            string.Equals(window.QuarantineConfirmationHelpCueToolTipValue, window.QuarantineConfirmationToolTipValue, StringComparison.Ordinal),
+            message + " Help cue tooltip should mirror the confirmation tooltip.");
+        Assert(
+            string.Equals(window.QuarantineConfirmationHelpCueAutomationHelpTextValue, window.QuarantineConfirmationAutomationHelpTextValue, StringComparison.Ordinal),
+            message + " Help cue automation help text should mirror the confirmation help text.");
+    }
+
+    private static void AssertSelectedRestoreConfirmationHelpCue(MainWindow window, string message)
+    {
+        Assert(
+            window.SelectedRestoreConfirmationToolTipValue.Contains("Exact RESTORE", StringComparison.OrdinalIgnoreCase)
+            && window.SelectedRestoreConfirmationToolTipValue.Contains("fixture selected restore", StringComparison.OrdinalIgnoreCase)
+            && window.SelectedRestoreConfirmationToolTipValue.Contains("real-profile/custom", StringComparison.OrdinalIgnoreCase),
+            message + " Confirmation tooltip should expose fixture-only exact-confirmation boundaries.");
+        Assert(
+            string.Equals(window.SelectedRestoreConfirmationAutomationHelpTextValue, window.SelectedRestoreConfirmationToolTipValue, StringComparison.Ordinal),
+            message + " Confirmation automation help text should mirror the tooltip.");
+        Assert(
+            window.SelectedRestoreConfirmationHelpCueAutomationNameValue.Contains("Selected restore confirmation help cue", StringComparison.OrdinalIgnoreCase),
+            message + " Help cue should have a specific automation name.");
+        Assert(
+            string.Equals(window.SelectedRestoreConfirmationHelpCueToolTipValue, window.SelectedRestoreConfirmationToolTipValue, StringComparison.Ordinal),
+            message + " Help cue tooltip should mirror the confirmation tooltip.");
+        Assert(
+            string.Equals(window.SelectedRestoreConfirmationHelpCueAutomationHelpTextValue, window.SelectedRestoreConfirmationAutomationHelpTextValue, StringComparison.Ordinal),
+            message + " Help cue automation help text should mirror the confirmation help text.");
     }
 
     private static void AssertSelectedRestoreExecutionGateHelpCue(MainWindow window, string message, params string[] expectedSnippets)
