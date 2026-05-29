@@ -20,6 +20,45 @@ Storage Scan MVP packet implemented and tested by the user against `C:\Users\mox
 
 ## Completed packets
 
+### 2026-05-30: Run Full Local MVP Preflight After CMD Launcher
+
+Status: completed
+
+Evidence:
+
+- Execution-Policy Friendly Fixture Launcher added a `.cmd` first-hop wrapper and changed `Invoke-MvpPreflight.ps1` next-step output.
+- A full local preflight gives stronger evidence that the new launcher packet did not disturb restore, build, tests, fixture dry-run, or whitespace gates.
+
+Implementation:
+
+- Ran `Invoke-MvpPreflight.ps1` from the repository root after the `.cmd` launcher packet was pushed.
+- Preflight restored packages, built the solution, ran core tests, ran WPF app tests, ran the synthetic fixture generator in `-WhatIf` mode, and ran whitespace diff checking.
+- Preflight printed the updated next manual fixture step: `.\tools\Start-MvpFixtureReview.cmd -SkipPreflight`.
+- No real user files were scanned or modified.
+
+Verification:
+
+- `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\Invoke-MvpPreflight.ps1` passed.
+- Preflight output ended with `MVP preflight passed. No real user files were scanned or modified.`
+- `git -c safe.directory='D:/Codex/Windows File Cleaner' status --short --branch` showed a clean tree before recording this docs-only verification note.
+
+Docs updated:
+
+- `docs/codex/thread-handoff.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No ADR added. This is verification evidence only, with no architecture, persistence, cleanup execution, restore rule, data-model, or security change.
+
+Open questions:
+
+- The next useful product signal is still a visible fixture review pass using `.\tools\Start-MvpFixtureReview.cmd`, including hoverable `?` help cues, collapsed panel header summaries/state styling, styled inline Quarantine Preview readiness, styled Review Grid Mode Status, and current-session quarantined controls.
+
+Rejected ideas buffer:
+
+- Do not treat preflight as a replacement for manual visible fixture review; it proves automated gates only.
+
 ### 2026-05-30: Execution-Policy Friendly Fixture Launcher
 
 Status: completed
