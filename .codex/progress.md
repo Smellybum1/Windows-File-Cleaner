@@ -6,7 +6,7 @@ Use it to preserve what was completed, what was verified, what was rejected, and
 
 ## Current status
 
-Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. The app has a broad read-only review workflow, debounced Storage Review Search for large real-profile scans, Cleanup Scope Scan Gate discoverability polish, Matched Review Mix, Review Shortlist Safety Mix, Selected Folder Subtree Summary, Storage Hotspot Trail, Selected Folder Child Focus, Selected Folder Descendant Focus, fixture launch/preflight tooling with checklist output and checklist-only mode, Quarantine Preview, Quarantine Execution Scope Status, Restore Manifest Draft, Quarantine Confirmation Draft, Quarantine Action Draft, write-ahead Restore Manifest persistence, core Quarantine execution, core Undo Quarantine, fixture-only WPF Quarantine execution, WPF undo for the current fixture execution, Quarantine Manifest Discovery, Selected Restore Manifest Review, Selected Restore Confirmation Gate, Fixture-only Selected Restore Execution, and Restore Readiness Preview. Real-profile WPF Quarantine execution, real-profile WPF Undo Quarantine, permanent deletion, and persisted cleanup history remain unavailable. Fresh-thread handoff notes and a startup prompt live in `docs/codex/thread-handoff.md`.
+Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. The app has a broad read-only review workflow, debounced Storage Review Search for large real-profile scans, Cleanup Scope Scan Gate discoverability polish, Matched Review Mix, Review Shortlist Safety Mix, Selected Folder Subtree Summary, Storage Hotspot Trail, Selected Folder Child Focus, Selected Folder Descendant Focus, fixture launch/preflight tooling with checklist output and checklist-only mode, Quarantine Preview, Quarantine approval-boundary wording, Quarantine Execution Scope Status, Restore Manifest Draft, Quarantine Confirmation Draft, Quarantine Action Draft, write-ahead Restore Manifest persistence, core Quarantine execution, core Undo Quarantine, fixture-only WPF Quarantine execution, WPF undo for the current fixture execution, Quarantine Manifest Discovery, Selected Restore Manifest Review, Selected Restore Confirmation Gate, Fixture-only Selected Restore Execution, and Restore Readiness Preview. Real-profile WPF Quarantine execution, real-profile WPF Undo Quarantine, permanent deletion, and persisted cleanup history remain unavailable. Fresh-thread handoff notes and a startup prompt live in `docs/codex/thread-handoff.md`.
 
 ## Next recommended work
 
@@ -4823,3 +4823,49 @@ Rejected ideas buffer:
 
 - Do not make checklist-only mode create fixture files.
 - Do not make the launcher click Scan automatically.
+
+### 2026-05-29: Add Quarantine Approval Boundary Wording
+
+Status: completed
+
+Evidence:
+
+- Handoff guidance recommends Quarantine Preview/readiness clarity before real cleanup execution.
+- Existing preview/gate panes showed execution scope status, but the approval boundary was spread across surrounding wording.
+- WPF smoke tests already exercise fixture and custom non-fixture Quarantine Preview/Gate panes.
+
+Implementation:
+
+- Added an `Approval boundary:` line to Quarantine Preview output.
+- Added the same approval-boundary line to Quarantine Execution Gate output.
+- Fixture wording says Review Shortlist and Quarantine Preview are not cleanup approval and exact `QUARANTINE` can open only fixture execution in this build.
+- Preview-only wording says Review Shortlist and Quarantine Preview are not cleanup approval and real-profile/custom execution remains unavailable.
+- Kept real-profile Quarantine execution, custom execution, restore behavior, permanent deletion, cleanup history, and eligibility rules unchanged.
+
+Verification:
+
+- `dotnet run --project tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj` passed.
+- `dotnet build WindowsFileCleaner.sln --no-restore` passed with 0 warnings and 0 errors.
+- `git -c safe.directory='D:/Codex/Windows File Cleaner' diff --check` passed; Git printed line-ending normalization warnings for touched files but no whitespace errors.
+
+Docs updated:
+
+- `README.md`
+- `docs/domain/context.md`
+- `docs/domain/glossary.md`
+- `docs/codex/thread-handoff.md`
+- `docs/features/2026-05-29-quarantine-approval-boundary-wording.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No ADR added. This is reversible WPF wording/readiness clarity with no persistence, cleanup execution, restore, security, deployment, or data-model change.
+
+Open questions:
+
+- Does the extra line make the preview/gate panes easier to scan during the next visible fixture review?
+
+Rejected ideas buffer:
+
+- Do not use approval-boundary wording as permission to enable real-profile execution.
+- Do not remove the existing execution scope status line before manual review.

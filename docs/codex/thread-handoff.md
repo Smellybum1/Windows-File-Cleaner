@@ -9,7 +9,7 @@ Use this when starting a fresh Codex thread for this repository.
 - Repo: `D:\Codex\Windows File Cleaner`
 - GitHub: `Smellybum1/Windows-File-Cleaner`
 - Branch: `main`
-- Latest completed packet: Fixture Review Checklist-Only Mode (after Fixture Review Checklist Output)
+- Latest completed packet: Quarantine Approval Boundary Wording (after Fixture Review Checklist-Only Mode)
 - Current app stack: C# / WPF / .NET 8
 - Desktop shortcut target: `D:\Codex\Windows File Cleaner\src\WindowsFileCleaner.App\bin\Debug\net8.0-windows\WindowsFileCleaner.App.exe`
 
@@ -17,7 +17,7 @@ Use this when starting a fresh Codex thread for this repository.
 
 Windows File Cleaner is a local Windows-only desktop app for reviewing storage under `C:\Users\moxhe`.
 
-The current MVP has a read-only Storage Scan that can inspect large real-profile scans with filters, debounced search, visible Cleanup Scope Scan Gate status/tooltip wording, Review Mix, Matched Review Mix, Review Shortlist Safety Mix, selected-folder child/descendant focus, selected-folder summaries, hotspot trail, file preview, CSV export, Review Shortlist, fixture launcher checklist output and checklist-only mode, Quarantine Preview, Quarantine Execution Scope Status, Restore Manifest Draft, Quarantine Confirmation Draft, Quarantine Action Draft, manifest discovery, selected manifest review, selected restore gate, and restore-readiness preview.
+The current MVP has a read-only Storage Scan that can inspect large real-profile scans with filters, debounced search, visible Cleanup Scope Scan Gate status/tooltip wording, Review Mix, Matched Review Mix, Review Shortlist Safety Mix, selected-folder child/descendant focus, selected-folder summaries, hotspot trail, file preview, CSV export, Review Shortlist, fixture launcher checklist output and checklist-only mode, Quarantine Preview, Quarantine approval-boundary wording, Quarantine Execution Scope Status, Restore Manifest Draft, Quarantine Confirmation Draft, Quarantine Action Draft, manifest discovery, selected manifest review, selected restore gate, and restore-readiness preview.
 
 Fixture-only cleanup execution exists for synthetic Cleanup Scopes. Real-profile cleanup execution remains intentionally unavailable.
 
@@ -44,13 +44,14 @@ Fixture-only cleanup execution exists for synthetic Cleanup Scopes. Real-profile
 - Quarantine Execution Scope Status added plain-language fixture-only versus preview-only scope wording to Quarantine Preview and Quarantine Execution Gate output.
 - Fixture Review Checklist Output added a compact terminal checklist to `Start-MvpFixtureReview.ps1`.
 - Fixture Review Checklist-Only Mode added `Start-MvpFixtureReview.ps1 -ChecklistOnly`, which prints the same checklist without preflight, fixture creation, or WPF launch.
+- Quarantine Approval Boundary Wording added a compact preview/gate line that keeps Review Shortlist and Quarantine Preview separate from cleanup approval.
 
 ## Best next work
 
 Prefer a small packet. Good candidates:
 
 1. Manual fixture visual polish pass using `.\tools\Start-MvpFixtureReview.ps1`; optionally preview the prompts with `.\tools\Start-MvpFixtureReview.ps1 -ChecklistOnly`, use the launcher checklist, then update docs with any findings.
-2. Real-profile Quarantine Preview/readiness wording pass, still without enabling real-profile execution.
+2. Continue Quarantine Preview/readiness wording review in the visible app, still without enabling real-profile execution.
 3. Retest Review Shortlist Safety Mix and Quarantine Execution Scope Status in the visible app during fixture or real-profile review.
 4. During the next visible fixture/real-profile pass, confirm the scan-gate summary line fits comfortably and makes locked/ready state obvious.
 5. Start real-profile Quarantine execution design only after the user explicitly wants to move beyond preview and the safety/undo story is reviewed again.

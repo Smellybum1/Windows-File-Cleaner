@@ -1694,6 +1694,7 @@ Last reviewed: 2026-05-29
 A Quarantine Preview is a read-only dry run showing which shortlisted Storage Scan rows would be eligible for a future Quarantine action, where they would go, what size they represent, and which rows are blocked or redundant.
 
 It does not create folders, write manifests, move files, delete files, or approve cleanup.
+The WPF preview and execution gate panes should keep the approval boundary visible: Review Shortlist and Quarantine Preview are review evidence, not cleanup approval.
 
 #### Examples
 
@@ -1704,6 +1705,7 @@ It does not create folders, write manifests, move files, delete files, or approv
 - Show blocked descendant examples as cleanup-scope-relative paths so broad-parent blockers stay readable.
 - Mark a child row as redundant when its selected parent is already included.
 - Show Quarantine Execution Scope Status so fixture-only availability and real-profile/custom preview-only status are clear before confirmation.
+- Show approval-boundary wording so Review Shortlist and Quarantine Preview are not mistaken for cleanup approval.
 
 #### Non-examples
 
@@ -1742,6 +1744,7 @@ It does not create folders, write manifests, move files, delete files, or approv
 - Build destination paths from the current Quarantine Root Selection.
 - Clear stale preview and draft readiness output when the Quarantine Root Selection changes.
 - Include Quarantine Execution Scope Status in the WPF preview pane.
+- Include approval-boundary wording in WPF preview and gate panes.
 
 ### Quarantine Root Selection
 

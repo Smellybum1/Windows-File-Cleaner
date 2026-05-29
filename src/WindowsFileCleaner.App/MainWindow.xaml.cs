@@ -2290,6 +2290,7 @@ public partial class MainWindow : Window
             $"Restore Manifest Draft: {restoreManifestDraft.DraftId} | Entries: {restoreManifestDraft.EntryCount:N0} | Bytes: {restoreManifestDraft.TotalSizeDisplay} | Executed manifest: {FormatYesNo(restoreManifestDraft.IsExecutedManifest)}",
             $"Quarantine Confirmation Draft: {confirmationDraft.ConfirmationId} | Required future text: {confirmationDraft.RequiredConfirmationText} | Execution implemented: {FormatYesNo(confirmationDraft.IsExecutionImplemented)}",
             $"Execution scope status: {FormatQuarantineExecutionScopeStatus(confirmationDraft.IsExecutionImplemented)}",
+            $"Approval boundary: {FormatQuarantineApprovalBoundary(confirmationDraft.IsExecutionImplemented)}",
             confirmationDraft.HasDataBlockers
                 ? $"Confirmation readiness blockers: {confirmationDraft.Blockers.Count:N0}"
                 : "Confirmation readiness blockers: 0",
@@ -2336,6 +2337,7 @@ public partial class MainWindow : Window
             $"Entered confirmation matches: {FormatYesNo(gate.IsConfirmationTextMatched)}",
             $"Execution implemented: {FormatYesNo(gate.IsExecutionImplemented)}",
             $"Execution scope status: {FormatQuarantineExecutionScopeStatus(gate.IsExecutionImplemented)}",
+            $"Approval boundary: {FormatQuarantineApprovalBoundary(gate.IsExecutionImplemented)}",
             $"Can execute: {FormatYesNo(gate.CanExecute)}",
             undoResult is not null
                 ? "Fixture Undo Quarantine has restored synthetic files where possible. Current scan results are stale."
@@ -2415,6 +2417,13 @@ public partial class MainWindow : Window
         return isExecutionImplemented
             ? "Fixture-only execution is available only after preview readiness and exact QUARANTINE confirmation."
             : "Preview only for this Cleanup Scope; real-profile and custom execution remain unavailable.";
+    }
+
+    private static string FormatQuarantineApprovalBoundary(bool isExecutionImplemented)
+    {
+        return isExecutionImplemented
+            ? "Review Shortlist and Quarantine Preview are not cleanup approval; exact QUARANTINE can open only fixture execution in this build."
+            : "Review Shortlist and Quarantine Preview are not cleanup approval; real-profile and custom execution remain unavailable.";
     }
 
     private static string FormatQuarantineExecutionResult(QuarantineExecutionResult result)
