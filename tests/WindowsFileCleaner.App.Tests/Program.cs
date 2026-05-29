@@ -1358,6 +1358,12 @@ internal sealed class MainWindowSmokeTests
                 window.QuarantinePreviewTextValue.Contains(Path.Combine(customQuarantineRoot, "preview", "Downloads", "old-installer.msi"), StringComparison.OrdinalIgnoreCase),
                 "Preview pane should map included rows under the typed quarantine root.");
             Assert(window.QuarantinePreviewTextValue.Contains("No files were modified", StringComparison.OrdinalIgnoreCase), "Preview pane should preserve the read-only boundary.");
+            Assert(
+                window.QuarantinePreviewStatusTextValue.Contains("Quarantine Preview ready", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantinePreviewStatusTextValue.Contains("1 included", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantinePreviewStatusTextValue.Contains("not cleanup approval", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantinePreviewStatusTextValue.Contains("No files were modified", StringComparison.OrdinalIgnoreCase),
+                "Inline preview status should make readiness visible in the Quarantine shortlist panel.");
             Assert(File.Exists(installer.FullPath), "Shortlisted fixture installer should still exist after preview.");
             Assert(File.Exists(fixture.MarkerPath), "Fixture marker file should still exist after review interactions.");
             Assert(!Directory.Exists(customQuarantineRoot), "Quarantine Preview should not create the typed quarantine root.");
@@ -1375,6 +1381,10 @@ internal sealed class MainWindowSmokeTests
             Assert(
                 window.QuarantinePreviewTextValue.Contains("Preview and draft readiness appear", StringComparison.OrdinalIgnoreCase),
                 "Changing the quarantine root should clear stale preview readiness text.");
+            Assert(
+                window.QuarantinePreviewStatusTextValue.Contains("Recreate Quarantine Preview", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantinePreviewStatusTextValue.Contains("No files were modified", StringComparison.OrdinalIgnoreCase),
+                "Changing the quarantine root should show inline preview invalidation in the Quarantine shortlist panel.");
             Assert(!Directory.Exists(changedQuarantineRoot), "Changing the preview root should not create folders.");
 
             window.RemoveSelectedPathFromReviewShortlist();
@@ -1384,6 +1394,10 @@ internal sealed class MainWindowSmokeTests
             Assert(
                 window.QuarantinePreviewTextValue.Contains("Preview and draft readiness appear", StringComparison.OrdinalIgnoreCase),
                 "Removing the shortlisted row should clear preview readiness text.");
+            Assert(
+                window.QuarantinePreviewStatusTextValue.Contains("Review Shortlist rows are added", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantinePreviewStatusTextValue.Contains("No files were modified", StringComparison.OrdinalIgnoreCase),
+                "Removing the shortlisted row should reset inline preview status.");
 
             Assert(window.CanAddSelectedRowToReviewShortlist, "Removed selected row should be addable again through the selected-row action.");
             window.AddSelectedPathToReviewShortlist();
@@ -1437,6 +1451,11 @@ internal sealed class MainWindowSmokeTests
                 window.CurrentStatusText.Contains("Quarantine Preview created from Review Shortlist", StringComparison.OrdinalIgnoreCase)
                 && window.CurrentStatusText.Contains("2 included", StringComparison.OrdinalIgnoreCase),
                 "Fixture preview status should make the multi-row Review Shortlist scope visible.");
+            Assert(
+                window.QuarantinePreviewStatusTextValue.Contains("Quarantine Preview ready", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantinePreviewStatusTextValue.Contains("2 included", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantinePreviewStatusTextValue.Contains("not cleanup approval", StringComparison.OrdinalIgnoreCase),
+                "Inline preview status should summarize multi-row preview readiness before confirmation.");
             Assert(
                 window.QuarantinePreviewTextValue.Contains("Source: Review Shortlist", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantinePreviewTextValue.Contains("Only included rows can be quarantined", StringComparison.OrdinalIgnoreCase),
@@ -1492,6 +1511,11 @@ internal sealed class MainWindowSmokeTests
                 && window.CurrentStatusText.Contains("Undo fixture quarantine", StringComparison.OrdinalIgnoreCase)
                 && window.CurrentStatusText.Contains("rescan refreshes review rows", StringComparison.OrdinalIgnoreCase),
                 "Fixture execution status should report completion, undo availability, and stale scan state.");
+            Assert(
+                window.QuarantinePreviewStatusTextValue.Contains("Fixture Quarantine execution completed", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantinePreviewStatusTextValue.Contains("2 included Review Shortlist row", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantinePreviewStatusTextValue.Contains("Undo fixture quarantine", StringComparison.OrdinalIgnoreCase),
+                "Inline preview status should change to fixture execution evidence after execution.");
             Assert(
                 window.QuarantinePreviewTextValue.Contains("Fixture Quarantine execution result", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantinePreviewTextValue.Contains("Current scan and review rows are stale", StringComparison.OrdinalIgnoreCase),
@@ -1553,6 +1577,10 @@ internal sealed class MainWindowSmokeTests
                 window.CurrentStatusText.Contains("Fixture Undo Quarantine completed", StringComparison.OrdinalIgnoreCase)
                 && window.CurrentStatusText.Contains("Rescan", StringComparison.OrdinalIgnoreCase),
                 "Fixture undo status should report completion and stale scan state.");
+            Assert(
+                window.QuarantinePreviewStatusTextValue.Contains("Fixture Undo Quarantine completed", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantinePreviewStatusTextValue.Contains("2 restored", StringComparison.OrdinalIgnoreCase),
+                "Inline preview status should change to fixture undo evidence after undo.");
             Assert(
                 window.QuarantinePreviewTextValue.Contains("Fixture Undo Quarantine result", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantinePreviewTextValue.Contains("Current scan and review rows are stale", StringComparison.OrdinalIgnoreCase),

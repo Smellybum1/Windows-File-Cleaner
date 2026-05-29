@@ -517,6 +517,11 @@
                                     ToolTipService.ShowOnDisabled="True"
                                     Click="BackToScanRowsButton_Click" />
                         </WrapPanel>
+                        <TextBlock x:Name="QuarantinePreviewStatusText"
+                                   Text="Quarantine Preview readiness appears after Review Shortlist rows are added. No files were modified."
+                                   Foreground="#526171"
+                                   Margin="0,6,0,0"
+                                   TextWrapping="Wrap" />
                         <WrapPanel Margin="0,6,0,0">
                             <TextBlock Text="Shortlist confirmation"
                                        VerticalAlignment="Center"

@@ -6636,6 +6636,8 @@ Verification:
 - `D:\Codex\Windows File Cleaner\.local\test-bin\app-tests\Debug\net8.0-windows\WindowsFileCleaner.App.Tests.exe` passed.
 - `dotnet build WindowsFileCleaner.sln --no-restore "-p:BaseOutputPath=D:/Codex/Windows File Cleaner/.local/test-bin/solution/"` passed.
 - `git -c safe.directory='D:/Codex/Windows File Cleaner' diff --check` passed with line-ending normalization warnings only.
+- `dotnet build WindowsFileCleaner.sln --no-restore "-p:BaseOutputPath=D:/Codex/Windows File Cleaner/.local/test-bin/solution/"` passed.
+- `git -c safe.directory='D:/Codex/Windows File Cleaner' diff --check` passed with line-ending normalization warnings only.
 
 Docs updated:
 
@@ -6739,3 +6741,47 @@ ADRs:
 Open questions:
 
 - Should the closed Quarantine header also include the selected Quarantine Root, or is that too visually noisy?
+
+### 2026-05-29: Add Quarantine Preview Inline Status
+
+Status: completed
+
+Evidence:
+
+- User noticed that clicking `Preview shortlist quarantine` appeared to do nothing because the success text was only visible at the bottom/status area.
+- The Quarantine shortlist area is now the control cluster for root, preview, execution, undo, and current-session quarantined review, so preview readiness should be visible there.
+
+Implementation:
+
+- Added inline `QuarantinePreviewStatusText` inside the Quarantine shortlist panel.
+- Before preview, the line explains whether Review Shortlist rows need to be added or previewed.
+- After preview, the line summarizes included, blocked, redundant, previewed bytes, readiness blockers, not-cleanup-approval wording, and no-file-modified wording.
+- After Quarantine Root changes, the line says preview destinations must be regenerated.
+- After fixture execution or undo, the line switches to fixture execution/undo evidence instead of dry-run wording.
+- Kept real-profile Quarantine execution, real-profile Undo Quarantine, permanent deletion, and cleanup history unavailable.
+
+Verification:
+
+- `dotnet build tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj "-p:BaseOutputPath=D:/Codex/Windows File Cleaner/.local/test-bin/app-tests/"` passed.
+- `D:\Codex\Windows File Cleaner\.local\test-bin\app-tests\Debug\net8.0-windows\WindowsFileCleaner.App.Tests.exe` passed.
+
+Docs updated:
+
+- `README.md`
+- `docs/domain/context.md`
+- `docs/domain/glossary.md`
+- `docs/features/2026-05-29-quarantine-preview-inline-status.md`
+- `docs/codex/thread-handoff.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No ADR added. This is reversible UI visibility polish with no persistence, cleanup execution, restore rule, data-model, or security change.
+
+Open questions:
+
+- Should the inline readiness line get visual success/warning styling after a manual fixture pass, or is plain text enough?
+
+Rejected ideas buffer:
+
+- Do not show a modal popup for dry-run preview success unless manual review shows inline text is still too easy to miss.

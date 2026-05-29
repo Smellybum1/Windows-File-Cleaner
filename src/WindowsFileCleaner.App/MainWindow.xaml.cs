@@ -71,6 +71,7 @@ public partial class MainWindow : Window
         UpdateCleanupScopeSafetyNote();
         UpdateQuarantineRootSafetyNote();
         UpdateShortlistSafetyMix();
+        UpdateQuarantinePreviewStatus();
         UpdateQuarantineExecutionGate();
         UpdateQuarantineManifestDiscoveryControls();
         UpdateQuarantinedViewControls();
@@ -304,6 +305,8 @@ public partial class MainWindow : Window
     public string FilePreviewTextValue => FilePreviewText.Text;
 
     public string QuarantinePreviewTextValue => QuarantinePreviewText.Text;
+
+    public string QuarantinePreviewStatusTextValue => QuarantinePreviewStatusText.Text;
 
     public string QuarantineExecutionGateTextValue => QuarantineExecutionGateText.Text;
 
@@ -600,6 +603,10 @@ public partial class MainWindow : Window
         StatusText.Text = hadPreview
             ? "Quarantine root selected for preview. Recreate Quarantine Preview to review destinations. No folders were created and no files were modified."
             : "Quarantine root selected for preview. No folders were created and no files were modified.";
+        if (hadPreview)
+        {
+            UpdateQuarantinePreviewStatus("Quarantine Root changed. Recreate Quarantine Preview to review destinations. No folders were created and no files were modified.");
+        }
     }
 
     private void DiscoverQuarantineManifestsButton_Click(object sender, RoutedEventArgs e)
@@ -990,6 +997,7 @@ public partial class MainWindow : Window
             $"{_currentQuarantinePreview.BlockedCount:N0} blocked, " +
             $"{_currentQuarantinePreview.RedundantCount:N0} redundant, " +
             $"{_currentQuarantinePreview.IncludedSizeDisplay} previewed, {blockerSummary}. No files were modified.";
+        UpdateQuarantinePreviewStatus();
     }
 
     private void ExportQuarantinePreviewButton_Click(object sender, RoutedEventArgs e)
@@ -1110,6 +1118,7 @@ public partial class MainWindow : Window
 
         ClearQuarantinePreview();
         UpdateShortlistControls();
+        UpdateQuarantinePreviewStatus("Quarantine root changed. Recreate Quarantine Preview to review destinations. No files were modified.");
         StatusText.Text = "Quarantine root changed. Recreate Quarantine Preview to review destinations. No files were modified.";
     }
 
@@ -2313,6 +2322,7 @@ public partial class MainWindow : Window
         {
             ShortlistSafetyMixText.Text = "Review Shortlist is empty. Shortlist safety mix appears after rows are shortlisted.";
             UpdateQuarantineShortlistHeader();
+            UpdateQuarantinePreviewStatus();
             return;
         }
 
@@ -2321,6 +2331,7 @@ public partial class MainWindow : Window
         {
             ShortlistSafetyMixText.Text = "Review Shortlist is empty. Add only recognized rows after inspection; shortlist is not cleanup approval.";
             UpdateQuarantineShortlistHeader();
+            UpdateQuarantinePreviewStatus();
             return;
         }
 
@@ -2344,6 +2355,7 @@ public partial class MainWindow : Window
             $"No category {uncategorizedCount:N0} | " +
             $"Largest shortlisted row {ByteSizeFormatter.Format(largestShortlistedBytes)}. Review context only, not cleanup approval.";
         UpdateQuarantineShortlistHeader();
+        UpdateQuarantinePreviewStatus();
     }
 
     private void UpdateQuarantineShortlistHeader()
@@ -2367,6 +2379,59 @@ public partial class MainWindow : Window
             : "undo unavailable";
         QuarantineShortlistHeaderText.Text =
             $"Quarantine shortlist: {_shortlist.Count:N0} shortlisted | {previewText} | {currentQuarantineText} | {undoText}";
+    }
+
+    private void UpdateQuarantinePreviewStatus(string? message = null)
+    {
+        if (QuarantinePreviewStatusText is null)
+        {
+            return;
+        }
+
+        if (!string.IsNullOrWhiteSpace(message))
+        {
+            QuarantinePreviewStatusText.Text = message;
+            return;
+        }
+
+        if (_currentUndoQuarantineResult is not null)
+        {
+            var result = _currentUndoQuarantineResult;
+            QuarantinePreviewStatusText.Text = result.Succeeded
+                ? $"Fixture Undo Quarantine completed: {result.RestoredCount:N0} restored. Rescan before further review."
+                : $"Fixture Undo Quarantine needs recovery review: {result.RestoredCount:N0} restored, {result.FailedCount:N0} failed. Rescan before further review.";
+            return;
+        }
+
+        if (_currentQuarantineExecutionResult is not null)
+        {
+            var result = _currentQuarantineExecutionResult;
+            QuarantinePreviewStatusText.Text = result.Succeeded
+                ? $"Fixture Quarantine execution completed: {result.MovedCount:N0} included Review Shortlist row(s) moved, {result.RestoreManifest.TotalSizeDisplay} quarantined. Undo fixture quarantine remains available when enabled; rescan refreshes review rows."
+                : $"Fixture Quarantine execution needs recovery review: {result.MovedCount:N0} included Review Shortlist row(s) moved, {result.FailedCount:N0} failed. Use Undo fixture quarantine when available; rescan refreshes review rows.";
+            return;
+        }
+
+        if (_currentQuarantinePreview is not null && _currentQuarantineConfirmationDraft is not null)
+        {
+            var blockerSummary = _currentQuarantineConfirmationDraft.HasDataBlockers
+                ? $"{_currentQuarantineConfirmationDraft.Blockers.Count:N0} readiness blocker(s)"
+                : "no readiness blockers";
+            var readinessLabel = _currentQuarantineConfirmationDraft.HasDataBlockers
+                ? "Quarantine Preview needs review"
+                : "Quarantine Preview ready";
+            QuarantinePreviewStatusText.Text =
+                $"{readinessLabel}: {_currentQuarantinePreview.IncludedCount:N0} included, " +
+                $"{_currentQuarantinePreview.BlockedCount:N0} blocked, " +
+                $"{_currentQuarantinePreview.RedundantCount:N0} redundant, " +
+                $"{_currentQuarantinePreview.IncludedSizeDisplay} previewed, {blockerSummary}. " +
+                "Review Shortlist is the source; this is not cleanup approval. No files were modified.";
+            return;
+        }
+
+        QuarantinePreviewStatusText.Text = _shortlist.Count == 0
+            ? "Quarantine Preview readiness appears after Review Shortlist rows are added. No files were modified."
+            : $"Review Shortlist has {_shortlist.Count:N0} row(s). Use Preview shortlist quarantine to review included, blocked, redundant, and readiness state. This is not cleanup approval. No files were modified.";
     }
 
     private static string FormatRowCount(int count)
@@ -2498,6 +2563,7 @@ public partial class MainWindow : Window
     {
         ClearQuarantinePreview();
         UpdateShortlistControls();
+        UpdateQuarantinePreviewStatus($"Quarantine Preview could not be created: {note.Message} No files were modified.");
         StatusText.Text = $"Quarantine Preview could not be created: {note.Message} No files were modified.";
     }
 
@@ -2524,6 +2590,7 @@ public partial class MainWindow : Window
 
         ExportQuarantinePreviewButton.IsEnabled = false;
         UpdateQuarantineExecutionGate();
+        UpdateQuarantinePreviewStatus();
         RefreshQuarantinedRowsIfVisible();
         UpdateQuarantinedViewControls();
     }
@@ -2707,6 +2774,7 @@ public partial class MainWindow : Window
         StatusText.Text = result.Succeeded
             ? $"Fixture Quarantine execution completed: {result.MovedCount:N0} included Review Shortlist row(s) moved, {result.RestoreManifest.TotalSizeDisplay} quarantined. Use Undo fixture quarantine to restore; rescan refreshes review rows."
             : $"Fixture Quarantine execution needs recovery review: {result.MovedCount:N0} included Review Shortlist row(s) moved, {result.FailedCount:N0} failed. Use Undo fixture quarantine when available; rescan refreshes review rows.";
+        UpdateQuarantinePreviewStatus();
     }
 
     public void ExecuteSelectedRestoreForCurrentSelection()
@@ -2764,6 +2832,7 @@ public partial class MainWindow : Window
         StatusText.Text = result.Succeeded
             ? $"Fixture Undo Quarantine completed: {result.RestoredCount:N0} restored. Rescan before further review."
             : $"Fixture Undo Quarantine needs recovery review: {result.RestoredCount:N0} restored, {result.FailedCount:N0} failed. Rescan before further review.";
+        UpdateQuarantinePreviewStatus();
     }
 
     private static string FormatQuarantinePreview(
