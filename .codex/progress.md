@@ -20,6 +20,49 @@ Storage Scan MVP packet implemented and tested by the user against `C:\Users\mox
 
 ## Completed packets
 
+### 2026-05-30: Fixture Checklist Selected Restore Gate Cue
+
+Status: completed
+
+Evidence:
+
+- Selected Restore Gate Help Cue automated the cue behavior but left a visual-only follow-up: confirm the cue is noticeable without crowding the selected restore gate area.
+- The next recommended work remains manual fixture visual polish.
+- The fixture checklist is the current user-facing guide for visible fixture review.
+
+Implementation:
+
+- Updated `Start-MvpFixtureReview.ps1` checklist step 8 to check the Selected Restore Execution Gate `?` help cue in waiting, closed, open, and restored states and to watch for crowding.
+- Updated README fixture smoke and Manual MVP wording to match the checklist.
+- Added a feature brief for the checklist alignment packet.
+- No WPF behavior, scan behavior, Quarantine behavior, selected restore behavior, real-profile/custom restore availability, permanent deletion, or cleanup history changed.
+
+Verification:
+
+- `cmd.exe /c tools\Start-MvpFixtureReview.cmd -ChecklistOnly` passed without preflight, fixture creation, WPF launch, scan, or file modification.
+- `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\Start-MvpFixtureReview.ps1 -ChecklistOnly` passed without preflight, fixture creation, WPF launch, scan, or file modification.
+- `git diff --check` passed.
+
+Docs updated:
+
+- `README.md`
+- `docs/features/2026-05-30-fixture-checklist-selected-restore-gate-cue.md`
+- `docs/codex/thread-handoff.md`
+- `.codex/progress.md`
+- `tools/Start-MvpFixtureReview.ps1`
+
+ADRs:
+
+- No ADR added. This is checklist/documentation wording only and does not change architecture, persistence, cleanup execution, restore rules, data model, or security.
+
+Open questions:
+
+- The next visible fixture review should decide whether the selected restore gate cue placement needs WPF layout polish.
+
+Rejected ideas buffer:
+
+- Do not add another checklist step for this cue unless the visible review shows step 8 is too dense.
+
 ### 2026-05-30: Run Full Local MVP Preflight After Selected Restore Gate Cue
 
 Status: completed

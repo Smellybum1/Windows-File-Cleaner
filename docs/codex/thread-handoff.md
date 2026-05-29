@@ -9,7 +9,7 @@ Use this when starting a fresh Codex thread for this repository.
 - Repo: `D:\Codex\Windows File Cleaner`
 - GitHub: `Smellybum1/Windows-File-Cleaner`
 - Branch: `main`
-- Latest completed packet: Run Full Local MVP Preflight After Selected Restore Gate Cue
+- Latest completed packet: Fixture Checklist Selected Restore Gate Cue
 - Current app stack: C# / WPF / .NET 8
 - Desktop shortcut target: `D:\Codex\Windows File Cleaner\src\WindowsFileCleaner.App\bin\Debug\net8.0-windows\WindowsFileCleaner.App.exe`
 
@@ -61,6 +61,7 @@ Fixture-only cleanup execution exists for synthetic Cleanup Scopes. Real-profile
 - Full Local MVP Preflight After Gate Help Cue passed `cmd.exe /c tools\Invoke-MvpPreflight.cmd`; restore, build, core tests, WPF app tests, fixture `-WhatIf`, fixture checklist-only output with the Quarantine Execution Gate `?` help cue, and whitespace diff check all passed without scanning or modifying real user files.
 - Selected Restore Gate Help Cue adds a visible hoverable `?` cue beside the WPF Selected Restore Execution Gate, mirrors concise dynamic tooltip/help text for waiting, closed, open, restored, and custom/real-profile blocked states, and expands WPF smoke affordance coverage to thirteen cues.
 - Full Local MVP Preflight After Selected Restore Gate Cue passed `cmd.exe /c tools\Invoke-MvpPreflight.cmd`; restore, build, core tests, WPF app tests, fixture `-WhatIf`, fixture checklist-only output with the Selected Restore Execution Gate `?` help cue, and whitespace diff check all passed without scanning or modifying real user files.
+- Fixture Checklist Selected Restore Gate Cue updated checklist step 8 and README manual review wording to check the Selected Restore Execution Gate `?` help cue in waiting/closed/open/restored states and watch for visual crowding.
 - Quarantine Execution Scope Status added plain-language fixture-only versus preview-only scope wording to Quarantine Preview and Quarantine Execution Gate output.
 - Fixture Review Checklist Output added a compact terminal checklist to `Start-MvpFixtureReview.ps1`.
 - Fixture Review Checklist-Only Mode added `Start-MvpFixtureReview.ps1 -ChecklistOnly`, which prints the same checklist without preflight, fixture creation, or WPF launch.
@@ -164,7 +165,7 @@ Fixture-only cleanup execution exists for synthetic Cleanup Scopes. Real-profile
 
 Prefer a small packet. Good candidates:
 
-1. Run a manual fixture visual polish pass with `.\tools\Start-MvpFixtureReview.cmd -ChecklistOnly` and then `.\tools\Start-MvpFixtureReview.cmd`; verify the updated prompts match the visible app, including the scan-gate summary `?` help cue, Review Mix / Matched Review Mix / Review Shortlist Safety Mix / Review Grid Mode Status / inline Quarantine Preview status / Quarantine Execution Gate / Selected Restore Execution Gate / collapsed panel header hoverable `?` help cues and prompt tooltip/help text, panel-name collapsed header summaries/state styling and state-naming tooltip/help text, styled inline Quarantine Preview readiness state-naming tooltip/help text, and `Current quarantined (N)` / `Back to scan rows` help text.
+1. Run a manual fixture visual polish pass with `.\tools\Start-MvpFixtureReview.cmd -ChecklistOnly` and then `.\tools\Start-MvpFixtureReview.cmd`; verify the updated prompts match the visible app, including the scan-gate summary `?` help cue, Review Mix / Matched Review Mix / Review Shortlist Safety Mix / Review Grid Mode Status / inline Quarantine Preview status / Quarantine Execution Gate / Selected Restore Execution Gate / collapsed panel header hoverable `?` help cues and prompt tooltip/help text, Selected Restore Execution Gate cue waiting/closed/open/restored states without crowding the gate area, panel-name collapsed header summaries/state styling and state-naming tooltip/help text, styled inline Quarantine Preview readiness state-naming tooltip/help text, and `Current quarantined (N)` / `Back to scan rows` help text.
 2. Decide whether a future broader restore/history design should put discovered Restore Manifest entries in a separate tab/grid or keep them in the manifest discovery/readiness panes.
 3. Continue Quarantine Preview/readiness wording review in the visible app, still without enabling real-profile execution.
 4. Retest review navigation/export tooltips, Cleanup Scope/Quarantine Root browse tooltips, the scan-gate summary `?` help cue, the real-profile acknowledgement `?` help cue, selected-row action tooltips, visible-row shortlist labels/tooltips, report/preview tooltips, execution-control tooltips, readiness tooltips, and Quarantine Execution Scope Status in the visible app during fixture or real-profile review; consider whether always-visible help icons are needed for other safety-critical gates.

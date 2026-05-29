@@ -189,6 +189,7 @@ ADRs added or skipped:
 Follow-up work:
 
 - Confirm the selected restore cue does not crowd the visible gate area during the next manual fixture review.
+- Later packet `2026-05-30-fixture-checklist-selected-restore-gate-cue.md` added that visual check to the fixture launcher checklist and README manual review wording.
 
 Open questions:
 
