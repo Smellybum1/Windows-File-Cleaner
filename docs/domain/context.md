@@ -2738,7 +2738,7 @@ It is not a manifest discovery or history workflow.
 ### Current-Session Quarantined Review
 
 Status: draft
-Last reviewed: 2026-05-29
+Last reviewed: 2026-05-30
 
 #### Definition
 
@@ -2773,6 +2773,7 @@ It is reached with the `Current quarantined` button, which shows a moved-entry c
 
 - Depends on Restore Manifest and Restore Manifest Entry Status.
 - Complements WPF Current Fixture Undo Quarantine by keeping moved entries visible even when Storage Scan rows refresh.
+- Implements ADR 0016's boundary that the main-grid `Current quarantined` view stays current-session-only.
 - Older or discovered manifests remain under Quarantine Manifest Discovery, Selected Restore Manifest Review, and Restore Readiness Preview.
 
 #### Code implications
@@ -2787,11 +2788,12 @@ It is reached with the `Current quarantined` button, which shows a moved-entry c
 - Keep Review Grid Mode Status tooltip and automation help text synchronized on both the status text and the visible non-clickable `?` help cue, name the current status state, and make explicit that the status is read-only review context; it must not rescan, modify files, restore files, or approve cleanup.
 - Keep `Current quarantined` and `Back to scan rows` tooltips and automation help text dynamic enough to explain disabled states, current-session-only scope, read-only behavior, older-manifest discovery boundaries, and that returning to scan rows does not rescan or undo.
 - Keep this view read-only and current-session-only until a separate discovered-manifest design exists.
+- Do not expand this view into all quarantined history or a broad discovered-manifest grid without a separate Grill with Docs packet.
 
 ### Quarantine Manifest Discovery
 
 Status: draft
-Last reviewed: 2026-05-29
+Last reviewed: 2026-05-30
 
 #### Definition
 
@@ -2827,6 +2829,7 @@ It is discovery and status review only, not Undo Quarantine execution and not pe
 - Depends on Quarantine Root Selection.
 - Depends on Restore Manifest and the action-scoped layout from ADR 0004.
 - Implements ADR 0011.
+- Follows ADR 0016 by keeping older/discovered manifest review in manifest discovery/readiness panes instead of the `Current quarantined` main-grid switch.
 - Feeds Selected Restore Manifest Review.
 - Precedes broad WPF Undo Quarantine for discovered manifests.
 

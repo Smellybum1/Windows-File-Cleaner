@@ -134,7 +134,7 @@ ADRs added or skipped:
 
 Follow-up work:
 
-- Future broader restore/history design still needs to decide whether discovered Restore Manifest entries belong in a separate tab/grid or should remain in manifest discovery/readiness panes.
+- Later ADR 0016 decided that older/discovered Restore Manifest review stays in manifest discovery/readiness panes for now, and `Current quarantined` remains current-session-only rather than all quarantined history.
 - Consider making Quarantine Preview success/readiness more prominent than status-bar text.
 
 Open questions:

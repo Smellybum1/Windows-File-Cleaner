@@ -20,6 +20,51 @@ Storage Scan MVP packet implemented and tested by the user against `C:\Users\mox
 
 ## Completed packets
 
+### 2026-05-30: Restore Manifest Review Surface Decision
+
+Status: completed
+
+Evidence:
+
+- The handoff listed deciding whether future broader restore/history design should put discovered Restore Manifest entries in a separate tab/grid or keep them in manifest discovery/readiness panes as a good next packet.
+- Current-Session Quarantined Review solved the immediate fixture visibility issue for current in-memory moved entries.
+- Quarantine Manifest Discovery, Selected Restore Manifest Review, Selected Restore Execution Gate, Fixture-only Selected Restore Execution, and Restore Readiness Preview already cover older/discovered action-scoped manifests without broad real-profile restore.
+
+Implementation:
+
+- Added ADR 0016 accepting that older/discovered Restore Manifest review stays in manifest discovery/readiness panes for now.
+- Clarified that `Current quarantined` remains current-session-only and should not silently become all quarantined history or a broad discovered-manifest grid.
+- Updated README, domain context, glossary, handoff, progress, and a feature brief.
+- No WPF layout, scan behavior, Quarantine behavior, selected restore behavior, real-profile/custom restore availability, permanent deletion, or cleanup history changed.
+
+Verification:
+
+- `rg -n "Current quarantined|cleanup history|all quarantined history" README.md docs` completed and showed the updated boundaries.
+- `git diff --check` passed.
+
+Docs updated:
+
+- `README.md`
+- `docs/decisions/0016-keep-discovered-manifests-in-manifest-panes.md`
+- `docs/features/2026-05-30-restore-manifest-review-surface-decision.md`
+- `docs/domain/context.md`
+- `docs/domain/glossary.md`
+- `docs/codex/thread-handoff.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- Added ADR 0016 because the choice affects core UX flow, has multiple plausible options, and reversing it later would require WPF wording/view-model/test/docs changes.
+
+Open questions:
+
+- If broader browsing is needed later, should it be a dedicated tab, a separate grid under manifest discovery, or another view?
+
+Rejected ideas buffer:
+
+- Do not silently expand `Current quarantined` into all quarantined history.
+- Do not add a broad restore/history view before a separate Grill with Docs pass.
+
 ### 2026-05-30: Fixture Checklist Selected Restore Gate Cue
 
 Status: completed
@@ -1090,7 +1135,7 @@ ADRs:
 Open questions:
 
 - During the next visible fixture pass, confirm `Current quarantined (N)` is useful without crowding the Quarantine Shortlist toolbar.
-- A future broader restore/history design still needs to decide whether discovered Restore Manifest entries appear in a separate tab/grid or remain in manifest discovery/readiness panes.
+- Later ADR 0016 decided that older/discovered Restore Manifest review stays in manifest discovery/readiness panes for now, and `Current quarantined` remains current-session-only rather than all quarantined history.
 
 Rejected ideas buffer:
 
@@ -9623,7 +9668,7 @@ ADRs:
 
 Open questions:
 
-- A future broader restore/history design still needs to decide whether discovered Restore Manifest entries appear in a separate tab/grid or stay in manifest discovery/readiness panes.
+- Later ADR 0016 decided that older/discovered Restore Manifest review stays in manifest discovery/readiness panes for now, and `Current quarantined` remains current-session-only rather than all quarantined history.
 
 Rejected ideas buffer:
 
