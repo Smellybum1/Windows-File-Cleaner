@@ -20,6 +20,46 @@ Storage Scan MVP packet implemented and tested by the user against `C:\Users\mox
 
 ## Completed packets
 
+### 2026-05-30: Run Full Local MVP Preflight After Checklist Step
+
+Status: completed
+
+Evidence:
+
+- Preflight Fixture Checklist Step changed `tools\Invoke-MvpPreflight.ps1`, README, MVP readiness/preflight docs, progress, and handoff.
+- A full local preflight through the preferred `.cmd` wrapper verifies the new checklist-only step runs in the complete restore/build/test/fixture/diff path before the next visible fixture review.
+
+Implementation:
+
+- Ran `Invoke-MvpPreflight.cmd` from the repository root after the checklist-step packet was pushed.
+- Preflight restored packages, built the solution, ran core tests, ran WPF app tests, ran the synthetic fixture generator in `-WhatIf` mode, printed the fixture checklist in checklist-only mode, and ran whitespace diff checking.
+- No real user files were scanned or modified.
+
+Verification:
+
+- `cmd.exe /c tools\Invoke-MvpPreflight.cmd` passed.
+- Preflight output included `== Fixture checklist ==` and printed `Checklist-only mode. No preflight, fixture creation, or WPF launch will run.`
+- Preflight output ended with `MVP preflight passed. No real user files were scanned or modified.`
+- Preflight suggested `.\tools\Start-MvpFixtureReview.cmd -SkipPreflight` as the next manual fixture step.
+
+Docs updated:
+
+- `docs/codex/thread-handoff.md`
+- `.codex/progress.md`
+- `docs/features/2026-05-30-preflight-fixture-checklist-step.md`
+
+ADRs:
+
+- No ADR added. This is verification evidence only, with no architecture, persistence, cleanup execution, restore rule, data-model, or security change.
+
+Open questions:
+
+- The next useful product signal remains a visible fixture review pass against the checklist prompts now covered by preflight.
+
+Rejected ideas buffer:
+
+- Do not treat preflight as a replacement for visible UI review; it proves automated gates and checklist printability only.
+
 ### 2026-05-30: Preflight Fixture Checklist Step
 
 Status: completed

@@ -35,6 +35,7 @@ What changed:
 Tests run:
 
 - `cmd.exe /c tools\Invoke-MvpPreflight.cmd -SkipRestore` passed.
+- Later packet `2026-05-30-full-local-mvp-preflight-after-checklist-step` ran `cmd.exe /c tools\Invoke-MvpPreflight.cmd`; restore, build, core tests, WPF app tests, fixture `-WhatIf`, fixture checklist-only output, and whitespace diff check all passed without scanning or modifying real user files.
 - `git diff --check` passed with line-ending normalization warnings only.
 
 ADRs added or skipped:
