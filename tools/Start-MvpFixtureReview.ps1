@@ -3,7 +3,8 @@ param(
     [string]$FixtureRoot = ".local\storage-scan-smoke-fixture",
     [switch]$SkipPreflight,
     [switch]$SkipLaunch,
-    [switch]$SkipChecklist
+    [switch]$SkipChecklist,
+    [switch]$ChecklistOnly
 )
 
 Set-StrictMode -Version Latest
@@ -43,6 +44,14 @@ else {
 if (-not ($fixtureFullPath.Equals($repoFullPath, [System.StringComparison]::OrdinalIgnoreCase) -or
     $fixtureFullPath.StartsWith($repoFullPath + [System.IO.Path]::DirectorySeparatorChar, [System.StringComparison]::OrdinalIgnoreCase))) {
     throw "Fixture root must stay inside the repository: $repoFullPath"
+}
+
+if ($ChecklistOnly) {
+    Write-Host ""
+    Write-Host "Fixture Cleanup Scope: $fixtureFullPath"
+    Write-Host "Checklist-only mode. No preflight, fixture creation, or WPF launch will run."
+    Write-FixtureReviewChecklist -FixturePath $fixtureFullPath
+    return
 }
 
 Push-Location $repoRoot

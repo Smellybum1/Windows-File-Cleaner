@@ -72,6 +72,7 @@ What changed:
 - `Start-MvpFixtureReview.ps1` now prints a compact manual fixture review checklist.
 - Added `-SkipChecklist` for focused loops.
 - Kept automated verification read-only/no-launch through `-WhatIf -SkipPreflight -SkipLaunch`.
+- Later packet `2026-05-29-fixture-review-checklist-only-mode.md` added `-ChecklistOnly` so the same checklist can be printed without preflight, fixture creation, or WPF launch.
 
 Tests run:
 

@@ -87,6 +87,12 @@ Use the fixture review launcher for the manual fixture UI pass:
 The launcher runs preflight, creates a small synthetic Cleanup Scope inside the repo, and launches the WPF app with that scope. The app does not auto-scan; click `Scan` yourself after it opens.
 Before launching, the script prints a compact fixture review checklist with the main safety, search, shortlist, preview, fixture execution, undo, and manifest-review checks.
 
+To print only that checklist without running preflight, creating fixture files, or launching WPF:
+
+```powershell
+.\tools\Start-MvpFixtureReview.ps1 -ChecklistOnly
+```
+
 For focused troubleshooting, the individual fixture commands are:
 
 ```powershell
