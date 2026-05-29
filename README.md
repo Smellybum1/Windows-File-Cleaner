@@ -6,6 +6,8 @@ The current MVP centers on a read-only Storage Scan. It can also execute and und
 
 Current readiness evidence is tracked in `docs/features/2026-05-28-mvp-readiness-audit.md`.
 
+Fresh-thread handoff notes live in `docs/codex/thread-handoff.md`.
+
 ## Safety Status
 
 - Storage Scan does not modify scanned files.
@@ -33,6 +35,7 @@ Current readiness evidence is tracked in `docs/features/2026-05-28-mvp-readiness
 - Fixture-only Selected Restore Execution calls Undo Quarantine Executor for selected discovered fixture manifests only.
 - Fixture tests include a source-level guard against accidental cleanup-execution filesystem calls.
 - Real-profile scans require an explicit acknowledgement that MVP preflight and fixture review were run.
+- User-typed Storage Review Search is debounced for large real-profile scans; the status bar is the only pending-search indicator for now.
 
 ## Requirements
 
@@ -126,6 +129,7 @@ After the app opens:
 8. Treat row sizes as triage clues, not storage savings; folder rows include children and can overlap with child rows.
 9. Use Review Mix, Matched Review Mix, and Safety Summary to inspect the cleanup scope root, high-risk, protected, access issue examples, Quarantine candidate examples, No category examples, reparse point, quarantine candidate, and no-category rows. Review Mix summarizes the whole scan; Matched Review Mix summarizes the current filters/search/focus.
 10. Use Storage Review Search for specific names such as `pip`, `NVIDIA`, `Codex`, app names, or game/mod-manager folders; use prefixes such as `path:pip`, `parent:C:\Users\moxhe\AppData`, `under:C:\Users\moxhe\AppData`, `category:Python package cache`, `rating:High risk`, `recommendation:Quarantine candidate`, `access:readable`, or `access:access issue` when you want one field.
+    Search typed into the box applies after a short pause so large scan results do not re-filter on every keystroke.
 11. Use the `Relative path`, `Parent`, `Contents`, and `Access` columns for short, hashed, container, or unreadable row names; sort `Contents` when you want to compare rows by total contained items, then select large folders and inspect relative path, parent/depth context, Evidence, cache-specific Review guidance, Descendant review summary, Largest immediate children, and the Largest hotspot trail.
 12. Use the Descendant review summary to see the selected folder's descendant mix by rating, quarantine candidate count, protected rows, access issues, reparse points, and no-category rows; these counts are review context, not cleanup approval.
 13. Use the Largest hotspot trail to see the biggest nested path through a selected folder; the sizes overlap down the trail and are not storage savings.
