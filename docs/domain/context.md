@@ -1840,6 +1840,7 @@ It does not create folders, move files, write manifests, or approve future Quara
 - Use the typed value when calling `QuarantinePreviewBuilder`.
 - Keep the default as `D:\WindowsFileCleanerQuarantine`.
 - The typed root field tooltip and automation help text should say it is a read-only preview destination and preview does not create the folder or move files.
+- The Quarantine Root Safety Note has a visible hoverable `?` help cue that mirrors the note tooltip/help text and keeps the preview-root, no-folder-create, no-move, no-manifest-write, and not-cleanup-approval boundary discoverable.
 - Browse tooltips and automation help text should say selection is for preview paths only and does not create folders, move files, or approve cleanup.
 - Do not create or validate the folder by touching the filesystem during preview.
 
@@ -1853,6 +1854,8 @@ Last reviewed: 2026-05-29
 Quarantine Root Safety Note is read-only UI text explaining whether the current Quarantine Root Selection is usable for Quarantine Preview and whether it is on the preferred `D:` drive.
 
 It is a path-shape check for preview only. It does not prove that a folder exists, create folders, move files, write manifests, or approve future Quarantine execution.
+
+The WPF note has a visible hoverable `?` help cue. The cue mirrors the note tooltip and automation help text so the preview-root safety boundary is discoverable without making the note look like a cleanup approval control.
 
 #### Examples
 
@@ -1886,6 +1889,7 @@ It is a path-shape check for preview only. It does not prove that a folder exist
 - Use `QuarantineRootSafetyNote` and `QuarantineRootSafetyNoteBuilder`.
 - Require fully qualified roots before building Quarantine Preview destination paths.
 - Keep the note informational and read-only.
+- Keep the visible `?` cue tooltip/help text synchronized with the note text.
 - Do not touch the filesystem from the note builder.
 
 ### Scan Report Export

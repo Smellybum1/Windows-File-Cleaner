@@ -268,7 +268,8 @@ public partial class MainWindow : Window
         GetHelpCueAffordance("Inline Quarantine Preview status", QuarantinePreviewStatusHelpCue),
         GetHelpCueAffordance("Review Grid Mode Status", ReviewGridModeHelpCue),
         GetHelpCueAffordance("Real-profile preflight acknowledgement", RealProfilePreflightHelpCue),
-        GetHelpCueAffordance("Scan gate summary", ScanGateSummaryHelpCue)
+        GetHelpCueAffordance("Scan gate summary", ScanGateSummaryHelpCue),
+        GetHelpCueAffordance("Quarantine Root Safety Note", QuarantineRootSafetyNoteHelpCue)
     ];
 
     public string? ContentsColumnSortMemberPath => ResultsGrid.Columns
@@ -429,6 +430,16 @@ public partial class MainWindow : Window
     public string CurrentQuarantineRootPath => QuarantineRootBox.Text;
 
     public string QuarantineRootSafetyNoteTextValue => QuarantineRootSafetyNoteText.Text;
+
+    public string QuarantineRootSafetyNoteToolTipValue => QuarantineRootSafetyNoteText.ToolTip?.ToString() ?? "";
+
+    public string QuarantineRootSafetyNoteAutomationHelpTextValue => AutomationProperties.GetHelpText(QuarantineRootSafetyNoteText);
+
+    public string QuarantineRootSafetyNoteHelpCueToolTipValue => QuarantineRootSafetyNoteHelpCue.ToolTip?.ToString() ?? "";
+
+    public string QuarantineRootSafetyNoteHelpCueAutomationNameValue => AutomationProperties.GetName(QuarantineRootSafetyNoteHelpCue);
+
+    public string QuarantineRootSafetyNoteHelpCueAutomationHelpTextValue => AutomationProperties.GetHelpText(QuarantineRootSafetyNoteHelpCue);
 
     public string? CurrentQuarantinePreviewRootPath => _currentQuarantinePreview?.QuarantineRootPath;
 
@@ -1746,7 +1757,13 @@ public partial class MainWindow : Window
         }
 
         var note = QuarantineRootSafetyNoteBuilder.Build(QuarantineRootBox.Text);
-        QuarantineRootSafetyNoteText.Text = $"{note.Label}: {note.Message}";
+        var safetyNoteText = $"{note.Label}: {note.Message}";
+        var helpText = $"{safetyNoteText} Quarantine Root Safety Note is read-only preview-root context; it does not create folders, move files, write manifests, or approve cleanup.";
+        QuarantineRootSafetyNoteText.Text = safetyNoteText;
+        QuarantineRootSafetyNoteText.ToolTip = helpText;
+        AutomationProperties.SetHelpText(QuarantineRootSafetyNoteText, helpText);
+        QuarantineRootSafetyNoteHelpCue.ToolTip = helpText;
+        AutomationProperties.SetHelpText(QuarantineRootSafetyNoteHelpCue, helpText);
     }
 
     private void UpdateQuarantineExecutionGate()

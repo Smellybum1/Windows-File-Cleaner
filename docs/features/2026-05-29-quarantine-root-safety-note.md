@@ -160,6 +160,7 @@ What changed:
 - Added WPF safety-note text below Quarantine Root Selection.
 - Disabled Quarantine Preview for relative or invalid roots.
 - Preserved preview-only behavior and non-`D:` preview support.
+- Later packet `2026-05-30-quarantine-root-safety-note-help-cue.md` added a visible hoverable `?` cue that mirrors the note tooltip/help text and keeps no-create/no-move/no-manifest-write/not-cleanup-approval wording discoverable.
 
 Files changed:
 

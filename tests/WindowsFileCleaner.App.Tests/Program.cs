@@ -569,6 +569,14 @@ internal sealed class MainWindowSmokeTests
                 window.QuarantineRootSafetyNoteTextValue.Contains("Preferred Quarantine Root", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantineRootSafetyNoteTextValue.Contains("does not create folders", StringComparison.OrdinalIgnoreCase),
                 "Default Quarantine root note should explain preferred D: preview-only behavior.");
+            AssertQuarantineRootSafetyNoteHelpCue(
+                window,
+                "Default Quarantine Root Safety Note help cue should mirror preview-root boundaries.",
+                "Preferred Quarantine Root",
+                "does not create folders",
+                "move files",
+                "write manifests",
+                "approve cleanup");
             Assert(
                 window.QuarantineManifestDiscoveryTextValue.Contains("Read-only manifest discovery", StringComparison.OrdinalIgnoreCase),
                 "Quarantine Manifest Discovery pane should start in a read-only placeholder state.");
@@ -1360,6 +1368,14 @@ internal sealed class MainWindowSmokeTests
             Assert(
                 window.QuarantineRootSafetyNoteTextValue.Contains("fully qualified", StringComparison.OrdinalIgnoreCase),
                 "Relative Quarantine roots should show a fully qualified path warning.");
+            AssertQuarantineRootSafetyNoteHelpCue(
+                window,
+                "Invalid Quarantine Root Safety Note help cue should mirror invalid-root boundaries.",
+                "fully qualified",
+                "does not create folders",
+                "move files",
+                "write manifests",
+                "approve cleanup");
             window.PreviewQuarantineForReviewShortlist();
             Assert(
                 window.QuarantinePreviewStatusTextValue.Contains("Quarantine Preview could not be created", StringComparison.OrdinalIgnoreCase)
@@ -2274,7 +2290,7 @@ internal sealed class MainWindowSmokeTests
     private static void AssertHoverableHelpCueAffordances(MainWindow window, string message)
     {
         var affordances = window.HoverableHelpCueAffordances;
-        Assert(affordances.Count == 9, message + " Expected all nine circular help cues to be tracked.");
+        Assert(affordances.Count == 10, message + " Expected all ten circular help cues to be tracked.");
 
         foreach (var affordance in affordances)
         {
@@ -2284,6 +2300,34 @@ internal sealed class MainWindowSmokeTests
             Assert(
                 affordance.InitialShowDelay == 250,
                 $"{message} {affordance.Name} should use a prompt tooltip initial delay.");
+        }
+    }
+
+    private static void AssertQuarantineRootSafetyNoteHelpCue(MainWindow window, string message, params string[] expectedSnippets)
+    {
+        Assert(
+            window.QuarantineRootSafetyNoteToolTipValue.Contains(window.QuarantineRootSafetyNoteTextValue, StringComparison.OrdinalIgnoreCase)
+            && window.QuarantineRootSafetyNoteToolTipValue.Contains("read-only preview-root context", StringComparison.OrdinalIgnoreCase)
+            && window.QuarantineRootSafetyNoteToolTipValue.Contains("write manifests", StringComparison.OrdinalIgnoreCase),
+            message + " Safety note tooltip should mirror the visible note and preview-root boundary.");
+        Assert(
+            string.Equals(window.QuarantineRootSafetyNoteAutomationHelpTextValue, window.QuarantineRootSafetyNoteToolTipValue, StringComparison.Ordinal),
+            message + " Safety note automation help text should mirror the tooltip.");
+        Assert(
+            window.QuarantineRootSafetyNoteHelpCueAutomationNameValue.Contains("Quarantine Root Safety Note help cue", StringComparison.OrdinalIgnoreCase),
+            message + " Help cue should have a specific automation name.");
+        Assert(
+            string.Equals(window.QuarantineRootSafetyNoteHelpCueToolTipValue, window.QuarantineRootSafetyNoteToolTipValue, StringComparison.Ordinal),
+            message + " Help cue tooltip should mirror the safety note tooltip.");
+        Assert(
+            string.Equals(window.QuarantineRootSafetyNoteHelpCueAutomationHelpTextValue, window.QuarantineRootSafetyNoteAutomationHelpTextValue, StringComparison.Ordinal),
+            message + " Help cue automation help text should mirror the safety note help text.");
+
+        foreach (var expectedSnippet in expectedSnippets)
+        {
+            Assert(
+                window.QuarantineRootSafetyNoteHelpCueToolTipValue.Contains(expectedSnippet, StringComparison.OrdinalIgnoreCase),
+                message + $" Help cue tooltip should include '{expectedSnippet}'.");
         }
     }
 
