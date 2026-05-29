@@ -9,7 +9,7 @@ Use this when starting a fresh Codex thread for this repository.
 - Repo: `D:\Codex\Windows File Cleaner`
 - GitHub: `Smellybum1/Windows-File-Cleaner`
 - Branch: `main`
-- Latest completed packet: Quarantine Approval Boundary Wording (after Fixture Review Checklist-Only Mode)
+- Latest completed packet: Fixture Checklist Approval Boundary (after Quarantine Approval Boundary Wording)
 - Current app stack: C# / WPF / .NET 8
 - Desktop shortcut target: `D:\Codex\Windows File Cleaner\src\WindowsFileCleaner.App\bin\Debug\net8.0-windows\WindowsFileCleaner.App.exe`
 
@@ -45,6 +45,7 @@ Fixture-only cleanup execution exists for synthetic Cleanup Scopes. Real-profile
 - Fixture Review Checklist Output added a compact terminal checklist to `Start-MvpFixtureReview.ps1`.
 - Fixture Review Checklist-Only Mode added `Start-MvpFixtureReview.ps1 -ChecklistOnly`, which prints the same checklist without preflight, fixture creation, or WPF launch.
 - Quarantine Approval Boundary Wording added a compact preview/gate line that keeps Review Shortlist and Quarantine Preview separate from cleanup approval.
+- Fixture Checklist Approval Boundary updated the launcher checklist to call out Approval boundary plus Execution scope status during fixture review.
 
 ## Best next work
 

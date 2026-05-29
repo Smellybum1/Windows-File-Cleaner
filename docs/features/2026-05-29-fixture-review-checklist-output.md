@@ -18,7 +18,7 @@ Make the manual fixture review pass easier to run consistently by printing the h
 
 ## Desired behavior
 
-When the fixture launcher runs, it should print a compact checklist before WPF launch that reminds the user to check fixture scope wording, manual Scan, read-only status, review summaries, search/focus actions, Review Shortlist Safety Mix, Quarantine Preview, Quarantine Execution Scope Status, fixture-only execute/undo, manifest discovery, and real/custom execution blockers.
+When the fixture launcher runs, it should print a compact checklist before WPF launch that reminds the user to check fixture scope wording, manual Scan, read-only status, review summaries, search/focus actions, Review Shortlist Safety Mix, Quarantine Preview, approval-boundary wording, Quarantine Execution Scope Status, fixture-only execute/undo, manifest discovery, and real/custom execution blockers.
 
 The launcher should support `-SkipChecklist` for focused loops.
 
@@ -73,6 +73,7 @@ What changed:
 - Added `-SkipChecklist` for focused loops.
 - Kept automated verification read-only/no-launch through `-WhatIf -SkipPreflight -SkipLaunch`.
 - Later packet `2026-05-29-fixture-review-checklist-only-mode.md` added `-ChecklistOnly` so the same checklist can be printed without preflight, fixture creation, or WPF launch.
+- Later packet `2026-05-29-fixture-checklist-approval-boundary.md` updated the checklist to include Quarantine approval-boundary wording.
 
 Tests run:
 
