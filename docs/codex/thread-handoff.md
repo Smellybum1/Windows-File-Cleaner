@@ -9,7 +9,7 @@ Use this when starting a fresh Codex thread for this repository.
 - Repo: `D:\Codex\Windows File Cleaner`
 - GitHub: `Smellybum1/Windows-File-Cleaner`
 - Branch: `main`
-- Latest completed packet: Full Local MVP Preflight After Confirmation Field Help Cues
+- Latest completed packet: Help Cue Affordance Feature Brief Alignment
 - Current app stack: C# / WPF / .NET 8
 - Desktop shortcut target: `D:\Codex\Windows File Cleaner\src\WindowsFileCleaner.App\bin\Debug\net8.0-windows\WindowsFileCleaner.App.exe`
 
@@ -65,6 +65,7 @@ Fixture-only cleanup execution exists for synthetic Cleanup Scopes. Real-profile
 - Restore Manifest Review Surface Decision added ADR 0016: older/discovered Restore Manifests stay in manifest discovery/readiness panes for now, while `Current quarantined` remains current-session-only and not all quarantined history.
 - Confirmation Field Help Cues added visible hoverable `?` help cues beside the exact `QUARANTINE` and `RESTORE` confirmation fields and expanded WPF smoke affordance coverage to fifteen cues.
 - Full Local MVP Preflight After Confirmation Field Help Cues passed `cmd.exe /c tools\Invoke-MvpPreflight.cmd`; restore, build, core tests, WPF app tests, fixture `-WhatIf`, fixture checklist-only output with the new confirmation field `?` help cues, and whitespace diff check all passed without scanning or modifying real user files.
+- Help Cue Affordance Feature Brief Alignment updated the original hoverable help-cue feature briefs so they no longer stop their later-packet trail at eleven cues and now point to the current fifteen-cue affordance snapshot.
 - Quarantine Execution Scope Status added plain-language fixture-only versus preview-only scope wording to Quarantine Preview and Quarantine Execution Gate output.
 - Fixture Review Checklist Output added a compact terminal checklist to `Start-MvpFixtureReview.ps1`.
 - Fixture Review Checklist-Only Mode added `Start-MvpFixtureReview.ps1 -ChecklistOnly`, which prints the same checklist without preflight, fixture creation, or WPF launch.

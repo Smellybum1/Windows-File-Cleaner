@@ -10,7 +10,7 @@ Storage Scan MVP packet implemented and tested by the user against `C:\Users\mox
 
 ## Next recommended work
 
-1. Start the next thread from `docs/codex/thread-handoff.md`, optionally print the manual prompts with `.\tools\Start-MvpFixtureReview.cmd -ChecklistOnly`, then run `.\tools\Start-MvpFixtureReview.cmd`, confirm the launched app shows Fixture Cleanup Scope and its Cleanup Scope Safety Note `?` help cue, scope-specific scan-gate wording, scan-gate summary `?` help cue, Cleanup Scope browse tooltip, click `Scan`, and manually inspect layout, visible wording, Storage Review Search, Clear search tooltip, `parent:` search, `under:` search, Matched Review Mix, Review Shortlist Safety Mix, Selected Folder Subtree Summary, Storage Hotspot Trail, Selected Folder Child Focus (`Show children`), Selected Folder Descendant Focus (`Show descendants`), selected-row action tooltips, Storage Review Display Window controls and Previous/Next rows tooltips, Scan Report Export tooltip, Reset view tooltip, the `Relative path` and `Parent` columns, Selected Path Hierarchy Context, Selected File Content Preview, Selected Path Review Guidance, export dialogs, Safety Summary shortcuts, Review Shortlist, `Shortlist visible rows`, `Remove visible rows`, visible-row shortlist tooltips, Review Shortlist export/clear tooltips, typed/browsed Quarantine Root Selection, Quarantine Root browse tooltip, Quarantine Root Safety Note and its `?` help cue, Quarantine Preview, `Preview shortlist quarantine` and `Export preview` tooltips, Quarantine Execution Gate and its `?` help cue, Quarantine Action Draft, execution-control tooltips, fixture-only `Quarantine included shortlist`, `Current quarantined (N)`, current-fixture `Undo fixture quarantine`, `Discover manifests`, `Preview selected manifest readiness`, `Preview selected restore gate` tooltip, scope status, approval boundary, Selected Restore Execution Gate `?` help cue, fixture-only `Restore selected fixture manifest`, `Preview all-manifest readiness`, Review Mix, Access issues filter, category filter, No category filter, Size filter, and filter wording.
+1. Start the next thread from `docs/codex/thread-handoff.md`, optionally print the manual prompts with `.\tools\Start-MvpFixtureReview.cmd -ChecklistOnly`, then run `.\tools\Start-MvpFixtureReview.cmd`, confirm the launched app shows Fixture Cleanup Scope and its Cleanup Scope Safety Note `?` help cue, scope-specific scan-gate wording, scan-gate summary `?` help cue, Cleanup Scope browse tooltip, click `Scan`, and manually inspect layout, visible wording, Storage Review Search, Clear search tooltip, `parent:` search, `under:` search, Matched Review Mix, Review Shortlist Safety Mix, Selected Folder Subtree Summary, Storage Hotspot Trail, Selected Folder Child Focus (`Show children`), Selected Folder Descendant Focus (`Show descendants`), selected-row action tooltips, Storage Review Display Window controls and Previous/Next rows tooltips, Scan Report Export tooltip, Reset view tooltip, the `Relative path` and `Parent` columns, Selected Path Hierarchy Context, Selected File Content Preview, Selected Path Review Guidance, export dialogs, Safety Summary shortcuts, Review Shortlist, `Shortlist visible rows`, `Remove visible rows`, visible-row shortlist tooltips, Review Shortlist export/clear tooltips, typed/browsed Quarantine Root Selection, Quarantine Root browse tooltip, Quarantine Root Safety Note and its `?` help cue, Quarantine Preview, `Preview shortlist quarantine` and `Export preview` tooltips, shortlist confirmation `?` help cue, Quarantine Execution Gate and its `?` help cue, Quarantine Action Draft, execution-control tooltips, fixture-only `Quarantine included shortlist`, `Current quarantined (N)`, current-fixture `Undo fixture quarantine`, `Discover manifests`, `Preview selected manifest readiness`, `Preview selected restore gate` tooltip, selected restore confirmation `?` help cue, scope status, approval boundary, Selected Restore Execution Gate `?` help cue, fixture-only `Restore selected fixture manifest`, `Preview all-manifest readiness`, Review Mix, Access issues filter, category filter, No category filter, Size filter, and filter wording.
 2. Use `README.md` and `docs/features/2026-05-28-mvp-readiness-audit.md` to rerun the WPF app against `C:\Users\moxhe`; confirm `Scan` is disabled until the real-profile preflight acknowledgement is checked and the acknowledgement `?` help cue mirrors the tooltip/help boundary.
 3. Run `.\tools\Invoke-MvpPreflight.cmd` before any later real-profile scan if the worktree changes.
 4. Rerun the real scan and check whether the cleanup scope root row, `Relative path`, `Parent`, `Contents`, and `Access` columns, Size filter, `parent:` / `under:` / `access:readable` / `access:access issue` search, Matched Review Mix, Selected Folder Subtree Summary, Storage Hotspot Trail, `Show children`, `Show descendants`, Previous rows / Next rows, Safety Summary candidate and no-category examples, selected-row relative/parent/depth/access context, cache-specific Review guidance, specific rebuildable cache candidates such as `DXCache` and `pip\Cache`, conservative game/mod-manager labels such as OptiFine/CurseForge/Vortex, Cloud sync data and Credential data labels, and `Preview file` action make unfamiliar rows easier to triage.
@@ -19,6 +19,42 @@ Storage Scan MVP packet implemented and tested by the user against `C:\Users\mox
 7. Revisit .NET 10 before packaging or long-term distribution.
 
 ## Completed packets
+
+### 2026-05-30: Handoff Confirmation Cue Review Alignment
+
+Status: completed
+
+Evidence:
+
+- Help Cue Affordance Feature Brief Alignment was pushed after the handoff's latest-packet field was last updated.
+- The next recommended manual fixture review prompt did not explicitly mention the shortlist confirmation or selected restore confirmation `?` help cues, even though the launcher checklist and README detailed steps did.
+
+Implementation:
+
+- Updated `docs/codex/thread-handoff.md` so the latest completed packet is `Help Cue Affordance Feature Brief Alignment`.
+- Added a verified-recently handoff bullet for the feature-brief alignment packet.
+- Added shortlist confirmation and selected restore confirmation `?` cue checks to the progress next-work manual fixture review prompt.
+- Aligned README Safety Status and Current Workflow wording with the exact-confirmation help cues.
+- No WPF behavior, scan behavior, Quarantine behavior, selected restore behavior, real-profile/custom execution availability, permanent deletion, or cleanup history changed.
+
+Verification:
+
+- `rg -n 'shortlist confirmation|selected restore confirmation|exact RESTORE confirmation field|RESTORE confirmation field|Latest completed packet' README.md .codex\progress.md docs\codex\thread-handoff.md` showed the updated handoff latest-packet line and exact-confirmation cue wording.
+- `git -c safe.directory='D:/Codex/Windows File Cleaner' diff --check` passed with line-ending normalization warnings only.
+
+Docs updated:
+
+- `README.md`
+- `docs/codex/thread-handoff.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No ADR added. This is handoff/manual-review wording alignment only.
+
+Open questions:
+
+- During visible fixture review, confirm the exact-confirmation `?` cues are noticeable without making confirmation look like approval by itself.
 
 ### 2026-05-30: Help Cue Affordance Feature Brief Alignment
 
