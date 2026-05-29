@@ -9,7 +9,7 @@ Use this when starting a fresh Codex thread for this repository.
 - Repo: `D:\Codex\Windows File Cleaner`
 - GitHub: `Smellybum1/Windows-File-Cleaner`
 - Branch: `main`
-- Latest completed packet: Review Toolbar Report and Preview Tooltip Clarity (after Visible-Row Shortlist Tooltip Clarity)
+- Latest completed packet: Selection Browse Tooltip Clarity (after Review Toolbar Report and Preview Tooltip Clarity)
 - Current app stack: C# / WPF / .NET 8
 - Desktop shortcut target: `D:\Codex\Windows File Cleaner\src\WindowsFileCleaner.App\bin\Debug\net8.0-windows\WindowsFileCleaner.App.exe`
 
@@ -17,7 +17,7 @@ Use this when starting a fresh Codex thread for this repository.
 
 Windows File Cleaner is a local Windows-only desktop app for reviewing storage under `C:\Users\moxhe`.
 
-The current MVP has a read-only Storage Scan that can inspect large real-profile scans with filters, debounced search, visible scope-specific Cleanup Scope Scan Gate status/tooltip wording, Review Mix, Matched Review Mix, Review Shortlist Safety Mix, visible-row Review Shortlist bulk labels/tooltips, review toolbar report/preview tooltip clarity, selected-folder child/descendant focus, selected-folder summaries, hotspot trail, file preview, CSV export, Review Shortlist, fixture launcher checklist output and checklist-only mode, Quarantine Preview, Quarantine approval-boundary wording, Quarantine Execution Scope Status, execution-control tooltip clarity, readiness scope tooltip clarity, Restore Manifest Draft, Quarantine Confirmation Draft, confirmation label wording polish, Quarantine Action Draft, manifest discovery with all-manifest restore wording, Restore Manifest wording polish, selected manifest readiness label polish, all-manifest readiness label polish, selected manifest review with readiness-evidence wording, selected restore gate scope-status/approval-boundary wording, selected-restore scope-status checklist coverage, all-manifest readiness preview with all-manifest restore wording, and all-manifest restore boundary checklist coverage.
+The current MVP has a read-only Storage Scan that can inspect large real-profile scans with filters, debounced search, visible scope-specific Cleanup Scope Scan Gate status/tooltip wording, Cleanup Scope and Quarantine Root browse tooltip clarity, Review Mix, Matched Review Mix, Review Shortlist Safety Mix, visible-row Review Shortlist bulk labels/tooltips, review toolbar report/preview tooltip clarity, selected-folder child/descendant focus, selected-folder summaries, hotspot trail, file preview, CSV export, Review Shortlist, fixture launcher checklist output and checklist-only mode, Quarantine Preview, Quarantine approval-boundary wording, Quarantine Execution Scope Status, execution-control tooltip clarity, readiness scope tooltip clarity, Restore Manifest Draft, Quarantine Confirmation Draft, confirmation label wording polish, Quarantine Action Draft, manifest discovery with all-manifest restore wording, Restore Manifest wording polish, selected manifest readiness label polish, all-manifest readiness label polish, selected manifest review with readiness-evidence wording, selected restore gate scope-status/approval-boundary wording, selected-restore scope-status checklist coverage, all-manifest readiness preview with all-manifest restore wording, and all-manifest restore boundary checklist coverage.
 
 Fixture-only cleanup execution exists for synthetic Cleanup Scopes. Real-profile cleanup execution remains intentionally unavailable.
 
@@ -62,6 +62,7 @@ Fixture-only cleanup execution exists for synthetic Cleanup Scopes. Real-profile
 - Readiness Scope Tooltip Clarity added scope/approval-boundary tooltips to `Preview all-manifest readiness` and `Preview selected manifest readiness`, including disabled-state tooltip support for selected manifest readiness.
 - Visible-Row Shortlist Tooltip Clarity added disabled-state scope/no-file-modified/not-cleanup-approval tooltips to `Shortlist visible rows` and `Remove visible rows`.
 - Review Toolbar Report and Preview Tooltip Clarity added disabled-state report-only, in-memory-only, and dry-run tooltips to `Export shortlist`, `Clear shortlist`, `Preview quarantine`, and `Export preview`.
+- Selection Browse Tooltip Clarity added disabled-state path-only/preview-only/no-approval tooltips to Cleanup Scope and Quarantine Root `Browse...` controls.
 
 ## Best next work
 
@@ -69,7 +70,7 @@ Prefer a small packet. Good candidates:
 
 1. Manual fixture visual polish pass using `.\tools\Start-MvpFixtureReview.ps1`; optionally preview the prompts with `.\tools\Start-MvpFixtureReview.ps1 -ChecklistOnly`, use the launcher checklist, then update docs with any findings.
 2. Continue Quarantine Preview/readiness wording review in the visible app, still without enabling real-profile execution.
-3. Retest Review Shortlist Safety Mix, visible-row shortlist labels/tooltips, report/preview tooltips, execution-control tooltips, and Quarantine Execution Scope Status in the visible app during fixture or real-profile review.
+3. Retest Review Shortlist Safety Mix, Cleanup Scope/Quarantine Root browse tooltips, visible-row shortlist labels/tooltips, report/preview tooltips, execution-control tooltips, and Quarantine Execution Scope Status in the visible app during fixture or real-profile review.
 4. During the next visible fixture/real-profile pass, confirm the scope-specific scan-gate summary line fits comfortably and makes locked/ready state obvious.
 5. Start real-profile Quarantine execution design only after the user explicitly wants to move beyond preview and the safety/undo story is reviewed again.
 

@@ -44,6 +44,7 @@ Fresh-thread handoff notes live in `docs/codex/thread-handoff.md`.
 - Fixture tests include a source-level guard against accidental cleanup-execution filesystem calls.
 - Real-profile scans require an explicit acknowledgement that MVP preflight and fixture review were run.
 - Scan-gate ready wording is scope-specific: fixture scopes point later cleanup actions back to preview and exact confirmation, while real-profile/custom scopes keep cleanup execution unavailable.
+- Cleanup Scope and Quarantine Root browse controls use tooltips to keep path-selection, scan-gate, preview-only, and no-folder-creation boundaries visible.
 - User-typed Storage Review Search is debounced for large real-profile scans; the status bar is the only pending-search indicator for now.
 
 ## Requirements
@@ -138,7 +139,7 @@ The header also shows a scan-gate status line and Scan button tooltip so the loc
 
 After the app opens:
 
-1. Confirm the scope box shows the intended Cleanup Scope; use `Browse...` if you want to choose a fixture or custom folder before scanning.
+1. Confirm the scope box shows the intended Cleanup Scope; use `Browse...` if you want to choose a fixture or custom folder before scanning, and confirm its tooltip says browsing does not start a scan, bypass the real-profile gate, or approve cleanup.
 2. Confirm the Cleanup Scope Safety Note matches the path: fixture first for smoke testing, real profile only after preflight.
 3. For the real profile, confirm the scan-gate status says the scan is locked, then tick the acknowledgement that MVP preflight and fixture review were run; fixture scopes do not require this real-profile acknowledgement.
 4. Click `Scan`.
@@ -159,7 +160,7 @@ After the app opens:
 18. Try category filters such as Cleanup scope root, App cache, Python package cache, GPU shader cache, Large old file, Cloud sync data, Credential data, Windows app data, Installed application, Game data, Protected location, and No category.
 19. Use `Reset view` after stacking filters/search; it clears the review lens but keeps Review Shortlist.
 20. Add a likely-safe cleanup candidate to the Review Shortlist; specific rebuildable cache rows such as `DXCache` or `pip\Cache` may appear here, while broad parent folders should stay inspection-first. Check Review Shortlist Safety Mix for high-risk, protected, access issue, no-category, and largest-row context. Use `Shortlist visible rows` / `Remove visible rows` only after narrowing or paging the grid to rows you intentionally want to review, and confirm their tooltips keep visible-row scope, no-file-modified behavior, and not-cleanup-approval wording clear. Confirm `Export shortlist` and `Clear shortlist` tooltips keep report-only and in-memory-only wording clear.
-21. Confirm the Quarantine root points to the intended fully qualified preview/execution destination and that the safety note matches it, typing or browsing if needed, then click `Preview quarantine`; broad parent rows should be blocked when protected descendants are present, blocked descendant examples should use relative paths, confirmation readiness blockers should be separate from preview row details, approval-boundary wording should keep shortlist/preview separate from cleanup approval, Preview quarantine and Export preview tooltips should keep dry-run/report-only wording visible, execution scope status and disabled control tooltips should distinguish fixture-only from preview-only real/custom scopes, the Quarantine Action Draft should show action-scoped item and manifest paths, and the write-ahead Restore Manifest should show planned write-before-move ordering.
+21. Confirm the Quarantine root points to the intended fully qualified preview/execution destination and that the safety note matches it, typing or browsing if needed; the browse tooltip should say it selects preview paths only and does not create folders, move files, or approve cleanup. Then click `Preview quarantine`; broad parent rows should be blocked when protected descendants are present, blocked descendant examples should use relative paths, confirmation readiness blockers should be separate from preview row details, approval-boundary wording should keep shortlist/preview separate from cleanup approval, Preview quarantine and Export preview tooltips should keep dry-run/report-only wording visible, execution scope status and disabled control tooltips should distinguish fixture-only from preview-only real/custom scopes, the Quarantine Action Draft should show action-scoped item and manifest paths, and the write-ahead Restore Manifest should show planned write-before-move ordering.
 22. On a fixture Cleanup Scope only, typing `QUARANTINE` should enable `Execute quarantine`; clicking it moves the selected synthetic file/folder into the action-scoped quarantine path, writes `restore-manifest.json`, clears stale shortlist state, enables `Undo fixture quarantine`, and tells you to rescan.
 23. On that same fixture execution, clicking `Undo fixture quarantine` should restore the synthetic file/folder from quarantine, update the Restore Manifest, disable repeat undo, and keep stale-state wording visible.
 24. Use `Discover manifests` against the selected Quarantine Root; it should show read-only Restore Manifest summaries or discovery issues and should state that no all-manifest restore action is available.
@@ -175,7 +176,7 @@ The intended review flow is:
 
 1. Run fixture tests.
 2. Run the WPF app smoke tests.
-3. Confirm the Cleanup Scope Safety Note before scanning.
+3. Confirm the Cleanup Scope Safety Note and Cleanup Scope browse tooltip before scanning.
 4. Run Storage Scan.
 5. Inspect high-risk and protected rows first.
 6. Check whether the grid is showing all matched rows or one 2,000-row display window.
@@ -183,7 +184,7 @@ The intended review flow is:
 8. Use `Reset view` when the active review lens becomes too narrow; it does not clear Review Shortlist.
 9. Use Selected Path Hierarchy Context, Selected File Content Preview, Selected Path Review Guidance, Selected Folder Subtree Summary, Child Breakdown, Storage Hotspot Trail, Selected Folder Child Focus, Selected Folder Descendant Focus, and Open in Explorer for manual inspection.
 10. Add interesting rows to Review Shortlist; use Review Shortlist Safety Mix to sanity-check the shortlisted row mix, and use `Shortlist visible rows` / `Remove visible rows` only for the currently displayed review window. Their tooltips should repeat that this is review context, not cleanup approval, while export/clear tooltips keep report-only and in-memory-only boundaries visible.
-11. Check or browse the Quarantine root and generate Quarantine Preview for readiness review; preview/export tooltips should keep dry-run and report-only boundaries visible.
+11. Check or browse the Quarantine root and generate Quarantine Preview for readiness review; browse and preview/export tooltips should keep preview-only, no-folder-creation, dry-run, and report-only boundaries visible.
 12. For fixture scopes, optionally type `QUARANTINE`, run fixture-only Quarantine execution, then use `Undo fixture quarantine` to prove the reversible visible workflow.
 13. Use `Discover manifests` when you want read-only status for action-scoped Restore Manifests under the selected Quarantine Root.
 14. Select one discovered Restore Manifest and use `Preview selected manifest readiness` when you want one-action blocker evidence before any future broad Undo Quarantine.

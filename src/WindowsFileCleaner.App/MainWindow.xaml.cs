@@ -83,6 +83,8 @@ public partial class MainWindow : Window
 
     public string BrowseCleanupScopeButtonText => BrowseScopeButton.Content?.ToString() ?? "";
 
+    public string BrowseCleanupScopeButtonToolTipValue => BrowseScopeButton.ToolTip?.ToString() ?? "";
+
     public bool IsRealProfilePreflightConfirmationVisible => RealProfilePreflightCheckBox.Visibility == Visibility.Visible;
 
     public bool IsRealProfilePreflightConfirmed => RealProfilePreflightCheckBox.IsChecked == true;
@@ -301,6 +303,8 @@ public partial class MainWindow : Window
     public bool CanBrowseQuarantineRoot => BrowseQuarantineRootButton.IsEnabled;
 
     public string BrowseQuarantineRootButtonText => BrowseQuarantineRootButton.Content?.ToString() ?? "";
+
+    public string BrowseQuarantineRootButtonToolTipValue => BrowseQuarantineRootButton.ToolTip?.ToString() ?? "";
 
     public bool ReviewToolbarsUseWrappingLayout =>
         ReviewFilterToolbar is WrapPanel
