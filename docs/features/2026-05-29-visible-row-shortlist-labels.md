@@ -138,3 +138,7 @@ Open questions:
 Risky assumptions:
 
 - The longer labels improve clarity more than they add toolbar density.
+
+Follow-up note:
+
+- The later 2026-05-29 visible-row shortlist tooltip clarity packet added scope/no-file-modified/not-cleanup-approval tooltips for these bulk actions.

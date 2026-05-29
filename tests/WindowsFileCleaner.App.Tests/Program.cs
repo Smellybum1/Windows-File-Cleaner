@@ -91,6 +91,16 @@ internal sealed class MainWindowSmokeTests
                 window.PreviewSelectedRestoreManifestReadinessButtonToolTipValue.Contains("selected Restore Manifest only", StringComparison.OrdinalIgnoreCase)
                 && window.PreviewSelectedRestoreManifestReadinessButtonToolTipValue.Contains("not restore approval", StringComparison.OrdinalIgnoreCase),
                 "Selected manifest readiness tooltip should explain selected-only scope and approval boundary.");
+            Assert(
+                window.AddShownRowsToReviewShortlistButtonToolTipValue.Contains("currently visible review rows", StringComparison.OrdinalIgnoreCase)
+                && window.AddShownRowsToReviewShortlistButtonToolTipValue.Contains("not cleanup approval", StringComparison.OrdinalIgnoreCase)
+                && window.AddShownRowsToReviewShortlistButtonToolTipValue.Contains("no files are modified", StringComparison.OrdinalIgnoreCase),
+                "Visible-row shortlist add tooltip should explain scope, approval boundary, and no-file-modified behavior.");
+            Assert(
+                window.RemoveShownRowsFromReviewShortlistButtonToolTipValue.Contains("currently visible review rows", StringComparison.OrdinalIgnoreCase)
+                && window.RemoveShownRowsFromReviewShortlistButtonToolTipValue.Contains("not cleanup approval", StringComparison.OrdinalIgnoreCase)
+                && window.RemoveShownRowsFromReviewShortlistButtonToolTipValue.Contains("no files are modified", StringComparison.OrdinalIgnoreCase),
+                "Visible-row shortlist remove tooltip should explain scope, approval boundary, and no-file-modified behavior.");
             Assert(!window.CanPreviewSelectedRestoreGate, "MainWindow should not enable selected restore gate preview before selected manifest readiness.");
             Assert(!window.CanEnterSelectedRestoreConfirmation, "MainWindow should not allow selected restore confirmation before gate preview.");
             Assert(!window.CanExecuteSelectedRestore, "MainWindow should not allow selected restore execution before gate preview.");

@@ -274,6 +274,10 @@ public partial class MainWindow : Window
 
     public string RemoveShownRowsFromReviewShortlistButtonText => RemoveShownFromShortlistButton.Content?.ToString() ?? "";
 
+    public string AddShownRowsToReviewShortlistButtonToolTipValue => AddShownToShortlistButton.ToolTip?.ToString() ?? "";
+
+    public string RemoveShownRowsFromReviewShortlistButtonToolTipValue => RemoveShownFromShortlistButton.ToolTip?.ToString() ?? "";
+
     public bool CanPreviewQuarantine => PreviewQuarantineButton.IsEnabled;
 
     public bool CanExportQuarantinePreview => ExportQuarantinePreviewButton.IsEnabled;

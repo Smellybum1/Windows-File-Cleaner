@@ -1639,6 +1639,7 @@ It is not a cleanup approval and does not modify files.
 
 - Use `StorageReviewShortlist` for the in-memory selection model.
 - Bulk additions and removals should use only currently displayed rows, not hidden matched rows beyond the Storage Review Display Limit.
+- Visible-row bulk control tooltips should keep the display-window scope, no-file-modified behavior, and not-cleanup-approval boundary visible.
 - Keep shortlisted paths separate from Cleanup Actions and Quarantine manifests.
 - Do not persist or execute the Review Shortlist as an action without a future explicit approval workflow.
 
