@@ -592,6 +592,7 @@
                                 <Button x:Name="PreviewRestoreReadinessButton"
                                         Content="Preview all-manifest readiness"
                                         MinWidth="245"
+                                        ToolTip="Read-only all-manifest readiness for discovered Restore Manifests under the selected Quarantine Root; no files are restored."
                                         Click="PreviewRestoreReadinessButton_Click" />
                             </WrapPanel>
                             <WrapPanel Margin="0,6,0,0">
@@ -609,6 +610,8 @@
                                         Content="Preview selected manifest readiness"
                                         MinWidth="260"
                                         IsEnabled="False"
+                                        ToolTip="Read-only readiness for the selected Restore Manifest only; selection is not restore approval."
+                                        ToolTipService.ShowOnDisabled="True"
                                         Click="PreviewSelectedRestoreManifestReadinessButton_Click" />
                             </WrapPanel>
                             <TextBlock x:Name="QuarantineManifestDiscoveryText"

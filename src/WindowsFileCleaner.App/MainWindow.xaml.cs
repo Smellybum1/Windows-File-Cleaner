@@ -222,11 +222,15 @@ public partial class MainWindow : Window
 
     public string PreviewRestoreReadinessButtonText => PreviewRestoreReadinessButton.Content?.ToString() ?? "";
 
+    public string PreviewRestoreReadinessButtonToolTipValue => PreviewRestoreReadinessButton.ToolTip?.ToString() ?? "";
+
     public bool CanSelectDiscoveredRestoreManifest => RestoreManifestSelectionBox.IsEnabled;
 
     public bool CanPreviewSelectedRestoreManifestReadiness => PreviewSelectedRestoreManifestReadinessButton.IsEnabled;
 
     public string PreviewSelectedRestoreManifestReadinessButtonText => PreviewSelectedRestoreManifestReadinessButton.Content?.ToString() ?? "";
+
+    public string PreviewSelectedRestoreManifestReadinessButtonToolTipValue => PreviewSelectedRestoreManifestReadinessButton.ToolTip?.ToString() ?? "";
 
     public bool CanPreviewSelectedRestoreGate => PreviewSelectedRestoreGateButton.IsEnabled;
 

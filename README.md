@@ -30,6 +30,7 @@ Fresh-thread handoff notes live in `docs/codex/thread-handoff.md`.
 - Restore Manifest Draft and Quarantine Confirmation Draft are in-memory readiness evidence only.
 - Quarantine Execution Gate enables execution only for fixture Cleanup Scopes after preview readiness and exact `QUARANTINE` confirmation, and its scope-status wording keeps real-profile/custom execution visibly preview-only.
 - Quarantine and selected-restore execution controls have disabled-state tooltips that keep fixture-only gates and real-profile/custom blockers visible.
+- All-manifest and selected-manifest readiness controls have scope tooltips that keep read-only/no-restore and selected-only/not-approval boundaries visible.
 - Quarantine Action Draft shows action-scoped item and manifest paths before execution creates them.
 - Write-ahead Restore Manifest modeling shows planned status/write order before fixture execution writes the manifest.
 - Restore Manifest File Store writes action-scoped manifest JSON during fixture-tested execution paths.
@@ -160,9 +161,9 @@ After the app opens:
 22. On a fixture Cleanup Scope only, typing `QUARANTINE` should enable `Execute quarantine`; clicking it moves the selected synthetic file/folder into the action-scoped quarantine path, writes `restore-manifest.json`, clears stale shortlist state, enables `Undo fixture quarantine`, and tells you to rescan.
 23. On that same fixture execution, clicking `Undo fixture quarantine` should restore the synthetic file/folder from quarantine, update the Restore Manifest, disable repeat undo, and keep stale-state wording visible.
 24. Use `Discover manifests` against the selected Quarantine Root; it should show read-only Restore Manifest summaries or discovery issues and should state that no all-manifest restore action is available.
-25. Select a discovered Restore Manifest and use `Preview selected manifest readiness`; it should show readiness for that manifest only without moving files and should route any fixture-only restore through the selected restore gate.
+25. Select a discovered Restore Manifest and use `Preview selected manifest readiness`; it should show readiness for that manifest only without moving files, its tooltip should keep selected-only/not-approval wording visible, and it should route any fixture-only restore through the selected restore gate.
 26. Use `Preview selected restore gate`, then type `RESTORE`; for a fixture Restore Manifest it should show fixture-only scope status, approval-boundary wording, disabled-control tooltip wording, and `Can execute: yes`, and `Restore selected fixture manifest` should restore the synthetic file while telling you to rediscover and rescan.
-27. Use `Preview all-manifest readiness` against the selected Quarantine Root; it should show restorable, blocked, already-restored, or recovery-review rows across discovered manifests without moving files.
+27. Use `Preview all-manifest readiness` against the selected Quarantine Root; it should show restorable, blocked, already-restored, or recovery-review rows across discovered manifests without moving files, and its tooltip should keep read-only/no-restore wording visible.
 28. On `C:\Users\moxhe` or a custom non-fixture Cleanup Scope, typing `QUARANTINE` should still leave `Execute quarantine` disabled with a scope-specific blocker and no undo action; selected restore should also show preview-only scope status and stay unavailable for non-fixture manifests even when `RESTORE` is typed.
 29. Export CSV reports only when you intentionally choose an output file; the main report export follows the active filters/type/size/search, includes relative path, parent/depth, and access-status context for recursive rows, and the suggested filename includes the search term when one is active.
 

@@ -2805,6 +2805,7 @@ It is not approval to restore and does not restore files.
 - Use `SelectedRestoreManifestReview` and `SelectedRestoreManifestReviewBuilder`.
 - Keep selection read-only and derived from current discovery results.
 - Keep selected manifest readiness separate from approval and execution.
+- Keep the WPF selected manifest readiness tooltip explicit that the action is selected-only and not restore approval.
 - Do not call `UndoQuarantineExecutor.Undo`.
 
 ### Selected Restore Confirmation Draft
@@ -2999,6 +3000,7 @@ It is not approval to restore and does not restore files.
 - Use `RestoreReadinessPreview`, `RestoreReadinessPreviewBuilder`, `RestoreReadinessManifestPreview`, and `RestoreReadinessEntryPreview`.
 - Keep it read-only. Do not call `UndoQuarantineExecutor.Undo`.
 - The WPF action label should make the all-manifest readiness scope visible so it is distinct from selected manifest readiness.
+- The WPF action tooltip should repeat the read-only all-manifest scope and no-restore boundary.
 - WPF readiness output should distinguish read-only blocker evidence from all-manifest restore execution while pointing fixture-only restore toward the selected restore gate.
 - Recompute readiness immediately before any future restore execution because filesystem state can change.
 
