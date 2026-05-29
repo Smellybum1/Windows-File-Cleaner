@@ -9,7 +9,7 @@ Use this when starting a fresh Codex thread for this repository.
 - Repo: `D:\Codex\Windows File Cleaner`
 - GitHub: `Smellybum1/Windows-File-Cleaner`
 - Branch: `main`
-- Latest completed packet: Review Shortlist Safety Mix Help Cue
+- Latest completed packet: Full Local MVP Preflight After Safety Cue
 - Current app stack: C# / WPF / .NET 8
 - Desktop shortcut target: `D:\Codex\Windows File Cleaner\src\WindowsFileCleaner.App\bin\Debug\net8.0-windows\WindowsFileCleaner.App.exe`
 
@@ -120,6 +120,7 @@ Fixture-only cleanup execution exists for synthetic Cleanup Scopes. Real-profile
 - Review Mix Help Text mirrored Review Mix and Matched Review Mix into tooltip/help text with no-rescan, no-file-modified, no-storage-savings-proof, and not-cleanup-approval boundaries.
 - Review Mix Help Cues added visible circular `?` help cues beside Review Mix and Matched Review Mix so their mirrored tooltip/help text is easier to discover.
 - Review Shortlist Safety Mix Help Cue added a visible circular `?` help cue beside Review Shortlist Safety Mix so its mirrored tooltip/help text is easier to discover before Quarantine Preview.
+- Full Local MVP Preflight After Safety Cue passed `Invoke-MvpPreflight.ps1`; restore, build, core tests, WPF app tests, fixture `-WhatIf`, and whitespace diff check all passed without scanning or modifying real user files.
 
 ## Best next work
 
