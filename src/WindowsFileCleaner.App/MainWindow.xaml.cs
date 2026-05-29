@@ -97,6 +97,8 @@ public partial class MainWindow : Window
 
     public bool CanExportScanCsv => ExportCsvButton.IsEnabled;
 
+    public string ExportScanCsvButtonToolTipValue => ExportCsvButton.ToolTip?.ToString() ?? "";
+
     public int CurrentScanReportExportRowCount => BuildCurrentScanReportExportRows().Count;
 
     public IReadOnlyList<string> CurrentScanReportExportPaths => BuildCurrentScanReportExportRows()
@@ -120,6 +122,10 @@ public partial class MainWindow : Window
     public bool CanUseSizeThresholdFilter => SizeThresholdFilterBox.IsEnabled;
 
     public bool CanResetReviewView => ResetViewButton.IsEnabled;
+
+    public string ClearSearchButtonToolTipValue => ClearSearchButton.ToolTip?.ToString() ?? "";
+
+    public string ResetReviewViewButtonToolTipValue => ResetViewButton.ToolTip?.ToString() ?? "";
 
     public string CurrentEntryTypeFilterLabel => EntryTypeFilterBox.SelectedItem is EntryTypeFilterOption option
         ? option.Label
@@ -166,7 +172,11 @@ public partial class MainWindow : Window
 
     public bool CanShowPreviousReviewWindow => PreviousReviewWindowButton.IsEnabled;
 
+    public string PreviousReviewWindowButtonToolTipValue => PreviousReviewWindowButton.ToolTip?.ToString() ?? "";
+
     public bool CanShowNextReviewWindow => NextReviewWindowButton.IsEnabled;
+
+    public string NextReviewWindowButtonToolTipValue => NextReviewWindowButton.ToolTip?.ToString() ?? "";
 
     public string CurrentSearchText => SearchBox.Text;
 

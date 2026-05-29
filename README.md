@@ -23,6 +23,7 @@ Fresh-thread handoff notes live in `docs/codex/thread-handoff.md`.
 - Real-profile WPF Quarantine execution and broad WPF Undo Quarantine remain unavailable.
 - The visible WPF app does not delete files.
 - CSV exports write only to a path selected by the user.
+- Scan Report Export and review navigation controls use tooltips to keep report-only, in-memory, no-rescan, and no-file-modified boundaries visible.
 - Review Shortlist is an in-memory review aid, not cleanup approval.
 - Review Shortlist export and clear controls use tooltips to keep report-only and in-memory-only boundaries visible.
 - Review Shortlist bulk actions label their scope as visible rows and include tooltips so they apply only to the current displayed review window, not cleanup approval.
@@ -146,7 +147,7 @@ After the app opens:
 4. Click `Scan`.
 5. Confirm the status says no files were modified.
 6. Review the summary cards for total size, folders, files, and access issues.
-7. If the status or filter summary says `rows 1-2,000 of ... matched`, use `Next rows` / `Previous rows` to move through matched rows, or narrow with search and filters.
+7. If the status or filter summary says `rows 1-2,000 of ... matched`, use `Next rows` / `Previous rows` to move through matched in-memory rows, or narrow with search and filters. Their tooltips should keep no-rescan and no-file-modified wording visible.
 8. Treat row sizes as triage clues, not storage savings; folder rows include children and can overlap with child rows.
 9. Use Review Mix, Matched Review Mix, and Safety Summary to inspect the cleanup scope root, high-risk, protected, access issue examples, Quarantine candidate examples, No category examples, reparse point, quarantine candidate, and no-category rows. Review Mix summarizes the whole scan; Matched Review Mix summarizes the current filters/search/focus.
 10. Use Storage Review Search for specific names such as `pip`, `NVIDIA`, `Codex`, app names, or game/mod-manager folders; use prefixes such as `path:pip`, `parent:C:\Users\moxhe\AppData`, `under:C:\Users\moxhe\AppData`, `category:Python package cache`, `rating:High risk`, `recommendation:Quarantine candidate`, `access:readable`, or `access:access issue` when you want one field.
@@ -159,7 +160,7 @@ After the app opens:
 16. Use the Type filter to switch between all rows, files only, and folders only; use the Size filter to focus on rows such as `100 MB+`, `1 GB+`, or `5 GB+`.
 17. Select small text files and use `Preview file` only when you intentionally want a bounded read-only text snippet; binary, Credential Data, and unsupported files should not render as text, and the tooltip should keep bounded/no-file-modified wording visible.
 18. Try category filters such as Cleanup scope root, App cache, Python package cache, GPU shader cache, Large old file, Cloud sync data, Credential data, Windows app data, Installed application, Game data, Protected location, and No category.
-19. Use `Reset view` after stacking filters/search; it clears the review lens but keeps Review Shortlist.
+19. Use `Clear search` or `Reset view` after stacking filters/search; reset clears the review lens but keeps Review Shortlist. Their tooltips should keep no-rescan, no-file-modified, and shortlist-preserving wording visible.
 20. Add a likely-safe cleanup candidate to the Review Shortlist; specific rebuildable cache rows such as `DXCache` or `pip\Cache` may appear here, while broad parent folders should stay inspection-first. Check Review Shortlist Safety Mix for high-risk, protected, access issue, no-category, and largest-row context. Confirm selected-row and visible-row shortlist tooltips keep row/window scope, no-file-modified behavior, and not-cleanup-approval wording clear. Confirm `Export shortlist` and `Clear shortlist` tooltips keep report-only and in-memory-only wording clear.
 21. Confirm the Quarantine root points to the intended fully qualified preview/execution destination and that the safety note matches it, typing or browsing if needed; the browse tooltip should say it selects preview paths only and does not create folders, move files, or approve cleanup. Then click `Preview quarantine`; broad parent rows should be blocked when protected descendants are present, blocked descendant examples should use relative paths, confirmation readiness blockers should be separate from preview row details, approval-boundary wording should keep shortlist/preview separate from cleanup approval, Preview quarantine and Export preview tooltips should keep dry-run/report-only wording visible, execution scope status and disabled control tooltips should distinguish fixture-only from preview-only real/custom scopes, the Quarantine Action Draft should show action-scoped item and manifest paths, and the write-ahead Restore Manifest should show planned write-before-move ordering.
 22. On a fixture Cleanup Scope only, typing `QUARANTINE` should enable `Execute quarantine`; clicking it moves the selected synthetic file/folder into the action-scoped quarantine path, writes `restore-manifest.json`, clears stale shortlist state, enables `Undo fixture quarantine`, and tells you to rescan.
@@ -169,7 +170,7 @@ After the app opens:
 26. Use `Preview selected restore gate`, then type `RESTORE`; for a fixture Restore Manifest it should show fixture-only scope status, approval-boundary wording, disabled-control tooltip wording, and `Can execute: yes`, and `Restore selected fixture manifest` should restore the synthetic file while telling you to rediscover and rescan.
 27. Use `Preview all-manifest readiness` against the selected Quarantine Root; it should show restorable, blocked, already-restored, or recovery-review rows across discovered manifests without moving files, and its tooltip should keep read-only/no-restore wording visible.
 28. On `C:\Users\moxhe` or a custom non-fixture Cleanup Scope, typing `QUARANTINE` should still leave `Execute quarantine` disabled with a scope-specific blocker and no undo action; selected restore should also show preview-only scope status and stay unavailable for non-fixture manifests even when `RESTORE` is typed.
-29. Export CSV reports only when you intentionally choose an output file; the main report export follows the active filters/type/size/search, includes relative path, parent/depth, and access-status context for recursive rows, and the suggested filename includes the search term when one is active.
+29. Export CSV reports only when you intentionally choose an output file; the main report export follows the active filters/type/size/search, includes relative path, parent/depth, and access-status context for recursive rows, and the suggested filename includes the search term when one is active. Its tooltip should keep report-only, not-cleanup-approval, and no-scanned-file-modified wording visible.
 
 ## Current Workflow
 
@@ -180,9 +181,9 @@ The intended review flow is:
 3. Confirm the Cleanup Scope Safety Note and Cleanup Scope browse tooltip before scanning.
 4. Run Storage Scan.
 5. Inspect high-risk and protected rows first.
-6. Check whether the grid is showing all matched rows or one 2,000-row display window.
+6. Check whether the grid is showing all matched rows or one 2,000-row display window; Previous/Next rows tooltips should keep in-memory/no-rescan boundaries visible.
 7. Use `Next rows` / `Previous rows`, Storage Review Search, `parent:` search, `under:` search, Type filter, Size filter, category filters, and Matched Review Mix to understand large buckets and specific app/tool paths.
-8. Use `Reset view` when the active review lens becomes too narrow; it does not clear Review Shortlist.
+8. Use `Clear search` or `Reset view` when the active review lens becomes too narrow; Reset view does not clear Review Shortlist and its tooltip should say so.
 9. Use Selected Path Hierarchy Context, Selected File Content Preview, Selected Path Review Guidance, Selected Folder Subtree Summary, Child Breakdown, Storage Hotspot Trail, Selected Folder Child Focus, Selected Folder Descendant Focus, Copy path, and Open in Explorer for manual inspection; selected-row action tooltips should keep review-only and inspection-only boundaries visible.
 10. Add interesting rows to Review Shortlist; use Review Shortlist Safety Mix to sanity-check the shortlisted row mix, and use `Shortlist visible rows` / `Remove visible rows` only for the currently displayed review window. Their tooltips should repeat that this is review context, not cleanup approval, while export/clear tooltips keep report-only and in-memory-only boundaries visible.
 11. Check or browse the Quarantine root and generate Quarantine Preview for readiness review; browse and preview/export tooltips should keep preview-only, no-folder-creation, dry-run, and report-only boundaries visible.

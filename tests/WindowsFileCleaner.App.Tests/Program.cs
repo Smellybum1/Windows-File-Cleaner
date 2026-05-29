@@ -92,6 +92,35 @@ internal sealed class MainWindowSmokeTests
                 && window.PreviewSelectedRestoreManifestReadinessButtonToolTipValue.Contains("not restore approval", StringComparison.OrdinalIgnoreCase),
                 "Selected manifest readiness tooltip should explain selected-only scope and approval boundary.");
             Assert(
+                window.ExportScanCsvButtonToolTipValue.Contains("CSV report", StringComparison.OrdinalIgnoreCase)
+                && window.ExportScanCsvButtonToolTipValue.Contains("not cleanup approval", StringComparison.OrdinalIgnoreCase)
+                && window.ExportScanCsvButtonToolTipValue.Contains("no scanned files are modified", StringComparison.OrdinalIgnoreCase),
+                "Scan Report Export tooltip should explain report-only behavior.");
+            Assert(
+                window.ClearSearchButtonToolTipValue.Contains("Storage Review Search", StringComparison.OrdinalIgnoreCase)
+                && window.ClearSearchButtonToolTipValue.Contains("does not rescan", StringComparison.OrdinalIgnoreCase)
+                && window.ClearSearchButtonToolTipValue.Contains("modify files", StringComparison.OrdinalIgnoreCase)
+                && window.ClearSearchButtonToolTipValue.Contains("Review Shortlist", StringComparison.OrdinalIgnoreCase),
+                "Clear search tooltip should explain read-only search clearing.");
+            Assert(
+                window.ResetReviewViewButtonToolTipValue.Contains("filters and search", StringComparison.OrdinalIgnoreCase)
+                && window.ResetReviewViewButtonToolTipValue.Contains("keeping Review Shortlist", StringComparison.OrdinalIgnoreCase)
+                && window.ResetReviewViewButtonToolTipValue.Contains("does not rescan", StringComparison.OrdinalIgnoreCase)
+                && window.ResetReviewViewButtonToolTipValue.Contains("modify files", StringComparison.OrdinalIgnoreCase),
+                "Reset view tooltip should explain read-only reset behavior.");
+            Assert(
+                window.PreviousReviewWindowButtonToolTipValue.Contains("previous in-memory", StringComparison.OrdinalIgnoreCase)
+                && window.PreviousReviewWindowButtonToolTipValue.Contains("Storage Review Display Window", StringComparison.OrdinalIgnoreCase)
+                && window.PreviousReviewWindowButtonToolTipValue.Contains("does not rescan", StringComparison.OrdinalIgnoreCase)
+                && window.PreviousReviewWindowButtonToolTipValue.Contains("modify files", StringComparison.OrdinalIgnoreCase),
+                "Previous rows tooltip should explain read-only display-window navigation.");
+            Assert(
+                window.NextReviewWindowButtonToolTipValue.Contains("next in-memory", StringComparison.OrdinalIgnoreCase)
+                && window.NextReviewWindowButtonToolTipValue.Contains("Storage Review Display Window", StringComparison.OrdinalIgnoreCase)
+                && window.NextReviewWindowButtonToolTipValue.Contains("does not rescan", StringComparison.OrdinalIgnoreCase)
+                && window.NextReviewWindowButtonToolTipValue.Contains("modify files", StringComparison.OrdinalIgnoreCase),
+                "Next rows tooltip should explain read-only display-window navigation.");
+            Assert(
                 window.AddShownRowsToReviewShortlistButtonToolTipValue.Contains("currently visible review rows", StringComparison.OrdinalIgnoreCase)
                 && window.AddShownRowsToReviewShortlistButtonToolTipValue.Contains("not cleanup approval", StringComparison.OrdinalIgnoreCase)
                 && window.AddShownRowsToReviewShortlistButtonToolTipValue.Contains("no files are modified", StringComparison.OrdinalIgnoreCase),
