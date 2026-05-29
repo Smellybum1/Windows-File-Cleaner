@@ -571,7 +571,7 @@
                                         Content="Undo fixture quarantine"
                                         MinWidth="170"
                                         IsEnabled="False"
-                                        ToolTip="Current fixture execution only; discovered old manifests and real-profile/custom undo remain unavailable."
+                                        ToolTip="Current fixture execution only; discovered Restore Manifests and real-profile/custom undo remain unavailable."
                                         ToolTipService.ShowOnDisabled="True"
                                         Click="UndoQuarantineButton_Click" />
                             </WrapPanel>

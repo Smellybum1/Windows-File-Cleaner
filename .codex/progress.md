@@ -6,7 +6,7 @@ Use it to preserve what was completed, what was verified, what was rejected, and
 
 ## Current status
 
-Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. The app has a broad read-only review workflow, debounced Storage Review Search for large real-profile scans, scope-specific Cleanup Scope Scan Gate discoverability polish, Matched Review Mix, Review Shortlist Safety Mix, visible-row Review Shortlist bulk labels, Selected Folder Subtree Summary, Storage Hotspot Trail, Selected Folder Child Focus, Selected Folder Descendant Focus, fixture launch/preflight tooling with checklist output, checklist-only mode, approval-boundary prompt coverage, selected-restore scope-status checklist coverage, all-manifest restore boundary checklist coverage, execution-control tooltip clarity, and Undo Quarantine domain consistency, Quarantine Preview, Quarantine approval-boundary wording, Quarantine Execution Scope Status, Restore Manifest Draft, Quarantine Confirmation Draft, confirmation label wording polish, Quarantine Action Draft, write-ahead Restore Manifest persistence, core Quarantine execution, core Undo Quarantine, fixture-only WPF Quarantine execution, WPF undo for the current fixture execution, Quarantine Manifest Discovery with all-manifest restore wording, Selected Restore Manifest Review with readiness-evidence wording, Selected Restore Confirmation Gate with scope-status/approval-boundary wording, Fixture-only Selected Restore Execution, and Restore Readiness Preview with all-manifest restore wording. Real-profile WPF Quarantine execution, real-profile WPF Undo Quarantine, permanent deletion, and persisted cleanup history remain unavailable. Fresh-thread handoff notes and a startup prompt live in `docs/codex/thread-handoff.md`.
+Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. The app has a broad read-only review workflow, debounced Storage Review Search for large real-profile scans, scope-specific Cleanup Scope Scan Gate discoverability polish, Matched Review Mix, Review Shortlist Safety Mix, visible-row Review Shortlist bulk labels, Selected Folder Subtree Summary, Storage Hotspot Trail, Selected Folder Child Focus, Selected Folder Descendant Focus, fixture launch/preflight tooling with checklist output, checklist-only mode, approval-boundary prompt coverage, selected-restore scope-status checklist coverage, all-manifest restore boundary checklist coverage, execution-control tooltip clarity, Undo Quarantine domain consistency, and Restore Manifest wording polish, Quarantine Preview, Quarantine approval-boundary wording, Quarantine Execution Scope Status, Restore Manifest Draft, Quarantine Confirmation Draft, confirmation label wording polish, Quarantine Action Draft, write-ahead Restore Manifest persistence, core Quarantine execution, core Undo Quarantine, fixture-only WPF Quarantine execution, WPF undo for the current fixture execution, Quarantine Manifest Discovery with all-manifest restore wording, Selected Restore Manifest Review with readiness-evidence wording, Selected Restore Confirmation Gate with scope-status/approval-boundary wording, Fixture-only Selected Restore Execution, and Restore Readiness Preview with all-manifest restore wording. Real-profile WPF Quarantine execution, real-profile WPF Undo Quarantine, permanent deletion, and persisted cleanup history remain unavailable. Fresh-thread handoff notes and a startup prompt live in `docs/codex/thread-handoff.md`.
 
 ## Next recommended work
 
@@ -5383,3 +5383,50 @@ Rejected ideas buffer:
 
 - Do not rewrite old feature briefs that accurately describe packet-start behavior.
 - Do not turn this docs correction into a real-profile undo design packet.
+
+### 2026-05-29: Add Restore Manifest Wording Polish
+
+Status: completed
+
+Evidence:
+
+- Current-facing README, WPF tooltip, and WPF smoke assertion messages still used `old manifest` wording.
+- The glossary already uses Restore Manifest as the preferred term.
+- Handoff guidance prefers readiness clarity before any real cleanup execution.
+
+Implementation:
+
+- Updated the disabled current-fixture undo tooltip to refer to discovered Restore Manifests.
+- Updated README manual check wording to say discovery should state that no all-manifest restore action is available.
+- Updated WPF smoke assertion messages to use Restore Manifest/all-manifest restore wording.
+- Updated domain context and glossary wording for current undo and selected restore boundaries.
+- Kept Quarantine Manifest Discovery, Restore Readiness Preview, current-fixture undo, fixture-only selected restore, real-profile blockers, deletion, and cleanup history behavior unchanged.
+
+Verification:
+
+- `dotnet run --project tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj` passed.
+- `dotnet build WindowsFileCleaner.sln --no-restore` passed with 0 warnings and 0 errors.
+- `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\Start-MvpFixtureReview.ps1 -ChecklistOnly` passed and printed the all-manifest restore checklist wording without preflight, fixture creation, or WPF launch.
+- `git -c safe.directory='D:/Codex/Windows File Cleaner' diff --check` passed; Git printed line-ending normalization warnings for touched files but no whitespace errors.
+
+Docs updated:
+
+- `README.md`
+- `docs/domain/context.md`
+- `docs/domain/glossary.md`
+- `docs/features/2026-05-29-restore-manifest-wording-polish.md`
+- `docs/codex/thread-handoff.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No ADR added. This is reversible wording clarity with no persistence, cleanup execution, restore, security, deployment, or data-model change.
+
+Open questions:
+
+- If all-manifest restore is designed later, what should the final button label be?
+
+Rejected ideas buffer:
+
+- Do not rename historical ADR rationale wholesale in this packet.
+- Do not introduce a new `discovered-manifest restore` term when `Restore Manifest` already exists.

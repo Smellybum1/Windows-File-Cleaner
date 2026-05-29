@@ -2386,7 +2386,7 @@ Last reviewed: 2026-05-29
 
 Undo Quarantine Executor is the narrow core component that restores Restore Manifest entries recorded as Moved from their action-scoped quarantine paths back to their original paths.
 
-It is fixture-tested and is used by the WPF app for current-fixture undo and fixture-only selected restore. Real-profile WPF Undo Quarantine and all-manifest discovered-manifest restore remain unavailable.
+It is fixture-tested and is used by the WPF app for current-fixture undo and fixture-only selected restore. Real-profile WPF Undo Quarantine and all-manifest restore for discovered Restore Manifests remain unavailable.
 
 #### Examples
 
@@ -2421,13 +2421,13 @@ It is fixture-tested and is used by the WPF app for current-fixture undo and fix
 - Reverses entries moved by Quarantine Executor.
 - Implements the fixture-first boundary accepted in ADR 0008.
 - Supports WPF Current Fixture Undo Quarantine and Fixture-only Selected Restore Execution.
-- Precedes real-profile WPF Undo Quarantine and any all-manifest discovered-manifest restore workflow.
+- Precedes real-profile WPF Undo Quarantine and any all-manifest restore workflow for discovered Restore Manifests.
 
 #### Code implications
 
 - Use `UndoQuarantineExecutor`, `UndoQuarantineResult`, and `UndoQuarantineEntryResult`.
 - Keep filesystem move-back APIs allowlisted only in this component.
-- Keep real-profile WPF Undo Quarantine and all-manifest discovered-manifest restore unavailable until separate design packets.
+- Keep real-profile WPF Undo Quarantine and all-manifest restore for discovered Restore Manifests unavailable until separate design packets.
 - Do not overwrite existing original paths.
 - Do not permanently delete quarantined items or cleanup action folders from this component.
 
@@ -2909,7 +2909,7 @@ Last reviewed: 2026-05-29
 
 Fixture-only Selected Restore Execution is the visible WPF restore path that restores a selected discovered Restore Manifest only when that manifest belongs to a recognized fixture Cleanup Scope.
 
-It is the fixture proof for selected old-manifest restore, not real-profile Undo Quarantine.
+It is the fixture proof for selected discovered Restore Manifest restore, not real-profile Undo Quarantine.
 
 #### Examples
 
