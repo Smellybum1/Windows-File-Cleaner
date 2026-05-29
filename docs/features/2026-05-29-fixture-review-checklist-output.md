@@ -74,6 +74,7 @@ What changed:
 - Kept automated verification read-only/no-launch through `-WhatIf -SkipPreflight -SkipLaunch`.
 - Later packet `2026-05-29-fixture-review-checklist-only-mode.md` added `-ChecklistOnly` so the same checklist can be printed without preflight, fixture creation, or WPF launch.
 - Later packet `2026-05-29-fixture-checklist-approval-boundary.md` updated the checklist to include Quarantine approval-boundary wording.
+- Later packet `2026-05-29-fixture-checklist-selected-restore-scope.md` updated the checklist to include Selected Restore gate scope-status and approval-boundary wording.
 
 Tests run:
 

@@ -182,6 +182,7 @@ ADRs added or skipped:
 Follow-up work:
 
 - Check visible fixture layout with `.\tools\Start-MvpFixtureReview.ps1`.
+- Later packet `2026-05-29-fixture-checklist-selected-restore-scope.md` added the selected restore scope-status wording to the launcher checklist.
 - Decide later whether the technical `Execution implemented` line should remain.
 
 Open questions:
