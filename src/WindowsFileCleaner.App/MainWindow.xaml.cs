@@ -284,6 +284,7 @@ public partial class MainWindow : Window
         GetHelpCueAffordance("Cleanup Scope Safety Note", CleanupScopeSafetyNoteHelpCue),
         GetHelpCueAffordance("Quarantine Root Safety Note", QuarantineRootSafetyNoteHelpCue),
         GetHelpCueAffordance("Shortlist confirmation", QuarantineConfirmationHelpCue),
+        GetHelpCueAffordance("Quarantine Manifest Discovery", QuarantineManifestDiscoveryHelpCue),
         GetHelpCueAffordance("Restore Manifest selection", RestoreManifestSelectionHelpCue),
         GetHelpCueAffordance("Selected restore confirmation", SelectedRestoreConfirmationHelpCue)
     ];
@@ -528,6 +529,12 @@ public partial class MainWindow : Window
     public string DiscoverQuarantineManifestsButtonToolTipValue => DiscoverQuarantineManifestsButton.ToolTip?.ToString() ?? "";
 
     public string DiscoverQuarantineManifestsButtonAutomationHelpTextValue => AutomationProperties.GetHelpText(DiscoverQuarantineManifestsButton);
+
+    public string QuarantineManifestDiscoveryHelpCueToolTipValue => QuarantineManifestDiscoveryHelpCue.ToolTip?.ToString() ?? "";
+
+    public string QuarantineManifestDiscoveryHelpCueAutomationNameValue => AutomationProperties.GetName(QuarantineManifestDiscoveryHelpCue);
+
+    public string QuarantineManifestDiscoveryHelpCueAutomationHelpTextValue => AutomationProperties.GetHelpText(QuarantineManifestDiscoveryHelpCue);
 
     public bool CanPreviewRestoreReadiness => PreviewRestoreReadinessButton.IsEnabled;
 

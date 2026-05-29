@@ -34,7 +34,7 @@ What changed:
 - Later packet `2026-05-30-scan-gate-summary-help-cue.md` added a ninth tracked circular `?` cue for the scan-gate summary.
 - Later packet `2026-05-30-quarantine-root-safety-note-help-cue.md` added a tenth tracked circular `?` cue for the Quarantine Root Safety Note.
 - Later packet `2026-05-30-cleanup-scope-safety-note-help-cue.md` added an eleventh tracked circular `?` cue for the Cleanup Scope Safety Note.
-- Later packets added the Quarantine Execution Gate, Selected Restore Execution Gate, shortlist confirmation, selected restore confirmation, and Restore Manifest selection cues; the WPF smoke affordance snapshot now tracks sixteen circular `?` cues.
+- Later packets added the Quarantine Execution Gate, Selected Restore Execution Gate, shortlist confirmation, Quarantine Manifest Discovery, Restore Manifest selection, and selected restore confirmation cues; the WPF smoke affordance snapshot now tracks seventeen circular `?` cues.
 
 Tests run:
 

@@ -2841,6 +2841,7 @@ It is discovery and status review only, not Undo Quarantine execution and not pe
 - Keep discovery itself status-only; Selected Restore Manifest Review and selected manifest readiness are separate read-only workflows until a restore execution design exists.
 - WPF discovery output should distinguish discovery from all-manifest restore execution while pointing fixture-only restore toward the selected restore gate.
 - WPF discovery control tooltip and automation help text should state that discovery is read-only and does not restore, move, delete, clean up folders, or create cleanup history.
+- Keep the WPF discovery `?` help cue visible beside `Discover manifests` and mirror the same discovery tooltip/help text.
 - Do not call this cleanup history.
 
 ### Restore Manifest Summary

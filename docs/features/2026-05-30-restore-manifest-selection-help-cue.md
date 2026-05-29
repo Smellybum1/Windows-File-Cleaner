@@ -42,6 +42,7 @@ What changed:
 - Added a visible circular `?` help cue beside the WPF Restore Manifest selection control.
 - Added test-facing accessors and WPF smoke assertions that the cue mirrors the selection tooltip/help text.
 - Expanded the tracked hoverable help-cue affordance snapshot from fifteen to sixteen cues.
+- Later packet `2026-05-30-quarantine-manifest-discovery-help-cue.md` added the companion `Discover manifests` cue and expanded the snapshot to seventeen cues.
 
 Tests run:
 
@@ -54,7 +55,7 @@ ADRs added or skipped:
 Open questions:
 
 - During visible fixture review, confirm the selected-manifest row still fits comfortably with the new cue.
-- Decide later whether `Discover manifests` also needs a visible help cue.
+- Later companion work added a visible cue for `Discover manifests`; visible review should confirm the manifest controls are not too crowded.
 
 Risky assumptions:
 

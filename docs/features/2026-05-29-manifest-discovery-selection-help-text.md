@@ -184,12 +184,13 @@ ADRs added or skipped:
 Follow-up work:
 
 - Restore Manifest selection later gained a visible `?` help cue that mirrors the selection tooltip/help text.
-- Confirm in visible fixture/real-profile review whether `Discover manifests` also needs an always-visible help icon.
+- Quarantine Manifest Discovery later gained a visible `?` help cue that mirrors the `Discover manifests` tooltip/help text.
+- Confirm in visible fixture/real-profile review whether the two manifest-review cues fit comfortably.
 - Continue polishing Quarantine Preview/readiness clarity before any real-profile cleanup execution.
 
 Open questions:
 
-- Does `Discover manifests` also need a visible help affordance, or is its button tooltip enough?
+- During visible fixture review, do the adjacent manifest-review cues feel useful without crowding the row?
 
 Risky assumptions:
 

@@ -33,7 +33,7 @@ What changed:
 - Later packet `2026-05-30-scan-gate-summary-help-cue.md` expanded the tracked cue list to nine by adding the scan-gate summary cue.
 - Later packet `2026-05-30-quarantine-root-safety-note-help-cue.md` expanded the tracked cue list to ten by adding the Quarantine Root Safety Note cue.
 - Later packet `2026-05-30-cleanup-scope-safety-note-help-cue.md` expanded the tracked cue list to eleven by adding the Cleanup Scope Safety Note cue.
-- Later packets expanded the tracked cue list to sixteen by adding Quarantine Execution Gate, Selected Restore Execution Gate, shortlist confirmation, selected restore confirmation, and Restore Manifest selection cues.
+- Later packets expanded the tracked cue list to seventeen by adding Quarantine Execution Gate, Selected Restore Execution Gate, shortlist confirmation, Quarantine Manifest Discovery, Restore Manifest selection, and selected restore confirmation cues.
 
 Tests run:
 

@@ -180,6 +180,9 @@ internal sealed class MainWindowSmokeTests
                 && window.DiscoverQuarantineManifestsButtonAutomationHelpTextValue.Contains("does not restore", StringComparison.OrdinalIgnoreCase)
                 && window.DiscoverQuarantineManifestsButtonAutomationHelpTextValue.Contains("cleanup history", StringComparison.OrdinalIgnoreCase),
                 "Quarantine Manifest Discovery automation help text should explain read-only discovery boundaries.");
+            AssertQuarantineManifestDiscoveryHelpCue(
+                window,
+                "Startup");
             Assert(window.CanPreviewRestoreReadiness, "MainWindow should allow read-only Restore Readiness Preview before scanning.");
             Assert(
                 window.PreviewRestoreReadinessButtonText == "Preview all-manifest readiness",
@@ -2392,7 +2395,7 @@ internal sealed class MainWindowSmokeTests
     private static void AssertHoverableHelpCueAffordances(MainWindow window, string message)
     {
         var affordances = window.HoverableHelpCueAffordances;
-        Assert(affordances.Count == 16, message + " Expected all sixteen circular help cues to be tracked.");
+        Assert(affordances.Count == 17, message + " Expected all seventeen circular help cues to be tracked.");
 
         foreach (var affordance in affordances)
         {
@@ -2424,6 +2427,28 @@ internal sealed class MainWindowSmokeTests
         Assert(
             string.Equals(window.QuarantineConfirmationHelpCueAutomationHelpTextValue, window.QuarantineConfirmationAutomationHelpTextValue, StringComparison.Ordinal),
             message + " Help cue automation help text should mirror the confirmation help text.");
+    }
+
+    private static void AssertQuarantineManifestDiscoveryHelpCue(MainWindow window, string message)
+    {
+        Assert(
+            window.DiscoverQuarantineManifestsButtonToolTipValue.Contains("action-scoped Restore Manifests", StringComparison.OrdinalIgnoreCase)
+            && window.DiscoverQuarantineManifestsButtonToolTipValue.Contains("read-only", StringComparison.OrdinalIgnoreCase)
+            && window.DiscoverQuarantineManifestsButtonToolTipValue.Contains("does not restore", StringComparison.OrdinalIgnoreCase)
+            && window.DiscoverQuarantineManifestsButtonToolTipValue.Contains("cleanup history", StringComparison.OrdinalIgnoreCase),
+            message + " Discovery tooltip should expose read-only discovery boundaries.");
+        Assert(
+            string.Equals(window.DiscoverQuarantineManifestsButtonAutomationHelpTextValue, window.DiscoverQuarantineManifestsButtonToolTipValue, StringComparison.Ordinal),
+            message + " Discovery automation help text should mirror the tooltip.");
+        Assert(
+            window.QuarantineManifestDiscoveryHelpCueAutomationNameValue.Contains("Quarantine Manifest Discovery help cue", StringComparison.OrdinalIgnoreCase),
+            message + " Help cue should have a specific automation name.");
+        Assert(
+            string.Equals(window.QuarantineManifestDiscoveryHelpCueToolTipValue, window.DiscoverQuarantineManifestsButtonToolTipValue, StringComparison.Ordinal),
+            message + " Help cue tooltip should mirror the discovery tooltip.");
+        Assert(
+            string.Equals(window.QuarantineManifestDiscoveryHelpCueAutomationHelpTextValue, window.DiscoverQuarantineManifestsButtonAutomationHelpTextValue, StringComparison.Ordinal),
+            message + " Help cue automation help text should mirror the discovery help text.");
     }
 
     private static void AssertRestoreManifestSelectionHelpCue(MainWindow window, string message)
