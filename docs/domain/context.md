@@ -2526,7 +2526,7 @@ It lists data blockers, records the exact preview counts and bytes to review, ex
 - Use `QuarantineConfirmationDraft` and `QuarantineConfirmationDraftBuilder`.
 - Use `HasDataBlockers` only as readiness evidence, not as permission to execute.
 - Keep `IsExecutionImplemented` true only for recognized fixture Cleanup Scopes in the current build.
-- Surface `IsExecutionImplemented` as plain-language Quarantine Execution Scope Status in WPF.
+- Surface `IsExecutionImplemented` as plain-language Quarantine Execution Scope Status in WPF instead of exposing the technical implementation flag.
 - Do not create folders, move files, delete files, write manifests, or persist cleanup jobs from confirmation draft code.
 
 ### Quarantine Execution Gate
@@ -2575,7 +2575,7 @@ In the current build the gate can open only for recognized fixture Cleanup Scope
 - Use `QuarantineExecutionGate` and `QuarantineExecutionGateBuilder`.
 - `CanExecute` must require no blockers, exact confirmation text, and implemented execution support.
 - Keep `CanExecute` false for real-profile and custom non-fixture Cleanup Scopes.
-- Keep Quarantine Execution Scope Status visible in the gate readout.
+- Keep Quarantine Execution Scope Status, Approval boundary, and `Can execute` visible in the gate readout instead of asking users to infer fixture-only versus preview-only behavior from technical implementation fields.
 - In WPF, keep verbose gate details height-constrained when shown in the Quarantine shortlist area so the main review grid remains usable.
 - In WPF, keep the Quarantine shortlist area collapsible so the user can recover grid height after reviewing the gate.
 - In WPF, keep the collapsed Quarantine Shortlist header useful with a panel-name prefix, shortlist, preview, current quarantined, and undo state, and mirror that header summary plus current header state into tooltip and automation help text on both the header text and visible non-clickable `?` help cue with read-only/not-cleanup-approval wording.

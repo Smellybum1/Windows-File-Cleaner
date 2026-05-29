@@ -6,7 +6,7 @@ Use it to preserve what was completed, what was verified, what was rejected, and
 
 ## Current status
 
-Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. The app has a broad read-only review workflow, manual fixture Show children/Clipboard crash fix, scan cancel help text, scan-gate summary help text plus a visible hoverable `?` help cue, real-profile acknowledgement help text plus a visible hoverable `?` help cue, Cleanup Scope Safety Note and Quarantine Root Safety Note help text plus visible hoverable `?` help cues, Review Mix, Matched Review Mix, Review Shortlist Safety Mix, Review Grid Mode Status, inline Quarantine Preview status, Safety Summary header, and Quarantine Shortlist header hoverable `?` help cues with tooltip/help text and affordance smoke coverage plus a full `.cmd` MVP preflight after scan-gate cue coverage, Safety Summary shortcut help text, Safety Summary collapsed-header state styling, review-lens filter help text, manifest discovery/selection help text, debounced Storage Review Search for large real-profile scans, Storage Review Search input automation help text, scan-gate automation help text, Cleanup Scope input/browse automation help text, Quarantine Root input/browse automation help text, selected-row action automation help text, visible-row shortlist automation help text, execution/readiness automation help text, review report/preview automation help text, review toolbar automation help text, review navigation/export tooltip clarity, Review Grid Mode Status tooltip/help text, scope-specific Cleanup Scope Scan Gate discoverability polish, Cleanup Scope and Quarantine Root browse tooltip clarity, selected-row action tooltip clarity, Matched Review Mix, Review Shortlist Safety Mix, visible-row Review Shortlist bulk labels/tooltips, review toolbar report/preview tooltip clarity, Selected Folder Subtree Summary, Storage Hotspot Trail, Selected Folder Child Focus, Selected Folder Descendant Focus, execution-policy-friendly fixture/preflight tooling with checklist output, checklist-only mode now covered by MVP preflight and GitHub Actions now running preflight through the same `.cmd` wrapper as local user instructions, hoverable help-cue checklist wording, approval-boundary prompt coverage, selected-restore scope-status checklist coverage, all-manifest restore boundary checklist coverage, execution-control tooltip clarity, readiness scope tooltip clarity, Undo Quarantine domain consistency, Restore Manifest wording polish, Selected Manifest Readiness label polish, and All-Manifest Readiness label polish, Quarantine Preview, Quarantine approval-boundary wording, Quarantine Execution Scope Status, Restore Manifest Draft, Quarantine Confirmation Draft, confirmation label wording polish, Quarantine Action Draft, write-ahead Restore Manifest persistence, core Quarantine execution, core Undo Quarantine, fixture-only WPF Quarantine execution, WPF undo for the current fixture execution, Current quarantined grid switching with a moved-entry count label for current-session moved entries plus a full `.cmd` MVP preflight after that count-label packet, Quarantine Manifest Discovery with all-manifest restore wording, Selected Restore Manifest Review with readiness-evidence wording, Selected Restore Confirmation Gate with scope-status/approval-boundary wording and without technical implementation-flag wording, Fixture-only Selected Restore Execution, and Restore Readiness Preview with all-manifest restore wording. Real-profile WPF Quarantine execution, real-profile WPF Undo Quarantine, permanent deletion, and persisted cleanup history remain unavailable. Fresh-thread handoff notes and a startup prompt live in `docs/codex/thread-handoff.md`.
+Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. The app has a broad read-only review workflow, manual fixture Show children/Clipboard crash fix, scan cancel help text, scan-gate summary help text plus a visible hoverable `?` help cue, real-profile acknowledgement help text plus a visible hoverable `?` help cue, Cleanup Scope Safety Note and Quarantine Root Safety Note help text plus visible hoverable `?` help cues, Review Mix, Matched Review Mix, Review Shortlist Safety Mix, Review Grid Mode Status, inline Quarantine Preview status, Safety Summary header, and Quarantine Shortlist header hoverable `?` help cues with tooltip/help text and affordance smoke coverage plus a full `.cmd` MVP preflight after scan-gate cue coverage, Safety Summary shortcut help text, Safety Summary collapsed-header state styling, review-lens filter help text, manifest discovery/selection help text, debounced Storage Review Search for large real-profile scans, Storage Review Search input automation help text, scan-gate automation help text, Cleanup Scope input/browse automation help text, Quarantine Root input/browse automation help text, selected-row action automation help text, visible-row shortlist automation help text, execution/readiness automation help text, review report/preview automation help text, review toolbar automation help text, review navigation/export tooltip clarity, Review Grid Mode Status tooltip/help text, scope-specific Cleanup Scope Scan Gate discoverability polish, Cleanup Scope and Quarantine Root browse tooltip clarity, selected-row action tooltip clarity, Matched Review Mix, Review Shortlist Safety Mix, visible-row Review Shortlist bulk labels/tooltips, review toolbar report/preview tooltip clarity, Selected Folder Subtree Summary, Storage Hotspot Trail, Selected Folder Child Focus, Selected Folder Descendant Focus, execution-policy-friendly fixture/preflight tooling with checklist output, checklist-only mode now covered by MVP preflight and GitHub Actions now running preflight through the same `.cmd` wrapper as local user instructions, hoverable help-cue checklist wording, approval-boundary prompt coverage, selected-restore scope-status checklist coverage, all-manifest restore boundary checklist coverage, execution-control tooltip clarity, readiness scope tooltip clarity, Undo Quarantine domain consistency, Restore Manifest wording polish, Selected Manifest Readiness label polish, and All-Manifest Readiness label polish, Quarantine Preview and Quarantine Execution Gate scope-status/approval-boundary wording without technical implementation-flag wording, Restore Manifest Draft, Quarantine Confirmation Draft, confirmation label wording polish, Quarantine Action Draft, write-ahead Restore Manifest persistence, core Quarantine execution, core Undo Quarantine, fixture-only WPF Quarantine execution, WPF undo for the current fixture execution, Current quarantined grid switching with a moved-entry count label for current-session moved entries plus a full `.cmd` MVP preflight after that count-label packet, Quarantine Manifest Discovery with all-manifest restore wording, Selected Restore Manifest Review with readiness-evidence wording, Selected Restore Confirmation Gate with scope-status/approval-boundary wording and without technical implementation-flag wording, Fixture-only Selected Restore Execution, and Restore Readiness Preview with all-manifest restore wording. Real-profile WPF Quarantine execution, real-profile WPF Undo Quarantine, permanent deletion, and persisted cleanup history remain unavailable. Fresh-thread handoff notes and a startup prompt live in `docs/codex/thread-handoff.md`.
 
 ## Next recommended work
 
@@ -19,6 +19,50 @@ Storage Scan MVP packet implemented and tested by the user against `C:\Users\mox
 7. Revisit .NET 10 before packaging or long-term distribution.
 
 ## Completed packets
+
+### 2026-05-30: Quarantine Gate Technical Wording
+
+Status: completed
+
+Evidence:
+
+- Quarantine Execution Scope Status kept the technical `Execution implemented` line only for continuity.
+- The Quarantine Preview and Quarantine Execution Gate panes already have plain-language `Execution scope status`, `Approval boundary`, and `Can execute` lines.
+- Selected Restore Gate Technical Wording made the same simplification successfully.
+
+Implementation:
+
+- Removed `Execution implemented` from WPF Quarantine Preview and Quarantine Execution Gate display text.
+- Kept the internal `IsExecutionImplemented` flag as the source for Quarantine Execution Scope Status and execution availability.
+- Updated WPF smoke tests so fixture Quarantine execution and custom blockers still pass while Quarantine panes no longer expose the technical line.
+- Updated domain and feature notes.
+- Did not change Storage Scan, Quarantine Preview eligibility, fixture Quarantine execution semantics, current-fixture undo, selected restore, manifest discovery, restore readiness, real-profile availability, permanent deletion, or cleanup history.
+
+Verification:
+
+- `dotnet run --project tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj` passed.
+- `git diff --check` passed with line-ending normalization warnings only.
+
+Docs updated:
+
+- `docs/domain/context.md`
+- `docs/features/2026-05-29-quarantine-execution-scope-status.md`
+- `docs/features/2026-05-29-quarantine-approval-boundary-wording.md`
+- `docs/features/2026-05-30-quarantine-gate-technical-wording.md`
+- `docs/codex/thread-handoff.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No ADR added. This is WPF wording polish only and does not change architecture, persistence, cleanup execution, restore rules, data model, or security.
+
+Open questions:
+
+- None.
+
+Rejected ideas buffer:
+
+- Do not remove internal `IsExecutionImplemented` flags; only remove the user-facing technical wording where plain scope-status lines carry the meaning.
 
 ### 2026-05-30: Selected Restore Gate Technical Wording
 

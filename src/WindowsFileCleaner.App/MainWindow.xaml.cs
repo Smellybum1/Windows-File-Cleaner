@@ -3318,7 +3318,7 @@ public partial class MainWindow : Window
             $"Included: {preview.IncludedCount:N0} | Blocked: {preview.BlockedCount:N0} | Redundant: {preview.RedundantCount:N0}",
             $"Previewed size: {preview.IncludedSizeDisplay}",
             $"Restore Manifest Draft: {restoreManifestDraft.DraftId} | Entries: {restoreManifestDraft.EntryCount:N0} | Bytes: {restoreManifestDraft.TotalSizeDisplay} | Executed manifest: {FormatYesNo(restoreManifestDraft.IsExecutedManifest)}",
-            $"Quarantine Confirmation Draft: {confirmationDraft.ConfirmationId} | Required confirmation text: {confirmationDraft.RequiredConfirmationText} | Execution implemented: {FormatYesNo(confirmationDraft.IsExecutionImplemented)}",
+            $"Quarantine Confirmation Draft: {confirmationDraft.ConfirmationId} | Required confirmation text: {confirmationDraft.RequiredConfirmationText}",
             $"Execution scope status: {FormatQuarantineExecutionScopeStatus(confirmationDraft.IsExecutionImplemented)}",
             $"Approval boundary: {FormatQuarantineApprovalBoundary(confirmationDraft.IsExecutionImplemented)}",
             confirmationDraft.HasDataBlockers
@@ -3365,7 +3365,6 @@ public partial class MainWindow : Window
         {
             $"Required confirmation text: {gate.RequiredConfirmationText}",
             $"Entered confirmation matches: {FormatYesNo(gate.IsConfirmationTextMatched)}",
-            $"Execution implemented: {FormatYesNo(gate.IsExecutionImplemented)}",
             $"Execution scope status: {FormatQuarantineExecutionScopeStatus(gate.IsExecutionImplemented)}",
             $"Approval boundary: {FormatQuarantineApprovalBoundary(gate.IsExecutionImplemented)}",
             $"Can execute: {FormatYesNo(gate.CanExecute)}",

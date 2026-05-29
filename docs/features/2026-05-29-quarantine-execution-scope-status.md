@@ -48,7 +48,6 @@ Validation gate before implementation:
 Small feature-level decisions:
 
 - Add `Execution scope status:` to both Quarantine Preview and Quarantine Execution Gate text.
-- Keep the technical `Execution implemented:` line for continuity with existing tests and docs.
 - Reuse the same formatter for preview and gate output.
 
 ADR-worthy decisions:
@@ -95,7 +94,8 @@ ADRs added or skipped:
 Open questions:
 
 - Does the extra line make the Quarantine Preview/Gate panes easier to scan during the next visible fixture review?
+- Later packet `2026-05-30-quarantine-gate-technical-wording.md` removed the technical `Execution implemented` line from Quarantine Preview and Quarantine Execution Gate panes after scope-status and approval-boundary wording made it redundant.
 
 Risky assumptions:
 
-- Keeping both `Execution implemented:` and the new plain-language scope line is clearer than replacing the technical line before manual review.
+- `IsExecutionImplemented` remains the correct internal source for Quarantine Execution Scope Status.

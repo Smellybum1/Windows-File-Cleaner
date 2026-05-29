@@ -51,7 +51,7 @@ Small feature-level decisions:
 
 - Add an `Approval boundary:` line to both Quarantine Preview and Quarantine Execution Gate text.
 - Use scope-specific wording so fixture-only execution remains distinct from real/custom preview-only scopes.
-- Keep existing `Execution implemented:` and `Execution scope status:` lines for continuity.
+- Keep existing `Execution scope status:` lines for continuity; later packet `2026-05-30-quarantine-gate-technical-wording.md` removes the technical implementation flag from visible pane text.
 
 ADR-worthy decisions:
 

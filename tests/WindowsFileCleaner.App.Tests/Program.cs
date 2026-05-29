@@ -1462,7 +1462,9 @@ internal sealed class MainWindowSmokeTests
                 window.QuarantinePreviewTextValue.Contains("Required confirmation text: QUARANTINE", StringComparison.OrdinalIgnoreCase)
                 && !window.QuarantinePreviewTextValue.Contains("Required future text", StringComparison.OrdinalIgnoreCase),
                 "Quarantine preview pane should use current confirmation wording rather than stale future wording.");
-            Assert(window.QuarantinePreviewTextValue.Contains("Execution implemented: yes", StringComparison.OrdinalIgnoreCase), "Fixture preview pane should state fixture execution is available.");
+            Assert(
+                !window.QuarantinePreviewTextValue.Contains("Execution implemented", StringComparison.OrdinalIgnoreCase),
+                "Fixture preview pane should rely on scope-status wording instead of technical implementation flags.");
             Assert(
                 window.QuarantinePreviewTextValue.Contains("Execution scope status", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantinePreviewTextValue.Contains("Fixture-only execution is available", StringComparison.OrdinalIgnoreCase),
@@ -1506,7 +1508,8 @@ internal sealed class MainWindowSmokeTests
             Assert(window.CurrentQuarantineConfirmationText == "QUARANTINE", "Confirmation text should be editable in the WPF gate.");
             Assert(
                 window.QuarantineExecutionGateTextValue.Contains("Entered confirmation matches: yes", StringComparison.OrdinalIgnoreCase)
-                && window.QuarantineExecutionGateTextValue.Contains("Execution implemented: yes", StringComparison.OrdinalIgnoreCase)
+                && !window.QuarantineExecutionGateTextValue.Contains("Execution implemented", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineExecutionGateTextValue.Contains("Fixture-only execution is available", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantineExecutionGateTextValue.Contains("Can execute: yes", StringComparison.OrdinalIgnoreCase),
                 "Matched confirmation should open fixture-only execution.");
             Assert(window.CanExecuteQuarantine, "Fixture-only execution should enable after exact confirmation text.");
@@ -1684,8 +1687,9 @@ internal sealed class MainWindowSmokeTests
                 && window.QuarantinePreviewTextValue.Contains("Only included rows can be quarantined", StringComparison.OrdinalIgnoreCase),
                 "Fixture preview pane should explain that execution targets included shortlist rows only.");
             Assert(
-                window.QuarantineExecutionGateTextValue.Contains("Execution implemented: yes", StringComparison.OrdinalIgnoreCase),
-                "Fixture execution gate should show execution availability.");
+                !window.QuarantineExecutionGateTextValue.Contains("Execution implemented", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineExecutionGateTextValue.Contains("Fixture-only execution is available", StringComparison.OrdinalIgnoreCase),
+                "Fixture execution gate should show execution availability through scope-status wording.");
             Assert(
                 window.QuarantineExecutionGateTextValue.Contains("Execution target: all included Review Shortlist rows", StringComparison.OrdinalIgnoreCase),
                 "Fixture execution gate should name the included-shortlist execution target.");
@@ -2102,8 +2106,8 @@ internal sealed class MainWindowSmokeTests
             Assert(!window.CanExecuteQuarantine, "Custom non-fixture scope should keep WPF execution unavailable.");
             Assert(!window.CanUndoQuarantine, "Custom non-fixture scope should not expose fixture undo.");
             Assert(
-                window.QuarantinePreviewTextValue.Contains("Execution implemented: no", StringComparison.OrdinalIgnoreCase),
-                "Custom-scope preview should state execution is unavailable.");
+                !window.QuarantinePreviewTextValue.Contains("Execution implemented", StringComparison.OrdinalIgnoreCase),
+                "Custom-scope preview should rely on scope-status wording instead of technical implementation flags.");
             Assert(
                 window.QuarantinePreviewTextValue.Contains("Execution scope status", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantinePreviewTextValue.Contains("Preview only for this Cleanup Scope", StringComparison.OrdinalIgnoreCase)
