@@ -6,7 +6,7 @@ Use it to preserve what was completed, what was verified, what was rejected, and
 
 ## Current status
 
-Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. The app has a broad read-only review workflow, Matched Review Mix, Selected Folder Subtree Summary, Storage Hotspot Trail, Selected Folder Child Focus, Selected Folder Descendant Focus, fixture launch/preflight tooling, Quarantine Preview, Restore Manifest Draft, Quarantine Confirmation Draft, Quarantine Action Draft, write-ahead Restore Manifest persistence, core Quarantine execution, core Undo Quarantine, fixture-only WPF Quarantine execution, WPF undo for the current fixture execution, Quarantine Manifest Discovery, Selected Restore Manifest Review, Selected Restore Confirmation Gate, Fixture-only Selected Restore Execution, and Restore Readiness Preview. Real-profile WPF Quarantine execution, real-profile WPF Undo Quarantine, permanent deletion, and persisted cleanup history remain unavailable.
+Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. The app has a broad read-only review workflow, debounced Storage Review Search for large real-profile scans, Matched Review Mix, Selected Folder Subtree Summary, Storage Hotspot Trail, Selected Folder Child Focus, Selected Folder Descendant Focus, fixture launch/preflight tooling, Quarantine Preview, Restore Manifest Draft, Quarantine Confirmation Draft, Quarantine Action Draft, write-ahead Restore Manifest persistence, core Quarantine execution, core Undo Quarantine, fixture-only WPF Quarantine execution, WPF undo for the current fixture execution, Quarantine Manifest Discovery, Selected Restore Manifest Review, Selected Restore Confirmation Gate, Fixture-only Selected Restore Execution, and Restore Readiness Preview. Real-profile WPF Quarantine execution, real-profile WPF Undo Quarantine, permanent deletion, and persisted cleanup history remain unavailable.
 
 ## Next recommended work
 
@@ -4509,3 +4509,47 @@ Rejected ideas buffer:
 - Do not add clickable bucket shortcuts in this packet.
 - Do not show matched byte sums as savings.
 - Do not use Matched Review Mix to auto-shortlist or recommend cleanup.
+
+### 2026-05-29: Debounce Storage Review Search typing
+
+Status: completed
+
+Evidence:
+
+- User tested the real `C:\Users\moxhe` scan and reported sluggish typing in the Search box.
+- Real-profile searches such as `cache`, `chrome`, and `user data` matched tens or hundreds of thousands of rows.
+- The WPF `SearchBox_TextChanged` path refreshed the large result grid synchronously on every keystroke.
+- User retested after the debounce change and reported that Search typing feels much better.
+- User confirmed the status-bar message is enough; no separate visible Search pending indicator is needed right now.
+
+Implementation:
+
+- Added a 350 ms debounce for user-typed Storage Review Search text.
+- Kept direct/programmatic search application immediate for tests, review shortcuts, and selected-folder focus flows.
+- Reused the already computed matched result set when updating the post-scan filter summary, avoiding one duplicate large-filter pass.
+- Preserved read-only behavior; no scan, cleanup, quarantine, restore, or classification behavior changed.
+
+Verification:
+
+- `dotnet build WindowsFileCleaner.sln` passed with 0 warnings and 0 errors after the running app was closed.
+- `dotnet run --project tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj` passed.
+- `dotnet run --project tests\WindowsFileCleaner.Tests\WindowsFileCleaner.Tests.csproj` passed.
+
+Docs updated:
+
+- `docs/domain/context.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No ADR added. This is a reversible UI responsiveness change with no persistence, cleanup execution, security, or data-model impact.
+
+Open questions:
+
+- None for this packet.
+
+Rejected ideas buffer:
+
+- Do not reduce search coverage just to improve speed.
+- Do not make search require pressing Enter unless real-profile typing remains sluggish after debounce.
+- Do not add a separate visible Search pending indicator unless future testing shows the status bar is insufficient.

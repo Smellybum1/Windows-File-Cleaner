@@ -408,6 +408,24 @@ internal sealed class MainWindowSmokeTests
                 !window.CurrentScanReportExportFileName.Contains("-search-", StringComparison.OrdinalIgnoreCase),
                 "Scan Report Export filename should omit the search segment after search is cleared.");
 
+            window.EnterStorageReviewSearchText("pip");
+            Assert(window.IsStorageReviewSearchPending, "User-typed Storage Review Search should debounce before applying the filter.");
+            Assert(window.CurrentSearchText == "pip", "Debounced user search should still update the textbox immediately.");
+            Assert(
+                !window.FilterSummaryTextValue.Contains("Search \"pip\"", StringComparison.OrdinalIgnoreCase),
+                "Debounced user search should not refresh the large result set until the debounce is committed.");
+            Assert(
+                window.CurrentStatusText.Contains("typing pauses", StringComparison.OrdinalIgnoreCase),
+                "Debounced user search should explain that filtering waits for typing to pause.");
+            window.ApplyPendingStorageReviewSearch();
+            Assert(!window.IsStorageReviewSearchPending, "Committed user search should stop the debounce timer.");
+            Assert(
+                window.FilterSummaryTextValue.Contains("Search \"pip\"", StringComparison.OrdinalIgnoreCase),
+                "Committed user search should refresh the active review lens.");
+            Assert(
+                window.CurrentStatusText.Contains("Search applied", StringComparison.OrdinalIgnoreCase),
+                "Committed user search should report that the search was applied without modifying files.");
+
             Assert(File.Exists(fixture.MarkerPath), "Fixture marker file should still exist after the read-only scan.");
         }
         finally

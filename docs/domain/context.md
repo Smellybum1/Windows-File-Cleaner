@@ -584,6 +584,7 @@ Recognized field prefixes restrict search to one field:
 #### Lifecycle
 
 - Available after a Storage Scan completes.
+- User-typed interactive search is applied after a short debounce so large completed scans do not re-filter on every keystroke.
 - Resets when a new Storage Scan completes.
 - Does not modify files.
 
@@ -600,6 +601,7 @@ Recognized field prefixes restrict search to one field:
 - Treat `parent:` as an immediate-parent lens, not a recursive descendant tree.
 - Treat `under:` as a descendant lens that excludes the selected ancestor row.
 - Keep search in-memory and read-only.
+- Keep direct/programmatic search application immediate for shortcuts and tests, but debounce textbox typing before refreshing large review result sets.
 - Do not use search text to change Bloat Categories, Importance Ratings, Deletion Recommendations, or cleanup eligibility.
 
 ### Access Status

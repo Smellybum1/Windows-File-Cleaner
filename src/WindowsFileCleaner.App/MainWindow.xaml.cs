@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Threading;
 using Microsoft.Win32;
 using WindowsFileCleaner.Core;
 
@@ -10,7 +11,9 @@ namespace WindowsFileCleaner.App;
 public partial class MainWindow : Window
 {
     private const int MaxDisplayedRows = 2000;
+    private static readonly TimeSpan SearchDebounceDelay = TimeSpan.FromMilliseconds(350);
     private readonly StorageReviewShortlist _shortlist = new();
+    private readonly DispatcherTimer _searchDebounceTimer = new() { Interval = SearchDebounceDelay };
     private CancellationTokenSource? _scanCancellation;
     private StorageScanReview? _currentReview;
     private StorageScanSafetySummary? _currentSafetySummary;
@@ -54,6 +57,7 @@ public partial class MainWindow : Window
     public MainWindow(string initialCleanupScopePath)
     {
         InitializeComponent();
+        _searchDebounceTimer.Tick += SearchDebounceTimer_Tick;
         _isWindowInitialized = true;
         ScopePathBox.Text = initialCleanupScopePath;
         ResultsGrid.ItemsSource = Array.Empty<StorageEntryRow>();
@@ -158,6 +162,8 @@ public partial class MainWindow : Window
     public bool CanShowNextReviewWindow => NextReviewWindowButton.IsEnabled;
 
     public string CurrentSearchText => SearchBox.Text;
+
+    public bool IsStorageReviewSearchPending => _searchDebounceTimer.IsEnabled;
 
     public string SearchHelpToolTipValue => SearchBox.ToolTip?.ToString() ?? "";
 
@@ -426,7 +432,7 @@ public partial class MainWindow : Window
         AccessIssueCountText.Text = result.InaccessibleCount.ToString("N0");
         StatusText.Text = FormatScanCompletedStatus(matchedEntries.Count);
         UpdateFilterButtons();
-        UpdateFilterSummary();
+        UpdateFilterSummary(matchedEntries);
         UpdateReviewMix();
         UpdateSafetySummary();
         UpdateShortlistControls();
@@ -786,9 +792,29 @@ public partial class MainWindow : Window
             return;
         }
 
-        _currentSearch = StorageReviewSearch.FromText(SearchBox.Text);
-        _currentDisplayStartIndex = 0;
-        RefreshResults();
+        _searchDebounceTimer.Stop();
+        _searchDebounceTimer.Start();
+        StatusText.Text = "Search will apply after typing pauses. No files were modified.";
+    }
+
+    private void SearchDebounceTimer_Tick(object? sender, EventArgs e)
+    {
+        ApplySearchBoxTextFromPendingInput();
+    }
+
+    private void ApplySearchBoxTextFromPendingInput()
+    {
+        if (_currentReview is null)
+        {
+            _searchDebounceTimer.Stop();
+            return;
+        }
+
+        var searchText = SearchBox.Text;
+        ApplyStorageReviewSearch(searchText);
+        StatusText.Text = _currentSearch.IsActive
+            ? $"Search applied: \"{_currentSearch.Query}\". No files were modified."
+            : "Search cleared. No files were modified.";
     }
 
     private void QuarantineRootBox_TextChanged(object sender, TextChangedEventArgs e)
@@ -1361,10 +1387,21 @@ public partial class MainWindow : Window
             return;
         }
 
+        _searchDebounceTimer.Stop();
         _currentSearch = StorageReviewSearch.FromText(searchText);
         _currentDisplayStartIndex = 0;
         SetSearchTextSilently(_currentSearch.Query);
         RefreshResults();
+    }
+
+    public void EnterStorageReviewSearchText(string searchText)
+    {
+        SearchBox.Text = searchText;
+    }
+
+    public void ApplyPendingStorageReviewSearch()
+    {
+        ApplySearchBoxTextFromPendingInput();
     }
 
     public void ResetReviewView()
@@ -1374,6 +1411,7 @@ public partial class MainWindow : Window
             return;
         }
 
+        _searchDebounceTimer.Stop();
         _currentFilter = StorageReviewFilter.All;
         _currentCategoryFilter = StorageCategoryFilter.All;
         _currentEntryTypeFilter = StorageEntryTypeFilter.All;
@@ -1716,7 +1754,7 @@ public partial class MainWindow : Window
         NextReviewWindowButton.IsEnabled = canUseWindowControls && _currentDisplayStartIndex + MaxDisplayedRows < matchedCount;
     }
 
-    private void UpdateFilterSummary()
+    private void UpdateFilterSummary(IReadOnlyList<StorageReviewEntry>? currentMatchedEntries = null)
     {
         if (_currentReview is null)
         {
@@ -1726,7 +1764,7 @@ public partial class MainWindow : Window
             return;
         }
 
-        var matchedEntries = ApplyCurrentReviewFilters();
+        var matchedEntries = currentMatchedEntries ?? ApplyCurrentReviewFilters();
         ClampDisplayStartIndex(matchedEntries.Count);
         var largestMatchedBytes = matchedEntries.Select(row => row.Entry.SizeBytes).DefaultIfEmpty(0).Max();
         var categoryLabel = _currentCategoryFilter.Kind == StorageCategoryFilterKind.All ? "" : $" + {FormatCategoryFilter(_currentCategoryFilter)}";
