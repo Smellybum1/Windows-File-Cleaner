@@ -7011,6 +7011,43 @@ Rejected ideas buffer:
 
 - Do not make checklist-only mode perform visual verification or launch WPF; it stays terminal-output-only.
 
+### 2026-05-30: Record Manual Fixture Checklist Progress
+
+Status: completed
+
+Evidence:
+
+- User ran the latest manual fixture review checklist through steps 1-11 and reported that all checked behavior worked.
+- User agreed that a useful panel header summary while a panel is collapsed is desirable.
+- The current build already keeps compact dynamic Safety Summary and Quarantine shortlist summaries in the Expander headers and mirrors them through tooltip/help text.
+
+Implementation:
+
+- Recorded the manual verification evidence and closed-header summary preference in durable docs.
+- No app behavior changed.
+- No real user files were scanned or modified by this docs-only packet.
+
+Verification:
+
+- `git -c safe.directory='D:/Codex/Windows File Cleaner' status --short --branch` showed the branch clean before the docs-only update.
+
+Docs updated:
+
+- `docs/codex/thread-handoff.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No ADR added. This is verification evidence only, with no architecture, persistence, cleanup execution, restore rule, data-model, or security change.
+
+Open questions:
+
+- During the next visible fixture pass, confirm whether the collapsed header summaries are noticeable enough in the actual WPF window, or whether they need stronger visual treatment.
+
+Rejected ideas buffer:
+
+- Do not add new cleanup execution, restore execution, permanent deletion, or cleanup history in response to review-panel layout feedback.
+
 ### 2026-05-30: Retire Stale Grid-Mode Styling Follow-ups
 
 Status: completed
