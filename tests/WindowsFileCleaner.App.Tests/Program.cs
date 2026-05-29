@@ -2006,7 +2006,7 @@ internal sealed class MainWindowSmokeTests
                 && selectedGateText.Contains("Required confirmation text: RESTORE", StringComparison.OrdinalIgnoreCase)
                 && !selectedGateText.Contains("Required future text", StringComparison.OrdinalIgnoreCase)
                 && selectedGateText.Contains("Selected Restore Execution Gate: read-only", StringComparison.OrdinalIgnoreCase)
-                && selectedGateText.Contains("Execution implemented: yes", StringComparison.OrdinalIgnoreCase)
+                && !selectedGateText.Contains("Execution implemented", StringComparison.OrdinalIgnoreCase)
                 && selectedGateText.Contains("Execution scope status:", StringComparison.OrdinalIgnoreCase)
                 && selectedGateText.Contains("Fixture-only selected restore is available", StringComparison.OrdinalIgnoreCase)
                 && selectedGateText.Contains("Approval boundary:", StringComparison.OrdinalIgnoreCase)
@@ -2024,7 +2024,8 @@ internal sealed class MainWindowSmokeTests
             var matchedSelectedGateText = discoveryWindow.SelectedRestoreExecutionGateTextValue;
             Assert(
                 matchedSelectedGateText.Contains("Entered confirmation matches: yes", StringComparison.OrdinalIgnoreCase)
-                && matchedSelectedGateText.Contains("Execution implemented: yes", StringComparison.OrdinalIgnoreCase)
+                && matchedSelectedGateText.Contains("Fixture-only selected restore is available", StringComparison.OrdinalIgnoreCase)
+                && !matchedSelectedGateText.Contains("Execution implemented", StringComparison.OrdinalIgnoreCase)
                 && matchedSelectedGateText.Contains("Can execute: yes", StringComparison.OrdinalIgnoreCase),
                 "Exact RESTORE should open selected fixture restore execution. Text: " + matchedSelectedGateText);
             Assert(discoveryWindow.CanExecuteSelectedRestore, "Exact RESTORE should enable selected fixture restore execution.");
@@ -2158,7 +2159,7 @@ internal sealed class MainWindowSmokeTests
             window.PreviewSelectedRestoreGateForCurrentSelection();
 
             Assert(
-                window.SelectedRestoreExecutionGateTextValue.Contains("Execution implemented: no", StringComparison.OrdinalIgnoreCase)
+                !window.SelectedRestoreExecutionGateTextValue.Contains("Execution implemented", StringComparison.OrdinalIgnoreCase)
                 && window.SelectedRestoreExecutionGateTextValue.Contains("Execution scope status:", StringComparison.OrdinalIgnoreCase)
                 && window.SelectedRestoreExecutionGateTextValue.Contains("Preview only for this selected Restore Manifest", StringComparison.OrdinalIgnoreCase)
                 && window.SelectedRestoreExecutionGateTextValue.Contains("real-profile and custom selected restore remain unavailable", StringComparison.OrdinalIgnoreCase)

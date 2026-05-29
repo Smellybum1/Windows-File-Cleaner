@@ -47,7 +47,7 @@ Questions that must be answered before implementation:
 
 Questions that can be deferred:
 
-- Should the selected restore gate eventually hide the technical `Execution implemented` line after manual fixture review?
+- None.
 
 ## Grill notes
 
@@ -84,7 +84,7 @@ Validation gate before implementation:
 Rejected ideas buffer:
 
 - Do not enable real-profile selected restore in a wording packet.
-- Do not remove existing technical gate fields before manual review.
+- Do not use selected restore scope-status wording as permission to enable real-profile selected restore.
 
 ## Decisions made
 
@@ -183,7 +183,7 @@ Follow-up work:
 
 - Check visible fixture layout with `.\tools\Start-MvpFixtureReview.ps1`.
 - Later packet `2026-05-29-fixture-checklist-selected-restore-scope.md` added the selected restore scope-status wording to the launcher checklist.
-- Decide later whether the technical `Execution implemented` line should remain.
+- Later packet `2026-05-30-selected-restore-gate-technical-wording.md` removed the technical `Execution implemented` line from the selected restore gate pane after plain scope-status and approval-boundary wording made it redundant.
 
 Open questions:
 
@@ -191,4 +191,4 @@ Open questions:
 
 Risky assumptions:
 
-- `IsExecutionImplemented` remains the correct source for selected restore scope-status wording.
+- `IsExecutionImplemented` remains the correct internal source for selected restore scope-status wording.

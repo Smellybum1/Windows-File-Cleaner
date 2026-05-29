@@ -3632,13 +3632,12 @@ public partial class MainWindow : Window
             : confirmationDraft.SelectedManifestPath;
         var lines = new List<string>
         {
-            $"Selected Restore Confirmation Draft: {confirmationDraft.ConfirmationId} | Required confirmation text: {confirmationDraft.RequiredConfirmationText} | Execution implemented: {FormatYesNo(confirmationDraft.IsExecutionImplemented)}",
+            $"Selected Restore Confirmation Draft: {confirmationDraft.ConfirmationId} | Required confirmation text: {confirmationDraft.RequiredConfirmationText}",
             $"Selected manifest: {selectedPath}",
             $"Restorable entries: {confirmationDraft.RestorableEntryCount:N0} | Restorable size: {confirmationDraft.RestorableSizeDisplay} | Blocked rows: {confirmationDraft.BlockedEntryCount:N0} | Recovery review rows: {confirmationDraft.RecoveryReviewEntryCount:N0} | Not moved rows: {confirmationDraft.NotMovedEntryCount:N0} | Already restored rows: {confirmationDraft.AlreadyRestoredEntryCount:N0}",
             $"Selected Restore Execution Gate: read-only",
             $"Required confirmation text: {gate.RequiredConfirmationText}",
             $"Entered confirmation matches: {FormatYesNo(gate.IsConfirmationTextMatched)}",
-            $"Execution implemented: {FormatYesNo(gate.IsExecutionImplemented)}",
             $"Execution scope status: {FormatSelectedRestoreExecutionScopeStatus(gate.IsExecutionImplemented)}",
             $"Approval boundary: {FormatSelectedRestoreApprovalBoundary(gate.IsExecutionImplemented)}",
             $"Can execute: {FormatYesNo(gate.CanExecute)}",
