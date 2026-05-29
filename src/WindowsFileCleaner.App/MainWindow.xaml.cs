@@ -455,6 +455,10 @@ public partial class MainWindow : Window
 
     public string ShortlistSafetyMixTextValue => ShortlistSafetyMixText.Text;
 
+    public string ShortlistSafetyMixToolTipValue => ShortlistSafetyMixText.ToolTip?.ToString() ?? "";
+
+    public string ShortlistSafetyMixAutomationHelpTextValue => AutomationProperties.GetHelpText(ShortlistSafetyMixText);
+
     public string QuarantineShortlistHeaderTextValue => QuarantineShortlistHeaderText.Text;
 
     public string QuarantineShortlistHeaderToolTipValue => QuarantineShortlistHeaderText.ToolTip?.ToString() ?? "";
@@ -2476,7 +2480,7 @@ public partial class MainWindow : Window
     {
         if (_currentReview is null)
         {
-            ShortlistSafetyMixText.Text = "Review Shortlist is empty. Shortlist safety mix appears after rows are shortlisted.";
+            SetShortlistSafetyMixText("Review Shortlist is empty. Shortlist safety mix appears after rows are shortlisted.");
             UpdateQuarantineShortlistHeader();
             UpdateQuarantinePreviewStatus();
             return;
@@ -2485,7 +2489,7 @@ public partial class MainWindow : Window
         var shortlistedRows = _shortlist.ApplyTo(_currentReview.Entries);
         if (shortlistedRows.Count == 0)
         {
-            ShortlistSafetyMixText.Text = "Review Shortlist is empty. Add only recognized rows after inspection; shortlist is not cleanup approval.";
+            SetShortlistSafetyMixText("Review Shortlist is empty. Add only recognized rows after inspection; shortlist is not cleanup approval.");
             UpdateQuarantineShortlistHeader();
             UpdateQuarantinePreviewStatus();
             return;
@@ -2500,7 +2504,7 @@ public partial class MainWindow : Window
         var uncategorizedCount = shortlistedRows.Count(row => row.Entry.BloatCategories.Count == 0);
         var largestShortlistedBytes = shortlistedRows.Select(row => row.Entry.SizeBytes).DefaultIfEmpty(0).Max();
 
-        ShortlistSafetyMixText.Text =
+        SetShortlistSafetyMixText(
             $"Shortlist safety mix: {FormatRowCount(shortlistedRows.Count)} | " +
             $"Likely safe {likelySafeCount:N0} | " +
             $"Caution {cautionCount:N0} | " +
@@ -2509,9 +2513,22 @@ public partial class MainWindow : Window
             $"Protected {protectedLocationCount:N0} | " +
             $"Access issues {accessIssueCount:N0} | " +
             $"No category {uncategorizedCount:N0} | " +
-            $"Largest shortlisted row {ByteSizeFormatter.Format(largestShortlistedBytes)}. Review context only, not cleanup approval.";
+            $"Largest shortlisted row {ByteSizeFormatter.Format(largestShortlistedBytes)}. Review context only, not cleanup approval.");
         UpdateQuarantineShortlistHeader();
         UpdateQuarantinePreviewStatus();
+    }
+
+    private void SetShortlistSafetyMixText(string text)
+    {
+        ShortlistSafetyMixText.Text = text;
+        var helpText = FormatShortlistSafetyMixHelpText(text);
+        ShortlistSafetyMixText.ToolTip = helpText;
+        AutomationProperties.SetHelpText(ShortlistSafetyMixText, helpText);
+    }
+
+    private static string FormatShortlistSafetyMixHelpText(string text)
+    {
+        return $"{text} Review Shortlist Safety Mix is read-only review context; it does not rescan, modify files, prove Quarantine readiness, prove storage savings, or approve cleanup.";
     }
 
     private void UpdateQuarantineShortlistHeader()

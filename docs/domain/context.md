@@ -1708,6 +1708,7 @@ It is not cleanup approval, Quarantine Preview readiness, or a storage-savings e
 - Use `ShortlistSafetyMixText` for the WPF readout.
 - Compute from `StorageReviewShortlist.ApplyTo(_currentReview.Entries)` so the summary follows scan review ordering and completed scan data.
 - Keep the readout explicitly framed as review context only, not cleanup approval.
+- WPF tooltip and automation help text should mirror the current mix and say it is read-only review context that does not rescan, modify files, prove Quarantine readiness, prove storage savings, or approve cleanup.
 
 ### Quarantine Preview
 

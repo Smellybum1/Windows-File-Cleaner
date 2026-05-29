@@ -1270,6 +1270,7 @@ internal sealed class MainWindowSmokeTests
             Assert(
                 window.ShortlistSafetyMixTextValue.Contains("Review Shortlist is empty", StringComparison.OrdinalIgnoreCase),
                 "Shortlist Safety Mix should start empty before rows are shortlisted.");
+            AssertShortlistSafetyMixHelpText(window, "Shortlist Safety Mix help text should expose the empty-state review boundary.");
 
             window.AddShownRowsToReviewShortlist();
             Assert(window.ReviewShortlistCount == 1, "Bulk shortlisting visible rows should update Review Shortlist count.");
@@ -1296,6 +1297,7 @@ internal sealed class MainWindowSmokeTests
                 && window.ShortlistSafetyMixTextValue.Contains("Quarantine candidates 1", StringComparison.OrdinalIgnoreCase)
                 && window.ShortlistSafetyMixTextValue.Contains("not cleanup approval", StringComparison.OrdinalIgnoreCase),
                 "Shortlist Safety Mix should summarize shortlisted rows without implying approval.");
+            AssertShortlistSafetyMixHelpText(window, "Shortlist Safety Mix help text should mirror the populated shortlist safety boundary.");
 
             window.SetQuarantineRootForPreview(@"relative\quarantine");
             Assert(!window.CanPreviewQuarantine, "Relative Quarantine roots should disable Quarantine Preview.");
@@ -1335,6 +1337,7 @@ internal sealed class MainWindowSmokeTests
             Assert(
                 window.ShortlistSafetyMixTextValue.Contains("Review Shortlist is empty", StringComparison.OrdinalIgnoreCase),
                 "Removing visible rows should refresh Shortlist Safety Mix to empty.");
+            AssertShortlistSafetyMixHelpText(window, "Shortlist Safety Mix help text should refresh after visible rows are removed.");
             Assert(
                 window.CurrentStatusText.Contains("Removed 1 visible row", StringComparison.OrdinalIgnoreCase),
                 "Removing visible rows should report the visible-window removal.");
@@ -2220,6 +2223,28 @@ internal sealed class MainWindowSmokeTests
             && window.QuarantinePreviewStatusAutomationHelpTextValue.Contains("delete files", StringComparison.OrdinalIgnoreCase)
             && window.QuarantinePreviewStatusAutomationHelpTextValue.Contains("approve cleanup", StringComparison.OrdinalIgnoreCase),
             message + " Automation help text should mirror the current status text and safety boundary.");
+    }
+
+    private static void AssertShortlistSafetyMixHelpText(MainWindow window, string message)
+    {
+        Assert(
+            window.ShortlistSafetyMixToolTipValue.Contains(window.ShortlistSafetyMixTextValue, StringComparison.OrdinalIgnoreCase)
+            && window.ShortlistSafetyMixToolTipValue.Contains("read-only review context", StringComparison.OrdinalIgnoreCase)
+            && window.ShortlistSafetyMixToolTipValue.Contains("does not rescan", StringComparison.OrdinalIgnoreCase)
+            && window.ShortlistSafetyMixToolTipValue.Contains("modify files", StringComparison.OrdinalIgnoreCase)
+            && window.ShortlistSafetyMixToolTipValue.Contains("Quarantine readiness", StringComparison.OrdinalIgnoreCase)
+            && window.ShortlistSafetyMixToolTipValue.Contains("storage savings", StringComparison.OrdinalIgnoreCase)
+            && window.ShortlistSafetyMixToolTipValue.Contains("approve cleanup", StringComparison.OrdinalIgnoreCase),
+            message + " Tooltip should mirror the current safety mix and review boundary.");
+        Assert(
+            window.ShortlistSafetyMixAutomationHelpTextValue.Contains(window.ShortlistSafetyMixTextValue, StringComparison.OrdinalIgnoreCase)
+            && window.ShortlistSafetyMixAutomationHelpTextValue.Contains("read-only review context", StringComparison.OrdinalIgnoreCase)
+            && window.ShortlistSafetyMixAutomationHelpTextValue.Contains("does not rescan", StringComparison.OrdinalIgnoreCase)
+            && window.ShortlistSafetyMixAutomationHelpTextValue.Contains("modify files", StringComparison.OrdinalIgnoreCase)
+            && window.ShortlistSafetyMixAutomationHelpTextValue.Contains("Quarantine readiness", StringComparison.OrdinalIgnoreCase)
+            && window.ShortlistSafetyMixAutomationHelpTextValue.Contains("storage savings", StringComparison.OrdinalIgnoreCase)
+            && window.ShortlistSafetyMixAutomationHelpTextValue.Contains("approve cleanup", StringComparison.OrdinalIgnoreCase),
+            message + " Automation help text should mirror the current safety mix and review boundary.");
     }
 
     private static QuarantineExecutionResult CreateExecutedRestoreManifest(

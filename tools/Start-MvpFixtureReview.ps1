@@ -25,7 +25,7 @@ function Write-FixtureReviewChecklist {
     Write-Host "Manual fixture review checklist:"
     Write-Host "  1. Confirm the header says Fixture Cleanup Scope, Scan ready for fixture, Cleanup Scope browse tooltip is path-only, and fixture cleanup actions stay gated."
     Write-Host "  2. Click Scan manually; confirm the status says no files were modified."
-    Write-Host "  3. Check Review Mix, Matched Review Mix, collapsible Safety Summary header/details with the Safety Summary panel-name prefix plus header state styling and state-naming tooltip/help text, Review Shortlist Safety Mix, review navigation/export tooltips, and Review Shortlist labels/tooltips."
+    Write-Host "  3. Check Review Mix, Matched Review Mix, collapsible Safety Summary header/details with the Safety Summary panel-name prefix plus header state styling and state-naming tooltip/help text, Review Shortlist Safety Mix plus tooltip/help text, review navigation/export tooltips, and Review Shortlist labels/tooltips."
     Write-Host "  4. Try search examples: old-installer, parent:$FixturePath\Downloads, under:$FixturePath\AppData."
     Write-Host "  5. Select folders and try selected-row tooltips, Show children, Show descendants, hotspot trail, subtree summary, and file preview."
     Write-Host "  6. Shortlist fixture cleanup candidates, check the collapsible Quarantine Shortlist header/details with the Quarantine Shortlist panel-name prefix plus header state styling and state-naming tooltip/help text, Quarantine Root browse tooltip, styled inline preview readiness (neutral/success/warning/error) plus state-naming tooltip/help text, preview/export tooltips, Approval boundary, Execution scope status, and execution tooltips."

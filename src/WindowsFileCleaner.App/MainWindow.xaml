@@ -436,7 +436,9 @@
                            Text="Review Shortlist is empty. Shortlist safety mix appears after rows are shortlisted."
                            Foreground="#526171"
                            Margin="0,6,0,0"
-                           TextWrapping="Wrap" />
+                           TextWrapping="Wrap"
+                           ToolTip="Review Shortlist is empty. Shortlist safety mix appears after rows are shortlisted. Review Shortlist Safety Mix is read-only review context; it does not rescan, modify files, prove Quarantine readiness, prove storage savings, or approve cleanup."
+                           AutomationProperties.HelpText="Review Shortlist is empty. Shortlist safety mix appears after rows are shortlisted. Review Shortlist Safety Mix is read-only review context; it does not rescan, modify files, prove Quarantine readiness, prove storage savings, or approve cleanup." />
                 <Border x:Name="QuarantineShortlistArea"
                         Background="#F7FAFD"
                         BorderBrush="#DCE3EA"

@@ -67,6 +67,7 @@ What changed:
 - Added the WPF Review Shortlist Safety Mix readout.
 - Added app smoke assertions for the new readout.
 - Kept behavior read-only and separate from Quarantine Preview and fixture-only execution.
+- Later packet `2026-05-30-review-shortlist-safety-mix-help-text.md` mirrored the dynamic readout into tooltip and automation help text with no-rescan/no-file-modified/no-readiness-proof/no-savings-proof/not-cleanup-approval wording.
 
 Tests run:
 

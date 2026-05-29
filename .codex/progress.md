@@ -20,6 +20,55 @@ Storage Scan MVP packet implemented and tested by the user against `C:\Users\mox
 
 ## Completed packets
 
+### 2026-05-30: Add Review Shortlist Safety Mix Help Text
+
+Status: completed
+
+Evidence:
+
+- Review Shortlist Safety Mix is a safety-context readout before Quarantine Preview.
+- Neighboring Review Shortlist, preview, and status controls already expose tooltip and automation help text.
+- Safety Mix visible text said it was review context and not cleanup approval, but that boundary was not available through tooltip/help text.
+
+Implementation:
+
+- Added static startup tooltip and automation help text to `ShortlistSafetyMixText`.
+- Updated Review Shortlist Safety Mix updates so empty, populated, and empty-after-removal text is mirrored into tooltip/help text.
+- Help text says the readout is read-only review context and does not rescan, modify files, prove Quarantine readiness, prove storage savings, or approve cleanup.
+- Added WPF smoke assertions for empty, populated, and empty-after-removal states.
+- Did not change scan behavior, Review Shortlist membership, Quarantine Preview, fixture execution, undo, selected restore, manifests, or real-profile cleanup availability.
+
+Verification:
+
+- `dotnet build tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj "-p:BaseOutputPath=D:/Codex/Windows File Cleaner/.local/test-bin/app-tests/"` passed.
+- `D:\Codex\Windows File Cleaner\.local\test-bin\app-tests\Debug\net8.0-windows\WindowsFileCleaner.App.Tests.exe` passed.
+- `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\Start-MvpFixtureReview.ps1 -ChecklistOnly` passed and printed the updated Review Shortlist Safety Mix tooltip/help-text prompt without preflight, fixture creation, or WPF launch.
+- `dotnet build WindowsFileCleaner.sln --no-restore "-p:BaseOutputPath=D:/Codex/Windows File Cleaner/.local/test-bin/solution/"` passed.
+- `git -c safe.directory='D:/Codex/Windows File Cleaner' diff --check` passed with line-ending normalization warnings only.
+
+Docs updated:
+
+- `README.md`
+- `docs/domain/context.md`
+- `docs/domain/glossary.md`
+- `docs/features/2026-05-29-fixture-review-checklist-output.md`
+- `docs/features/2026-05-29-review-shortlist-safety-mix.md`
+- `docs/features/2026-05-30-review-shortlist-safety-mix-help-text.md`
+- `docs/codex/thread-handoff.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No ADR added. This is reversible WPF help-text polish with no persistence, cleanup execution, restore rule, data-model, or security change.
+
+Open questions:
+
+- During the next visible fixture or real-profile review, confirm whether Safety Mix tooltip/help text is enough or whether the dense line should become compact chips/table.
+
+Rejected ideas buffer:
+
+- Do not redesign the Safety Mix layout until manual review shows the compact text line is too dense.
+
 ### 2026-05-30: Run Full Local MVP Preflight After Header Summary Labels
 
 Status: completed
