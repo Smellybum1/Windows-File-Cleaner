@@ -763,6 +763,11 @@ internal sealed class MainWindowSmokeTests
                 && !window.QuarantineExecutionGateTextValue.Contains("Create a Quarantine Preview before entering confirmation text", StringComparison.OrdinalIgnoreCase)
                 && !window.QuarantineExecutionGateTextValue.Contains("Preview quarantine.", StringComparison.OrdinalIgnoreCase),
                 "Quarantine execution gate startup text should point to the visible preview button label.");
+            AssertQuarantineExecutionGateHelpCue(
+                window,
+                "Startup Quarantine Execution Gate cue should expose the visible preview-button guidance.",
+                "Use Preview shortlist quarantine",
+                "Real-profile/custom execution remains unavailable");
             Assert(
                 window.QuarantinePreviewTextValue.Contains("Preview shortlist quarantine", StringComparison.OrdinalIgnoreCase)
                 && !window.QuarantinePreviewTextValue.Contains("Preview quarantine.", StringComparison.OrdinalIgnoreCase),
@@ -1487,6 +1492,12 @@ internal sealed class MainWindowSmokeTests
             Assert(
                 window.QuarantineExecutionGateTextValue.Contains("Type QUARANTINE", StringComparison.OrdinalIgnoreCase),
                 "Execution gate should require the confirmation phrase before execution can ever be enabled.");
+            AssertQuarantineExecutionGateHelpCue(
+                window,
+                "Previewed Quarantine Execution Gate cue should expose the exact confirmation blocker.",
+                "Gate is closed",
+                "Type QUARANTINE",
+                "approve cleanup");
             Assert(
                 window.QuarantineExecutionGateTextValue.Contains("Execution scope status", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantineExecutionGateTextValue.Contains("Fixture-only execution is available", StringComparison.OrdinalIgnoreCase),
@@ -1518,6 +1529,12 @@ internal sealed class MainWindowSmokeTests
                 && window.QuarantineExecutionGateTextValue.Contains("Fixture-only execution is available", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantineExecutionGateTextValue.Contains("Can execute: yes", StringComparison.OrdinalIgnoreCase),
                 "Matched confirmation should open fixture-only execution.");
+            AssertQuarantineExecutionGateHelpCue(
+                window,
+                "Open Quarantine Execution Gate cue should expose fixture-only execution state.",
+                "Gate is open",
+                "fixture execution",
+                "Real-profile/custom execution remains unavailable");
             Assert(window.CanExecuteQuarantine, "Fixture-only execution should enable after exact confirmation text.");
             Assert(
                 window.QuarantinePreviewTextValue.Contains(Path.Combine(customQuarantineRoot, "preview", "Downloads", "old-installer.msi"), StringComparison.OrdinalIgnoreCase),
@@ -2331,7 +2348,7 @@ internal sealed class MainWindowSmokeTests
     private static void AssertHoverableHelpCueAffordances(MainWindow window, string message)
     {
         var affordances = window.HoverableHelpCueAffordances;
-        Assert(affordances.Count == 11, message + " Expected all eleven circular help cues to be tracked.");
+        Assert(affordances.Count == 12, message + " Expected all twelve circular help cues to be tracked.");
 
         foreach (var affordance in affordances)
         {
@@ -2341,6 +2358,35 @@ internal sealed class MainWindowSmokeTests
             Assert(
                 affordance.InitialShowDelay == 250,
                 $"{message} {affordance.Name} should use a prompt tooltip initial delay.");
+        }
+    }
+
+    private static void AssertQuarantineExecutionGateHelpCue(MainWindow window, string message, params string[] expectedSnippets)
+    {
+        Assert(
+            window.QuarantineExecutionGateToolTipValue.Contains("Quarantine Execution Gate", StringComparison.OrdinalIgnoreCase)
+            && window.QuarantineExecutionGateToolTipValue.Contains("review context", StringComparison.OrdinalIgnoreCase)
+            && window.QuarantineExecutionGateToolTipValue.Contains("exact QUARANTINE", StringComparison.OrdinalIgnoreCase)
+            && window.QuarantineExecutionGateToolTipValue.Contains("approve cleanup", StringComparison.OrdinalIgnoreCase),
+            message + " Gate tooltip should expose execution-gate scope and approval boundary.");
+        Assert(
+            string.Equals(window.QuarantineExecutionGateAutomationHelpTextValue, window.QuarantineExecutionGateToolTipValue, StringComparison.Ordinal),
+            message + " Gate automation help text should mirror the tooltip.");
+        Assert(
+            window.QuarantineExecutionGateHelpCueAutomationNameValue.Contains("Quarantine Execution Gate help cue", StringComparison.OrdinalIgnoreCase),
+            message + " Help cue should have a specific automation name.");
+        Assert(
+            string.Equals(window.QuarantineExecutionGateHelpCueToolTipValue, window.QuarantineExecutionGateToolTipValue, StringComparison.Ordinal),
+            message + " Help cue tooltip should mirror the gate tooltip.");
+        Assert(
+            string.Equals(window.QuarantineExecutionGateHelpCueAutomationHelpTextValue, window.QuarantineExecutionGateAutomationHelpTextValue, StringComparison.Ordinal),
+            message + " Help cue automation help text should mirror the gate help text.");
+
+        foreach (var expectedSnippet in expectedSnippets)
+        {
+            Assert(
+                window.QuarantineExecutionGateHelpCueToolTipValue.Contains(expectedSnippet, StringComparison.OrdinalIgnoreCase),
+                message + $" Help cue tooltip should include expected wording: {expectedSnippet}");
         }
     }
 

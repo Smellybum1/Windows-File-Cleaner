@@ -276,6 +276,7 @@ public partial class MainWindow : Window
         GetHelpCueAffordance("Review Shortlist Safety Mix", ShortlistSafetyMixHelpCue),
         GetHelpCueAffordance("Quarantine Shortlist header", QuarantineShortlistHeaderHelpCue),
         GetHelpCueAffordance("Inline Quarantine Preview status", QuarantinePreviewStatusHelpCue),
+        GetHelpCueAffordance("Quarantine Execution Gate", QuarantineExecutionGateHelpCue),
         GetHelpCueAffordance("Review Grid Mode Status", ReviewGridModeHelpCue),
         GetHelpCueAffordance("Real-profile preflight acknowledgement", RealProfilePreflightHelpCue),
         GetHelpCueAffordance("Scan gate summary", ScanGateSummaryHelpCue),
@@ -423,6 +424,16 @@ public partial class MainWindow : Window
     public string QuarantinePreviewStatusHelpCueAutomationHelpTextValue => AutomationProperties.GetHelpText(QuarantinePreviewStatusHelpCue);
 
     public string QuarantineExecutionGateTextValue => QuarantineExecutionGateText.Text;
+
+    public string QuarantineExecutionGateToolTipValue => QuarantineExecutionGateText.ToolTip?.ToString() ?? "";
+
+    public string QuarantineExecutionGateAutomationHelpTextValue => AutomationProperties.GetHelpText(QuarantineExecutionGateText);
+
+    public string QuarantineExecutionGateHelpCueToolTipValue => QuarantineExecutionGateHelpCue.ToolTip?.ToString() ?? "";
+
+    public string QuarantineExecutionGateHelpCueAutomationNameValue => AutomationProperties.GetName(QuarantineExecutionGateHelpCue);
+
+    public string QuarantineExecutionGateHelpCueAutomationHelpTextValue => AutomationProperties.GetHelpText(QuarantineExecutionGateHelpCue);
 
     public double QuarantineExecutionGateViewportMaxHeight => QuarantineExecutionGateScroll.MaxHeight;
 
@@ -1814,6 +1825,14 @@ public partial class MainWindow : Window
             _currentRestoreManifest,
             _currentQuarantineExecutionResult,
             _currentUndoQuarantineResult);
+        var gateHelpText = FormatQuarantineExecutionGateHelpText(
+            _currentQuarantineExecutionGate,
+            _currentQuarantineExecutionResult,
+            _currentUndoQuarantineResult);
+        QuarantineExecutionGateText.ToolTip = gateHelpText;
+        AutomationProperties.SetHelpText(QuarantineExecutionGateText, gateHelpText);
+        QuarantineExecutionGateHelpCue.ToolTip = gateHelpText;
+        AutomationProperties.SetHelpText(QuarantineExecutionGateHelpCue, gateHelpText);
         UpdateQuarantineShortlistHeader();
     }
 
@@ -3440,6 +3459,24 @@ public partial class MainWindow : Window
         }
 
         return string.Join(Environment.NewLine, lines);
+    }
+
+    private static string FormatQuarantineExecutionGateHelpText(
+        QuarantineExecutionGate gate,
+        QuarantineExecutionResult? executionResult,
+        UndoQuarantineResult? undoResult)
+    {
+        var state = undoResult is not null
+            ? "Current fixture Undo Quarantine has already run; rescan before further review."
+            : executionResult is not null
+            ? "Current fixture Quarantine execution already ran; use Undo fixture quarantine if you want to restore this current fixture execution."
+            : gate.CanExecute
+            ? "Gate is open for fixture execution after exact QUARANTINE confirmation."
+            : gate.HasBlockers
+            ? $"Gate is closed: {FormatQuarantineExecutionGateBlocker(gate.Blockers[0])}"
+            : "Gate is closed until exact QUARANTINE confirmation.";
+
+        return $"Quarantine Execution Gate: {state} The gate text is review context; only the separate fixture action button can move files after exact QUARANTINE. Real-profile/custom execution remains unavailable. This cue does not create folders, move files, restore files, delete files, write manifests, or approve cleanup.";
     }
 
     private static string FormatQuarantineExecutionGateBlocker(string blocker)

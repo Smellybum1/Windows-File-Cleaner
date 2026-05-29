@@ -2532,7 +2532,7 @@ It lists data blockers, records the exact preview counts and bytes to review, ex
 ### Quarantine Execution Gate
 
 Status: draft
-Last reviewed: 2026-05-29
+Last reviewed: 2026-05-30
 
 #### Definition
 
@@ -2549,6 +2549,7 @@ In the current build the gate can open only for recognized fixture Cleanup Scope
 - Carry forward blocked preview row or manifest mismatch blockers from Quarantine Confirmation Draft.
 - Show Quarantine Execution Scope Status before `Can execute` so the scope boundary is plain even when exact confirmation text matches.
 - Show disabled-state tooltips and automation help text on confirmation and execution controls so fixture-only and real-profile/custom blockers remain visible before gates open.
+- Show a visible hoverable `?` help cue beside the WPF gate readout so the current gate state and fixture-only/not-cleanup-approval boundary are discoverable without relying only on disabled-control hover.
 
 #### Non-examples
 
@@ -2586,6 +2587,7 @@ In the current build the gate can open only for recognized fixture Cleanup Scope
 - Keep inline preview readiness styling semantic and lightweight: neutral for waiting, success for ready/completed fixture evidence, warning for blockers or stale preview state, and error for preview creation failures; styling must not imply cleanup approval.
 - Keep inline preview readiness tooltip and automation help text synchronized with the dynamic status and explicit no-create/no-move/no-restore/no-delete/not-cleanup-approval boundaries.
 - Keep confirmation and execution control tooltips and automation help text aligned with fixture-only execution and real-profile/custom blockers.
+- In WPF, mirror concise Quarantine Execution Gate tooltip/help text onto both the gate readout and visible non-clickable `?` help cue, including current gate state, exact `QUARANTINE`, fixture-only execution, real-profile/custom blockers, and not-cleanup-approval wording.
 - Do not create folders, move files, delete files, write manifests, or persist cleanup jobs from gate builder code.
 
 ### Quarantine Execution Scope Status

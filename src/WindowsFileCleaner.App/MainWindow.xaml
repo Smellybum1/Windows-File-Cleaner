@@ -822,17 +822,43 @@
                                     ToolTipService.ShowOnDisabled="True"
                                     Click="UndoQuarantineButton_Click" />
                         </WrapPanel>
-                        <ScrollViewer x:Name="QuarantineExecutionGateScroll"
-                                      MaxHeight="96"
-                                      Margin="0,6,0,0"
-                                      VerticalScrollBarVisibility="Auto"
-                                      HorizontalScrollBarVisibility="Disabled">
-                            <TextBlock x:Name="QuarantineExecutionGateText"
-                                       Text="Execution gate appears after using Preview shortlist quarantine."
-                                       FontFamily="Consolas"
-                                       FontSize="12"
-                                       TextWrapping="Wrap" />
-                        </ScrollViewer>
+                        <DockPanel Margin="0,6,0,0"
+                                   LastChildFill="True">
+                            <Border x:Name="QuarantineExecutionGateHelpCue"
+                                    DockPanel.Dock="Right"
+                                    Width="18"
+                                    Height="18"
+                                    Margin="8,1,0,0"
+                                    VerticalAlignment="Top"
+                                    Background="#F4F7FA"
+                                    BorderBrush="#8A99A8"
+                                    BorderThickness="1"
+                                    CornerRadius="9"
+                                    Cursor="Help"
+                                    ToolTipService.InitialShowDelay="250"
+                                    ToolTip="Quarantine Execution Gate appears after using Preview shortlist quarantine. The gate text is review context; only the separate fixture action button can move files after exact QUARANTINE. Real-profile/custom execution remains unavailable. This cue does not create folders, move files, restore files, delete files, write manifests, or approve cleanup."
+                                    AutomationProperties.Name="Quarantine Execution Gate help cue"
+                                    AutomationProperties.HelpText="Quarantine Execution Gate appears after using Preview shortlist quarantine. The gate text is review context; only the separate fixture action button can move files after exact QUARANTINE. Real-profile/custom execution remains unavailable. This cue does not create folders, move files, restore files, delete files, write manifests, or approve cleanup.">
+                                <TextBlock Text="?"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"
+                                           FontSize="11"
+                                           FontWeight="Bold"
+                                           Foreground="#526171" />
+                            </Border>
+                            <ScrollViewer x:Name="QuarantineExecutionGateScroll"
+                                          MaxHeight="96"
+                                          VerticalScrollBarVisibility="Auto"
+                                          HorizontalScrollBarVisibility="Disabled">
+                                <TextBlock x:Name="QuarantineExecutionGateText"
+                                           Text="Execution gate appears after using Preview shortlist quarantine."
+                                           FontFamily="Consolas"
+                                           FontSize="12"
+                                           TextWrapping="Wrap"
+                                           ToolTip="Quarantine Execution Gate appears after using Preview shortlist quarantine. The gate text is review context; only the separate fixture action button can move files after exact QUARANTINE. Real-profile/custom execution remains unavailable. This cue does not create folders, move files, restore files, delete files, write manifests, or approve cleanup."
+                                           AutomationProperties.HelpText="Quarantine Execution Gate appears after using Preview shortlist quarantine. The gate text is review context; only the separate fixture action button can move files after exact QUARANTINE. Real-profile/custom execution remains unavailable. This cue does not create folders, move files, restore files, delete files, write manifests, or approve cleanup." />
+                            </ScrollViewer>
+                        </DockPanel>
                     </StackPanel>
                     </Expander>
                 </Border>
