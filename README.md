@@ -24,6 +24,7 @@ Fresh-thread handoff notes live in `docs/codex/thread-handoff.md`.
 - The visible WPF app does not delete files.
 - CSV exports write only to a path selected by the user.
 - Review Shortlist is an in-memory review aid, not cleanup approval.
+- Review Shortlist bulk actions label their scope as visible rows so they apply only to the current displayed review window.
 - Review Shortlist Safety Mix summarizes shortlisted rows from completed scan data only; it is review context, not cleanup approval or storage-savings proof.
 - Quarantine Preview is a dry run only, and its preview/gate panes keep Review Shortlist and Quarantine Preview separate from cleanup approval.
 - Restore Manifest Draft and Quarantine Confirmation Draft are in-memory readiness evidence only.
@@ -87,7 +88,7 @@ Use the fixture review launcher for the manual fixture UI pass:
 ```
 
 The launcher runs preflight, creates a small synthetic Cleanup Scope inside the repo, and launches the WPF app with that scope. The app does not auto-scan; click `Scan` yourself after it opens.
-Before launching, the script prints a compact fixture review checklist with the main safety, search, shortlist, preview approval-boundary, fixture execution, undo, manifest-review, all-manifest restore boundary, and selected-restore scope-status checks.
+Before launching, the script prints a compact fixture review checklist with the main safety, search, visible-row shortlist labels, preview approval-boundary, fixture execution, undo, manifest-review, all-manifest restore boundary, and selected-restore scope-status checks.
 
 To print only that checklist without running preflight, creating fixture files, or launching WPF:
 
@@ -152,7 +153,7 @@ After the app opens:
 17. Select small text files and use `Preview file` only when you intentionally want a bounded read-only text snippet; binary and unsupported files should not render as text.
 18. Try category filters such as Cleanup scope root, App cache, Python package cache, GPU shader cache, Large old file, Cloud sync data, Credential data, Windows app data, Installed application, Game data, Protected location, and No category.
 19. Use `Reset view` after stacking filters/search; it clears the review lens but keeps Review Shortlist.
-20. Add a likely-safe cleanup candidate to the Review Shortlist; specific rebuildable cache rows such as `DXCache` or `pip\Cache` may appear here, while broad parent folders should stay inspection-first. Check Review Shortlist Safety Mix for high-risk, protected, access issue, no-category, and largest-row context. Use `Shortlist shown` / `Remove shown` only after narrowing or paging the grid to rows you intentionally want to review.
+20. Add a likely-safe cleanup candidate to the Review Shortlist; specific rebuildable cache rows such as `DXCache` or `pip\Cache` may appear here, while broad parent folders should stay inspection-first. Check Review Shortlist Safety Mix for high-risk, protected, access issue, no-category, and largest-row context. Use `Shortlist visible rows` / `Remove visible rows` only after narrowing or paging the grid to rows you intentionally want to review.
 21. Confirm the Quarantine root points to the intended fully qualified preview/execution destination and that the safety note matches it, typing or browsing if needed, then click `Preview quarantine`; broad parent rows should be blocked when protected descendants are present, blocked descendant examples should use relative paths, confirmation readiness blockers should be separate from preview row details, approval-boundary wording should keep shortlist/preview separate from cleanup approval, execution scope status should distinguish fixture-only from preview-only real/custom scopes, the Quarantine Action Draft should show action-scoped item and manifest paths, and the write-ahead Restore Manifest should show planned write-before-move ordering.
 22. On a fixture Cleanup Scope only, typing `QUARANTINE` should enable `Execute quarantine`; clicking it moves the selected synthetic file/folder into the action-scoped quarantine path, writes `restore-manifest.json`, clears stale shortlist state, enables `Undo fixture quarantine`, and tells you to rescan.
 23. On that same fixture execution, clicking `Undo fixture quarantine` should restore the synthetic file/folder from quarantine, update the Restore Manifest, disable repeat undo, and keep stale-state wording visible.
@@ -176,7 +177,7 @@ The intended review flow is:
 7. Use `Next rows` / `Previous rows`, Storage Review Search, `parent:` search, `under:` search, Type filter, Size filter, category filters, and Matched Review Mix to understand large buckets and specific app/tool paths.
 8. Use `Reset view` when the active review lens becomes too narrow; it does not clear Review Shortlist.
 9. Use Selected Path Hierarchy Context, Selected File Content Preview, Selected Path Review Guidance, Selected Folder Subtree Summary, Child Breakdown, Storage Hotspot Trail, Selected Folder Child Focus, Selected Folder Descendant Focus, and Open in Explorer for manual inspection.
-10. Add interesting rows to Review Shortlist; use Review Shortlist Safety Mix to sanity-check the shortlisted row mix, and use `Shortlist shown` / `Remove shown` only for the currently displayed review window.
+10. Add interesting rows to Review Shortlist; use Review Shortlist Safety Mix to sanity-check the shortlisted row mix, and use `Shortlist visible rows` / `Remove visible rows` only for the currently displayed review window.
 11. Check or browse the Quarantine root and generate Quarantine Preview for readiness review.
 12. For fixture scopes, optionally type `QUARANTINE`, run fixture-only Quarantine execution, then use `Undo fixture quarantine` to prove the reversible visible workflow.
 13. Use `Discover manifests` when you want read-only status for action-scoped Restore Manifests under the selected Quarantine Root.

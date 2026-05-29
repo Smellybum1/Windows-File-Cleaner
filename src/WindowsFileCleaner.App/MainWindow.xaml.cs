@@ -252,6 +252,10 @@ public partial class MainWindow : Window
 
     public bool CanRemoveShownRowsFromReviewShortlist => RemoveShownFromShortlistButton.IsEnabled;
 
+    public string AddShownRowsToReviewShortlistButtonText => AddShownToShortlistButton.Content?.ToString() ?? "";
+
+    public string RemoveShownRowsFromReviewShortlistButtonText => RemoveShownFromShortlistButton.Content?.ToString() ?? "";
+
     public bool CanPreviewQuarantine => PreviewQuarantineButton.IsEnabled;
 
     public bool CanExportQuarantinePreview => ExportQuarantinePreviewButton.IsEnabled;
@@ -611,7 +615,7 @@ public partial class MainWindow : Window
         var addedCount = _shortlist.AddMany(rows.Select(row => row.Entry));
         if (addedCount == 0)
         {
-            StatusText.Text = $"All shown paths are already in Review Shortlist ({_shortlist.Count:N0}). No files were modified.";
+            StatusText.Text = $"All visible rows are already in Review Shortlist ({_shortlist.Count:N0}). No files were modified.";
             UpdateShortlistControls();
             return;
         }
@@ -620,7 +624,7 @@ public partial class MainWindow : Window
         var selectedPath = _selectedRow?.FullPath;
         RefreshResults(selectedPath);
         StatusText.Text =
-            $"Shortlisted {addedCount:N0} shown path(s) ({_shortlist.Count:N0} total). " +
+            $"Shortlisted {addedCount:N0} visible row(s) ({_shortlist.Count:N0} total). " +
             "Review Shortlist is not cleanup approval. No files were modified.";
     }
 
@@ -640,7 +644,7 @@ public partial class MainWindow : Window
         var removedCount = _shortlist.RemoveMany(rows.Select(row => row.Entry));
         if (removedCount == 0)
         {
-            StatusText.Text = $"No shown paths were in Review Shortlist ({_shortlist.Count:N0}). No files were modified.";
+            StatusText.Text = $"No visible rows were in Review Shortlist ({_shortlist.Count:N0}). No files were modified.";
             UpdateShortlistControls();
             return;
         }
@@ -649,7 +653,7 @@ public partial class MainWindow : Window
         var selectedPath = _selectedRow?.FullPath;
         RefreshResults(selectedPath);
         StatusText.Text =
-            $"Removed {removedCount:N0} shown path(s) from Review Shortlist ({_shortlist.Count:N0} total). " +
+            $"Removed {removedCount:N0} visible row(s) from Review Shortlist ({_shortlist.Count:N0} total). " +
             "No files were modified.";
     }
 

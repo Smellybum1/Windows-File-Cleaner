@@ -323,13 +323,13 @@
                 <WrapPanel x:Name="ReviewShortlistToolbar"
                            Margin="0,6,0,0">
                     <Button x:Name="AddShownToShortlistButton"
-                            Content="Shortlist shown"
-                            MinWidth="125"
+                            Content="Shortlist visible rows"
+                            MinWidth="160"
                             IsEnabled="False"
                             Click="AddShownToShortlistButton_Click" />
                     <Button x:Name="RemoveShownFromShortlistButton"
-                            Content="Remove shown"
-                            MinWidth="115"
+                            Content="Remove visible rows"
+                            MinWidth="155"
                             IsEnabled="False"
                             Click="RemoveShownFromShortlistButton_Click" />
                     <Button x:Name="ExportShortlistCsvButton"

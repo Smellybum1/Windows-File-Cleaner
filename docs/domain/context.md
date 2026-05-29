@@ -869,7 +869,7 @@ The initial window starts at row `1`. Previous rows and Next rows move the windo
 
 - Uses Storage Review Display Limit.
 - Uses Storage Review Filter, Bloat Category Filter, Storage Entry Type Filter, Storage Size Threshold Filter, and Storage Review Search.
-- Defines which rows `Shortlist shown` and `Remove shown` apply to.
+- Defines which rows `Shortlist visible rows` and `Remove visible rows` apply to.
 - Does not constrain Scan Report Export, which uses the full active review lens rather than only the visible window.
 
 #### Code implications
@@ -1607,8 +1607,8 @@ It is not a cleanup approval and does not modify files.
 #### Examples
 
 - Add a large cache folder to the Review Shortlist while inspecting Caution rows.
-- Shortlist the currently shown Quarantine candidate rows after narrowing with search or filters.
-- Remove the currently shown rows from the Review Shortlist after reviewing or correcting a broad filter.
+- Shortlist the current visible Quarantine candidate rows after narrowing with search or filters.
+- Remove the current visible rows from the Review Shortlist after reviewing or correcting a broad filter.
 - Add multiple likely cleanup opportunities, then export only those rows to CSV.
 - Clear the Review Shortlist before starting a new review pass.
 
@@ -1622,7 +1622,7 @@ It is not a cleanup approval and does not modify files.
 #### Lifecycle
 
 - Starts empty after each new Storage Scan.
-- Changes only when the user adds selected rows, shortlists shown rows, removes selected rows, or clears the shortlist.
+- Changes only when the user adds selected rows, shortlists visible rows, removes selected rows, or clears the shortlist.
 - Can be exported as a read-only CSV report.
 - Is discarded when a new Storage Scan completes.
 

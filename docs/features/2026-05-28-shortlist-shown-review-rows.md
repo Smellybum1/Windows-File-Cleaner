@@ -208,7 +208,8 @@ ADRs added or skipped:
 
 Follow-up work:
 
-- Include `Shortlist shown` and `Remove shown` in the next visible fixture and real-profile review pass.
+- Later packet 2026-05-29-visible-row-shortlist-labels renamed the visible WPF buttons to `Shortlist visible rows` and `Remove visible rows`.
+- Include the visible-row shortlist buttons in the next visible fixture and real-profile review pass.
 
 Open questions:
 
@@ -216,4 +217,4 @@ Open questions:
 
 Risky assumptions:
 
-- The user will narrow filters/search before using `Shortlist shown` on a real scan.
+- The user will narrow filters/search before using the visible-row shortlist action on a real scan.

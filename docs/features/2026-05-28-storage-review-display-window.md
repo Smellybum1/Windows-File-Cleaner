@@ -26,7 +26,7 @@ As the project owner, I want Previous rows and Next rows controls when a scan ma
 - `Previous rows` returns to the prior matched row window.
 - The row-window label and filter summary show the active row range.
 - Changing the active review lens resets the display window to the first matched rows.
-- `Shortlist shown` and `Remove shown` apply only to the currently displayed window.
+- `Shortlist visible rows` and `Remove visible rows` apply only to the currently displayed window.
 - Scan Report Export uses the full active review lens, not only the visible display window.
 - All behavior remains in-memory and read-only.
 
