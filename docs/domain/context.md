@@ -2752,6 +2752,8 @@ It is reached with the `Quarantined` button and returns to Storage Scan rows wit
 - Use `QuarantinedItemRow` for WPF grid rows.
 - Use `ShowQuarantinedButton` and `BackToScanRowsButton` for the view switch.
 - Populate the view from current Restore Manifest entries with `RestoreManifestEntryStatus.Moved`.
+- Keep Review Grid Mode Status visible above the main grid so users can tell whether they are reviewing Storage Scan rows or current-session quarantined entries.
+- When Storage Scan rows may be stale after fixture Quarantine execution, Review Grid Mode Status should point to available current-session quarantined entries instead of implying refreshed scan evidence.
 - Keep this view read-only and current-session-only until a separate discovered-manifest design exists.
 
 ### Quarantine Manifest Discovery

@@ -1426,6 +1426,10 @@ internal sealed class MainWindowSmokeTests
                 && window.SafetySummaryHeaderTextValue.Contains("High risk", StringComparison.OrdinalIgnoreCase)
                 && window.SafetySummaryHeaderTextValue.Contains("Quarantine", StringComparison.OrdinalIgnoreCase),
                 "Collapsed Safety Summary header should preserve compact scan risk counts.");
+            Assert(
+                window.ReviewGridModeTextValue.Contains("Main grid: Storage Scan rows", StringComparison.OrdinalIgnoreCase)
+                && window.ReviewGridModeTextValue.Contains("No files were modified", StringComparison.OrdinalIgnoreCase),
+                "Main grid mode text should identify Storage Scan rows after scanning.");
 
             var installer = window.DisplayedRows.Single(row =>
                 row.FullPath.EndsWith(@"Downloads\old-installer.msi", StringComparison.OrdinalIgnoreCase));
@@ -1494,6 +1498,11 @@ internal sealed class MainWindowSmokeTests
             Assert(window.CanUndoQuarantine, "Fixture undo should become available after a successful fixture execution.");
             Assert(window.CanShowQuarantinedRows, "Current-session quarantined rows should be available after successful fixture execution.");
             Assert(
+                window.ReviewGridModeTextValue.Contains("Main grid: Storage Scan rows", StringComparison.OrdinalIgnoreCase)
+                && window.ReviewGridModeTextValue.Contains("2 current-session quarantined", StringComparison.OrdinalIgnoreCase)
+                && window.ReviewGridModeTextValue.Contains("Scan rows may be stale", StringComparison.OrdinalIgnoreCase),
+                "Main grid mode text should point from stale scan rows to available current-session quarantined rows.");
+            Assert(
                 window.QuarantineShortlistHeaderTextValue.Contains("2 current quarantined", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantineShortlistHeaderTextValue.Contains("undo available", StringComparison.OrdinalIgnoreCase),
                 "Collapsed Quarantine shortlist header should summarize current quarantined entries and undo availability.");
@@ -1529,6 +1538,11 @@ internal sealed class MainWindowSmokeTests
             Assert(window.IsShowingQuarantinedRows, "Quarantined button should switch the main grid to quarantined rows.");
             Assert(window.AreQuarantinedRowsVisible, "Quarantined rows grid should be visible in quarantined view.");
             Assert(!window.AreScanRowsVisible, "Storage Scan rows grid should be hidden in quarantined view.");
+            Assert(
+                window.ReviewGridModeTextValue.Contains("Main grid: Current-session quarantined items", StringComparison.OrdinalIgnoreCase)
+                && window.ReviewGridModeTextValue.Contains("Read-only view", StringComparison.OrdinalIgnoreCase)
+                && window.ReviewGridModeTextValue.Contains("Back to scan rows", StringComparison.OrdinalIgnoreCase),
+                "Main grid mode text should identify the current-session quarantined view and how to return.");
             Assert(window.DisplayedQuarantinedRows.Count == 2, "Quarantined view should show every current Moved Restore Manifest entry.");
             Assert(
                 window.DisplayedQuarantinedRows.Any(row => row.OriginalPath.Equals(installer.FullPath, StringComparison.OrdinalIgnoreCase))
@@ -1545,6 +1559,10 @@ internal sealed class MainWindowSmokeTests
             Assert(!window.IsShowingQuarantinedRows, "Back to scan rows should leave quarantined view.");
             Assert(window.AreScanRowsVisible, "Storage Scan rows grid should be visible after returning.");
             Assert(!window.AreQuarantinedRowsVisible, "Quarantined rows grid should hide after returning.");
+            Assert(
+                window.ReviewGridModeTextValue.Contains("Main grid: Storage Scan rows", StringComparison.OrdinalIgnoreCase)
+                && window.ReviewGridModeTextValue.Contains("2 current-session quarantined", StringComparison.OrdinalIgnoreCase),
+                "Main grid mode text should identify scan rows after returning from quarantined rows.");
 
             RunDispatcherTask(() => window.RunStorageScanForCurrentScopeAsync());
             Assert(!File.Exists(installer.FullPath), "Post-execution rescan should reflect that the original fixture file moved.");
@@ -1565,6 +1583,10 @@ internal sealed class MainWindowSmokeTests
             Assert(!window.CanUndoQuarantine, "Fixture undo should disable after the undo attempt.");
             Assert(window.DisplayedQuarantinedRows.Count == 0, "Quarantined view should clear current-session moved entries after undo.");
             Assert(!window.CanShowQuarantinedRows, "Quarantined button should disable after undo leaves no current-session moved entries.");
+            Assert(
+                window.ReviewGridModeTextValue.Contains("Current-session quarantined rows appear after fixture Quarantine execution", StringComparison.OrdinalIgnoreCase)
+                || window.ReviewGridModeTextValue.Contains("No moved entries are available", StringComparison.OrdinalIgnoreCase),
+                "Main grid mode text should stop advertising current quarantined rows after undo.");
             Assert(
                 window.QuarantineShortlistHeaderTextValue.Contains("undo completed", StringComparison.OrdinalIgnoreCase),
                 "Collapsed Quarantine shortlist header should summarize completed undo state.");

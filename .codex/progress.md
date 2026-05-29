@@ -6587,6 +6587,8 @@ Verification:
 - `D:\Codex\Windows File Cleaner\.local\test-bin\app-tests\Debug\net8.0-windows\WindowsFileCleaner.App.Tests.exe` passed.
 - `dotnet build WindowsFileCleaner.sln --no-restore "-p:BaseOutputPath=D:/Codex/Windows File Cleaner/.local/test-bin/solution/"` passed.
 - `git -c safe.directory='D:/Codex/Windows File Cleaner' diff --check` passed with line-ending normalization warnings only.
+- `dotnet build WindowsFileCleaner.sln --no-restore "-p:BaseOutputPath=D:/Codex/Windows File Cleaner/.local/test-bin/solution/"` passed.
+- `git -c safe.directory='D:/Codex/Windows File Cleaner' diff --check` passed with line-ending normalization warnings only.
 
 Docs updated:
 
@@ -6785,3 +6787,47 @@ Open questions:
 Rejected ideas buffer:
 
 - Do not show a modal popup for dry-run preview success unless manual review shows inline text is still too easy to miss.
+
+### 2026-05-29: Add Review Grid Mode Status
+
+Status: completed
+
+Evidence:
+
+- The main grid can now show either Storage Scan rows or Current-Session Quarantined Review rows.
+- The visible `Quarantined` / `Back to scan rows` buttons help, but a persistent grid-mode label reduces ambiguity during manual fixture review and after post-execution stale scan rows.
+
+Implementation:
+
+- Added `ReviewGridModeText` above the main grid.
+- Storage Scan mode names the scan row display window and says whether current-session quarantined items are available.
+- Current-session quarantined mode identifies the read-only current in-memory Restore Manifest view and points to `Back to scan rows`.
+- After fixture Quarantine execution, Storage Scan mode warns that scan rows may be stale and points to available current-session quarantined entries.
+- After fixture undo clears moved entries, the mode text stops advertising current quarantined rows.
+- Kept real-profile Quarantine execution, real-profile Undo Quarantine, permanent deletion, and cleanup history unavailable.
+
+Verification:
+
+- `dotnet build tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj "-p:BaseOutputPath=D:/Codex/Windows File Cleaner/.local/test-bin/app-tests/"` passed.
+- `D:\Codex\Windows File Cleaner\.local\test-bin\app-tests\Debug\net8.0-windows\WindowsFileCleaner.App.Tests.exe` passed.
+
+Docs updated:
+
+- `README.md`
+- `docs/domain/context.md`
+- `docs/domain/glossary.md`
+- `docs/features/2026-05-29-review-grid-mode-status.md`
+- `docs/codex/thread-handoff.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No ADR added. This is reversible WPF status text with no persistence, cleanup execution, restore rule, data-model, or security change.
+
+Open questions:
+
+- Should the Review Grid Mode Status later use a badge or visual severity style, or is plain text sufficient?
+
+Rejected ideas buffer:
+
+- Do not use the grid mode status as cleanup history or as proof that Storage Scan rows are refreshed after fixture execution.

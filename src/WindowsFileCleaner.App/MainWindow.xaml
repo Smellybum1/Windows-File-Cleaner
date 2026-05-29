@@ -569,6 +569,11 @@
                     </StackPanel>
                     </Expander>
                 </Border>
+                <TextBlock x:Name="ReviewGridModeText"
+                           Text="Main grid: Storage Scan rows appear after a scan. No files were modified."
+                           Foreground="#526171"
+                           Margin="0,8,0,0"
+                           TextWrapping="Wrap" />
             </StackPanel>
 
             <DataGrid x:Name="ResultsGrid"

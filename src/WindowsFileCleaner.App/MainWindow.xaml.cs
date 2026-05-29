@@ -75,6 +75,7 @@ public partial class MainWindow : Window
         UpdateQuarantineExecutionGate();
         UpdateQuarantineManifestDiscoveryControls();
         UpdateQuarantinedViewControls();
+        UpdateReviewGridModeText();
     }
 
     public string CurrentCleanupScopePath => ScopePathBox.Text;
@@ -216,6 +217,8 @@ public partial class MainWindow : Window
     public bool AreScanRowsVisible => ResultsGrid.Visibility == Visibility.Visible;
 
     public bool AreQuarantinedRowsVisible => QuarantinedGrid.Visibility == Visibility.Visible;
+
+    public string ReviewGridModeTextValue => ReviewGridModeText.Text;
 
     public string? ContentsColumnSortMemberPath => ResultsGrid.Columns
         .OfType<DataGridTextColumn>()
@@ -1961,6 +1964,7 @@ public partial class MainWindow : Window
         UpdateFilterButtons();
         UpdateFilterSummary();
         UpdateShortlistControls();
+        UpdateReviewGridModeText();
 
         if (rows.Length > 0)
         {
@@ -1983,6 +1987,7 @@ public partial class MainWindow : Window
         }
 
         QuarantinedGrid.ItemsSource = BuildCurrentQuarantinedRows();
+        UpdateReviewGridModeText();
         if (QuarantinedGrid.Items.Count > 0)
         {
             QuarantinedGrid.SelectedIndex = 0;
@@ -1997,6 +2002,41 @@ public partial class MainWindow : Window
     {
         ResultsGrid.Visibility = _isShowingQuarantinedRows ? Visibility.Collapsed : Visibility.Visible;
         QuarantinedGrid.Visibility = _isShowingQuarantinedRows ? Visibility.Visible : Visibility.Collapsed;
+        UpdateReviewGridModeText();
+    }
+
+    private void UpdateReviewGridModeText()
+    {
+        if (ReviewGridModeText is null)
+        {
+            return;
+        }
+
+        var currentQuarantinedCount = BuildCurrentQuarantinedRows().Count;
+        if (_isShowingQuarantinedRows)
+        {
+            ReviewGridModeText.Text = currentQuarantinedCount == 0
+                ? "Main grid: Current-session quarantined items. No moved entries are available; use Back to scan rows to return. No files were modified."
+                : $"Main grid: Current-session quarantined items ({currentQuarantinedCount:N0}). Read-only view from the current in-memory Restore Manifest; use Back to scan rows to return. No files were modified.";
+            return;
+        }
+
+        if (_currentReview is null)
+        {
+            ReviewGridModeText.Text = "Main grid: Storage Scan rows appear after a scan. No files were modified.";
+            return;
+        }
+
+        var matchedCount = ApplyCurrentReviewFilters().Count;
+        var quarantinedHint = currentQuarantinedCount > 0
+            ? $" {currentQuarantinedCount:N0} current-session quarantined item(s) are available with Quarantined."
+            : " Current-session quarantined rows appear after fixture Quarantine execution.";
+        var staleHint = _currentQuarantineExecutionResult is not null && _currentUndoQuarantineResult is null
+            ? " Scan rows may be stale after fixture Quarantine execution; rescan refreshes rows."
+            : "";
+
+        ReviewGridModeText.Text =
+            $"Main grid: Storage Scan rows ({FormatReviewWindowRange(matchedCount)}).{quarantinedHint}{staleHint} No files were modified.";
     }
 
     private void UpdateQuarantinedViewControls()
@@ -2010,6 +2050,7 @@ public partial class MainWindow : Window
             && !_isShowingQuarantinedRows
             && BuildCurrentQuarantinedRows().Count > 0;
         BackToScanRowsButton.IsEnabled = !_isScanning && _isShowingQuarantinedRows;
+        UpdateReviewGridModeText();
     }
 
     private IReadOnlyList<QuarantinedItemRow> BuildCurrentQuarantinedRows()
