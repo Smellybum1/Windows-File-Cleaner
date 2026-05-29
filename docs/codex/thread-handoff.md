@@ -9,7 +9,7 @@ Use this when starting a fresh Codex thread for this repository.
 - Repo: `D:\Codex\Windows File Cleaner`
 - GitHub: `Smellybum1/Windows-File-Cleaner`
 - Branch: `main`
-- Latest completed packet: Broad Restore Action Wording (after Fixture Checklist Selected Restore Scope)
+- Latest completed packet: Fixture Checklist Broad Restore Wording (after Broad Restore Action Wording)
 - Current app stack: C# / WPF / .NET 8
 - Desktop shortcut target: `D:\Codex\Windows File Cleaner\src\WindowsFileCleaner.App\bin\Debug\net8.0-windows\WindowsFileCleaner.App.exe`
 
@@ -17,7 +17,7 @@ Use this when starting a fresh Codex thread for this repository.
 
 Windows File Cleaner is a local Windows-only desktop app for reviewing storage under `C:\Users\moxhe`.
 
-The current MVP has a read-only Storage Scan that can inspect large real-profile scans with filters, debounced search, visible Cleanup Scope Scan Gate status/tooltip wording, Review Mix, Matched Review Mix, Review Shortlist Safety Mix, selected-folder child/descendant focus, selected-folder summaries, hotspot trail, file preview, CSV export, Review Shortlist, fixture launcher checklist output and checklist-only mode, Quarantine Preview, Quarantine approval-boundary wording, Quarantine Execution Scope Status, Restore Manifest Draft, Quarantine Confirmation Draft, confirmation label wording polish, Quarantine Action Draft, manifest discovery with broad-restore wording, selected manifest review with readiness-evidence wording, selected restore gate scope-status/approval-boundary wording, selected-restore scope-status checklist coverage, and restore-readiness preview with broad-restore wording.
+The current MVP has a read-only Storage Scan that can inspect large real-profile scans with filters, debounced search, visible Cleanup Scope Scan Gate status/tooltip wording, Review Mix, Matched Review Mix, Review Shortlist Safety Mix, selected-folder child/descendant focus, selected-folder summaries, hotspot trail, file preview, CSV export, Review Shortlist, fixture launcher checklist output and checklist-only mode, Quarantine Preview, Quarantine approval-boundary wording, Quarantine Execution Scope Status, Restore Manifest Draft, Quarantine Confirmation Draft, confirmation label wording polish, Quarantine Action Draft, manifest discovery with broad-restore wording, selected manifest review with readiness-evidence wording, selected restore gate scope-status/approval-boundary wording, selected-restore scope-status checklist coverage, restore-readiness preview with broad-restore wording, and broad-restore boundary checklist coverage.
 
 Fixture-only cleanup execution exists for synthetic Cleanup Scopes. Real-profile cleanup execution remains intentionally unavailable.
 
@@ -50,6 +50,7 @@ Fixture-only cleanup execution exists for synthetic Cleanup Scopes. Real-profile
 - Selected Restore Scope Status added plain-language fixture-only versus preview-only selected restore scope wording plus an approval-boundary line to the Selected Restore Execution Gate.
 - Fixture Checklist Selected Restore Scope updated the launcher checklist to call out selected restore Approval boundary plus Execution scope status during fixture review.
 - Broad Restore Action Wording updated discovery/readiness/selected-review panes so they say no broad restore action is available and route fixture selected restore through selected readiness and the selected restore gate.
+- Fixture Checklist Broad Restore Wording updated the launcher checklist to call out no broad restore action wording during fixture review.
 
 ## Best next work
 
