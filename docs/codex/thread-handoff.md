@@ -9,7 +9,7 @@ Use this when starting a fresh Codex thread for this repository.
 - Repo: `D:\Codex\Windows File Cleaner`
 - GitHub: `Smellybum1/Windows-File-Cleaner`
 - Branch: `main`
-- Latest completed packet: Review Grid Mode Status Help Text
+- Latest completed packet: Full Local MVP Preflight After Grid Mode Help
 - Current app stack: C# / WPF / .NET 8
 - Desktop shortcut target: `D:\Codex\Windows File Cleaner\src\WindowsFileCleaner.App\bin\Debug\net8.0-windows\WindowsFileCleaner.App.exe`
 
@@ -106,6 +106,7 @@ Fixture-only cleanup execution exists for synthetic Cleanup Scopes. Real-profile
 - Full Local MVP Preflight After Current Label passed `Invoke-MvpPreflight.ps1`; restore, build, core tests, WPF app tests, fixture `-WhatIf`, and whitespace diff check all passed without scanning or modifying real user files.
 - User ran the latest manual fixture review checklist through steps 1-11 and reported that all checked behavior worked; user also agreed that useful collapsed panel header summaries are desirable.
 - Review Grid Mode Status Help Text mirrored dynamic grid-mode wording into tooltip and automation help text with read-only, no-rescan, no-file-modified, no-restore, and not-cleanup-approval boundaries.
+- Full Local MVP Preflight After Grid Mode Help passed `Invoke-MvpPreflight.ps1`; restore, build, core tests, WPF app tests, fixture `-WhatIf`, and whitespace diff check all passed without scanning or modifying real user files.
 
 ## Best next work
 
