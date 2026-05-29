@@ -9,7 +9,7 @@ Use this when starting a fresh Codex thread for this repository.
 - Repo: `D:\Codex\Windows File Cleaner`
 - GitHub: `Smellybum1/Windows-File-Cleaner`
 - Branch: `main`
-- Latest completed packet: Quarantine Preview Placeholder Label
+- Latest completed packet: Run Full Local MVP Preflight After Placeholder Label
 - Current app stack: C# / WPF / .NET 8
 - Desktop shortcut target: `D:\Codex\Windows File Cleaner\src\WindowsFileCleaner.App\bin\Debug\net8.0-windows\WindowsFileCleaner.App.exe`
 
@@ -55,6 +55,7 @@ Fixture-only cleanup execution exists for synthetic Cleanup Scopes. Real-profile
 - Fixture Checklist Quarantine Button Label updated `Start-MvpFixtureReview.cmd -ChecklistOnly` step 7 to say `click Quarantine included shortlist`, matching the visible WPF action label; checklist-only output passed without preflight, fixture creation, WPF launch, scan, or file modification.
 - Full Local MVP Preflight After Checklist Label passed `cmd.exe /c tools\Invoke-MvpPreflight.cmd`; restore, build, core tests, WPF app tests, fixture `-WhatIf`, checklist-only output with `click Quarantine included shortlist`, and whitespace diff check all passed without scanning or modifying real user files.
 - Quarantine Preview Placeholder Label updated WPF startup/reset placeholder text to say `Preview shortlist quarantine` instead of the older generic preview label; WPF smoke coverage now checks startup and stale-reset placeholders.
+- Full Local MVP Preflight After Placeholder Label passed `cmd.exe /c tools\Invoke-MvpPreflight.cmd`; restore, build, core tests, WPF app tests, fixture `-WhatIf`, fixture checklist-only output, and whitespace diff check all passed without scanning or modifying real user files.
 - Quarantine Execution Scope Status added plain-language fixture-only versus preview-only scope wording to Quarantine Preview and Quarantine Execution Gate output.
 - Fixture Review Checklist Output added a compact terminal checklist to `Start-MvpFixtureReview.ps1`.
 - Fixture Review Checklist-Only Mode added `Start-MvpFixtureReview.ps1 -ChecklistOnly`, which prints the same checklist without preflight, fixture creation, or WPF launch.

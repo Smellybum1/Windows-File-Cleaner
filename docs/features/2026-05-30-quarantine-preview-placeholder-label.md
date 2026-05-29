@@ -53,6 +53,7 @@ Tests run:
 - `rg -n "after using Preview quarantine|Preview quarantine/export" src tests README.md docs\codex\thread-handoff.md tools`
 - `rg -n "Preview quarantine\." src\WindowsFileCleaner.App README.md docs\codex\thread-handoff.md tools`
 - `git diff --check`
+- Later verification packet: `cmd.exe /c tools\Invoke-MvpPreflight.cmd` passed; restore, build, core tests, WPF app tests, fixture `-WhatIf`, fixture checklist-only output, and whitespace diff check all passed without scanning or modifying real user files.
 
 ADRs added or skipped:
 
