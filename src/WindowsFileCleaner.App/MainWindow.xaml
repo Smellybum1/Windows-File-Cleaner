@@ -95,6 +95,9 @@
                           Content="I ran MVP preflight and fixture review before scanning this real profile."
                           Margin="0,8,0,0"
                           Visibility="Collapsed"
+                          ToolTip="Acknowledges that MVP preflight and fixture review were already run before this real-profile Storage Scan; this does not run preflight, create fixtures, start scanning, persist approval, or approve cleanup."
+                          AutomationProperties.HelpText="Acknowledges that MVP preflight and fixture review were already run before this real-profile Storage Scan; this does not run preflight, create fixtures, start scanning, persist approval, or approve cleanup."
+                          ToolTipService.ShowOnDisabled="True"
                           Checked="RealProfilePreflightCheckBox_Changed"
                           Unchecked="RealProfilePreflightCheckBox_Changed" />
                 <TextBlock x:Name="ScanGateText"

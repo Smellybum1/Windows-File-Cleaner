@@ -522,6 +522,20 @@ internal sealed class MainWindowSmokeTests
             Assert(window.IsRealProfilePreflightConfirmationVisible, "MainWindow should show the real-profile preflight acknowledgement.");
             Assert(!window.IsRealProfilePreflightConfirmed, "Real-profile preflight acknowledgement should start unchecked.");
             Assert(
+                window.RealProfilePreflightCheckBoxToolTipValue.Contains("MVP preflight", StringComparison.OrdinalIgnoreCase)
+                && window.RealProfilePreflightCheckBoxToolTipValue.Contains("fixture review", StringComparison.OrdinalIgnoreCase)
+                && window.RealProfilePreflightCheckBoxToolTipValue.Contains("does not run preflight", StringComparison.OrdinalIgnoreCase)
+                && window.RealProfilePreflightCheckBoxToolTipValue.Contains("start scanning", StringComparison.OrdinalIgnoreCase)
+                && window.RealProfilePreflightCheckBoxToolTipValue.Contains("approve cleanup", StringComparison.OrdinalIgnoreCase),
+                "Real-profile acknowledgement tooltip should explain local acknowledgement boundaries.");
+            Assert(
+                window.RealProfilePreflightCheckBoxAutomationHelpTextValue.Contains("MVP preflight", StringComparison.OrdinalIgnoreCase)
+                && window.RealProfilePreflightCheckBoxAutomationHelpTextValue.Contains("fixture review", StringComparison.OrdinalIgnoreCase)
+                && window.RealProfilePreflightCheckBoxAutomationHelpTextValue.Contains("does not run preflight", StringComparison.OrdinalIgnoreCase)
+                && window.RealProfilePreflightCheckBoxAutomationHelpTextValue.Contains("start scanning", StringComparison.OrdinalIgnoreCase)
+                && window.RealProfilePreflightCheckBoxAutomationHelpTextValue.Contains("approve cleanup", StringComparison.OrdinalIgnoreCase),
+                "Real-profile acknowledgement automation help text should explain local acknowledgement boundaries.");
+            Assert(
                 window.ScanGateSummaryTextValue.Contains("Scan locked for real profile", StringComparison.OrdinalIgnoreCase)
                 && window.ScanGateSummaryTextValue.Contains("run MVP preflight", StringComparison.OrdinalIgnoreCase)
                 && window.ScanGateSummaryTextValue.Contains("tick the acknowledgement", StringComparison.OrdinalIgnoreCase),

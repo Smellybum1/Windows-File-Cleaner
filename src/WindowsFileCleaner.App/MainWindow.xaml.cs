@@ -96,6 +96,10 @@ public partial class MainWindow : Window
 
     public bool IsRealProfilePreflightConfirmed => RealProfilePreflightCheckBox.IsChecked == true;
 
+    public string RealProfilePreflightCheckBoxToolTipValue => RealProfilePreflightCheckBox.ToolTip?.ToString() ?? "";
+
+    public string RealProfilePreflightCheckBoxAutomationHelpTextValue => AutomationProperties.GetHelpText(RealProfilePreflightCheckBox);
+
     public string ScanGateTextValue => ScanGateText.Text;
 
     public string ScanGateSummaryTextValue => ScanGateSummaryText.Text;
