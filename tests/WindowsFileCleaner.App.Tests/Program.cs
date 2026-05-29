@@ -29,6 +29,7 @@ internal static class Program
                 tests.MainWindowExecutesQuarantineForFixtureScopeOnly();
                 tests.MainWindowDiscoversQuarantineManifestsReadOnly();
                 tests.MainWindowKeepsQuarantineExecutionUnavailableForCustomScope();
+                tests.MainWindowKeepsSelectedRestoreUnavailableForCustomScope();
                 tests.MainWindowBlocksQuarantinePreviewForParentWithProtectedDescendant();
             }
             finally
@@ -77,6 +78,7 @@ internal sealed class MainWindowSmokeTests
             Assert(!window.CanPreviewSelectedRestoreManifestReadiness, "MainWindow should not enable selected Restore Manifest review before discovery.");
             Assert(!window.CanPreviewSelectedRestoreGate, "MainWindow should not enable selected restore gate preview before selected readiness.");
             Assert(!window.CanEnterSelectedRestoreConfirmation, "MainWindow should not allow selected restore confirmation before gate preview.");
+            Assert(!window.CanExecuteSelectedRestore, "MainWindow should not allow selected restore execution before gate preview.");
             Assert(window.BrowseQuarantineRootButtonText.Contains("Browse", StringComparison.OrdinalIgnoreCase), "Quarantine root browse action should be visible in the review toolbar.");
             Assert(
                 window.CurrentQuarantineRootPath == QuarantinePreviewBuilder.DefaultQuarantineRootPath,
@@ -810,25 +812,28 @@ internal sealed class MainWindowSmokeTests
                 && discoveryWindow.CurrentStatusText.Contains("No files were modified", StringComparison.OrdinalIgnoreCase),
                 "Selected restore gate status should report a read-only result.");
             Assert(discoveryWindow.CanEnterSelectedRestoreConfirmation, "Selected restore confirmation should become editable after gate preview.");
+            Assert(!discoveryWindow.CanExecuteSelectedRestore, "Selected restore execution should stay closed before exact RESTORE.");
             Assert(
                 selectedGateText.Contains("Selected Restore Confirmation Draft:", StringComparison.OrdinalIgnoreCase)
                 && selectedGateText.Contains("Required future text: RESTORE", StringComparison.OrdinalIgnoreCase)
                 && selectedGateText.Contains("Selected Restore Execution Gate: read-only", StringComparison.OrdinalIgnoreCase)
-                && selectedGateText.Contains("Execution implemented: no", StringComparison.OrdinalIgnoreCase)
+                && selectedGateText.Contains("Execution implemented: yes", StringComparison.OrdinalIgnoreCase)
                 && selectedGateText.Contains("Can execute: no", StringComparison.OrdinalIgnoreCase)
-                && selectedGateText.Contains("No restore action is available", StringComparison.OrdinalIgnoreCase),
-                "Selected restore gate pane should show read-only confirmation evidence without enabling restore. Text: " + selectedGateText);
+                && selectedGateText.Contains("No files were modified", StringComparison.OrdinalIgnoreCase),
+                "Selected restore gate pane should show fixture confirmation evidence before exact RESTORE. Text: " + selectedGateText);
             discoveryWindow.SetSelectedRestoreConfirmationText("NOPE");
             Assert(
                 discoveryWindow.SelectedRestoreExecutionGateTextValue.Contains("Entered confirmation matches: no", StringComparison.OrdinalIgnoreCase),
                 "Wrong selected restore confirmation text should not match.");
+            Assert(!discoveryWindow.CanExecuteSelectedRestore, "Wrong selected restore confirmation text should not enable selected restore.");
             discoveryWindow.SetSelectedRestoreConfirmationText("RESTORE");
             var matchedSelectedGateText = discoveryWindow.SelectedRestoreExecutionGateTextValue;
             Assert(
                 matchedSelectedGateText.Contains("Entered confirmation matches: yes", StringComparison.OrdinalIgnoreCase)
-                && matchedSelectedGateText.Contains("Execution implemented: no", StringComparison.OrdinalIgnoreCase)
-                && matchedSelectedGateText.Contains("Can execute: no", StringComparison.OrdinalIgnoreCase),
-                "Exact RESTORE should match but still not execute in this build. Text: " + matchedSelectedGateText);
+                && matchedSelectedGateText.Contains("Execution implemented: yes", StringComparison.OrdinalIgnoreCase)
+                && matchedSelectedGateText.Contains("Can execute: yes", StringComparison.OrdinalIgnoreCase),
+                "Exact RESTORE should open selected fixture restore execution. Text: " + matchedSelectedGateText);
+            Assert(discoveryWindow.CanExecuteSelectedRestore, "Exact RESTORE should enable selected fixture restore execution.");
             Assert(File.Exists(quarantinePath), "Selected restore gate should not move quarantined files.");
             Assert(!File.Exists(originalPath), "Selected restore gate should not restore original paths.");
 
@@ -850,6 +855,23 @@ internal sealed class MainWindowSmokeTests
                 "Restore readiness pane should not imply old-manifest restore is available.");
             Assert(File.Exists(quarantinePath), "Restore readiness preview should not move quarantined files.");
             Assert(!File.Exists(originalPath), "Restore readiness preview should not restore original paths.");
+
+            discoveryWindow.ExecuteSelectedRestoreForCurrentSelection();
+
+            Assert(!discoveryWindow.CanExecuteSelectedRestore, "Selected fixture restore should disable after the execution attempt.");
+            Assert(!discoveryWindow.CanEnterSelectedRestoreConfirmation, "Selected restore confirmation should disable after execution attempt.");
+            Assert(File.Exists(originalPath), "Selected fixture restore should restore the original fixture file.");
+            Assert(!File.Exists(quarantinePath), "Selected fixture restore should move the file out of quarantine.");
+            Assert(File.Exists(manifestPath), "Selected fixture restore should keep the Restore Manifest for recovery evidence.");
+            Assert(
+                discoveryWindow.CurrentStatusText.Contains("Fixture Selected Restore completed", StringComparison.OrdinalIgnoreCase)
+                && discoveryWindow.CurrentStatusText.Contains("Rediscover", StringComparison.OrdinalIgnoreCase),
+                "Selected fixture restore status should report completion and stale discovery state.");
+            Assert(
+                discoveryWindow.SelectedRestoreExecutionGateTextValue.Contains("Selected restore result: Restored 1", StringComparison.OrdinalIgnoreCase)
+                && discoveryWindow.SelectedRestoreExecutionGateTextValue.Contains("Current scan, discovery, and readiness rows are stale", StringComparison.OrdinalIgnoreCase)
+                && discoveryWindow.SelectedRestoreExecutionGateTextValue.Contains("Selected restore row | Restored", StringComparison.OrdinalIgnoreCase),
+                "Selected restore gate pane should show fixture restore result evidence.");
         }
         finally
         {
@@ -885,6 +907,54 @@ internal sealed class MainWindowSmokeTests
                 "Custom-scope gate should explain the scope-specific execution blocker.");
             Assert(File.Exists(installer.FullPath), "Custom-scope execution blocker should leave the source file untouched.");
             Assert(!Directory.Exists(customQuarantineRoot), "Custom-scope execution blocker should not create quarantine folders.");
+        }
+        finally
+        {
+            window.Close();
+        }
+    }
+
+    public void MainWindowKeepsSelectedRestoreUnavailableForCustomScope()
+    {
+        using var fixture = SmokeFixture.CreateCustomScope();
+        var customQuarantineRoot = Path.Combine(fixture.RootPath, "custom-selected-restore-quarantine-root");
+        var execution = CreateExecutedRestoreManifest(
+            fixture.RootPath,
+            customQuarantineRoot,
+            @"Downloads\old-installer.msi",
+            "custom-selected-restore");
+        var entry = execution.RestoreManifest.Entries.Single();
+        var window = new MainWindow(fixture.RootPath);
+        try
+        {
+            Assert(execution.Succeeded, "Custom-scope setup should create a moved Restore Manifest for selected restore blocker review.");
+            Assert(File.Exists(entry.QuarantinePath), "Custom-scope setup should place the synthetic file in quarantine.");
+            Assert(!File.Exists(entry.OriginalPath), "Custom-scope setup should leave the original path moved.");
+
+            window.SetQuarantineRootForPreview(customQuarantineRoot);
+            window.DiscoverQuarantineManifestsForCurrentRoot();
+            Assert(window.SelectDiscoveredRestoreManifestByPath(execution.RestoreManifest.ManifestPath), "Custom-scope Restore Manifest should be selectable by path.");
+            window.PreviewSelectedRestoreManifestReadiness();
+            window.PreviewSelectedRestoreGateForCurrentSelection();
+
+            Assert(
+                window.SelectedRestoreExecutionGateTextValue.Contains("Execution implemented: no", StringComparison.OrdinalIgnoreCase),
+                "Custom-scope selected restore gate should keep execution unavailable.");
+            window.SetSelectedRestoreConfirmationText("RESTORE");
+            Assert(
+                window.SelectedRestoreExecutionGateTextValue.Contains("Entered confirmation matches: yes", StringComparison.OrdinalIgnoreCase)
+                && window.SelectedRestoreExecutionGateTextValue.Contains("Can execute: no", StringComparison.OrdinalIgnoreCase),
+                "Custom-scope selected restore should match RESTORE but stay closed.");
+            Assert(!window.CanExecuteSelectedRestore, "Custom-scope selected restore execution should remain unavailable.");
+
+            window.ExecuteSelectedRestoreForCurrentSelection();
+
+            Assert(
+                window.CurrentStatusText.Contains("gate is not open", StringComparison.OrdinalIgnoreCase)
+                && window.CurrentStatusText.Contains("No files were modified", StringComparison.OrdinalIgnoreCase),
+                "Custom-scope selected restore execution attempt should report a closed gate.");
+            Assert(File.Exists(entry.QuarantinePath), "Custom-scope selected restore blocker should leave quarantined file in place.");
+            Assert(!File.Exists(entry.OriginalPath), "Custom-scope selected restore blocker should not restore original path.");
         }
         finally
         {
@@ -980,6 +1050,43 @@ internal sealed class MainWindowSmokeTests
         {
             throw new InvalidOperationException(message);
         }
+    }
+
+    private static QuarantineExecutionResult CreateExecutedRestoreManifest(
+        string cleanupScopePath,
+        string quarantineRootPath,
+        string relativePath,
+        string idSuffix)
+    {
+        var scanner = new StorageScanner();
+        var result = scanner.Scan(new StorageScanOptions(cleanupScopePath));
+        var review = StorageScanReviewBuilder.Build(result);
+        var selectedRow = review.Entries.Single(entry =>
+            entry.Entry.FullPath.EndsWith(relativePath, StringComparison.OrdinalIgnoreCase));
+        var preview = QuarantinePreviewBuilder.Build([selectedRow], cleanupScopePath, quarantineRootPath);
+        var manifestDraft = RestoreManifestDraftBuilder.Build(
+            preview,
+            new DateTimeOffset(2026, 5, 29, 7, 8, 9, TimeSpan.Zero),
+            $"manifest-draft-{idSuffix}");
+        var confirmation = QuarantineConfirmationDraftBuilder.Build(
+            preview,
+            manifestDraft,
+            new DateTimeOffset(2026, 5, 29, 8, 9, 10, TimeSpan.Zero),
+            $"confirmation-draft-{idSuffix}",
+            isExecutionImplemented: true);
+        var actionDraft = QuarantineActionDraftBuilder.Build(
+            preview,
+            manifestDraft,
+            confirmation,
+            new DateTimeOffset(2026, 5, 29, 9, 10, 11, TimeSpan.Zero),
+            $"quarantine-action-{idSuffix}");
+        var manifest = RestoreManifestBuilder.BuildPlanned(
+            actionDraft,
+            manifestDraft,
+            new DateTimeOffset(2026, 5, 29, 10, 11, 12, TimeSpan.Zero),
+            $"restore-manifest-{idSuffix}");
+
+        return QuarantineExecutor.Execute(manifest);
     }
 }
 

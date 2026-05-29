@@ -6,11 +6,11 @@ Use it to preserve what was completed, what was verified, what was rejected, and
 
 ## Current status
 
-Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. The app has a broad read-only review workflow, fixture launch/preflight tooling, Quarantine Preview, Restore Manifest Draft, Quarantine Confirmation Draft, Quarantine Action Draft, write-ahead Restore Manifest persistence, core Quarantine execution, core Undo Quarantine, fixture-only WPF Quarantine execution, WPF undo for the current fixture execution, read-only Quarantine Manifest Discovery, read-only Selected Restore Manifest Review, read-only Selected Restore Confirmation Gate, and read-only Restore Readiness Preview. Real-profile WPF Quarantine execution, broad WPF Undo Quarantine that restores discovered manifests, permanent deletion, and persisted cleanup history remain unavailable.
+Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. The app has a broad read-only review workflow, fixture launch/preflight tooling, Quarantine Preview, Restore Manifest Draft, Quarantine Confirmation Draft, Quarantine Action Draft, write-ahead Restore Manifest persistence, core Quarantine execution, core Undo Quarantine, fixture-only WPF Quarantine execution, WPF undo for the current fixture execution, Quarantine Manifest Discovery, Selected Restore Manifest Review, Selected Restore Confirmation Gate, Fixture-only Selected Restore Execution, and Restore Readiness Preview. Real-profile WPF Quarantine execution, real-profile WPF Undo Quarantine, permanent deletion, and persisted cleanup history remain unavailable.
 
 ## Next recommended work
 
-1. Run `.\tools\Start-MvpFixtureReview.ps1`, confirm the launched app shows Fixture Cleanup Scope, click `Scan`, and manually inspect layout, visible wording, Storage Review Search, Storage Review Display Window controls, the `Relative path` and `Parent` columns, Selected Path Hierarchy Context, Selected File Content Preview, Selected Path Review Guidance, export dialogs, Safety Summary shortcuts, Review Shortlist, Shortlist shown, Remove shown, typed/browsed Quarantine Root Selection, Quarantine Root Safety Note, Quarantine Preview, Quarantine Execution Gate, Quarantine Action Draft, fixture-only `Execute quarantine`, current-fixture `Undo fixture quarantine`, read-only `Discover manifests`, read-only `Preview selected readiness`, read-only `Preview selected restore gate`, read-only `Preview restore readiness`, Review Mix, Access issues filter, category filter, No category filter, Size filter, and filter wording.
+1. Run `.\tools\Start-MvpFixtureReview.ps1`, confirm the launched app shows Fixture Cleanup Scope, click `Scan`, and manually inspect layout, visible wording, Storage Review Search, Storage Review Display Window controls, the `Relative path` and `Parent` columns, Selected Path Hierarchy Context, Selected File Content Preview, Selected Path Review Guidance, export dialogs, Safety Summary shortcuts, Review Shortlist, Shortlist shown, Remove shown, typed/browsed Quarantine Root Selection, Quarantine Root Safety Note, Quarantine Preview, Quarantine Execution Gate, Quarantine Action Draft, fixture-only `Execute quarantine`, current-fixture `Undo fixture quarantine`, `Discover manifests`, `Preview selected readiness`, `Preview selected restore gate`, fixture-only `Restore selected fixture manifest`, `Preview restore readiness`, Review Mix, Access issues filter, category filter, No category filter, Size filter, and filter wording.
 2. Use `README.md` and `docs/features/2026-05-28-mvp-readiness-audit.md` to rerun the WPF app against `C:\Users\moxhe`; confirm `Scan` is disabled until the real-profile preflight acknowledgement is checked.
 3. Run `.\tools\Invoke-MvpPreflight.ps1` before any later real-profile scan if the worktree changes.
 4. Rerun the real scan and check whether the cleanup scope root row, `Relative path`, `Parent`, `Contents`, and `Access` columns, Size filter, `access:readable` / `access:access issue` search, Previous rows / Next rows, Safety Summary candidate and no-category examples, selected-row relative/parent/depth/access context, cache-specific Review guidance, specific rebuildable cache candidates such as `DXCache` and `pip\Cache`, conservative game/mod-manager labels such as OptiFine/CurseForge/Vortex, Cloud sync data and Credential data labels, and `Preview file` action make unfamiliar rows easier to triage.
@@ -4190,3 +4190,61 @@ Rejected ideas buffer:
 - Do not treat typed `RESTORE` as approval while execution is unavailable.
 - Do not expose a selected restore execution button yet.
 - Do not reuse the Quarantine confirmation phrase for restore.
+
+### 2026-05-29: Add Fixture-only Selected Restore Execution
+
+Status: completed
+
+Evidence:
+
+- Selected Restore Manifest Review and Selected Restore Confirmation Gate prove selected manifest, selected readiness, and exact `RESTORE` confirmation semantics.
+- Current-fixture WPF undo proves the visible app can call `UndoQuarantineExecutor` safely for synthetic fixture files.
+- ADR 0015 selects fixture-only selected restore execution before any real-profile selected restore workflow.
+
+Implementation:
+
+- Added ADR 0015 for fixture-only selected restore execution.
+- Added WPF `Restore selected fixture manifest` action.
+- WPF now marks selected restore execution available only when the selected Restore Manifest Cleanup Scope is recognized as a fixture.
+- WPF calls `UndoQuarantineExecutor.Undo` for selected discovered fixture Restore Manifests after clean selected readiness and exact `RESTORE`.
+- WPF shows selected restore result evidence and stale-state wording, then disables repeat selected restore for the current selected review.
+- Custom non-fixture selected restore remains blocked even when `RESTORE` is typed.
+- Kept real-profile selected restore, real-profile Quarantine execution, permanent deletion, cleanup history, and quarantine-folder cleanup unavailable.
+
+Verification:
+
+- `dotnet run --project tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj` passed.
+- `dotnet run --project tests\WindowsFileCleaner.Tests\WindowsFileCleaner.Tests.csproj` passed.
+- `dotnet build WindowsFileCleaner.sln --no-restore` passed with 0 warnings and 0 errors.
+- `dotnet run --project tests\WindowsFileCleaner.Tests\WindowsFileCleaner.Tests.csproj --no-build` passed.
+- `dotnet run --project tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj --no-build` passed.
+- `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\Invoke-MvpPreflight.ps1` passed.
+- Preflight restored, built, ran core tests, ran WPF app tests, ran fixture `-WhatIf`, ran `git diff --check`, and reported that no real user files were scanned or modified.
+- `git diff --check` passed.
+
+Docs updated:
+
+- `README.md`
+- `docs/domain/context.md`
+- `docs/domain/glossary.md`
+- `docs/decisions/0015-use-fixture-only-selected-restore-execution.md`
+- `docs/features/2026-05-28-mvp-readiness-audit.md`
+- `docs/features/2026-05-29-fixture-only-selected-restore-execution.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- Added `docs/decisions/0015-use-fixture-only-selected-restore-execution.md`.
+
+Open questions:
+
+- Should successful selected restore offer empty action-folder cleanup?
+- What extra backup/manual review should real-profile selected restore require?
+- Should selected restore refresh discovery automatically after execution or require the user to rediscover?
+
+Rejected ideas buffer:
+
+- Do not enable real-profile selected restore in this packet.
+- Do not implement restore movement in WPF.
+- Do not clean up action folders after selected restore.
+- Do not let selected restore run more than once for the same current selected review.

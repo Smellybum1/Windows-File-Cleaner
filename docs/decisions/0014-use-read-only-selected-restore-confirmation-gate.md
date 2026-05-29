@@ -97,4 +97,4 @@ Low before selected old-manifest restore execution depends on this gate. Later, 
 
 ## Superseded by
 
-- None.
+- ADR 0015 supersedes the WPF execution-availability part for fixture Restore Manifests only. The selected restore confirmation draft and gate model remain in use.

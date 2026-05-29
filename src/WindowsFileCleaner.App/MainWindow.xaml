@@ -593,6 +593,11 @@
                                          VerticalContentAlignment="Center"
                                          ToolTip="Read-only selected restore gate. Discovered-manifest restore execution is unavailable in this build."
                                          TextChanged="SelectedRestoreConfirmationBox_TextChanged" />
+                                <Button x:Name="ExecuteSelectedRestoreButton"
+                                        Content="Restore selected fixture manifest"
+                                        MinWidth="215"
+                                        IsEnabled="False"
+                                        Click="ExecuteSelectedRestoreButton_Click" />
                             </WrapPanel>
                             <TextBlock x:Name="SelectedRestoreExecutionGateText"
                                        Text="Selected Restore Confirmation Draft appears after Preview selected restore gate."

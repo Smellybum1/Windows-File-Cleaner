@@ -27,6 +27,7 @@ public partial class MainWindow : Window
     private SelectedRestoreManifestReview? _currentSelectedRestoreManifestReview;
     private SelectedRestoreConfirmationDraft? _currentSelectedRestoreConfirmationDraft;
     private SelectedRestoreExecutionGate? _currentSelectedRestoreExecutionGate;
+    private UndoQuarantineResult? _currentSelectedRestoreResult;
     private string? _currentCleanupScopePath;
     private StorageReviewFilter _currentFilter = StorageReviewFilter.All;
     private StorageCategoryFilter _currentCategoryFilter = StorageCategoryFilter.All;
@@ -205,6 +206,8 @@ public partial class MainWindow : Window
     public bool CanEnterSelectedRestoreConfirmation => SelectedRestoreConfirmationBox.IsEnabled;
 
     public string CurrentSelectedRestoreConfirmationText => SelectedRestoreConfirmationBox.Text;
+
+    public bool CanExecuteSelectedRestore => ExecuteSelectedRestoreButton.IsEnabled;
 
     public int DiscoveredRestoreManifestCount => _currentQuarantineManifestDiscovery?.ManifestCount ?? 0;
 
@@ -1266,13 +1269,14 @@ public partial class MainWindow : Window
             _currentSelectedRestoreManifestReview,
             DateTimeOffset.UtcNow,
             BuildDraftId("selected-restore-confirmation"),
-            isExecutionImplemented: false);
+            isExecutionImplemented: IsSelectedRestoreExecutionAvailable());
         _currentSelectedRestoreExecutionGate = SelectedRestoreExecutionGateBuilder.Build(
             _currentSelectedRestoreConfirmationDraft,
             SelectedRestoreConfirmationBox.Text);
         SelectedRestoreExecutionGateText.Text = FormatSelectedRestoreExecutionGate(
             _currentSelectedRestoreConfirmationDraft,
-            _currentSelectedRestoreExecutionGate);
+            _currentSelectedRestoreExecutionGate,
+            _currentSelectedRestoreResult);
         UpdateQuarantineManifestDiscoveryControls();
 
         StatusText.Text = $"Selected Restore Confirmation Draft completed: {_currentSelectedRestoreConfirmationDraft.RestorableEntryCount:N0} restorable entries, {_currentSelectedRestoreConfirmationDraft.Blockers.Count:N0} blocker(s). No files were modified.";
@@ -1713,9 +1717,14 @@ public partial class MainWindow : Window
             && hasDiscoveredManifest
             && SelectedRestoreManifestPath is not null;
         PreviewSelectedRestoreGateButton.IsEnabled = !_isScanning
-            && _currentSelectedRestoreManifestReview?.HasReadinessPreview == true;
+            && _currentSelectedRestoreManifestReview?.HasReadinessPreview == true
+            && _currentSelectedRestoreResult is null;
         SelectedRestoreConfirmationBox.IsEnabled = !_isScanning
-            && _currentSelectedRestoreConfirmationDraft is not null;
+            && _currentSelectedRestoreConfirmationDraft is not null
+            && _currentSelectedRestoreResult is null;
+        ExecuteSelectedRestoreButton.IsEnabled = !_isScanning
+            && _currentSelectedRestoreExecutionGate?.CanExecute == true
+            && _currentSelectedRestoreResult is null;
     }
 
     private void SetSearchTextSilently(string text)
@@ -1753,6 +1762,29 @@ public partial class MainWindow : Window
             && _currentRestoreManifest is not null
             && _currentRestoreManifest.Entries.Any(entry => entry.Status == RestoreManifestEntryStatus.Moved)
             && IsFixtureQuarantineExecutionAvailable();
+    }
+
+    private bool IsSelectedRestoreExecutionAvailable()
+    {
+        var cleanupScopePath = _currentSelectedRestoreManifestReview?.SelectedManifest?.CleanupScopePath;
+        if (string.IsNullOrWhiteSpace(cleanupScopePath) || _currentSelectedRestoreResult is not null)
+        {
+            return false;
+        }
+
+        return CleanupScopeSafetyNoteBuilder.Build(cleanupScopePath).IsFixtureScope;
+    }
+
+    private RestoreManifest? FindSelectedRestoreManifest()
+    {
+        var selectedPath = SelectedRestoreManifestPath;
+        if (string.IsNullOrWhiteSpace(selectedPath) || _currentQuarantineManifestDiscovery is null)
+        {
+            return null;
+        }
+
+        return _currentQuarantineManifestDiscovery.RestoreManifests
+            .FirstOrDefault(manifest => SamePath(manifest.ManifestPath, selectedPath));
     }
 
     private void ReportInvalidQuarantineRootPath(QuarantineRootSafetyNote note)
@@ -1800,6 +1832,7 @@ public partial class MainWindow : Window
     {
         _currentSelectedRestoreConfirmationDraft = null;
         _currentSelectedRestoreExecutionGate = null;
+        _currentSelectedRestoreResult = null;
         SetSelectedRestoreConfirmationTextSilently("");
         if (SelectedRestoreExecutionGateText is not null)
         {
@@ -1911,12 +1944,19 @@ public partial class MainWindow : Window
             SelectedRestoreConfirmationBox.Text);
         SelectedRestoreExecutionGateText.Text = FormatSelectedRestoreExecutionGate(
             _currentSelectedRestoreConfirmationDraft,
-            _currentSelectedRestoreExecutionGate);
+            _currentSelectedRestoreExecutionGate,
+            _currentSelectedRestoreResult);
+        UpdateQuarantineManifestDiscoveryControls();
     }
 
     private void ExecuteQuarantineButton_Click(object sender, RoutedEventArgs e)
     {
         ExecuteQuarantineForCurrentPreview();
+    }
+
+    private void ExecuteSelectedRestoreButton_Click(object sender, RoutedEventArgs e)
+    {
+        ExecuteSelectedRestoreForCurrentSelection();
     }
 
     private void UndoQuarantineButton_Click(object sender, RoutedEventArgs e)
@@ -1947,6 +1987,41 @@ public partial class MainWindow : Window
         StatusText.Text = result.Succeeded
             ? $"Fixture Quarantine execution completed: {result.MovedCount:N0} moved, {result.RestoreManifest.TotalSizeDisplay} quarantined. Rescan before further review."
             : $"Fixture Quarantine execution needs recovery review: {result.MovedCount:N0} moved, {result.FailedCount:N0} failed. Rescan before further review.";
+    }
+
+    public void ExecuteSelectedRestoreForCurrentSelection()
+    {
+        if (_currentSelectedRestoreExecutionGate?.CanExecute != true || _currentSelectedRestoreConfirmationDraft is null)
+        {
+            StatusText.Text = "Selected restore execution gate is not open. No files were modified.";
+            return;
+        }
+
+        var manifest = FindSelectedRestoreManifest();
+        if (manifest is null)
+        {
+            StatusText.Text = "Selected Restore Manifest is no longer available in current discovery. No files were modified.";
+            return;
+        }
+
+        _currentSelectedRestoreResult = UndoQuarantineExecutor.Undo(manifest);
+        _currentSelectedRestoreExecutionGate = _currentSelectedRestoreExecutionGate with
+        {
+            Blockers = _currentSelectedRestoreExecutionGate.Blockers
+                .Concat(["Selected restore execution has already been attempted for this selected manifest review. Rediscover manifests before another selected restore attempt."])
+                .ToArray()
+        };
+        SetSelectedRestoreConfirmationTextSilently("");
+        SelectedRestoreExecutionGateText.Text = FormatSelectedRestoreExecutionGate(
+            _currentSelectedRestoreConfirmationDraft,
+            _currentSelectedRestoreExecutionGate,
+            _currentSelectedRestoreResult);
+        UpdateQuarantineManifestDiscoveryControls();
+
+        var result = _currentSelectedRestoreResult;
+        StatusText.Text = result.Succeeded
+            ? $"Fixture Selected Restore completed: {result.RestoredCount:N0} restored. Rediscover manifests and rescan before further review."
+            : $"Fixture Selected Restore needs recovery review: {result.RestoredCount:N0} restored, {result.FailedCount:N0} failed. Rediscover manifests and rescan before further review.";
     }
 
     public void UndoQuarantineForCurrentExecution()
@@ -2268,7 +2343,8 @@ public partial class MainWindow : Window
 
     private static string FormatSelectedRestoreExecutionGate(
         SelectedRestoreConfirmationDraft confirmationDraft,
-        SelectedRestoreExecutionGate gate)
+        SelectedRestoreExecutionGate gate,
+        UndoQuarantineResult? selectedRestoreResult = null)
     {
         var selectedPath = string.IsNullOrWhiteSpace(confirmationDraft.SelectedManifestPath)
             ? "(none)"
@@ -2283,7 +2359,9 @@ public partial class MainWindow : Window
             $"Entered confirmation matches: {FormatYesNo(gate.IsConfirmationTextMatched)}",
             $"Execution implemented: {FormatYesNo(gate.IsExecutionImplemented)}",
             $"Can execute: {FormatYesNo(gate.CanExecute)}",
-            "No restore action is available from this selected restore gate."
+            selectedRestoreResult is null
+                ? "No files were modified by this selected restore gate."
+                : "Fixture Selected Restore has restored synthetic files where possible. Current scan, discovery, and readiness rows are stale."
         };
 
         foreach (var blocker in gate.Blockers.Take(8))
@@ -2299,6 +2377,30 @@ public partial class MainWindow : Window
         foreach (var note in gate.ReviewNotes.Take(4))
         {
             lines.Add($"Selected restore gate note | {note}");
+        }
+
+        if (selectedRestoreResult is not null)
+        {
+            lines.Add($"Selected restore result: Restored {selectedRestoreResult.RestoredCount:N0} | Failed {selectedRestoreResult.FailedCount:N0} | Recovery review: {FormatYesNo(selectedRestoreResult.RequiresRecoveryReview)}");
+
+            foreach (var blocker in selectedRestoreResult.Blockers.Take(6))
+            {
+                lines.Add($"Selected restore result blocker | {blocker}");
+            }
+
+            foreach (var entry in selectedRestoreResult.Entries.Take(8))
+            {
+                var status = entry.WasRestored ? "Restored" : "Failed";
+                var error = string.IsNullOrWhiteSpace(entry.ErrorMessage)
+                    ? ""
+                    : $" | Error: {entry.ErrorMessage}";
+                lines.Add($"Selected restore row | {status} | {entry.QuarantinePath} -> {entry.OriginalPath}{error}");
+            }
+
+            if (selectedRestoreResult.Entries.Count > 8)
+            {
+                lines.Add($"... {selectedRestoreResult.Entries.Count - 8:N0} more selected restore row(s) not shown in this pane.");
+            }
         }
 
         return string.Join(Environment.NewLine, lines);

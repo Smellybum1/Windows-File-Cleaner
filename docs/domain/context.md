@@ -2515,21 +2515,21 @@ Last reviewed: 2026-05-29
 
 #### Definition
 
-Selected Restore Execution Gate is the read-only gate that combines a Selected Restore Confirmation Draft, typed confirmation text, and selected restore execution availability.
+Selected Restore Execution Gate is the gate that combines a Selected Restore Confirmation Draft, typed confirmation text, and selected restore execution availability.
 
-In the current WPF app, selected restore execution availability is always false for discovered older manifests.
+In the current WPF app, selected restore execution availability can be true only for selected discovered Restore Manifests whose Cleanup Scope is a recognized fixture Cleanup Scope.
 
 #### Examples
 
 - Showing `Entered confirmation matches: yes` after the user types `RESTORE`.
-- Showing `Execution implemented: no` and `Can execute: no` in the current build.
+- Showing `Execution implemented: yes` and `Can execute: yes` for a selected fixture Restore Manifest after exact `RESTORE` confirmation.
+- Showing `Execution implemented: no` and `Can execute: no` for real-profile or custom non-fixture selected Restore Manifests.
 - Reporting confirmation-readiness blockers before any future restore action can open.
 
 #### Non-examples
 
-- A restore button.
 - Approval to restore.
-- WPF Undo Quarantine execution.
+- Real-profile WPF Undo Quarantine execution.
 - A persisted cleanup job.
 
 #### Lifecycle
@@ -2537,7 +2537,7 @@ In the current WPF app, selected restore execution availability is always false 
 - Created after Selected Restore Confirmation Draft.
 - Refreshes when the selected restore confirmation text changes.
 - Is discarded when selected readiness, selected manifest, discovery, or Quarantine Root changes.
-- Does not create, move, delete, restore, write, or clean up files or folders.
+- Does not create, move, delete, restore, write, or clean up files or folders by itself.
 
 #### Relationships
 
@@ -2549,8 +2549,57 @@ In the current WPF app, selected restore execution availability is always false 
 
 - Use `SelectedRestoreExecutionGate` and `SelectedRestoreExecutionGateBuilder`.
 - Keep `CanExecute` false unless the exact `RESTORE` text matches, selected restore execution is implemented, and blockers are clear.
-- WPF must keep selected restore execution unavailable in the current build.
-- Do not expose a restore execution button from this gate yet.
+- WPF must keep selected restore execution unavailable for real-profile and custom non-fixture manifests.
+
+### Fixture-only Selected Restore Execution
+
+Status: draft
+Last reviewed: 2026-05-29
+
+#### Definition
+
+Fixture-only Selected Restore Execution is the visible WPF restore path that restores a selected discovered Restore Manifest only when that manifest belongs to a recognized fixture Cleanup Scope.
+
+It is the fixture proof for selected old-manifest restore, not real-profile Undo Quarantine.
+
+#### Examples
+
+- Discovering a fixture Restore Manifest in a new WPF window, selecting it, previewing selected readiness, typing `RESTORE`, and restoring the synthetic file from quarantine.
+- Showing selected restore result rows and stale-state guidance after the restore attempt.
+- Blocking the same workflow for a custom non-fixture Cleanup Scope even when `RESTORE` is typed.
+
+#### Non-examples
+
+- Real-profile WPF Undo Quarantine.
+- Custom non-fixture selected restore execution.
+- Permanent deletion.
+- Cleanup history.
+- Quarantine folder cleanup.
+
+#### Lifecycle
+
+- Requires a current Quarantine Manifest Discovery result.
+- Requires Selected Restore Manifest Review with readiness output.
+- Requires Selected Restore Confirmation Draft with no data blockers.
+- Requires Selected Restore Execution Gate to be open after exact `RESTORE`.
+- Calls `UndoQuarantineExecutor.Undo` for the selected Restore Manifest.
+- Disables repeat selected restore execution for the current selected review after an attempt.
+- Tells the user to rediscover manifests and rescan before further review.
+
+#### Relationships
+
+- Depends on Selected Restore Execution Gate.
+- Depends on Undo Quarantine Executor.
+- Implements ADR 0015.
+- Precedes real-profile selected restore execution.
+
+#### Code implications
+
+- Use `ExecuteSelectedRestoreForCurrentSelection` for the WPF action.
+- Use `UndoQuarantineExecutor.Undo`; do not implement restore movement in WPF code.
+- Use `CleanupScopeSafetyNoteBuilder.IsFixtureScope` to restrict visible selected restore execution to fixture Cleanup Scopes.
+- Keep real-profile and custom non-fixture selected restore execution unavailable.
+- Do not clean up quarantine folders in this action.
 
 ### Restore Readiness Preview
 
@@ -2696,7 +2745,7 @@ Last reviewed: 2026-05-29
 
 Undo Quarantine restores quarantined files or folders to their original locations when feasible.
 
-The current core implementation is fixture-tested through Undo Quarantine Executor. WPF exposes only current-fixture undo after fixture-only execution.
+The current core implementation is fixture-tested through Undo Quarantine Executor. WPF exposes current-fixture undo after fixture-only execution and fixture-only selected restore execution for discovered fixture Restore Manifests.
 
 #### Examples
 
@@ -2714,7 +2763,7 @@ The current core implementation is fixture-tested through Undo Quarantine Execut
 - Uses the Restore Manifest to return files to original paths.
 - Must refuse to overwrite an original path that now exists.
 - Must preserve recovery evidence when restore or manifest writes fail.
-- Broad WPF Undo Quarantine that restores discovered manifests remains a future workflow.
+- Broad WPF Undo Quarantine that restores real-profile discovered manifests remains a future workflow.
 
 #### Relationships
 
@@ -2726,6 +2775,7 @@ The current core implementation is fixture-tested through Undo Quarantine Execut
 - Has read-only Restore Readiness Preview for discovered manifest blockers.
 - Has read-only Selected Restore Manifest Review for focusing one discovered manifest before any broad restore action exists.
 - Has read-only Selected Restore Confirmation Draft and Selected Restore Execution Gate for exact-confirmation semantics before any selected restore action exists.
+- Has Fixture-only Selected Restore Execution for selected discovered fixture manifests.
 - Reverses a quarantine Cleanup Action.
 
 #### Code implications
