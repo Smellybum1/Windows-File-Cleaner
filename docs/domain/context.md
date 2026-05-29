@@ -2733,11 +2733,11 @@ Last reviewed: 2026-05-29
 
 Current-Session Quarantined Review is a read-only WPF grid view that shows entries still in `Moved` state from the current in-memory Restore Manifest.
 
-It is reached with the `Current quarantined` button and returns to Storage Scan rows with `Back to scan rows`.
+It is reached with the `Current quarantined` button, which shows a moved-entry count as `Current quarantined (N)` when current-session entries exist, and returns to Storage Scan rows with `Back to scan rows`.
 
 #### Examples
 
-- After fixture-only WPF Quarantine execution moves two included Review Shortlist rows, `Current quarantined` shows both original paths, quarantine paths, sizes, and manifest path.
+- After fixture-only WPF Quarantine execution moves two included Review Shortlist rows, `Current quarantined (2)` shows both original paths, quarantine paths, sizes, and manifest path.
 - After a post-execution rescan removes the moved source rows from Storage Scan results, `Current quarantined` still shows the current-session moved entries while current-fixture undo is available.
 - After `Undo fixture quarantine`, the view becomes empty because no current-session entries remain in `Moved` state.
 
@@ -2768,7 +2768,7 @@ It is reached with the `Current quarantined` button and returns to Storage Scan 
 
 - Use `QuarantinedItemRow` for WPF grid rows.
 - Use `ShowQuarantinedButton` and `BackToScanRowsButton` for the view switch.
-- Keep the visible grid-switch label scoped as `Current quarantined` so it is not mistaken for all quarantined history or discovered Restore Manifests.
+- Keep the visible grid-switch label scoped as `Current quarantined` so it is not mistaken for all quarantined history or discovered Restore Manifests; add the current-session moved-entry count only when entries exist.
 - Populate the view from current Restore Manifest entries with `RestoreManifestEntryStatus.Moved`.
 - Keep Review Grid Mode Status visible above the main grid so users can tell whether they are reviewing Storage Scan rows or current-session quarantined entries.
 - When Storage Scan rows may be stale after fixture Quarantine execution, Review Grid Mode Status should point to available current-session quarantined entries instead of implying refreshed scan evidence.

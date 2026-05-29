@@ -1631,6 +1631,9 @@ internal sealed class MainWindowSmokeTests
             Assert(window.CanUndoQuarantine, "Fixture undo should become available after a successful fixture execution.");
             Assert(window.CanShowQuarantinedRows, "Current-session quarantined rows should be available after successful fixture execution.");
             Assert(
+                window.ShowQuarantinedButtonText == "Current quarantined (2)",
+                "Current quarantined button label should summarize the available current-session moved entry count.");
+            Assert(
                 window.ShowQuarantinedButtonToolTipValue.Contains("2 current-session quarantined", StringComparison.OrdinalIgnoreCase)
                 && window.ShowQuarantinedButtonToolTipValue.Contains("read-only", StringComparison.OrdinalIgnoreCase)
                 && window.ShowQuarantinedButtonToolTipValue.Contains("does not restore", StringComparison.OrdinalIgnoreCase),

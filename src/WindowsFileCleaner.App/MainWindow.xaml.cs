@@ -2197,12 +2197,20 @@ public partial class MainWindow : Window
         }
 
         var currentQuarantinedCount = BuildCurrentQuarantinedRows().Count;
+        ShowQuarantinedButton.Content = FormatShowQuarantinedButtonText(currentQuarantinedCount);
         ShowQuarantinedButton.IsEnabled = !_isScanning
             && !_isShowingQuarantinedRows
             && currentQuarantinedCount > 0;
         BackToScanRowsButton.IsEnabled = !_isScanning && _isShowingQuarantinedRows;
         UpdateQuarantinedViewHelpText(currentQuarantinedCount);
         UpdateReviewGridModeText();
+    }
+
+    private static string FormatShowQuarantinedButtonText(int currentQuarantinedCount)
+    {
+        return currentQuarantinedCount > 0
+            ? $"Current quarantined ({currentQuarantinedCount:N0})"
+            : "Current quarantined";
     }
 
     private void UpdateQuarantinedViewHelpText(int currentQuarantinedCount)

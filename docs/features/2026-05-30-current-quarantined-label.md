@@ -54,6 +54,7 @@ What changed:
 - Updated Review Grid Mode Status wording to point to `Current quarantined` when current-session moved entries are available.
 - Added WPF smoke coverage for the new visible label.
 - Updated README, domain docs, feature docs, fixture checklist, handoff, and progress notes.
+- Later packet `2026-05-30-current-quarantined-count-label.md` keeps the empty label compact and adds `Current quarantined (N)` when current-session moved entries are available.
 
 ADRs added or skipped:
 
