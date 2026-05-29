@@ -165,6 +165,8 @@ public partial class MainWindow : Window
 
     public string DetailMetaTextValue => DetailMetaText.Text;
 
+    public string DetailHotspotTrailTextValue => DetailHotspotTrailText.Text;
+
     public string FilePreviewTextValue => FilePreviewText.Text;
 
     public string QuarantinePreviewTextValue => QuarantinePreviewText.Text;
@@ -908,6 +910,7 @@ public partial class MainWindow : Window
             DetailEvidenceText.Text = "";
             DetailGuidanceText.Text = "";
             DetailChildrenText.Text = "";
+            DetailHotspotTrailText.Text = "";
             FilePreviewText.Text = "Preview appears after selecting a file and using Preview file.";
             CopyPathButton.IsEnabled = false;
             ShowChildrenButton.IsEnabled = false;
@@ -927,6 +930,7 @@ public partial class MainWindow : Window
             : $"{row.Evidence}\n\nAccess issue: {row.Error}";
         DetailGuidanceText.Text = FormatSelectedPathReviewGuidance(row.Entry);
         DetailChildrenText.Text = FormatChildSummary(row.Entry);
+        DetailHotspotTrailText.Text = FormatStorageHotspotTrail(row.Entry);
         FilePreviewText.Text = row.Entry.IsDirectory
             ? "Folders do not have file content previews. Review Largest immediate children instead."
             : "Preview is loaded only when you use Preview file. No files were modified.";
@@ -2791,6 +2795,26 @@ public partial class MainWindow : Window
             Environment.NewLine,
             children.Select(child =>
                 $"{child.Name} | {child.SizeDisplay} | {FormatImportance(child.ImportanceRating)} | {FormatRecommendation(child.DeletionRecommendation)} | {FormatCategories(child.BloatCategories)}"));
+    }
+
+    private static string FormatStorageHotspotTrail(StorageEntry entry)
+    {
+        if (!entry.IsDirectory)
+        {
+            return "Files do not have descendant hotspot trails.";
+        }
+
+        var trail = StorageHotspotTrailBuilder.Build(entry);
+        if (trail.Count == 0)
+        {
+            return "No descendant hotspot trail was found for this folder.";
+        }
+
+        var rows = trail.Select(row =>
+            $"{row.Level:N0}. {row.Name} | {(row.IsDirectory ? "Folder" : "File")} | {row.SizeDisplay} | {FormatImportance(row.ImportanceRating)} | {FormatRecommendation(row.DeletionRecommendation)} | {FormatCategories(row.BloatCategories)}");
+        return "Largest child at each level. Sizes overlap down the trail and are not storage savings."
+            + Environment.NewLine
+            + string.Join(Environment.NewLine, rows);
     }
 
     private static string FormatSelectedPathReviewGuidance(StorageEntry entry)

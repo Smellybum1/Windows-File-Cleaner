@@ -491,6 +491,14 @@
                                        FontFamily="Consolas"
                                        FontSize="12"
                                        TextWrapping="Wrap" />
+                            <TextBlock Text="Largest hotspot trail"
+                                       FontWeight="SemiBold"
+                                       Margin="0,18,0,4" />
+                            <TextBlock x:Name="DetailHotspotTrailText"
+                                       Text=""
+                                       FontFamily="Consolas"
+                                       FontSize="12"
+                                       TextWrapping="Wrap" />
                             <TextBlock Text="File preview"
                                        FontWeight="SemiBold"
                                        Margin="0,18,0,4" />

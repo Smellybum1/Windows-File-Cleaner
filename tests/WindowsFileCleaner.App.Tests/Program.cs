@@ -264,6 +264,10 @@ internal sealed class MainWindowSmokeTests
                 && window.DetailPathContextTextValue.Contains("1 file", StringComparison.OrdinalIgnoreCase),
                 "Selected folder detail pane should show relative path and contained file/folder counts.");
             Assert(window.DetailMetaTextValue.Contains("Access: Readable", StringComparison.OrdinalIgnoreCase), "Selected row detail pane should show access status.");
+            Assert(
+                window.DetailHotspotTrailTextValue.Contains("old-installer.msi", StringComparison.OrdinalIgnoreCase)
+                && window.DetailHotspotTrailTextValue.Contains("not storage savings", StringComparison.OrdinalIgnoreCase),
+                "Selected folder detail pane should show a read-only hotspot trail with overlap wording.");
             window.ShowSelectedFolderChildren();
             Assert(window.CurrentSearchText.StartsWith("parent:", StringComparison.OrdinalIgnoreCase), "Selected-folder child focus should apply a parent-prefixed search.");
             Assert(window.FilterSummaryTextValue.Contains("Search \"parent:", StringComparison.OrdinalIgnoreCase), "Selected-folder child focus should update the filter summary.");
@@ -288,6 +292,9 @@ internal sealed class MainWindowSmokeTests
 
             Assert(window.SelectDisplayedPath(fixture.MarkerPath), "Fixture note file should be selectable for preview.");
             Assert(!window.CanShowSelectedFolderChildren, "Selected files should not enable selected-folder child focus.");
+            Assert(
+                window.DetailHotspotTrailTextValue.Contains("Files do not have descendant hotspot trails", StringComparison.OrdinalIgnoreCase),
+                "Selected files should explain that hotspot trails apply to folders.");
             Assert(window.CanPreviewSelectedFile, "Selected file preview should be enabled for a selected file.");
             window.PreviewSelectedFileContent();
             Assert(

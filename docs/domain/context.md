@@ -1134,6 +1134,52 @@ It helps the user understand what is inside large container folders such as `App
 - Sort children by size descending.
 - Keep the number of displayed children bounded.
 
+### Storage Hotspot Trail
+
+Status: draft
+Last reviewed: 2026-05-29
+
+#### Definition
+
+Storage Hotspot Trail is a read-only selected-folder summary that follows the largest child at each folder level to show where a selected folder's size appears to concentrate.
+
+It is a directional inspection aid, not a storage-savings calculation. Parent and child sizes overlap down the trail.
+
+#### Examples
+
+- Selecting `AppData` can show a largest-child path such as `Local -> NVIDIA -> DXCache -> shader.bin`.
+- Selecting `pip` can show the largest cache bucket under `Cache`.
+- Selecting a file shows that files do not have descendant hotspot trails.
+
+#### Non-examples
+
+- A Cleanup Action.
+- A recursive tree view.
+- A safety score.
+- A confirmed storage savings estimate.
+- A reason to quarantine a parent folder.
+
+#### Lifecycle
+
+- Generated from a completed Storage Scan.
+- Updates when the user selects a different result row.
+- Remains read-only and in-memory.
+- Does not change classifications, recommendations, Review Shortlist, Quarantine Preview, or cleanup eligibility.
+
+#### Relationships
+
+- Complements Child Breakdown by showing one likely path through nested storage instead of several immediate children.
+- Complements Selected Folder Child Focus by suggesting which child may be worth focusing next.
+- Uses Storage Scan results and the same Importance Ratings, Deletion Recommendations, and Bloat Categories as the main result.
+
+#### Code implications
+
+- Use `StorageHotspotTrailBuilder` for hotspot trails.
+- Follow the largest child by `SizeBytes`, with deterministic name tie-breaking.
+- Keep trail depth bounded.
+- Include files only as the terminal row in the trail.
+- Keep UI wording explicit that trail sizes overlap and are not storage savings.
+
 ### Selected Folder Child Focus
 
 Status: draft

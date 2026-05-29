@@ -55,6 +55,7 @@ tests.UndoQuarantineStopsBeforeRestoreWhenManifestWriteFails();
 tests.UndoQuarantineRequiresRecoveryReviewWhenPostRestoreManifestWriteFails();
 tests.UndoQuarantineRestoresFixtureDirectories();
 tests.ChildSummaryShowsLargestImmediateChildren();
+tests.StorageHotspotTrailShowsLargestDescendantPath();
 tests.SelectedPathReviewGuidanceExplainsReviewNextSteps();
 tests.PathInspectionPlanBuildsExplorerArguments();
 tests.SelectedFileContentPreviewReadsBoundedTextOnly();
@@ -2249,6 +2250,77 @@ internal sealed class StorageScanTests
 
         var file = Flatten(result.Root).Single(entry => entry.Name.Equals("outside.bin", StringComparison.OrdinalIgnoreCase));
         Assert(StorageChildSummaryBuilder.Build(file).Count == 0, "Files should not have child summaries.");
+    }
+
+    public void StorageHotspotTrailShowsLargestDescendantPath()
+    {
+        using var fixture = TestFixture.Create();
+
+        fixture.WriteFile(@"AppData\Local\NVIDIA\DXCache\shader.bin", 1024 * 1024 * 4, DateTimeOffset.UtcNow.AddDays(-5));
+        fixture.WriteFile(@"AppData\Local\Temp\scratch.tmp", 512, DateTimeOffset.UtcNow.AddDays(-2));
+        fixture.WriteFile(@"AppData\Roaming\small.bin", 1024 * 1024, DateTimeOffset.UtcNow.AddDays(-3));
+        fixture.WriteFile(@"Downloads\outside.bin", 1024 * 512, DateTimeOffset.UtcNow.AddDays(-120));
+
+        var scanner = new StorageScanner();
+        var result = scanner.Scan(new StorageScanOptions(fixture.RootPath));
+        var appData = Flatten(result.Root).Single(entry => entry.Name.Equals("AppData", StringComparison.OrdinalIgnoreCase));
+        var trail = StorageHotspotTrailBuilder.Build(appData);
+
+        Assert(trail.Count == 4, "Hotspot trail should follow the largest child at each nested level until the terminal file.");
+        Assert(trail.Select(row => row.Name).SequenceEqual(["Local", "NVIDIA", "DXCache", "shader.bin"]), "Hotspot trail should follow the largest nested AppData branch.");
+        Assert(trail[0].Level == 1 && trail[3].Level == 4, "Hotspot trail should record one-based levels.");
+        Assert(!trail[^1].IsDirectory, "Hotspot trail should include a file as the terminal row.");
+        Assert(StorageHotspotTrailBuilder.Build(appData, maxDepth: 2).Count == 2, "Hotspot trail should respect max depth.");
+
+        var file = Flatten(result.Root).Single(entry => entry.Name.Equals("outside.bin", StringComparison.OrdinalIgnoreCase));
+        Assert(StorageHotspotTrailBuilder.Build(file).Count == 0, "Files should not have hotspot trails.");
+
+        var now = DateTimeOffset.UtcNow;
+        var tieRoot = new StorageEntry(
+            @"C:\Root",
+            "Root",
+            IsDirectory: true,
+            SizeBytes: 2048,
+            LastModifiedUtc: now,
+            IsAccessible: true,
+            IsReparsePoint: false,
+            ErrorMessage: null,
+            BloatCategories: [],
+            ImportanceRating: ImportanceRating.Caution,
+            DeletionRecommendation: DeletionRecommendation.Inspect,
+            Evidence: "Synthetic tie root.",
+            Children:
+            [
+                new StorageEntry(
+                    @"C:\Root\Beta",
+                    "Beta",
+                    IsDirectory: false,
+                    SizeBytes: 1024,
+                    LastModifiedUtc: now,
+                    IsAccessible: true,
+                    IsReparsePoint: false,
+                    ErrorMessage: null,
+                    BloatCategories: [],
+                    ImportanceRating: ImportanceRating.Caution,
+                    DeletionRecommendation: DeletionRecommendation.Inspect,
+                    Evidence: "Synthetic tie child.",
+                    Children: []),
+                new StorageEntry(
+                    @"C:\Root\Alpha",
+                    "Alpha",
+                    IsDirectory: false,
+                    SizeBytes: 1024,
+                    LastModifiedUtc: now,
+                    IsAccessible: true,
+                    IsReparsePoint: false,
+                    ErrorMessage: null,
+                    BloatCategories: [],
+                    ImportanceRating: ImportanceRating.Caution,
+                    DeletionRecommendation: DeletionRecommendation.Inspect,
+                    Evidence: "Synthetic tie child.",
+                    Children: [])
+            ]);
+        Assert(StorageHotspotTrailBuilder.Build(tieRoot).Single().Name == "Alpha", "Hotspot trail should break size ties by name for deterministic output.");
     }
 
     public void SelectedPathReviewGuidanceExplainsReviewNextSteps()
