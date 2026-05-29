@@ -2559,6 +2559,7 @@ In the current build the gate can open only for recognized fixture Cleanup Scope
 - In WPF, keep the collapsed Quarantine shortlist header useful with shortlist, preview, current quarantined, and undo state.
 - In WPF, show a compact inline Quarantine Preview readiness status in the Quarantine shortlist area so successful previews are visible without relying only on the status bar.
 - Keep inline preview readiness text aligned with preview/gate state: before preview it explains what to do next, after preview it summarizes included/blocked/redundant counts and blockers, and after fixture execution or undo it switches to fixture execution/undo evidence.
+- Keep inline preview readiness styling semantic and lightweight: neutral for waiting, success for ready/completed fixture evidence, warning for blockers or stale preview state, and error for preview creation failures; styling must not imply cleanup approval.
 - Keep confirmation and execution control tooltips and automation help text aligned with fixture-only execution and real-profile/custom blockers.
 - Do not create folders, move files, delete files, write manifests, or persist cleanup jobs from gate builder code.
 

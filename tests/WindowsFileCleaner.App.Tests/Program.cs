@@ -1227,6 +1227,8 @@ internal sealed class MainWindowSmokeTests
                 "Bulk shortlist buttons should say they affect visible rows.");
             Assert(!window.CanRemoveShownRowsFromReviewShortlist, "Visible rows should not be removable before they are shortlisted.");
             Assert(!window.CanPreviewQuarantine, "Quarantine Preview should be disabled before a shortlist exists.");
+            Assert(window.QuarantinePreviewStatusStyleValue == "Neutral", "Inline preview status should start with quiet neutral styling before shortlist rows exist.");
+            Assert(window.QuarantinePreviewStatusFontWeightValue == "Normal", "Neutral inline preview status should not visually compete with actionable readiness states.");
             Assert(
                 window.ShortlistSafetyMixTextValue.Contains("Review Shortlist is empty", StringComparison.OrdinalIgnoreCase),
                 "Shortlist Safety Mix should start empty before rows are shortlisted.");
@@ -1240,6 +1242,8 @@ internal sealed class MainWindowSmokeTests
             Assert(window.CanRemoveShownRowsFromReviewShortlist, "Bulk-shortlisted visible rows should be removable as the current review window.");
             Assert(window.CanRemoveSelectedRowFromReviewShortlist, "Shortlisted row should be removable.");
             Assert(window.CanPreviewQuarantine, "Quarantine Preview should be available after shortlisting a row.");
+            Assert(window.QuarantinePreviewStatusStyleValue == "Warning", "Inline preview status should use warning styling while shortlisted rows still need preview.");
+            Assert(window.QuarantinePreviewStatusFontWeightValue == "SemiBold", "Actionable inline preview status should be visually emphasized.");
             Assert(
                 window.DisplayedRows.Any(row => row.FullPath == installer.FullPath && row.Shortlist == "Yes"),
                 "Shortlisted row should be marked in the WPF grid.");
@@ -1364,6 +1368,8 @@ internal sealed class MainWindowSmokeTests
                 && window.QuarantinePreviewStatusTextValue.Contains("not cleanup approval", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantinePreviewStatusTextValue.Contains("No files were modified", StringComparison.OrdinalIgnoreCase),
                 "Inline preview status should make readiness visible in the Quarantine shortlist panel.");
+            Assert(window.QuarantinePreviewStatusStyleValue == "Success", "Ready inline preview status should use success styling.");
+            Assert(window.QuarantinePreviewStatusFontWeightValue == "SemiBold", "Ready inline preview status should be visually emphasized.");
             Assert(File.Exists(installer.FullPath), "Shortlisted fixture installer should still exist after preview.");
             Assert(File.Exists(fixture.MarkerPath), "Fixture marker file should still exist after review interactions.");
             Assert(!Directory.Exists(customQuarantineRoot), "Quarantine Preview should not create the typed quarantine root.");
@@ -1385,6 +1391,7 @@ internal sealed class MainWindowSmokeTests
                 window.QuarantinePreviewStatusTextValue.Contains("Recreate Quarantine Preview", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantinePreviewStatusTextValue.Contains("No files were modified", StringComparison.OrdinalIgnoreCase),
                 "Changing the quarantine root should show inline preview invalidation in the Quarantine shortlist panel.");
+            Assert(window.QuarantinePreviewStatusStyleValue == "Warning", "Stale inline preview status should use warning styling.");
             Assert(!Directory.Exists(changedQuarantineRoot), "Changing the preview root should not create folders.");
 
             window.RemoveSelectedPathFromReviewShortlist();
@@ -1398,6 +1405,7 @@ internal sealed class MainWindowSmokeTests
                 window.QuarantinePreviewStatusTextValue.Contains("Review Shortlist rows are added", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantinePreviewStatusTextValue.Contains("No files were modified", StringComparison.OrdinalIgnoreCase),
                 "Removing the shortlisted row should reset inline preview status.");
+            Assert(window.QuarantinePreviewStatusStyleValue == "Neutral", "Empty-shortlist inline preview status should return to neutral styling.");
 
             Assert(window.CanAddSelectedRowToReviewShortlist, "Removed selected row should be addable again through the selected-row action.");
             window.AddSelectedPathToReviewShortlist();
@@ -1470,6 +1478,7 @@ internal sealed class MainWindowSmokeTests
                 && window.QuarantinePreviewStatusTextValue.Contains("2 included", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantinePreviewStatusTextValue.Contains("not cleanup approval", StringComparison.OrdinalIgnoreCase),
                 "Inline preview status should summarize multi-row preview readiness before confirmation.");
+            Assert(window.QuarantinePreviewStatusStyleValue == "Success", "Multi-row ready inline preview status should use success styling.");
             Assert(
                 window.QuarantinePreviewTextValue.Contains("Source: Review Shortlist", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantinePreviewTextValue.Contains("Only included rows can be quarantined", StringComparison.OrdinalIgnoreCase),
@@ -1544,6 +1553,7 @@ internal sealed class MainWindowSmokeTests
                 && window.QuarantinePreviewStatusTextValue.Contains("2 included Review Shortlist row", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantinePreviewStatusTextValue.Contains("Undo fixture quarantine", StringComparison.OrdinalIgnoreCase),
                 "Inline preview status should change to fixture execution evidence after execution.");
+            Assert(window.QuarantinePreviewStatusStyleValue == "Success", "Successful fixture execution inline status should use success styling.");
             Assert(
                 window.QuarantinePreviewTextValue.Contains("Fixture Quarantine execution result", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantinePreviewTextValue.Contains("Current scan and review rows are stale", StringComparison.OrdinalIgnoreCase),
@@ -1639,6 +1649,7 @@ internal sealed class MainWindowSmokeTests
                 window.QuarantinePreviewStatusTextValue.Contains("Fixture Undo Quarantine completed", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantinePreviewStatusTextValue.Contains("2 restored", StringComparison.OrdinalIgnoreCase),
                 "Inline preview status should change to fixture undo evidence after undo.");
+            Assert(window.QuarantinePreviewStatusStyleValue == "Success", "Successful fixture undo inline status should use success styling.");
             Assert(
                 window.QuarantinePreviewTextValue.Contains("Fixture Undo Quarantine result", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantinePreviewTextValue.Contains("Current scan and review rows are stale", StringComparison.OrdinalIgnoreCase),
@@ -1979,6 +1990,7 @@ internal sealed class MainWindowSmokeTests
             Assert(window.QuarantinePreviewTextValue.Contains("blocked preview row", StringComparison.OrdinalIgnoreCase), "Confirmation readiness should call out the blocked preview row.");
             Assert(window.QuarantinePreviewTextValue.Contains("Preview rows:", StringComparison.OrdinalIgnoreCase), "Preview pane should label row-level preview details.");
             Assert(window.QuarantinePreviewTextValue.Contains("Preview row | Blocked", StringComparison.OrdinalIgnoreCase), "Blocked row details should be labeled as preview rows.");
+            Assert(window.QuarantinePreviewStatusStyleValue == "Warning", "Blocked inline preview status should use warning styling.");
             Assert(window.QuarantinePreviewTextValue.Contains(@".cache\codex-runtimes", StringComparison.OrdinalIgnoreCase), "Preview pane should show relative protected descendant evidence.");
             var protectedDescendantReasonLine = window.QuarantinePreviewTextValue
                 .Split(Environment.NewLine)

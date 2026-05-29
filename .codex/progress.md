@@ -6922,3 +6922,49 @@ Open questions:
 Rejected ideas buffer:
 
 - Do not use `Quarantined` as discovered-manifest history or as a broad restore entry point.
+
+### 2026-05-29: Add Quarantine Preview Status Styling
+
+Status: completed
+
+Evidence:
+
+- User originally expected a popup after `Preview shortlist quarantine` and then noticed the inline/status text after looking near the bottom of the Quarantine shortlist area.
+- Quarantine Preview Inline Status made the feedback local to the controls, but every state still used the same muted styling.
+
+Implementation:
+
+- Added lightweight semantic styling for `QuarantinePreviewStatusText`.
+- Neutral waiting text remains normal weight.
+- Ready preview and successful fixture execution/undo evidence use success styling.
+- Shortlisted-but-not-previewed, stale preview, blocked preview, and recovery-review states use warning styling.
+- Preview creation failure uses error styling.
+- Kept Quarantine Preview as a dry run and did not add popup behavior, real-profile execution, permanent deletion, or cleanup history.
+
+Verification:
+
+- `dotnet build tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj "-p:BaseOutputPath=D:/Codex/Windows File Cleaner/.local/test-bin/app-tests/"` passed.
+- `D:\Codex\Windows File Cleaner\.local\test-bin\app-tests\Debug\net8.0-windows\WindowsFileCleaner.App.Tests.exe` passed.
+- `dotnet build WindowsFileCleaner.sln --no-restore "-p:BaseOutputPath=D:/Codex/Windows File Cleaner/.local/test-bin/solution/"` passed.
+- `git -c safe.directory='D:/Codex/Windows File Cleaner' diff --check` passed with line-ending normalization warnings only.
+
+Docs updated:
+
+- `README.md`
+- `docs/domain/context.md`
+- `docs/domain/glossary.md`
+- `docs/features/2026-05-29-quarantine-preview-status-styling.md`
+- `docs/codex/thread-handoff.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No ADR added. This is reversible WPF styling with no persistence, cleanup execution, restore rule, data-model, or security change.
+
+Open questions:
+
+- Should Review Grid Mode Status get similar styling later, or is plain text enough there?
+
+Rejected ideas buffer:
+
+- Do not add a modal popup for Quarantine Preview success unless a future manual visual pass proves styled inline status is still too easy to miss.

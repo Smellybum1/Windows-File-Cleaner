@@ -311,6 +311,12 @@ public partial class MainWindow : Window
 
     public string QuarantinePreviewStatusTextValue => QuarantinePreviewStatusText.Text;
 
+    public string QuarantinePreviewStatusStyleValue => QuarantinePreviewStatusText.Tag?.ToString() ?? "";
+
+    public string QuarantinePreviewStatusForegroundValue => QuarantinePreviewStatusText.Foreground.ToString();
+
+    public string QuarantinePreviewStatusFontWeightValue => QuarantinePreviewStatusText.FontWeight.ToString();
+
     public string QuarantineExecutionGateTextValue => QuarantineExecutionGateText.Text;
 
     public double QuarantineExecutionGateViewportMaxHeight => QuarantineExecutionGateScroll.MaxHeight;
@@ -2468,25 +2474,30 @@ public partial class MainWindow : Window
 
         if (!string.IsNullOrWhiteSpace(message))
         {
-            QuarantinePreviewStatusText.Text = message;
+            var style = message.Contains("could not be created", StringComparison.OrdinalIgnoreCase)
+                ? QuarantinePreviewStatusStyle.Error
+                : QuarantinePreviewStatusStyle.Warning;
+            SetQuarantinePreviewStatus(message, style);
             return;
         }
 
         if (_currentUndoQuarantineResult is not null)
         {
             var result = _currentUndoQuarantineResult;
-            QuarantinePreviewStatusText.Text = result.Succeeded
+            var text = result.Succeeded
                 ? $"Fixture Undo Quarantine completed: {result.RestoredCount:N0} restored. Rescan before further review."
                 : $"Fixture Undo Quarantine needs recovery review: {result.RestoredCount:N0} restored, {result.FailedCount:N0} failed. Rescan before further review.";
+            SetQuarantinePreviewStatus(text, result.Succeeded ? QuarantinePreviewStatusStyle.Success : QuarantinePreviewStatusStyle.Warning);
             return;
         }
 
         if (_currentQuarantineExecutionResult is not null)
         {
             var result = _currentQuarantineExecutionResult;
-            QuarantinePreviewStatusText.Text = result.Succeeded
+            var text = result.Succeeded
                 ? $"Fixture Quarantine execution completed: {result.MovedCount:N0} included Review Shortlist row(s) moved, {result.RestoreManifest.TotalSizeDisplay} quarantined. Undo fixture quarantine remains available when enabled; rescan refreshes review rows."
                 : $"Fixture Quarantine execution needs recovery review: {result.MovedCount:N0} included Review Shortlist row(s) moved, {result.FailedCount:N0} failed. Use Undo fixture quarantine when available; rescan refreshes review rows.";
+            SetQuarantinePreviewStatus(text, result.Succeeded ? QuarantinePreviewStatusStyle.Success : QuarantinePreviewStatusStyle.Warning);
             return;
         }
 
@@ -2498,18 +2509,46 @@ public partial class MainWindow : Window
             var readinessLabel = _currentQuarantineConfirmationDraft.HasDataBlockers
                 ? "Quarantine Preview needs review"
                 : "Quarantine Preview ready";
-            QuarantinePreviewStatusText.Text =
+            var text =
                 $"{readinessLabel}: {_currentQuarantinePreview.IncludedCount:N0} included, " +
                 $"{_currentQuarantinePreview.BlockedCount:N0} blocked, " +
                 $"{_currentQuarantinePreview.RedundantCount:N0} redundant, " +
                 $"{_currentQuarantinePreview.IncludedSizeDisplay} previewed, {blockerSummary}. " +
                 "Review Shortlist is the source; this is not cleanup approval. No files were modified.";
+            SetQuarantinePreviewStatus(
+                text,
+                _currentQuarantineConfirmationDraft.HasDataBlockers ? QuarantinePreviewStatusStyle.Warning : QuarantinePreviewStatusStyle.Success);
             return;
         }
 
-        QuarantinePreviewStatusText.Text = _shortlist.Count == 0
+        var waitingText = _shortlist.Count == 0
             ? "Quarantine Preview readiness appears after Review Shortlist rows are added. No files were modified."
             : $"Review Shortlist has {_shortlist.Count:N0} row(s). Use Preview shortlist quarantine to review included, blocked, redundant, and readiness state. This is not cleanup approval. No files were modified.";
+        SetQuarantinePreviewStatus(waitingText, _shortlist.Count == 0 ? QuarantinePreviewStatusStyle.Neutral : QuarantinePreviewStatusStyle.Warning);
+    }
+
+    private void SetQuarantinePreviewStatus(string text, QuarantinePreviewStatusStyle style)
+    {
+        QuarantinePreviewStatusText.Text = text;
+        QuarantinePreviewStatusText.Tag = style.ToString();
+        QuarantinePreviewStatusText.Foreground = style switch
+        {
+            QuarantinePreviewStatusStyle.Success => System.Windows.Media.Brushes.DarkGreen,
+            QuarantinePreviewStatusStyle.Warning => System.Windows.Media.Brushes.DarkGoldenrod,
+            QuarantinePreviewStatusStyle.Error => System.Windows.Media.Brushes.Firebrick,
+            _ => System.Windows.Media.Brushes.SlateGray
+        };
+        QuarantinePreviewStatusText.FontWeight = style == QuarantinePreviewStatusStyle.Neutral
+            ? FontWeights.Normal
+            : FontWeights.SemiBold;
+    }
+
+    private enum QuarantinePreviewStatusStyle
+    {
+        Neutral,
+        Success,
+        Warning,
+        Error
     }
 
     private static string FormatRowCount(int count)
