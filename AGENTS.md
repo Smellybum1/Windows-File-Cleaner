@@ -29,18 +29,15 @@ The project stack is C# with WPF for a Windows-only desktop app. The initial tar
 dotnet restore WindowsFileCleaner.sln --configfile NuGet.Config
 
 # Run full MVP preflight before any real-profile scan
-.\tools\Invoke-MvpPreflight.ps1
+.\tools\Invoke-MvpPreflight.cmd
 
 # Start local development
 dotnet run --project src/WindowsFileCleaner.App
 
 # Create a synthetic WPF smoke-test Cleanup Scope
-.\tools\New-StorageScanSmokeFixture.ps1
+.\tools\New-StorageScanSmokeFixture.cmd
 
 # Run preflight, create the synthetic fixture, and launch WPF against it
-.\tools\Start-MvpFixtureReview.ps1
-
-# Same fixture launcher through a .cmd wrapper when direct .ps1 execution is blocked
 .\tools\Start-MvpFixtureReview.cmd
 
 # Start local development against the synthetic Cleanup Scope

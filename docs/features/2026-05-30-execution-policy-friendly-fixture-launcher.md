@@ -67,6 +67,7 @@ What changed:
 - Added `tools\Start-MvpFixtureReview.cmd`, a process-scoped execution-policy-friendly wrapper for the existing fixture launcher.
 - Updated `Invoke-MvpPreflight.ps1` to suggest the `.cmd -SkipPreflight` manual next step.
 - Updated docs to present `.cmd` as the preferred manual fixture-review command when script execution is blocked.
+- Later packet `2026-05-30-execution-policy-friendly-tool-wrappers.md` added matching `.cmd` wrappers for standalone preflight and synthetic fixture generation, making the process-scoped bypass pattern consistent across human-facing tools.
 
 Tests run:
 

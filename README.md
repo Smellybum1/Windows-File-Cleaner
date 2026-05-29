@@ -69,8 +69,10 @@ Fresh-thread handoff notes live in `docs/codex/thread-handoff.md`.
 Run the MVP preflight from the repository root before scanning real user files:
 
 ```powershell
-.\tools\Invoke-MvpPreflight.ps1
+.\tools\Invoke-MvpPreflight.cmd
 ```
+
+The `.cmd` tool wrappers call the existing PowerShell scripts with process-scoped `-ExecutionPolicy Bypass`, so they work when direct `.ps1` execution is blocked without changing your machine or user execution policy. If your shell already allows scripts, the `.ps1` commands still work.
 
 The preflight restores, builds, runs both test harnesses, runs the fixture generator in `-WhatIf` mode, and runs `git diff --check`. It fails if any child command exits non-zero. It does not scan `C:\Users\moxhe`.
 
@@ -118,7 +120,7 @@ To print only that checklist without running preflight, creating fixture files, 
 For focused troubleshooting, the individual fixture commands are:
 
 ```powershell
-.\tools\New-StorageScanSmokeFixture.ps1
+.\tools\New-StorageScanSmokeFixture.cmd
 ```
 
 Then run the printed command, which has this shape:

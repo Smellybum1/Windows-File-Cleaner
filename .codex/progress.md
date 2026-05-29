@@ -6,19 +6,64 @@ Use it to preserve what was completed, what was verified, what was rejected, and
 
 ## Current status
 
-Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. The app has a broad read-only review workflow, manual fixture Show children/Clipboard crash fix, scan cancel help text, real-profile acknowledgement help text, Review Mix, Matched Review Mix, Review Shortlist Safety Mix, Review Grid Mode Status, inline Quarantine Preview status, Safety Summary header, and Quarantine Shortlist header hoverable `?` help cues with tooltip/help text, Safety Summary shortcut help text, Safety Summary collapsed-header state styling, review-lens filter help text, manifest discovery/selection help text, debounced Storage Review Search for large real-profile scans, Storage Review Search input automation help text, scan-gate automation help text, Cleanup Scope input/browse automation help text, Quarantine Root input/browse automation help text, selected-row action automation help text, visible-row shortlist automation help text, execution/readiness automation help text, review report/preview automation help text, review toolbar automation help text, review navigation/export tooltip clarity, Review Grid Mode Status tooltip/help text, scope-specific Cleanup Scope Scan Gate discoverability polish, Cleanup Scope and Quarantine Root browse tooltip clarity, selected-row action tooltip clarity, Matched Review Mix, Review Shortlist Safety Mix, visible-row Review Shortlist bulk labels/tooltips, review toolbar report/preview tooltip clarity, Selected Folder Subtree Summary, Storage Hotspot Trail, Selected Folder Child Focus, Selected Folder Descendant Focus, fixture launch/preflight tooling with checklist output, checklist-only mode, an execution-policy-friendly fixture launcher wrapper, approval-boundary prompt coverage, selected-restore scope-status checklist coverage, all-manifest restore boundary checklist coverage, execution-control tooltip clarity, readiness scope tooltip clarity, Undo Quarantine domain consistency, Restore Manifest wording polish, Selected Manifest Readiness label polish, and All-Manifest Readiness label polish, Quarantine Preview, Quarantine approval-boundary wording, Quarantine Execution Scope Status, Restore Manifest Draft, Quarantine Confirmation Draft, confirmation label wording polish, Quarantine Action Draft, write-ahead Restore Manifest persistence, core Quarantine execution, core Undo Quarantine, fixture-only WPF Quarantine execution, WPF undo for the current fixture execution, Current quarantined grid switching for current-session moved entries, Quarantine Manifest Discovery with all-manifest restore wording, Selected Restore Manifest Review with readiness-evidence wording, Selected Restore Confirmation Gate with scope-status/approval-boundary wording, Fixture-only Selected Restore Execution, and Restore Readiness Preview with all-manifest restore wording. Real-profile WPF Quarantine execution, real-profile WPF Undo Quarantine, permanent deletion, and persisted cleanup history remain unavailable. Fresh-thread handoff notes and a startup prompt live in `docs/codex/thread-handoff.md`.
+Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. The app has a broad read-only review workflow, manual fixture Show children/Clipboard crash fix, scan cancel help text, real-profile acknowledgement help text, Review Mix, Matched Review Mix, Review Shortlist Safety Mix, Review Grid Mode Status, inline Quarantine Preview status, Safety Summary header, and Quarantine Shortlist header hoverable `?` help cues with tooltip/help text, Safety Summary shortcut help text, Safety Summary collapsed-header state styling, review-lens filter help text, manifest discovery/selection help text, debounced Storage Review Search for large real-profile scans, Storage Review Search input automation help text, scan-gate automation help text, Cleanup Scope input/browse automation help text, Quarantine Root input/browse automation help text, selected-row action automation help text, visible-row shortlist automation help text, execution/readiness automation help text, review report/preview automation help text, review toolbar automation help text, review navigation/export tooltip clarity, Review Grid Mode Status tooltip/help text, scope-specific Cleanup Scope Scan Gate discoverability polish, Cleanup Scope and Quarantine Root browse tooltip clarity, selected-row action tooltip clarity, Matched Review Mix, Review Shortlist Safety Mix, visible-row Review Shortlist bulk labels/tooltips, review toolbar report/preview tooltip clarity, Selected Folder Subtree Summary, Storage Hotspot Trail, Selected Folder Child Focus, Selected Folder Descendant Focus, execution-policy-friendly fixture/preflight tooling with checklist output, checklist-only mode, approval-boundary prompt coverage, selected-restore scope-status checklist coverage, all-manifest restore boundary checklist coverage, execution-control tooltip clarity, readiness scope tooltip clarity, Undo Quarantine domain consistency, Restore Manifest wording polish, Selected Manifest Readiness label polish, and All-Manifest Readiness label polish, Quarantine Preview, Quarantine approval-boundary wording, Quarantine Execution Scope Status, Restore Manifest Draft, Quarantine Confirmation Draft, confirmation label wording polish, Quarantine Action Draft, write-ahead Restore Manifest persistence, core Quarantine execution, core Undo Quarantine, fixture-only WPF Quarantine execution, WPF undo for the current fixture execution, Current quarantined grid switching for current-session moved entries, Quarantine Manifest Discovery with all-manifest restore wording, Selected Restore Manifest Review with readiness-evidence wording, Selected Restore Confirmation Gate with scope-status/approval-boundary wording, Fixture-only Selected Restore Execution, and Restore Readiness Preview with all-manifest restore wording. Real-profile WPF Quarantine execution, real-profile WPF Undo Quarantine, permanent deletion, and persisted cleanup history remain unavailable. Fresh-thread handoff notes and a startup prompt live in `docs/codex/thread-handoff.md`.
 
 ## Next recommended work
 
 1. Start the next thread from `docs/codex/thread-handoff.md`, optionally print the manual prompts with `.\tools\Start-MvpFixtureReview.cmd -ChecklistOnly`, then run `.\tools\Start-MvpFixtureReview.cmd`, confirm the launched app shows Fixture Cleanup Scope, scope-specific scan-gate wording, Cleanup Scope browse tooltip, click `Scan`, and manually inspect layout, visible wording, Storage Review Search, Clear search tooltip, `parent:` search, `under:` search, Matched Review Mix, Review Shortlist Safety Mix, Selected Folder Subtree Summary, Storage Hotspot Trail, Selected Folder Child Focus (`Show children`), Selected Folder Descendant Focus (`Show descendants`), selected-row action tooltips, Storage Review Display Window controls and Previous/Next rows tooltips, Scan Report Export tooltip, Reset view tooltip, the `Relative path` and `Parent` columns, Selected Path Hierarchy Context, Selected File Content Preview, Selected Path Review Guidance, export dialogs, Safety Summary shortcuts, Review Shortlist, `Shortlist visible rows`, `Remove visible rows`, visible-row shortlist tooltips, Review Shortlist export/clear tooltips, typed/browsed Quarantine Root Selection, Quarantine Root browse tooltip, Quarantine Root Safety Note, Quarantine Preview, Preview quarantine/export tooltips, Quarantine Execution Gate, Quarantine Action Draft, execution-control tooltips, fixture-only `Execute quarantine`, `Current quarantined`, current-fixture `Undo fixture quarantine`, `Discover manifests`, `Preview selected manifest readiness`, `Preview selected restore gate` tooltip, scope status, and approval boundary, fixture-only `Restore selected fixture manifest`, `Preview all-manifest readiness`, Review Mix, Access issues filter, category filter, No category filter, Size filter, and filter wording.
 2. Use `README.md` and `docs/features/2026-05-28-mvp-readiness-audit.md` to rerun the WPF app against `C:\Users\moxhe`; confirm `Scan` is disabled until the real-profile preflight acknowledgement is checked.
-3. Run `.\tools\Invoke-MvpPreflight.ps1` before any later real-profile scan if the worktree changes.
+3. Run `.\tools\Invoke-MvpPreflight.cmd` before any later real-profile scan if the worktree changes.
 4. Rerun the real scan and check whether the cleanup scope root row, `Relative path`, `Parent`, `Contents`, and `Access` columns, Size filter, `parent:` / `under:` / `access:readable` / `access:access issue` search, Matched Review Mix, Selected Folder Subtree Summary, Storage Hotspot Trail, `Show children`, `Show descendants`, Previous rows / Next rows, Safety Summary candidate and no-category examples, selected-row relative/parent/depth/access context, cache-specific Review guidance, specific rebuildable cache candidates such as `DXCache` and `pip\Cache`, conservative game/mod-manager labels such as OptiFine/CurseForge/Vortex, Cloud sync data and Credential data labels, and `Preview file` action make unfamiliar rows easier to triage.
 5. Retest the Quarantine Readiness UI with a real scan and confirm typed Quarantine root destinations, broad-parent protected descendant blockers, readable relative examples, draft/readiness wording, and real-profile execution blockers are understandable.
 6. Defer real-profile Quarantine execution and broad WPF Undo Quarantine that restores discovered manifests until scan review, preview semantics, confirmation semantics, restore rules, manifest write order, and failure handling are trustworthy.
 7. Revisit .NET 10 before packaging or long-term distribution.
 
 ## Completed packets
+
+### 2026-05-30: Execution-Policy Friendly Tool Wrappers
+
+Status: completed
+
+Evidence:
+
+- The user hit PowerShell execution-policy blocking while running manual fixture review commands.
+- The fixture launcher had a `.cmd` wrapper, but standalone preflight and synthetic fixture generation were still documented as direct `.ps1` commands.
+- Preflight and synthetic fixture generation are human-facing safety/review workflows that benefit from the same process-scoped bypass path.
+
+Implementation:
+
+- Added `tools\Invoke-MvpPreflight.cmd` and `tools\New-StorageScanSmokeFixture.cmd`.
+- Updated README and AGENTS to prefer `.cmd` for manual preflight, fixture generation, and fixture review commands.
+- Updated the fixture-launcher feature note, progress, and handoff to record the broader wrapper pattern.
+- Did not change Storage Scan, fixture creation semantics, Quarantine Preview, fixture execution, undo, selected restore, manifests, real-profile scan gates, or real-profile cleanup availability.
+
+Verification:
+
+- `cmd.exe /c tools\New-StorageScanSmokeFixture.cmd -WhatIf` passed and showed intended fixture writes only.
+- `cmd.exe /c tools\Start-MvpFixtureReview.cmd -ChecklistOnly` passed and printed the manual fixture checklist without preflight, fixture creation, or WPF launch.
+- `cmd.exe /c tools\Invoke-MvpPreflight.cmd -SkipRestore` passed build, core tests, WPF app tests, fixture dry run, and whitespace diff check.
+- `git -c safe.directory='D:/Codex/Windows File Cleaner' diff --check` passed with line-ending normalization warnings only.
+
+Docs updated:
+
+- `README.md`
+- `AGENTS.md`
+- `docs/features/2026-05-30-execution-policy-friendly-fixture-launcher.md`
+- `docs/features/2026-05-30-execution-policy-friendly-tool-wrappers.md`
+- `docs/codex/thread-handoff.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No ADR added. This is reversible local tooling with no app architecture, persistence, cleanup execution, restore rule, data-model, or security model change.
+
+Open questions:
+
+- None.
+
+Rejected ideas buffer:
+
+- Do not ask the user to change machine/user PowerShell execution policy for this repo; prefer the `.cmd` wrappers or explicit `powershell.exe -ExecutionPolicy Bypass -File ...`.
 
 ### 2026-05-30: Run Full Local MVP Preflight After CMD Launcher
 
