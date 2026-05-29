@@ -24,7 +24,7 @@ As the project owner, I want Quarantine controls and quarantined entries to live
 
 - Move the Quarantine shortlist execution gate out of the right scrollable selected-row detail panel.
 - Group Quarantine Root Selection, preview/export, exact `QUARANTINE` confirmation, fixture execution, current-fixture undo, and gate text in one visible Quarantine shortlist area.
-- Add a `Quarantined` button that switches the main grid to current-session `Moved` Restore Manifest entries.
+- Add a `Quarantined` button that switches the main grid to current-session `Moved` Restore Manifest entries. Later wording polish renames the visible label to `Current quarantined` so the current-session scope is clear.
 - Add a `Back to scan rows` button that returns to the normal Storage Scan grid.
 - Keep the quarantined view read-only and current-session fixture-only for this packet.
 
@@ -40,13 +40,13 @@ As the project owner, I want Quarantine controls and quarantined entries to live
 Questions that can be deferred:
 
 - Should a future version merge current-session entries with read-only Quarantine Manifest Discovery results?
-- Should discovered quarantined items get their own tab or share the same `Quarantined` view after broader restore design?
+- Should discovered quarantined items get their own tab/grid or stay in manifest discovery/readiness panes after broader restore design?
 
 ## Decisions made
 
 Small feature-level decisions:
 
-- Start the `Quarantined` view from the current in-memory Restore Manifest only.
+- Start the `Quarantined` view from the current in-memory Restore Manifest only; later visible label wording calls this `Current quarantined`.
 - Show only entries still in `Moved` state as current quarantined items.
 - Keep older/discovered manifest review in the existing read-only discovery panes.
 
@@ -89,7 +89,7 @@ What changed:
 - Moved Quarantine Root Selection, preview/export, confirmation text, fixture execution, current-fixture undo, and Quarantine Execution Gate text into a dedicated Quarantine shortlist area above the grid.
 - Made the Quarantine shortlist area collapsible and kept verbose gate details in a constrained scroll area so the main grid remains usable.
 - Made the Safety Summary section collapsible to recover more review-grid height during focused review.
-- Added a `Quarantined` button that switches the main grid to current-session `Moved` Restore Manifest entries.
+- Added a `Quarantined` button that switches the main grid to current-session `Moved` Restore Manifest entries; later wording polish changed the visible label to `Current quarantined`.
 - Added `Back to scan rows` to return to normal Storage Scan rows.
 - Added WPF smoke coverage for the current-session quarantined view after execution, after post-execution rescan, and after undo.
 
@@ -122,6 +122,7 @@ Post-completion UI polish:
 - Collapsed Safety Summary now shows compact risk counts.
 - Collapsed Quarantine shortlist now shows shortlist, preview, current quarantined, and undo state.
 - Later header-help packet mirrors those collapsed-header summaries into tooltip and automation help text with read-only/not-cleanup-approval wording.
+- Later current-label packet renamed the visible `Quarantined` button to `Current quarantined` while keeping older/discovered manifests in the manifest discovery/readiness panes.
 
 Docs updated:
 
@@ -133,12 +134,12 @@ ADRs added or skipped:
 
 Follow-up work:
 
-- Decide whether a future `Quarantined` view should include discovered Restore Manifest entries or remain current-session only.
+- Future broader restore/history design still needs to decide whether discovered Restore Manifest entries belong in a separate tab/grid or should remain in manifest discovery/readiness panes.
 - Consider making Quarantine Preview success/readiness more prominent than status-bar text.
 
 Open questions:
 
-- Should discovered manifests eventually appear in the same grid view, a tab, or stay in the existing manifest discovery panes?
+- Should discovered manifests eventually appear in a separate grid/tab, or stay in the existing manifest discovery panes?
 
 Risky assumptions:
 

@@ -18,7 +18,7 @@ Make the active main-grid mode visible when the WPF app switches between Storage
 
 ## User story / job story
 
-As the project owner, I want the main grid to clearly say what it is showing, so I can tell whether I am reviewing scan rows or current-session quarantined entries after using `Quarantined` / `Back to scan rows`.
+As the project owner, I want the main grid to clearly say what it is showing, so I can tell whether I am reviewing scan rows or current-session quarantined entries after using `Current quarantined` / `Back to scan rows`.
 
 ## Desired behavior
 
@@ -82,7 +82,8 @@ What changed:
 - Added `ReviewGridModeText` above the main grid.
 - Storage Scan mode now names the scan row display window and says whether current-session quarantined items are available.
 - Current-session quarantined mode now identifies the read-only Restore Manifest view and points to `Back to scan rows`.
-- Fixture execution state now warns that scan rows may be stale and points to the quarantined view.
+- Fixture execution state now warns that scan rows may be stale and points to the current-session quarantined view.
+- Later label polish changed the visible grid switch from `Quarantined` to `Current quarantined`.
 - Fixture undo state stops advertising moved current-session entries once no moved entries remain.
 - Later packet `2026-05-29-review-grid-mode-status-styling.md` added neutral/informational/warning styling to the same status line without adding layout.
 

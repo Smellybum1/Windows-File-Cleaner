@@ -361,6 +361,8 @@ public partial class MainWindow : Window
 
     public bool CanShowScanRows => BackToScanRowsButton.IsEnabled;
 
+    public string ShowQuarantinedButtonText => ShowQuarantinedButton.Content?.ToString() ?? "";
+
     public string ShowQuarantinedButtonToolTipValue => ShowQuarantinedButton.ToolTip?.ToString() ?? "";
 
     public string ShowQuarantinedButtonAutomationHelpTextValue => AutomationProperties.GetHelpText(ShowQuarantinedButton);
@@ -2052,7 +2054,7 @@ public partial class MainWindow : Window
 
         var matchedCount = ApplyCurrentReviewFilters().Count;
         var quarantinedHint = currentQuarantinedCount > 0
-            ? $" {currentQuarantinedCount:N0} current-session quarantined item(s) are available with Quarantined."
+            ? $" {currentQuarantinedCount:N0} current-session quarantined item(s) are available with Current quarantined."
             : " Current-session quarantined rows appear after fixture Quarantine execution.";
         var staleHint = _currentQuarantineExecutionResult is not null && _currentUndoQuarantineResult is null
             ? " Scan rows may be stale after fixture Quarantine execution; rescan refreshes rows."

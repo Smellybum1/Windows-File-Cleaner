@@ -1471,16 +1471,19 @@ internal sealed class MainWindowSmokeTests
                 && window.SafetySummaryHeaderAutomationHelpTextValue.Contains("read-only review context", StringComparison.OrdinalIgnoreCase)
                 && window.SafetySummaryHeaderAutomationHelpTextValue.Contains("not cleanup approval", StringComparison.OrdinalIgnoreCase),
                 "Collapsed Safety Summary header automation help text should mirror the dynamic header and safety boundary.");
-            Assert(!window.CanShowQuarantinedRows, "Quarantined view should be unavailable before fixture execution moves entries.");
+            Assert(
+                window.ShowQuarantinedButtonText == "Current quarantined",
+                "Current-session quarantined view button label should expose the current-session scope.");
+            Assert(!window.CanShowQuarantinedRows, "Current quarantined view should be unavailable before fixture execution moves entries.");
             Assert(
                 window.ShowQuarantinedButtonToolTipValue.Contains("after fixture Quarantine execution", StringComparison.OrdinalIgnoreCase)
                 && window.ShowQuarantinedButtonToolTipValue.Contains("Discover manifests", StringComparison.OrdinalIgnoreCase)
                 && window.ShowQuarantinedButtonToolTipValue.Contains("cleanup history", StringComparison.OrdinalIgnoreCase),
-                "Disabled Quarantined tooltip should explain when current-session rows appear and route older manifests to discovery.");
+                "Disabled Current quarantined tooltip should explain when current-session rows appear and route older manifests to discovery.");
             Assert(
                 window.ShowQuarantinedButtonAutomationHelpTextValue.Contains("after fixture Quarantine execution", StringComparison.OrdinalIgnoreCase)
                 && window.ShowQuarantinedButtonAutomationHelpTextValue.Contains("Discover manifests", StringComparison.OrdinalIgnoreCase),
-                "Disabled Quarantined automation help text should explain current-session scope.");
+                "Disabled Current quarantined automation help text should explain current-session scope.");
             Assert(
                 window.ReviewGridModeTextValue.Contains("Main grid: Storage Scan rows", StringComparison.OrdinalIgnoreCase)
                 && window.ReviewGridModeTextValue.Contains("No files were modified", StringComparison.OrdinalIgnoreCase),
@@ -1569,14 +1572,15 @@ internal sealed class MainWindowSmokeTests
                 window.ShowQuarantinedButtonToolTipValue.Contains("2 current-session quarantined", StringComparison.OrdinalIgnoreCase)
                 && window.ShowQuarantinedButtonToolTipValue.Contains("read-only", StringComparison.OrdinalIgnoreCase)
                 && window.ShowQuarantinedButtonToolTipValue.Contains("does not restore", StringComparison.OrdinalIgnoreCase),
-                "Enabled Quarantined tooltip should summarize current-session rows and read-only boundaries.");
+                "Enabled Current quarantined tooltip should summarize current-session rows and read-only boundaries.");
             Assert(
                 window.ShowQuarantinedButtonAutomationHelpTextValue.Contains("2 current-session quarantined", StringComparison.OrdinalIgnoreCase)
                 && window.ShowQuarantinedButtonAutomationHelpTextValue.Contains("cleanup history", StringComparison.OrdinalIgnoreCase),
-                "Enabled Quarantined automation help text should summarize current-session rows and no-history boundary.");
+                "Enabled Current quarantined automation help text should summarize current-session rows and no-history boundary.");
             Assert(
                 window.ReviewGridModeTextValue.Contains("Main grid: Storage Scan rows", StringComparison.OrdinalIgnoreCase)
                 && window.ReviewGridModeTextValue.Contains("2 current-session quarantined", StringComparison.OrdinalIgnoreCase)
+                && window.ReviewGridModeTextValue.Contains("Current quarantined", StringComparison.OrdinalIgnoreCase)
                 && window.ReviewGridModeTextValue.Contains("Scan rows may be stale", StringComparison.OrdinalIgnoreCase),
                 "Main grid mode text should point from stale scan rows to available current-session quarantined rows.");
             Assert(window.ReviewGridModeStatusStyleValue == "Warning", "Stale Storage Scan rows should use warning grid-mode styling.");
@@ -1619,7 +1623,7 @@ internal sealed class MainWindowSmokeTests
                 "Execution gate should retain execution evidence after the gate closes.");
 
             window.ShowQuarantinedRows();
-            Assert(window.IsShowingQuarantinedRows, "Quarantined button should switch the main grid to quarantined rows.");
+            Assert(window.IsShowingQuarantinedRows, "Current quarantined button should switch the main grid to quarantined rows.");
             Assert(window.AreQuarantinedRowsVisible, "Quarantined rows grid should be visible in quarantined view.");
             Assert(!window.AreScanRowsVisible, "Storage Scan rows grid should be hidden in quarantined view.");
             Assert(
@@ -1643,7 +1647,7 @@ internal sealed class MainWindowSmokeTests
             Assert(
                 window.ShowQuarantinedButtonToolTipValue.Contains("Already showing", StringComparison.OrdinalIgnoreCase)
                 && window.ShowQuarantinedButtonToolTipValue.Contains("Back to scan rows", StringComparison.OrdinalIgnoreCase),
-                "Quarantined tooltip should explain why it is disabled while already in the quarantined view.");
+                "Current quarantined tooltip should explain why it is disabled while already in the quarantined view.");
             Assert(
                 window.BackToScanRowsButtonToolTipValue.Contains("Returns the main grid", StringComparison.OrdinalIgnoreCase)
                 && window.BackToScanRowsButtonToolTipValue.Contains("without rescanning", StringComparison.OrdinalIgnoreCase)
@@ -1682,11 +1686,11 @@ internal sealed class MainWindowSmokeTests
 
             Assert(!window.CanUndoQuarantine, "Fixture undo should disable after the undo attempt.");
             Assert(window.DisplayedQuarantinedRows.Count == 0, "Quarantined view should clear current-session moved entries after undo.");
-            Assert(!window.CanShowQuarantinedRows, "Quarantined button should disable after undo leaves no current-session moved entries.");
+            Assert(!window.CanShowQuarantinedRows, "Current quarantined button should disable after undo leaves no current-session moved entries.");
             Assert(
                 window.ShowQuarantinedButtonToolTipValue.Contains("no moved entries are available", StringComparison.OrdinalIgnoreCase)
                 && window.ShowQuarantinedButtonToolTipValue.Contains("Back to scan rows", StringComparison.OrdinalIgnoreCase),
-                "Quarantined tooltip should explain empty current-session view after undo.");
+                "Current quarantined tooltip should explain empty current-session view after undo.");
             Assert(
                 window.ReviewGridModeTextValue.Contains("Current-session quarantined rows appear after fixture Quarantine execution", StringComparison.OrdinalIgnoreCase)
                 || window.ReviewGridModeTextValue.Contains("No moved entries are available", StringComparison.OrdinalIgnoreCase),

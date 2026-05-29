@@ -6,7 +6,7 @@ Owner: project-owner
 
 ## Goal
 
-Make the `Quarantined` and `Back to scan rows` controls explain their current-session scope and disabled states while the main grid can switch between scan rows and quarantined rows.
+Make the `Current quarantined` and `Back to scan rows` controls explain their current-session scope and disabled states while the main grid can switch between scan rows and quarantined rows.
 
 ## Non-goals
 
@@ -22,9 +22,9 @@ As the project owner, I want the quarantined-view buttons to explain why they ar
 
 ## Desired behavior
 
-- Before fixture execution, disabled `Quarantined` help text explains that current-session rows appear only after fixture Quarantine execution records moved Restore Manifest entries.
-- When moved current-session entries exist, enabled `Quarantined` help text summarizes the count and read-only/no-restore/no-history boundary.
-- While already showing quarantined rows, disabled `Quarantined` help text explains that the view is already active and points to `Back to scan rows`.
+- Before fixture execution, disabled `Current quarantined` help text explains that current-session rows appear only after fixture Quarantine execution records moved Restore Manifest entries.
+- When moved current-session entries exist, enabled `Current quarantined` help text summarizes the count and read-only/no-restore/no-history boundary.
+- While already showing quarantined rows, disabled `Current quarantined` help text explains that the view is already active and points to `Back to scan rows`.
 - `Back to scan rows` help text explains that returning does not rescan, modify files, or run undo.
 - After undo clears moved entries, disabled help text explains that no moved entries are available and points back to scan rows when needed.
 
@@ -45,7 +45,7 @@ No new domain terms.
 Small feature-level decisions:
 
 - Keep dynamic help text on the existing buttons instead of adding a new visible hint.
-- Route older Restore Manifest review to `Discover manifests` in disabled `Quarantined` help text.
+- Route older Restore Manifest review to `Discover manifests` in disabled `Current quarantined` help text.
 
 ADR-worthy decisions:
 
@@ -80,10 +80,11 @@ Completed on: 2026-05-29
 
 What changed:
 
-- Added dynamic tooltip and automation help text for `Quarantined`.
+- Added dynamic tooltip and automation help text for `Quarantined`; later wording polish changed the visible label to `Current quarantined`.
 - Added dynamic tooltip and automation help text for `Back to scan rows`.
 - Help text now distinguishes before execution, active quarantined view, available current-session entries, and empty post-undo state.
 - Older Restore Manifest review remains routed to `Discover manifests`; current-session quarantined view remains read-only.
+- Later label polish made the visible control name carry current-session scope before the tooltip is opened.
 
 Files changed:
 

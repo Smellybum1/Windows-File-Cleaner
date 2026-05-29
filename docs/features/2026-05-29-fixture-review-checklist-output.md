@@ -77,7 +77,7 @@ What changed:
 - Later packet `2026-05-29-fixture-checklist-selected-restore-scope.md` updated the checklist to include Selected Restore gate scope-status and approval-boundary wording.
 - Later packet `2026-05-29-fixture-checklist-broad-restore-wording.md` updated the checklist to include broad-restore boundary wording for discovery/readiness panes.
 - Later packet `2026-05-29-all-manifest-restore-wording.md` refined that checklist wording to `all-manifest restore action`.
-- Later packet `2026-05-29-review-grid-mode-status.md` updated the checklist to include collapsible Safety Summary and Quarantine shortlist review, inline Quarantine Preview readiness, `Quarantined` / `Back to scan rows`, and Review Grid Mode Status.
+- Later packet `2026-05-29-review-grid-mode-status.md` updated the checklist to include collapsible Safety Summary and Quarantine shortlist review, inline Quarantine Preview readiness, `Quarantined` / `Back to scan rows`, and Review Grid Mode Status. Later current-label polish renamed the visible grid switch to `Current quarantined`.
 - Later packet `2026-05-29-quarantine-preview-status-styling.md` updated the checklist to call out styled inline preview readiness states: neutral, success, warning, and error.
 - Later packet `2026-05-29-review-grid-mode-status-styling.md` updated the checklist to call out styled Review Grid Mode Status states: neutral, informational, and warning.
 

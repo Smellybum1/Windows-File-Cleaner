@@ -503,8 +503,8 @@
                                     ToolTipService.ShowOnDisabled="True"
                                     Click="ExportQuarantinePreviewButton_Click" />
                             <Button x:Name="ShowQuarantinedButton"
-                                    Content="Quarantined"
-                                    MinWidth="120"
+                                    Content="Current quarantined"
+                                    MinWidth="155"
                                     Height="34"
                                     VerticalAlignment="Top"
                                     IsEnabled="False"
