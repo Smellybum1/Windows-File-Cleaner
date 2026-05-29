@@ -319,13 +319,21 @@ public partial class MainWindow : Window
 
     public string ExportShortlistButtonToolTipValue => ExportShortlistCsvButton.ToolTip?.ToString() ?? "";
 
+    public string ExportShortlistButtonAutomationHelpTextValue => AutomationProperties.GetHelpText(ExportShortlistCsvButton);
+
     public string ClearShortlistButtonToolTipValue => ClearShortlistButton.ToolTip?.ToString() ?? "";
 
+    public string ClearShortlistButtonAutomationHelpTextValue => AutomationProperties.GetHelpText(ClearShortlistButton);
+
     public string PreviewQuarantineButtonToolTipValue => PreviewQuarantineButton.ToolTip?.ToString() ?? "";
+
+    public string PreviewQuarantineButtonAutomationHelpTextValue => AutomationProperties.GetHelpText(PreviewQuarantineButton);
 
     public bool CanExportQuarantinePreview => ExportQuarantinePreviewButton.IsEnabled;
 
     public string ExportQuarantinePreviewButtonToolTipValue => ExportQuarantinePreviewButton.ToolTip?.ToString() ?? "";
+
+    public string ExportQuarantinePreviewButtonAutomationHelpTextValue => AutomationProperties.GetHelpText(ExportQuarantinePreviewButton);
 
     public bool CanEnterQuarantineConfirmation => QuarantineConfirmationBox.IsEnabled;
 

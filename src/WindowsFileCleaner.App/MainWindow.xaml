@@ -358,6 +358,7 @@
                             MinWidth="125"
                             IsEnabled="False"
                             ToolTip="Exports the current Review Shortlist as a CSV report only; this is not cleanup approval and no scanned files are modified."
+                            AutomationProperties.HelpText="Exports the current Review Shortlist as a CSV report only; this is not cleanup approval and no scanned files are modified."
                             ToolTipService.ShowOnDisabled="True"
                             Click="ExportShortlistCsvButton_Click" />
                     <Button x:Name="ClearShortlistButton"
@@ -365,6 +366,7 @@
                             MinWidth="120"
                             IsEnabled="False"
                             ToolTip="Clears only the in-memory Review Shortlist for this scan; this does not delete, move, quarantine, or restore files."
+                            AutomationProperties.HelpText="Clears only the in-memory Review Shortlist for this scan; this does not delete, move, quarantine, or restore files."
                             ToolTipService.ShowOnDisabled="True"
                             Click="ClearShortlistButton_Click" />
                     <Button x:Name="PreviewQuarantineButton"
@@ -372,6 +374,7 @@
                             MinWidth="145"
                             IsEnabled="False"
                             ToolTip="Builds a read-only Quarantine Preview from the Review Shortlist; preview does not create folders, move files, or approve cleanup."
+                            AutomationProperties.HelpText="Builds a read-only Quarantine Preview from the Review Shortlist; preview does not create folders, move files, or approve cleanup."
                             ToolTipService.ShowOnDisabled="True"
                             Click="PreviewQuarantineButton_Click" />
                     <StackPanel Margin="6,0,0,0"
@@ -406,6 +409,7 @@
                             MinWidth="120"
                             IsEnabled="False"
                             ToolTip="Exports the current Quarantine Preview as a CSV report only; it does not execute Quarantine or modify scanned files."
+                            AutomationProperties.HelpText="Exports the current Quarantine Preview as a CSV report only; it does not execute Quarantine or modify scanned files."
                             ToolTipService.ShowOnDisabled="True"
                             Click="ExportQuarantinePreviewButton_Click" />
                 </WrapPanel>

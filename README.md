@@ -25,11 +25,11 @@ Fresh-thread handoff notes live in `docs/codex/thread-handoff.md`.
 - CSV exports write only to a path selected by the user.
 - Scan Report Export and review navigation controls use tooltips and automation help text to keep report-only, in-memory, no-rescan, and no-file-modified boundaries available.
 - Review Shortlist is an in-memory review aid, not cleanup approval.
-- Review Shortlist export and clear controls use tooltips to keep report-only and in-memory-only boundaries visible.
+- Review Shortlist export and clear controls use tooltips and automation help text to keep report-only and in-memory-only boundaries available.
 - Review Shortlist bulk actions label their scope as visible rows and include tooltips so they apply only to the current displayed review window, not cleanup approval.
 - Review Shortlist Safety Mix summarizes shortlisted rows from completed scan data only; it is review context, not cleanup approval or storage-savings proof.
 - Quarantine Preview is a dry run only, and its preview/gate panes keep Review Shortlist and Quarantine Preview separate from cleanup approval.
-- Quarantine Preview and preview export controls use tooltips to keep dry-run and report-only boundaries visible.
+- Quarantine Preview and preview export controls use tooltips and automation help text to keep dry-run and report-only boundaries available.
 - Restore Manifest Draft and Quarantine Confirmation Draft are in-memory readiness evidence only.
 - Quarantine Execution Gate enables execution only for fixture Cleanup Scopes after preview readiness and exact `QUARANTINE` confirmation, and its scope-status wording keeps real-profile/custom execution visibly preview-only.
 - Quarantine and selected-restore execution controls have disabled-state tooltips that keep fixture-only gates and real-profile/custom blockers visible.
@@ -120,7 +120,7 @@ This only fills the Cleanup Scope box. Click `Scan` yourself after the app opens
 
 Use `-SkipChecklist` only when you intentionally want the launcher output without the reminder checklist.
 
-The automated `WindowsFileCleaner.App.Tests` project also scans a synthetic fixture through the WPF shell, exercises read-only review interactions, proves fixture-only Quarantine execution and undo, verifies manifest discovery, selected manifest review, selected restore confirmation gate, fixture-only selected restore execution, and all-manifest readiness preview, verifies custom non-fixture execution remains blocked, checks review navigation/export tooltip and automation help text boundaries, and checks that the review toolbars use wrapping layout, but it does not replace checking the visible layout and controls by eye.
+The automated `WindowsFileCleaner.App.Tests` project also scans a synthetic fixture through the WPF shell, exercises read-only review interactions, proves fixture-only Quarantine execution and undo, verifies manifest discovery, selected manifest review, selected restore confirmation gate, fixture-only selected restore execution, and all-manifest readiness preview, verifies custom non-fixture execution remains blocked, checks review navigation/export and report/preview tooltip and automation help text boundaries, and checks that the review toolbars use wrapping layout, but it does not replace checking the visible layout and controls by eye.
 
 ## Run The App
 
