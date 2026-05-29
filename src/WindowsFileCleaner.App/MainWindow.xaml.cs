@@ -383,6 +383,10 @@ public partial class MainWindow : Window
 
     public bool CanEditQuarantineRoot => QuarantineRootBox.IsEnabled;
 
+    public string QuarantineRootBoxToolTipValue => QuarantineRootBox.ToolTip?.ToString() ?? "";
+
+    public string QuarantineRootBoxAutomationHelpTextValue => AutomationProperties.GetHelpText(QuarantineRootBox);
+
     public bool CanBrowseQuarantineRoot => BrowseQuarantineRootButton.IsEnabled;
 
     public string BrowseQuarantineRootButtonText => BrowseQuarantineRootButton.Content?.ToString() ?? "";

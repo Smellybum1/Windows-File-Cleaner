@@ -394,6 +394,7 @@
                                      VerticalContentAlignment="Center"
                                      Text="D:\WindowsFileCleanerQuarantine"
                                      ToolTip="Read-only preview destination root. Preview does not create this folder or move files."
+                                     AutomationProperties.HelpText="Read-only preview destination root. Preview does not create this folder or move files."
                                      TextChanged="QuarantineRootBox_TextChanged" />
                             <Button x:Name="BrowseQuarantineRootButton"
                                     Content="Browse..."

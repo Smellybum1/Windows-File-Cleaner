@@ -73,6 +73,16 @@ internal sealed class MainWindowSmokeTests
             Assert(window.CanBrowseCleanupScope, "MainWindow should allow choosing a Cleanup Scope without starting a scan.");
             Assert(window.CanEditQuarantineRoot, "MainWindow should allow editing the read-only Quarantine Preview root before scanning.");
             Assert(window.CanBrowseQuarantineRoot, "MainWindow should allow browsing for the read-only Quarantine Preview root before scanning.");
+            Assert(
+                window.QuarantineRootBoxToolTipValue.Contains("Read-only preview destination root", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineRootBoxToolTipValue.Contains("does not create this folder", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineRootBoxToolTipValue.Contains("move files", StringComparison.OrdinalIgnoreCase),
+                "Quarantine Root text box tooltip should explain preview-only and no-file-modified behavior.");
+            Assert(
+                window.QuarantineRootBoxAutomationHelpTextValue.Contains("Read-only preview destination root", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineRootBoxAutomationHelpTextValue.Contains("does not create this folder", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineRootBoxAutomationHelpTextValue.Contains("move files", StringComparison.OrdinalIgnoreCase),
+                "Quarantine Root text box automation help text should explain preview-only and no-file-modified behavior.");
             Assert(window.CanDiscoverQuarantineManifests, "MainWindow should allow read-only Quarantine Manifest Discovery before scanning.");
             Assert(window.CanPreviewRestoreReadiness, "MainWindow should allow read-only Restore Readiness Preview before scanning.");
             Assert(

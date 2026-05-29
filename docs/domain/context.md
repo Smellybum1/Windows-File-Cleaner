@@ -1809,6 +1809,7 @@ It does not create folders, move files, write manifests, or approve future Quara
 - Use `QuarantineRootSafetyNote` and `QuarantineRootSafetyNoteBuilder` for preview-root messaging and gating.
 - Use the typed value when calling `QuarantinePreviewBuilder`.
 - Keep the default as `D:\WindowsFileCleanerQuarantine`.
+- The typed root field tooltip and automation help text should say it is a read-only preview destination and preview does not create the folder or move files.
 - Browse tooltips and automation help text should say selection is for preview paths only and does not create folders, move files, or approve cleanup.
 - Do not create or validate the folder by touching the filesystem during preview.
 
