@@ -51,6 +51,7 @@ Tests run:
 - `rg -n --fixed-strings "Execute quarantine" README.md docs\codex\thread-handoff.md docs\domain\context.md docs\features\2026-05-29-execution-control-tooltip-clarity.md docs\features\2026-05-29-execution-readiness-automation-help-text.md`
 - `git diff --check`
 - Later checklist packet: `.\tools\Start-MvpFixtureReview.cmd -ChecklistOnly` passed and printed `Quarantine included shortlist` in step 7.
+- Later verification packet: `cmd.exe /c tools\Invoke-MvpPreflight.cmd` passed; restore, build, core tests, WPF app tests, fixture `-WhatIf`, checklist-only output with `click Quarantine included shortlist`, and whitespace diff check all passed without scanning or modifying real user files.
 
 ADRs added or skipped:
 
