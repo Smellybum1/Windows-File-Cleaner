@@ -2980,7 +2980,7 @@ It summarizes the selected Restore Manifest, restorable entries, restorable byte
 ### Selected Restore Execution Gate
 
 Status: draft
-Last reviewed: 2026-05-29
+Last reviewed: 2026-05-30
 
 #### Definition
 

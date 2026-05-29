@@ -20,6 +20,47 @@ Storage Scan MVP packet implemented and tested by the user against `C:\Users\mox
 
 ## Completed packets
 
+### 2026-05-30: Run Full Local MVP Preflight After Selected Restore Gate Cue
+
+Status: completed
+
+Evidence:
+
+- Selected Restore Gate Help Cue changed WPF XAML, WPF selected restore gate tooltip/help text, WPF smoke assertions, fixture checklist wording, and domain/handoff docs.
+- A full local preflight through the preferred `.cmd` wrapper verifies the complete restore/build/test/fixture/checklist/diff path after that help-cue packet.
+
+Implementation:
+
+- Ran `Invoke-MvpPreflight.cmd` from the repository root after the selected restore gate help-cue packet was pushed.
+- Preflight restored packages, built the solution, ran core tests, ran WPF app tests, ran the synthetic fixture generator in `-WhatIf` mode, printed the fixture checklist in checklist-only mode, and ran whitespace diff checking.
+- No real user files were scanned or modified.
+
+Verification:
+
+- `cmd.exe /c tools\Invoke-MvpPreflight.cmd` passed.
+- Preflight output included `== Fixture checklist ==` and printed checklist step 8 with `Selected Restore Execution Gate ? help cue`.
+- Preflight output ended with `MVP preflight passed. No real user files were scanned or modified.`
+- Preflight suggested `.\tools\Start-MvpFixtureReview.cmd -SkipPreflight` as the next manual fixture step.
+
+Docs updated:
+
+- `docs/codex/thread-handoff.md`
+- `.codex/progress.md`
+- `docs/features/2026-05-30-selected-restore-gate-help-cue.md`
+- `docs/domain/context.md`
+
+ADRs:
+
+- No ADR added. This is verification evidence plus a `Last reviewed` date correction only, with no architecture, persistence, cleanup execution, restore rule, data-model, or security change.
+
+Open questions:
+
+- The next useful product signal remains a visible fixture review pass using the updated checklist and Selected Restore Execution Gate help cue.
+
+Rejected ideas buffer:
+
+- Do not treat preflight as a replacement for visible UI review; it proves automated gates and checklist printability only.
+
 ### 2026-05-30: Selected Restore Gate Help Cue
 
 Status: completed

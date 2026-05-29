@@ -176,6 +176,7 @@ Tests run:
 - `dotnet run --project tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj`
 - `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\Start-MvpFixtureReview.ps1 -ChecklistOnly`
 - `git diff --check`
+- Later verification packet: `cmd.exe /c tools\Invoke-MvpPreflight.cmd` passed; restore, build, core tests, WPF app tests, fixture `-WhatIf`, fixture checklist-only output with the Selected Restore Execution Gate `?` help cue, and whitespace diff check all passed without scanning or modifying real user files.
 
 Docs updated:
 
