@@ -51,6 +51,7 @@ What changed:
 - Added tooltip and automation help text to the Quarantine shortlist header.
 - Mirrored each header's dynamic summary into its tooltip/help text whenever scan, preview, execution, or undo state changes.
 - Added header text trimming so tight layouts keep the header compact instead of crowding the review grid.
+- Later packet `2026-05-30-quarantine-shortlist-header-styling.md` added lightweight semantic styling to the Quarantine shortlist header while preserving the same compact summary and help text.
 
 Docs updated:
 

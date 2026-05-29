@@ -459,6 +459,8 @@ public partial class MainWindow : Window
 
     public string QuarantineShortlistHeaderAutomationHelpTextValue => AutomationProperties.GetHelpText(QuarantineShortlistHeaderText);
 
+    public string QuarantineShortlistHeaderStatusStyleValue => QuarantineShortlistHeaderText.Tag?.ToString() ?? "";
+
     public bool CanAddSelectedRowToReviewShortlist => AddToShortlistButton.IsEnabled;
 
     public string AddSelectedRowToReviewShortlistButtonToolTipValue => AddToShortlistButton.ToolTip?.ToString() ?? "";
@@ -2522,9 +2524,54 @@ public partial class MainWindow : Window
         var headerText =
             $"Quarantine shortlist: {_shortlist.Count:N0} shortlisted | {previewText} | {currentQuarantineText} | {undoText}";
         var helpText = $"{headerText}. Header summary is read-only review context, not cleanup approval.";
+        var style = GetQuarantineShortlistHeaderStatusStyle(movedCount);
         QuarantineShortlistHeaderText.Text = headerText;
+        QuarantineShortlistHeaderText.Tag = style.ToString();
         QuarantineShortlistHeaderText.ToolTip = helpText;
         AutomationProperties.SetHelpText(QuarantineShortlistHeaderText, helpText);
+        QuarantineShortlistHeaderText.Foreground = style switch
+        {
+            QuarantineShortlistHeaderStatusStyle.Success => System.Windows.Media.Brushes.DarkGreen,
+            QuarantineShortlistHeaderStatusStyle.Information => System.Windows.Media.Brushes.DarkCyan,
+            QuarantineShortlistHeaderStatusStyle.Warning => System.Windows.Media.Brushes.DarkGoldenrod,
+            _ => System.Windows.Media.Brushes.SlateGray
+        };
+    }
+
+    private QuarantineShortlistHeaderStatusStyle GetQuarantineShortlistHeaderStatusStyle(int currentQuarantinedCount)
+    {
+        if (_currentUndoQuarantineResult is not null)
+        {
+            return _currentUndoQuarantineResult.Succeeded
+                ? QuarantineShortlistHeaderStatusStyle.Success
+                : QuarantineShortlistHeaderStatusStyle.Warning;
+        }
+
+        if (currentQuarantinedCount > 0)
+        {
+            return _currentQuarantineExecutionResult?.Succeeded == true
+                ? QuarantineShortlistHeaderStatusStyle.Information
+                : QuarantineShortlistHeaderStatusStyle.Warning;
+        }
+
+        if (_currentQuarantinePreview is not null && _currentQuarantineConfirmationDraft is not null)
+        {
+            return _currentQuarantineConfirmationDraft.HasDataBlockers
+                ? QuarantineShortlistHeaderStatusStyle.Warning
+                : QuarantineShortlistHeaderStatusStyle.Success;
+        }
+
+        return _shortlist.Count == 0
+            ? QuarantineShortlistHeaderStatusStyle.Neutral
+            : QuarantineShortlistHeaderStatusStyle.Warning;
+    }
+
+    private enum QuarantineShortlistHeaderStatusStyle
+    {
+        Neutral,
+        Success,
+        Information,
+        Warning
     }
 
     private void UpdateQuarantinePreviewStatus(string? message = null)

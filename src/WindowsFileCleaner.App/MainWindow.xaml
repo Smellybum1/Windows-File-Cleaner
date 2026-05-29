@@ -447,6 +447,8 @@
                         <TextBlock x:Name="QuarantineShortlistHeaderText"
                                    Text="Quarantine shortlist: 0 shortlisted | no preview | no current quarantine"
                                    FontWeight="SemiBold"
+                                   Foreground="#526171"
+                                   Tag="Neutral"
                                    TextTrimming="CharacterEllipsis"
                                    ToolTip="Quarantine shortlist: 0 shortlisted | no preview | no current quarantine. Header summary is read-only review context, not cleanup approval."
                                    AutomationProperties.HelpText="Quarantine shortlist: 0 shortlisted | no preview | no current quarantine. Header summary is read-only review context, not cleanup approval." />

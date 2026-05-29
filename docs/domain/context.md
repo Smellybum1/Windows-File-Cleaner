@@ -2557,6 +2557,7 @@ In the current build the gate can open only for recognized fixture Cleanup Scope
 - In WPF, keep verbose gate details height-constrained when shown in the Quarantine shortlist area so the main review grid remains usable.
 - In WPF, keep the Quarantine shortlist area collapsible so the user can recover grid height after reviewing the gate.
 - In WPF, keep the collapsed Quarantine shortlist header useful with shortlist, preview, current quarantined, and undo state, and mirror that header summary into tooltip and automation help text with read-only/not-cleanup-approval wording.
+- In WPF, lightweight Quarantine shortlist header styling may distinguish neutral, success, information, and warning states, but must not imply cleanup approval or change preview/execution gates.
 - In WPF, show a compact inline Quarantine Preview readiness status in the Quarantine shortlist area so successful previews are visible without relying only on the status bar.
 - Keep inline preview readiness text aligned with preview/gate state: before preview it explains what to do next, after preview it summarizes included/blocked/redundant counts and blockers, and after fixture execution or undo it switches to fixture execution/undo evidence.
 - Keep inline preview readiness styling semantic and lightweight: neutral for waiting, success for ready/completed fixture evidence, warning for blockers or stale preview state, and error for preview creation failures; styling must not imply cleanup approval.

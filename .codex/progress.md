@@ -6537,6 +6537,9 @@ Verification:
 - Initial `dotnet run --project tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj` was blocked because the manually launched WPF app was still running and locking `WindowsFileCleaner.App.exe`.
 - `dotnet build tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj "-p:BaseOutputPath=D:/Codex/Windows File Cleaner/.local/test-bin/app-tests/"` passed.
 - `D:\Codex\Windows File Cleaner\.local\test-bin\app-tests\Debug\net8.0-windows\WindowsFileCleaner.App.Tests.exe` passed.
+- `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\Start-MvpFixtureReview.ps1 -ChecklistOnly` passed and printed the updated header styling checklist prompt without preflight, fixture creation, or WPF launch.
+- `dotnet build WindowsFileCleaner.sln --no-restore "-p:BaseOutputPath=D:/Codex/Windows File Cleaner/.local/test-bin/solution/"` passed.
+- `git -c safe.directory='D:/Codex/Windows File Cleaner' diff --check` passed with line-ending normalization warnings only.
 - `dotnet build WindowsFileCleaner.sln --no-restore "-p:BaseOutputPath=D:/Codex/Windows File Cleaner/.local/test-bin/solution/"` passed.
 - `git -c safe.directory='D:/Codex/Windows File Cleaner' diff --check` passed with line-ending normalization warnings only.
 
@@ -7051,6 +7054,45 @@ ADRs:
 Open questions:
 
 - In the next manual fixture visual pass, confirm whether the collapsed panel header summaries are visible enough when panels are closed.
+
+### 2026-05-30: Add Quarantine Shortlist Header Styling
+
+Status: completed
+
+Evidence:
+
+- User confirmed the collapsible layout worked and said a header panel summary while closed would be nice.
+- The Quarantine shortlist header already summarized shortlist, preview, current quarantined, and undo state, but it used the same visual style for waiting, ready, blocked/stale, current-quarantined, and undo-completed states.
+
+Implementation:
+
+- Added lightweight semantic styling to `QuarantineShortlistHeaderText`.
+- Header state is neutral before shortlist/preview/current quarantine, warning while shortlist needs preview or preview is blocked/stale, success for clean preview or completed undo, and information while current-session quarantined rows exist.
+- Kept the header compact; no new row, badge, modal, cleanup execution, restore behavior, persisted history, or real-profile file movement was added.
+- Added WPF smoke assertions for startup, shortlisted-before-preview, invalid-root, clean preview, stale preview, blocked preview, current quarantined, and undo-completed header states.
+
+Verification:
+
+- `dotnet build tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj "-p:BaseOutputPath=D:/Codex/Windows File Cleaner/.local/test-bin/app-tests/"` passed.
+- `D:\Codex\Windows File Cleaner\.local\test-bin\app-tests\Debug\net8.0-windows\WindowsFileCleaner.App.Tests.exe` passed.
+
+Docs updated:
+
+- `README.md`
+- `docs/domain/context.md`
+- `docs/domain/glossary.md`
+- `docs/features/2026-05-29-fixture-review-checklist-output.md`
+- `docs/features/2026-05-30-collapsed-panel-header-help-text.md`
+- `docs/features/2026-05-30-quarantine-shortlist-header-styling.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No ADR added. This is reversible WPF styling with no persistence, cleanup execution, restore rule, data-model, or security change.
+
+Open questions:
+
+- In the next visible fixture pass, confirm whether the styled closed header makes the Quarantine shortlist state easier to scan without looking like cleanup approval.
 
 ### 2026-05-30: Record Manual Fixture Checklist Progress
 
