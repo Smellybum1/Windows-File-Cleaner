@@ -9,7 +9,7 @@ Use this when starting a fresh Codex thread for this repository.
 - Repo: `D:\Codex\Windows File Cleaner`
 - GitHub: `Smellybum1/Windows-File-Cleaner`
 - Branch: `main`
-- Latest completed packet: Current Quarantined Label
+- Latest completed packet: Full Local MVP Preflight After Current Label
 - Current app stack: C# / WPF / .NET 8
 - Desktop shortcut target: `D:\Codex\Windows File Cleaner\src\WindowsFileCleaner.App\bin\Debug\net8.0-windows\WindowsFileCleaner.App.exe`
 
@@ -103,6 +103,7 @@ Fixture-only cleanup execution exists for synthetic Cleanup Scopes. Real-profile
 - Collapsed Panel Header Help Text mirrors Safety Summary and Quarantine shortlist closed-header summaries into tooltip and automation help text with read-only/not-cleanup-approval wording.
 - Full Local MVP Preflight After Header Help passed `Invoke-MvpPreflight.ps1`; restore, build, core tests, WPF app tests, fixture `-WhatIf`, and whitespace diff check all passed without scanning or modifying real user files.
 - Current Quarantined Label renamed the visible current-session quarantined grid switch to `Current quarantined`, while older/discovered Restore Manifest review remains in manifest discovery/readiness panes.
+- Full Local MVP Preflight After Current Label passed `Invoke-MvpPreflight.ps1`; restore, build, core tests, WPF app tests, fixture `-WhatIf`, and whitespace diff check all passed without scanning or modifying real user files.
 
 ## Best next work
 

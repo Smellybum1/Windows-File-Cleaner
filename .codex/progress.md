@@ -7186,6 +7186,45 @@ Rejected ideas buffer:
 
 - Do not use the current-session grid switch as discovered-manifest history or broad restore entry point.
 
+### 2026-05-30: Run Full Local MVP Preflight After Current Label
+
+Status: completed
+
+Evidence:
+
+- Current Quarantined Label touched WPF UI text, WPF smoke assertions, fixture checklist wording, and durable docs.
+- A full local preflight gives stronger evidence than narrow app-test runs before the next manual fixture visual pass.
+
+Implementation:
+
+- Ran `Invoke-MvpPreflight.ps1` from the repository root after the current-label packet was pushed.
+- Preflight restored packages, built the solution, ran core tests, ran WPF app tests, ran the synthetic fixture generator in `-WhatIf` mode, and ran whitespace diff checking.
+- No real user files were scanned or modified.
+
+Verification:
+
+- `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\Invoke-MvpPreflight.ps1` passed.
+- Preflight output ended with `MVP preflight passed. No real user files were scanned or modified.`
+- Preflight suggested the next manual fixture step: `.\tools\Start-MvpFixtureReview.ps1 -SkipPreflight`.
+- `git -c safe.directory='D:/Codex/Windows File Cleaner' status --short --branch` showed a clean tree before recording this docs-only verification note.
+
+Docs updated:
+
+- `docs/codex/thread-handoff.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No ADR added. This is verification evidence only, with no architecture, persistence, cleanup execution, restore rule, data-model, or security change.
+
+Open questions:
+
+- The next useful product signal still needs a visible fixture review pass against `Current quarantined`, collapsed header tooltip/help text, styled inline Quarantine Preview readiness, and styled Review Grid Mode Status.
+
+Rejected ideas buffer:
+
+- Do not treat preflight as a replacement for manual visual fixture review; it proves automated gates only.
+
 ### 2026-05-29: Harden Quarantine Preview Error Style Coverage
 
 Status: completed
