@@ -6589,6 +6589,8 @@ Verification:
 - `git -c safe.directory='D:/Codex/Windows File Cleaner' diff --check` passed with line-ending normalization warnings only.
 - `dotnet build WindowsFileCleaner.sln --no-restore "-p:BaseOutputPath=D:/Codex/Windows File Cleaner/.local/test-bin/solution/"` passed.
 - `git -c safe.directory='D:/Codex/Windows File Cleaner' diff --check` passed with line-ending normalization warnings only.
+- `dotnet build WindowsFileCleaner.sln --no-restore "-p:BaseOutputPath=D:/Codex/Windows File Cleaner/.local/test-bin/solution/"` passed.
+- `git -c safe.directory='D:/Codex/Windows File Cleaner' diff --check` passed with line-ending normalization warnings only.
 
 Docs updated:
 
@@ -6873,3 +6875,50 @@ Open questions:
 Rejected ideas buffer:
 
 - Do not make checklist-only mode run preflight, create fixtures, launch WPF, or scan.
+
+### 2026-05-29: Add Quarantined View Control Help Text
+
+Status: completed
+
+Evidence:
+
+- `Quarantined` / `Back to scan rows` now switch the main grid between Storage Scan rows and current-session quarantined rows.
+- Review Grid Mode Status labels the active grid, but the buttons still used mostly static help text and did not explain disabled states.
+- User manual fixture review reported steps 1 through 11 working, and confirmed closed panel header summaries are desirable/useful.
+
+Implementation:
+
+- Added dynamic tooltip and automation help text for `Quarantined`.
+- Added dynamic tooltip and automation help text for `Back to scan rows`.
+- Disabled `Quarantined` help text now explains when current-session rows appear, when the view is already active, and when no moved entries remain after undo.
+- Enabled `Quarantined` help text summarizes the current-session moved entry count and read-only/no-restore/no-delete/no-history boundary.
+- `Back to scan rows` help text says returning does not rescan, modify files, or perform undo.
+- Kept real-profile Quarantine execution, real-profile Undo Quarantine, permanent deletion, and cleanup history unavailable.
+
+Verification:
+
+- `dotnet build tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj "-p:BaseOutputPath=D:/Codex/Windows File Cleaner/.local/test-bin/app-tests/"` passed.
+- `D:\Codex\Windows File Cleaner\.local\test-bin\app-tests\Debug\net8.0-windows\WindowsFileCleaner.App.Tests.exe` passed.
+- `dotnet build WindowsFileCleaner.sln --no-restore "-p:BaseOutputPath=D:/Codex/Windows File Cleaner/.local/test-bin/solution/"` passed.
+- `git -c safe.directory='D:/Codex/Windows File Cleaner' diff --check` passed with line-ending normalization warnings only.
+
+Docs updated:
+
+- `README.md`
+- `docs/domain/context.md`
+- `docs/domain/glossary.md`
+- `docs/features/2026-05-29-quarantined-view-control-help-text.md`
+- `docs/codex/thread-handoff.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No ADR added. This is reversible WPF help text with no persistence, cleanup execution, restore rule, data-model, or security change.
+
+Open questions:
+
+- Should discovered Restore Manifests eventually get a separate grid switch, or remain in discovery/readiness panes?
+
+Rejected ideas buffer:
+
+- Do not use `Quarantined` as discovered-manifest history or as a broad restore entry point.

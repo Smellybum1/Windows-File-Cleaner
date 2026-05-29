@@ -2046,11 +2046,48 @@ public partial class MainWindow : Window
             return;
         }
 
+        var currentQuarantinedCount = BuildCurrentQuarantinedRows().Count;
         ShowQuarantinedButton.IsEnabled = !_isScanning
             && !_isShowingQuarantinedRows
-            && BuildCurrentQuarantinedRows().Count > 0;
+            && currentQuarantinedCount > 0;
         BackToScanRowsButton.IsEnabled = !_isScanning && _isShowingQuarantinedRows;
+        UpdateQuarantinedViewHelpText(currentQuarantinedCount);
         UpdateReviewGridModeText();
+    }
+
+    private void UpdateQuarantinedViewHelpText(int currentQuarantinedCount)
+    {
+        var showHelpText = BuildShowQuarantinedHelpText(currentQuarantinedCount);
+        ShowQuarantinedButton.ToolTip = showHelpText;
+        AutomationProperties.SetHelpText(ShowQuarantinedButton, showHelpText);
+
+        var backHelpText = _isShowingQuarantinedRows
+            ? "Returns the main grid to completed Storage Scan rows without rescanning or modifying files. Current-session fixture undo remains separate."
+            : "Back to scan rows becomes available only while the main grid is showing current-session quarantined items. No files are modified.";
+        BackToScanRowsButton.ToolTip = backHelpText;
+        AutomationProperties.SetHelpText(BackToScanRowsButton, backHelpText);
+    }
+
+    private string BuildShowQuarantinedHelpText(int currentQuarantinedCount)
+    {
+        if (_isScanning)
+        {
+            return "Current-session quarantined items can be reviewed after the read-only Storage Scan is not running. No files are modified.";
+        }
+
+        if (_isShowingQuarantinedRows)
+        {
+            return currentQuarantinedCount > 0
+                ? "Already showing current-session quarantined Restore Manifest entries in the main grid. Use Back to scan rows to return; this view is read-only."
+                : "Already showing current-session quarantined items, but no moved entries are available. Use Back to scan rows to return. No files are modified.";
+        }
+
+        if (currentQuarantinedCount > 0)
+        {
+            return $"Shows {currentQuarantinedCount:N0} current-session quarantined Restore Manifest item(s) in the main grid. This is read-only and does not restore, move, delete, discover older manifests, or create cleanup history.";
+        }
+
+        return "Current-session quarantined items appear after fixture Quarantine execution records moved Restore Manifest entries. Use Discover manifests for older Restore Manifest review; no files are restored, moved, deleted, or added to cleanup history.";
     }
 
     private IReadOnlyList<QuarantinedItemRow> BuildCurrentQuarantinedRows()
