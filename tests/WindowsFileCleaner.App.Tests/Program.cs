@@ -122,6 +122,9 @@ internal sealed class MainWindowSmokeTests
             Assert(
                 window.QuarantineExecutionGateTextValue.Contains("Create a Quarantine Preview", StringComparison.OrdinalIgnoreCase),
                 "Quarantine execution gate should explain the preview dependency at startup.");
+            Assert(
+                window.MatchedReviewMixTextValue.Contains("appears after a scan", StringComparison.OrdinalIgnoreCase),
+                "Matched Review Mix should stay in placeholder state before a scan.");
             Assert(window.SearchHelpToolTipValue.Contains("path:", StringComparison.OrdinalIgnoreCase), "Search tooltip should show field-prefix examples.");
             Assert(window.SearchHelpToolTipValue.Contains("parent:", StringComparison.OrdinalIgnoreCase), "Search tooltip should include parent-prefix guidance.");
             Assert(window.SearchHelpToolTipValue.Contains("under:", StringComparison.OrdinalIgnoreCase), "Search tooltip should include under-prefix descendant guidance.");
@@ -212,6 +215,15 @@ internal sealed class MainWindowSmokeTests
             Assert(window.SafetySummaryTextValue.Contains("No category examples:", StringComparison.OrdinalIgnoreCase), "Safety Summary should show bounded no-category examples.");
             Assert(window.SafetySummaryTextValue.Contains(@"Unknown\notes.txt", StringComparison.OrdinalIgnoreCase), "Safety Summary no-category examples should include relative uncategorized paths.");
             Assert(window.FilterSummaryTextValue.Contains("All:", StringComparison.OrdinalIgnoreCase), "Filter summary should start on the All filter.");
+            Assert(
+                window.MatchedReviewMixTextValue.Contains("Matched review mix:", StringComparison.OrdinalIgnoreCase)
+                && window.MatchedReviewMixTextValue.Contains("Likely safe", StringComparison.OrdinalIgnoreCase)
+                && window.MatchedReviewMixTextValue.Contains("Caution", StringComparison.OrdinalIgnoreCase)
+                && window.MatchedReviewMixTextValue.Contains("High risk", StringComparison.OrdinalIgnoreCase)
+                && window.MatchedReviewMixTextValue.Contains("Quarantine candidates", StringComparison.OrdinalIgnoreCase)
+                && window.MatchedReviewMixTextValue.Contains("No category", StringComparison.OrdinalIgnoreCase)
+                && window.MatchedReviewMixTextValue.Contains("not cleanup approval", StringComparison.OrdinalIgnoreCase),
+                "Matched Review Mix should summarize the current matched rows without implying cleanup approval.");
             Assert(window.ReviewSizeNoteTextValue.Contains("parent and child rows can overlap", StringComparison.OrdinalIgnoreCase), "Review size note should explain recursive row overlap.");
             Assert(window.ReviewSizeNoteTextValue.Contains("not storage savings", StringComparison.OrdinalIgnoreCase), "Review size note should avoid treating row sizes as savings.");
             Assert(
@@ -304,6 +316,11 @@ internal sealed class MainWindowSmokeTests
             Assert(window.CurrentSizeThresholdFilterLabel.Contains("All sizes", StringComparison.OrdinalIgnoreCase), "Selected-folder descendant focus should reset the size lens to All.");
             Assert(window.CurrentStatusText.Contains("Focused review on descendants", StringComparison.OrdinalIgnoreCase), "Selected-folder descendant focus should report a read-only focus action.");
             Assert(window.CurrentStatusText.Contains("No files were modified", StringComparison.OrdinalIgnoreCase), "Selected-folder descendant focus status should preserve the read-only boundary.");
+            Assert(
+                window.MatchedReviewMixTextValue.Contains("Matched review mix:", StringComparison.OrdinalIgnoreCase)
+                && window.MatchedReviewMixTextValue.Contains("Review context only", StringComparison.OrdinalIgnoreCase)
+                && window.MatchedReviewMixTextValue.Contains("Quarantine candidates", StringComparison.OrdinalIgnoreCase),
+                "Selected-folder descendant focus should update Matched Review Mix for the focused subtree.");
             Assert(window.DisplayedRows.Count > 1, "Fixture AppData descendant focus should show nested descendant rows.");
             Assert(
                 window.DisplayedRows.All(row =>
@@ -364,6 +381,9 @@ internal sealed class MainWindowSmokeTests
 
             window.ApplyStorageReviewSearch("category:Python package cache");
             Assert(window.FilterSummaryTextValue.Contains("Search \"category:Python package cache\"", StringComparison.OrdinalIgnoreCase), "Prefixed search should keep the search text visible.");
+            Assert(
+                window.MatchedReviewMixTextValue.Contains("No category 0", StringComparison.OrdinalIgnoreCase),
+                "Matched Review Mix should recompute after prefixed search narrows the active review lens.");
             Assert(
                 window.DisplayedRows.All(row => row.Categories.Contains("Python package cache", StringComparison.OrdinalIgnoreCase)),
                 "Category-prefixed search should only show matching category rows.");

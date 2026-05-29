@@ -147,6 +147,8 @@ public partial class MainWindow : Window
 
     public string FilterSummaryTextValue => FilterSummaryText.Text;
 
+    public string MatchedReviewMixTextValue => MatchedReviewMixText.Text;
+
     public string ReviewSizeNoteTextValue => ReviewSizeNoteText.Text;
 
     public string ReviewWindowTextValue => ReviewWindowText.Text;
@@ -1719,6 +1721,7 @@ public partial class MainWindow : Window
         if (_currentReview is null)
         {
             FilterSummaryText.Text = "No scan loaded";
+            MatchedReviewMixText.Text = "Matched review mix appears after a scan.";
             UpdateReviewWindowControls(0);
             return;
         }
@@ -1737,7 +1740,29 @@ public partial class MainWindow : Window
             $"{FormatFilter(_currentFilter)}{categoryLabel}{typeLabel}{sizeLabel}{searchLabel}: {FormatReviewWindowRange(matchedEntries.Count)}, " +
             $"largest matched row {ByteSizeFormatter.Format(largestMatchedBytes)}, " +
             $"shortlist {_shortlist.Count:N0}.{limitLabel}";
+        UpdateMatchedReviewMix(matchedEntries);
         UpdateReviewWindowControls(matchedEntries.Count);
+    }
+
+    private void UpdateMatchedReviewMix(IReadOnlyList<StorageReviewEntry> matchedEntries)
+    {
+        var likelySafeCount = matchedEntries.Count(row => row.Entry.ImportanceRating == ImportanceRating.LikelySafe);
+        var cautionCount = matchedEntries.Count(row => row.Entry.ImportanceRating == ImportanceRating.Caution);
+        var highRiskCount = matchedEntries.Count(row => row.Entry.ImportanceRating == ImportanceRating.HighRisk);
+        var quarantineCandidateCount = matchedEntries.Count(row => row.Entry.DeletionRecommendation == DeletionRecommendation.QuarantineCandidate);
+        var protectedLocationCount = matchedEntries.Count(row => row.Entry.BloatCategories.Contains(BloatCategory.ProtectedLocation));
+        var accessIssueCount = matchedEntries.Count(row => !row.Entry.IsAccessible || row.Entry.BloatCategories.Contains(BloatCategory.AccessIssue));
+        var uncategorizedCount = matchedEntries.Count(row => row.Entry.BloatCategories.Count == 0);
+
+        MatchedReviewMixText.Text =
+            $"Matched review mix: {matchedEntries.Count:N0} rows | " +
+            $"Likely safe {likelySafeCount:N0} | " +
+            $"Caution {cautionCount:N0} | " +
+            $"High risk {highRiskCount:N0} | " +
+            $"Quarantine candidates {quarantineCandidateCount:N0} | " +
+            $"Protected {protectedLocationCount:N0} | " +
+            $"Access issues {accessIssueCount:N0} | " +
+            $"No category {uncategorizedCount:N0}. Review context only, not cleanup approval.";
     }
 
     private string FormatScanCompletedStatus(int matchedCount)

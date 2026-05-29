@@ -138,15 +138,16 @@ Use `README.md` as the current manual MVP checklist. The highest-value retest is
 7. Confirm whether the status/filter summary shows all matched rows or `2,000 shown of ... matched`.
 8. Test Safety Summary shortcuts.
 9. Test Access issues, Bloat Category, and No category filters.
-10. Select a large folder and confirm the Descendant review summary shows descendant counts/examples with no-cleanup-approval wording.
-11. Select a large folder and confirm the Largest hotspot trail shows a read-only largest-child path with overlap/not-storage-savings wording.
-12. Select a folder and use `Show children`; confirm it applies a `parent:` search and keeps the action read-only.
-13. Select a large folder and use `Show descendants`; confirm it applies an `under:` search, excludes the selected folder itself, and keeps the action read-only.
-14. Add one likely-safe row to Review Shortlist.
-15. Create a Quarantine Preview.
-16. Confirm Restore Manifest Draft and Quarantine Confirmation Draft wording is understandable.
-17. After a fixture execution, use `Discover manifests`, select one Restore Manifest, use `Preview selected readiness`, use `Preview selected restore gate`, type `RESTORE`, and for fixture manifests try `Restore selected fixture manifest`.
-18. Export the Quarantine Preview CSV only to a user-selected report path.
+10. Confirm Matched Review Mix changes as searches, filters, and selected-folder focus actions change the current matched rows.
+11. Select a large folder and confirm the Descendant review summary shows descendant counts/examples with no-cleanup-approval wording.
+12. Select a large folder and confirm the Largest hotspot trail shows a read-only largest-child path with overlap/not-storage-savings wording.
+13. Select a folder and use `Show children`; confirm it applies a `parent:` search and keeps the action read-only.
+14. Select a large folder and use `Show descendants`; confirm it applies an `under:` search, excludes the selected folder itself, updates Matched Review Mix, and keeps the action read-only.
+15. Add one likely-safe row to Review Shortlist.
+16. Create a Quarantine Preview.
+17. Confirm Restore Manifest Draft and Quarantine Confirmation Draft wording is understandable.
+18. After a fixture execution, use `Discover manifests`, select one Restore Manifest, use `Preview selected readiness`, use `Preview selected restore gate`, type `RESTORE`, and for fixture manifests try `Restore selected fixture manifest`.
+19. Export the Quarantine Preview CSV only to a user-selected report path.
 
 ## Decisions made
 

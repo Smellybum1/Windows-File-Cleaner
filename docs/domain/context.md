@@ -1004,6 +1004,51 @@ It shows counts and largest-row sizes for Likely safe, Caution, High risk, and Q
 - Use largest-row sizes for triage until the app has an explicit non-overlapping selection model.
 - Show Access issues as a count because unreadable rows may not have meaningful size data.
 
+### Matched Review Mix
+
+Status: draft
+Last reviewed: 2026-05-29
+
+#### Definition
+
+Matched Review Mix is a read-only summary of the currently matched Storage Scan review rows after the active review lens is applied.
+
+The active review lens can include Storage Review Filter, Bloat Category Filter, Storage Entry Type Filter, Storage Size Threshold Filter, Storage Review Search, Storage Review Display Window position, Selected Folder Child Focus, or Selected Folder Descendant Focus. Matched Review Mix counts the full matched set, not only the currently displayed 2,000-row window.
+
+#### Examples
+
+- After `under:C:\Users\moxhe\AppData`, show how many matched descendant rows are Likely safe, Caution, High risk, Quarantine candidates, Protected Location rows, Access issues, and Uncategorized Results.
+- After `category:Python package cache`, show that the current matched rows are focused on that category.
+- After a Size filter such as `1 GB+`, show the review mix of the large matched rows.
+
+#### Non-examples
+
+- A Cleanup Action.
+- Cleanup approval.
+- A storage savings estimate.
+- A replacement for Review Mix over the whole scan.
+- A replacement for selected-folder Descendant review summary.
+
+#### Lifecycle
+
+- Appears after a Storage Scan completes.
+- Recomputes when the active review lens changes.
+- Resets when a new Storage Scan completes.
+- Does not modify files.
+
+#### Relationships
+
+- Uses completed Storage Scan review rows.
+- Complements Review Mix, Filter Summary, Storage Review Display Window, Selected Folder Descendant Focus, and Selected Folder Subtree Summary.
+- Supports Inspect before recommending removal by summarizing the current matched set before shortlisting or previewing.
+
+#### Code implications
+
+- Use `MatchedReviewMix` for the domain concept if represented in code.
+- Use `MatchedReviewMixText` for the WPF readout.
+- Count matched rows across the full active lens, not just the display window.
+- Include wording that the summary is review context, not cleanup approval.
+
 ### Storage Review Size Note
 
 Status: draft
