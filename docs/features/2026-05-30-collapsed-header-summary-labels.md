@@ -9,7 +9,7 @@ Make collapsed Safety Summary and Quarantine Shortlist header summaries easier t
 
 ## Non-goals
 
-- Do not add a new row, badge, modal, popup, or help icon.
+- Do not add a new row, badge, modal, or popup. Later packet `2026-05-30-collapsed-header-help-cues.md` added compact visible `?` help cues without changing the panel-name header labels.
 - Do not change Storage Scan rows, Review Shortlist membership, Quarantine Preview eligibility, fixture execution, undo, selected restore, or manifest behavior.
 - Do not enable real-profile Quarantine execution, real-profile Undo Quarantine, permanent deletion, or persisted cleanup history.
 
@@ -32,6 +32,7 @@ What changed:
 - Renamed the Quarantine shortlist header prefix to `Quarantine Shortlist:`.
 - Aligned the initial Quarantine Shortlist XAML header with the dynamic runtime summary by including `undo unavailable`.
 - Added WPF smoke assertions that both headers start with the visible panel name.
+- Later packet `2026-05-30-collapsed-header-help-cues.md` added visible circular `?` help cues that mirror the same panel-name header summaries and state help text.
 
 Tests run:
 

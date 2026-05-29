@@ -149,14 +149,36 @@
             <Expander x:Name="SafetySummaryExpander"
                       IsExpanded="True">
                 <Expander.Header>
-                    <TextBlock x:Name="SafetySummaryHeaderText"
-                               Text="Safety Summary: waiting for scan"
-                               FontWeight="SemiBold"
-                               Foreground="#526171"
-                               Tag="Neutral"
-                               TextTrimming="CharacterEllipsis"
-                               ToolTip="Safety Summary: waiting for scan. Header state: neutral. Header summary is read-only review context, not cleanup approval."
-                               AutomationProperties.HelpText="Safety Summary: waiting for scan. Header state: neutral. Header summary is read-only review context, not cleanup approval." />
+                    <DockPanel LastChildFill="True">
+                        <Border x:Name="SafetySummaryHeaderHelpCue"
+                                DockPanel.Dock="Right"
+                                Width="18"
+                                Height="18"
+                                Margin="8,0,0,0"
+                                VerticalAlignment="Center"
+                                Background="#F4F7FA"
+                                BorderBrush="#8A99A8"
+                                BorderThickness="1"
+                                CornerRadius="9"
+                                ToolTip="Safety Summary: waiting for scan. Header state: neutral. Header summary is read-only review context, not cleanup approval."
+                                AutomationProperties.Name="Safety Summary header help cue"
+                                AutomationProperties.HelpText="Safety Summary: waiting for scan. Header state: neutral. Header summary is read-only review context, not cleanup approval.">
+                            <TextBlock Text="?"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"
+                                       FontSize="11"
+                                       FontWeight="Bold"
+                                       Foreground="#526171" />
+                        </Border>
+                        <TextBlock x:Name="SafetySummaryHeaderText"
+                                   Text="Safety Summary: waiting for scan"
+                                   FontWeight="SemiBold"
+                                   Foreground="#526171"
+                                   Tag="Neutral"
+                                   TextTrimming="CharacterEllipsis"
+                                   ToolTip="Safety Summary: waiting for scan. Header state: neutral. Header summary is read-only review context, not cleanup approval."
+                                   AutomationProperties.HelpText="Safety Summary: waiting for scan. Header state: neutral. Header summary is read-only review context, not cleanup approval." />
+                    </DockPanel>
                 </Expander.Header>
                 <StackPanel Margin="0,6,0,0">
                     <DockPanel LastChildFill="True">
@@ -518,14 +540,36 @@
                     <Expander x:Name="QuarantineShortlistExpander"
                               IsExpanded="True">
                     <Expander.Header>
-                        <TextBlock x:Name="QuarantineShortlistHeaderText"
-                                   Text="Quarantine Shortlist: 0 shortlisted | no preview | no current quarantine | undo unavailable"
-                                   FontWeight="SemiBold"
-                                   Foreground="#526171"
-                                   Tag="Neutral"
-                                   TextTrimming="CharacterEllipsis"
-                                   ToolTip="Quarantine Shortlist: 0 shortlisted | no preview | no current quarantine | undo unavailable. Header state: neutral. Header summary is read-only review context, not cleanup approval."
-                                   AutomationProperties.HelpText="Quarantine Shortlist: 0 shortlisted | no preview | no current quarantine | undo unavailable. Header state: neutral. Header summary is read-only review context, not cleanup approval." />
+                        <DockPanel LastChildFill="True">
+                            <Border x:Name="QuarantineShortlistHeaderHelpCue"
+                                    DockPanel.Dock="Right"
+                                    Width="18"
+                                    Height="18"
+                                    Margin="8,0,0,0"
+                                    VerticalAlignment="Center"
+                                    Background="#F4F7FA"
+                                    BorderBrush="#8A99A8"
+                                    BorderThickness="1"
+                                    CornerRadius="9"
+                                    ToolTip="Quarantine Shortlist: 0 shortlisted | no preview | no current quarantine | undo unavailable. Header state: neutral. Header summary is read-only review context, not cleanup approval."
+                                    AutomationProperties.Name="Quarantine Shortlist header help cue"
+                                    AutomationProperties.HelpText="Quarantine Shortlist: 0 shortlisted | no preview | no current quarantine | undo unavailable. Header state: neutral. Header summary is read-only review context, not cleanup approval.">
+                                <TextBlock Text="?"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"
+                                           FontSize="11"
+                                           FontWeight="Bold"
+                                           Foreground="#526171" />
+                            </Border>
+                            <TextBlock x:Name="QuarantineShortlistHeaderText"
+                                       Text="Quarantine Shortlist: 0 shortlisted | no preview | no current quarantine | undo unavailable"
+                                       FontWeight="SemiBold"
+                                       Foreground="#526171"
+                                       Tag="Neutral"
+                                       TextTrimming="CharacterEllipsis"
+                                       ToolTip="Quarantine Shortlist: 0 shortlisted | no preview | no current quarantine | undo unavailable. Header state: neutral. Header summary is read-only review context, not cleanup approval."
+                                       AutomationProperties.HelpText="Quarantine Shortlist: 0 shortlisted | no preview | no current quarantine | undo unavailable. Header state: neutral. Header summary is read-only review context, not cleanup approval." />
+                        </DockPanel>
                     </Expander.Header>
                     <StackPanel Margin="0,6,0,0">
                         <WrapPanel>

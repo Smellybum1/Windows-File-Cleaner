@@ -273,6 +273,12 @@ public partial class MainWindow : Window
 
     public string SafetySummaryHeaderStatusStyleValue => SafetySummaryHeaderText.Tag?.ToString() ?? "";
 
+    public string SafetySummaryHeaderHelpCueToolTipValue => SafetySummaryHeaderHelpCue.ToolTip?.ToString() ?? "";
+
+    public string SafetySummaryHeaderHelpCueAutomationNameValue => AutomationProperties.GetName(SafetySummaryHeaderHelpCue);
+
+    public string SafetySummaryHeaderHelpCueAutomationHelpTextValue => AutomationProperties.GetHelpText(SafetySummaryHeaderHelpCue);
+
     public string SafetyHighRiskButtonToolTipValue => SafetyHighRiskButton.ToolTip?.ToString() ?? "";
 
     public string SafetyHighRiskButtonAutomationHelpTextValue => AutomationProperties.GetHelpText(SafetyHighRiskButton);
@@ -504,6 +510,12 @@ public partial class MainWindow : Window
     public string QuarantineShortlistHeaderAutomationHelpTextValue => AutomationProperties.GetHelpText(QuarantineShortlistHeaderText);
 
     public string QuarantineShortlistHeaderStatusStyleValue => QuarantineShortlistHeaderText.Tag?.ToString() ?? "";
+
+    public string QuarantineShortlistHeaderHelpCueToolTipValue => QuarantineShortlistHeaderHelpCue.ToolTip?.ToString() ?? "";
+
+    public string QuarantineShortlistHeaderHelpCueAutomationNameValue => AutomationProperties.GetName(QuarantineShortlistHeaderHelpCue);
+
+    public string QuarantineShortlistHeaderHelpCueAutomationHelpTextValue => AutomationProperties.GetHelpText(QuarantineShortlistHeaderHelpCue);
 
     public bool CanAddSelectedRowToReviewShortlist => AddToShortlistButton.IsEnabled;
 
@@ -2615,6 +2627,8 @@ public partial class MainWindow : Window
         QuarantineShortlistHeaderText.Tag = style.ToString();
         QuarantineShortlistHeaderText.ToolTip = helpText;
         AutomationProperties.SetHelpText(QuarantineShortlistHeaderText, helpText);
+        QuarantineShortlistHeaderHelpCue.ToolTip = helpText;
+        AutomationProperties.SetHelpText(QuarantineShortlistHeaderHelpCue, helpText);
         QuarantineShortlistHeaderText.Foreground = style switch
         {
             QuarantineShortlistHeaderStatusStyle.Success => System.Windows.Media.Brushes.DarkGreen,
@@ -3750,6 +3764,8 @@ public partial class MainWindow : Window
         SafetySummaryHeaderText.Tag = style.ToString();
         SafetySummaryHeaderText.ToolTip = helpText;
         AutomationProperties.SetHelpText(SafetySummaryHeaderText, helpText);
+        SafetySummaryHeaderHelpCue.ToolTip = helpText;
+        AutomationProperties.SetHelpText(SafetySummaryHeaderHelpCue, helpText);
         SafetySummaryHeaderText.Foreground = style switch
         {
             SafetySummaryHeaderStatusStyle.Warning => System.Windows.Media.Brushes.DarkGoldenrod,

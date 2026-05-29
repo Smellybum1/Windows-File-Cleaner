@@ -32,7 +32,7 @@ No new terms. This extends existing Safety Summary and Quarantine shortlist head
 ## Decisions made
 
 - Keep the visual header compact and use tooltip/help text for full summary inspection.
-- Do not add another visible help icon until manual fixture review shows the header tooltip is insufficient.
+- Later packet `2026-05-30-collapsed-header-help-cues.md` superseded the earlier wait-and-see idea after the user preferred visible `?` cues for hidden safety tooltips.
 
 ## Test plan
 
@@ -55,6 +55,7 @@ What changed:
 - Later packet `2026-05-30-safety-summary-header-styling.md` added lightweight neutral/warning styling to the Safety Summary header while preserving the same compact summary and help text.
 - Later packet `2026-05-30-collapsed-header-state-help-text.md` added textual header-state wording to both collapsed header tooltips/help text so state is not color-only.
 - Later packet `2026-05-30-collapsed-header-summary-labels.md` made the compact headers start with the visible panel names: `Safety Summary:` and `Quarantine Shortlist:`.
+- Later packet `2026-05-30-collapsed-header-help-cues.md` added visible circular `?` help cues beside both collapsed headers that mirror the same dynamic tooltip and automation help text.
 
 Docs updated:
 
@@ -66,7 +67,7 @@ ADRs added or skipped:
 
 Open questions:
 
-- During the next visible fixture pass, is header tooltip/help text enough, or should safety-critical panel headers get a small always-visible help affordance?
+- During the next visible fixture pass, confirm the header `?` help cues are noticeable without crowding the Expander headers.
 
 Risky assumptions:
 

@@ -9,7 +9,7 @@ Make collapsed Safety Summary and Quarantine shortlist header state available th
 
 ## Non-goals
 
-- Do not add a new row, badge, modal, or help icon.
+- Do not add a new row, badge, modal, or popup. Later packet `2026-05-30-collapsed-header-help-cues.md` added compact visible `?` help cues without changing header state semantics.
 - Do not change Storage Scan results, Review Shortlist membership, Quarantine Preview eligibility, fixture execution, undo, selected restore, or manifest behavior.
 - Do not enable real-profile Quarantine execution, real-profile Undo Quarantine, permanent deletion, or persisted cleanup history.
 
@@ -32,6 +32,7 @@ What changed:
 - Added textual header-state wording to Quarantine shortlist header tooltip/help text.
 - Added WPF smoke assertions for startup neutral state, Safety Summary needs-review state, Quarantine shortlist needs-review state, preview-ready/completed state, and current-session quarantined review state.
 - Later packet `2026-05-30-collapsed-header-summary-labels.md` made the same compact headers start with the visible panel names without changing header state semantics.
+- Later packet `2026-05-30-collapsed-header-help-cues.md` mirrored the same state wording onto visible circular `?` help cues for both headers.
 
 Tests run:
 
