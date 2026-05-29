@@ -6,7 +6,7 @@ Use it to preserve what was completed, what was verified, what was rejected, and
 
 ## Current status
 
-Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. The app has a broad read-only review workflow, review-lens filter help text, debounced Storage Review Search for large real-profile scans, Storage Review Search input automation help text, scan-gate automation help text, Cleanup Scope input/browse automation help text, Quarantine Root input/browse automation help text, selected-row action automation help text, visible-row shortlist automation help text, execution/readiness automation help text, review report/preview automation help text, review toolbar automation help text, review navigation/export tooltip clarity, scope-specific Cleanup Scope Scan Gate discoverability polish, Cleanup Scope and Quarantine Root browse tooltip clarity, selected-row action tooltip clarity, Matched Review Mix, Review Shortlist Safety Mix, visible-row Review Shortlist bulk labels/tooltips, review toolbar report/preview tooltip clarity, Selected Folder Subtree Summary, Storage Hotspot Trail, Selected Folder Child Focus, Selected Folder Descendant Focus, fixture launch/preflight tooling with checklist output, checklist-only mode, approval-boundary prompt coverage, selected-restore scope-status checklist coverage, all-manifest restore boundary checklist coverage, execution-control tooltip clarity, readiness scope tooltip clarity, Undo Quarantine domain consistency, Restore Manifest wording polish, Selected Manifest Readiness label polish, and All-Manifest Readiness label polish, Quarantine Preview, Quarantine approval-boundary wording, Quarantine Execution Scope Status, Restore Manifest Draft, Quarantine Confirmation Draft, confirmation label wording polish, Quarantine Action Draft, write-ahead Restore Manifest persistence, core Quarantine execution, core Undo Quarantine, fixture-only WPF Quarantine execution, WPF undo for the current fixture execution, Quarantine Manifest Discovery with all-manifest restore wording, Selected Restore Manifest Review with readiness-evidence wording, Selected Restore Confirmation Gate with scope-status/approval-boundary wording, Fixture-only Selected Restore Execution, and Restore Readiness Preview with all-manifest restore wording. Real-profile WPF Quarantine execution, real-profile WPF Undo Quarantine, permanent deletion, and persisted cleanup history remain unavailable. Fresh-thread handoff notes and a startup prompt live in `docs/codex/thread-handoff.md`.
+Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. The app has a broad read-only review workflow, Safety Summary shortcut help text, review-lens filter help text, debounced Storage Review Search for large real-profile scans, Storage Review Search input automation help text, scan-gate automation help text, Cleanup Scope input/browse automation help text, Quarantine Root input/browse automation help text, selected-row action automation help text, visible-row shortlist automation help text, execution/readiness automation help text, review report/preview automation help text, review toolbar automation help text, review navigation/export tooltip clarity, scope-specific Cleanup Scope Scan Gate discoverability polish, Cleanup Scope and Quarantine Root browse tooltip clarity, selected-row action tooltip clarity, Matched Review Mix, Review Shortlist Safety Mix, visible-row Review Shortlist bulk labels/tooltips, review toolbar report/preview tooltip clarity, Selected Folder Subtree Summary, Storage Hotspot Trail, Selected Folder Child Focus, Selected Folder Descendant Focus, fixture launch/preflight tooling with checklist output, checklist-only mode, approval-boundary prompt coverage, selected-restore scope-status checklist coverage, all-manifest restore boundary checklist coverage, execution-control tooltip clarity, readiness scope tooltip clarity, Undo Quarantine domain consistency, Restore Manifest wording polish, Selected Manifest Readiness label polish, and All-Manifest Readiness label polish, Quarantine Preview, Quarantine approval-boundary wording, Quarantine Execution Scope Status, Restore Manifest Draft, Quarantine Confirmation Draft, confirmation label wording polish, Quarantine Action Draft, write-ahead Restore Manifest persistence, core Quarantine execution, core Undo Quarantine, fixture-only WPF Quarantine execution, WPF undo for the current fixture execution, Quarantine Manifest Discovery with all-manifest restore wording, Selected Restore Manifest Review with readiness-evidence wording, Selected Restore Confirmation Gate with scope-status/approval-boundary wording, Fixture-only Selected Restore Execution, and Restore Readiness Preview with all-manifest restore wording. Real-profile WPF Quarantine execution, real-profile WPF Undo Quarantine, permanent deletion, and persisted cleanup history remain unavailable. Fresh-thread handoff notes and a startup prompt live in `docs/codex/thread-handoff.md`.
 
 ## Next recommended work
 
@@ -6286,3 +6286,47 @@ Open questions:
 Rejected ideas buffer:
 
 - Do not change filter behavior, add new filters, alter export selection, retry access issue paths, or treat filter state as cleanup approval while polishing review lens help text.
+
+### 2026-05-29: Add Safety Summary Shortcut Help Text
+
+Status: completed
+
+Evidence:
+
+- Safety Summary shortcuts are central to manual fixture and real-profile safety review.
+- Neighboring review controls already had tooltip and automation help text, but the Safety Summary shortcut buttons did not.
+- Domain docs require Safety Summary shortcuts to stay read-only and separate from rescans, permission changes, link following, file changes, and cleanup approval.
+
+Implementation:
+
+- Added disabled-state WPF tooltips and `AutomationProperties.HelpText` to Safety Summary shortcut buttons.
+- Added test-facing tooltip/help-text accessors and WPF smoke assertions for read-only shortcut scope, no-rescan, no-file-modified, no-permission-change, no-link-following, and not-cleanup/Quarantine-approval wording.
+- Updated README, domain docs, progress, handoff, and the feature brief.
+- Kept shortcut mapping, filter behavior, scan behavior, exports, cleanup execution, restore, deletion, and cleanup history unchanged.
+
+Verification:
+
+- `dotnet run --project tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj` passed.
+- `dotnet build WindowsFileCleaner.sln --no-restore` passed.
+- `git -c safe.directory='D:/Codex/Windows File Cleaner' diff --check` passed.
+
+Docs updated:
+
+- `README.md`
+- `docs/domain/context.md`
+- `docs/domain/glossary.md`
+- `docs/features/2026-05-29-safety-summary-shortcut-help-text.md`
+- `docs/codex/thread-handoff.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No ADR added. This is reversible WPF metadata/test polish with no persistence, cleanup execution, restore, security, deployment, or data-model change.
+
+Open questions:
+
+- Do visible fixture/real-profile reviews show that Safety Summary shortcuts need always-visible help icons or stronger grouping?
+
+Rejected ideas buffer:
+
+- Do not change shortcut mapping, add shortcuts, retry access issue paths, follow reparse points, or treat shortcut state as cleanup approval while polishing Safety Summary shortcut help text.

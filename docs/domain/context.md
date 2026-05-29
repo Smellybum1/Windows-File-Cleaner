@@ -1110,7 +1110,7 @@ It tells the user to treat row sizes as triage clues, not confirmed Storage Savi
 ### Storage Scan Safety Summary
 
 Status: draft
-Last reviewed: 2026-05-28
+Last reviewed: 2026-05-29
 
 #### Definition
 
@@ -1157,6 +1157,7 @@ It summarizes safety-relevant scan signals such as high-risk rows, Protected Loc
 - Keep Quarantine candidate examples bounded, size-labeled, cleanup-scope-relative, and derived from scan rows.
 - Keep Uncategorized Result examples bounded, size-labeled, cleanup-scope-relative, and derived from scan rows.
 - Keep summary notes derived from scan results only.
+- Safety Summary review shortcut tooltips and automation help text should keep shortcut scope, read-only behavior, no-rescan/no-file-modified boundaries, no-permission-change behavior for Access issues, no-link-following behavior for reparse points, and not-cleanup-approval wording available.
 - Do not trigger permission changes, cleanup actions, quarantine actions, or rescans from the summary.
 
 ### Child Breakdown

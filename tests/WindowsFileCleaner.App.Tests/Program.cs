@@ -222,6 +222,66 @@ internal sealed class MainWindowSmokeTests
                 && window.CategoryFilterAutomationHelpTextValue.Contains("approve cleanup", StringComparison.OrdinalIgnoreCase),
                 "Category filter automation help text should explain read-only category filtering.");
             Assert(
+                window.SafetyHighRiskButtonToolTipValue.Contains("High risk", StringComparison.OrdinalIgnoreCase)
+                && window.SafetyHighRiskButtonToolTipValue.Contains("read-only review shortcut", StringComparison.OrdinalIgnoreCase)
+                && window.SafetyHighRiskButtonToolTipValue.Contains("approve cleanup", StringComparison.OrdinalIgnoreCase),
+                "Safety high-risk shortcut tooltip should explain read-only shortcut behavior.");
+            Assert(
+                window.SafetyHighRiskButtonAutomationHelpTextValue.Contains("High risk", StringComparison.OrdinalIgnoreCase)
+                && window.SafetyHighRiskButtonAutomationHelpTextValue.Contains("read-only review shortcut", StringComparison.OrdinalIgnoreCase)
+                && window.SafetyHighRiskButtonAutomationHelpTextValue.Contains("approve cleanup", StringComparison.OrdinalIgnoreCase),
+                "Safety high-risk shortcut automation help text should explain read-only shortcut behavior.");
+            Assert(
+                window.SafetyProtectedButtonToolTipValue.Contains("Protected Location", StringComparison.OrdinalIgnoreCase)
+                && window.SafetyProtectedButtonToolTipValue.Contains("does not rescan", StringComparison.OrdinalIgnoreCase)
+                && window.SafetyProtectedButtonToolTipValue.Contains("approve cleanup", StringComparison.OrdinalIgnoreCase),
+                "Safety protected shortcut tooltip should explain read-only protected-row review.");
+            Assert(
+                window.SafetyProtectedButtonAutomationHelpTextValue.Contains("Protected Location", StringComparison.OrdinalIgnoreCase)
+                && window.SafetyProtectedButtonAutomationHelpTextValue.Contains("does not rescan", StringComparison.OrdinalIgnoreCase)
+                && window.SafetyProtectedButtonAutomationHelpTextValue.Contains("approve cleanup", StringComparison.OrdinalIgnoreCase),
+                "Safety protected shortcut automation help text should explain read-only protected-row review.");
+            Assert(
+                window.SafetyAccessIssuesButtonToolTipValue.Contains("Access issue", StringComparison.OrdinalIgnoreCase)
+                && window.SafetyAccessIssuesButtonToolTipValue.Contains("does not retry", StringComparison.OrdinalIgnoreCase)
+                && window.SafetyAccessIssuesButtonToolTipValue.Contains("change permissions", StringComparison.OrdinalIgnoreCase),
+                "Safety access shortcut tooltip should explain no-retry/no-permission-change behavior.");
+            Assert(
+                window.SafetyAccessIssuesButtonAutomationHelpTextValue.Contains("Access issue", StringComparison.OrdinalIgnoreCase)
+                && window.SafetyAccessIssuesButtonAutomationHelpTextValue.Contains("does not retry", StringComparison.OrdinalIgnoreCase)
+                && window.SafetyAccessIssuesButtonAutomationHelpTextValue.Contains("change permissions", StringComparison.OrdinalIgnoreCase),
+                "Safety access shortcut automation help text should explain no-retry/no-permission-change behavior.");
+            Assert(
+                window.SafetyReparsePointsButtonToolTipValue.Contains("reparse point", StringComparison.OrdinalIgnoreCase)
+                && window.SafetyReparsePointsButtonToolTipValue.Contains("does not follow links", StringComparison.OrdinalIgnoreCase)
+                && window.SafetyReparsePointsButtonToolTipValue.Contains("approve cleanup", StringComparison.OrdinalIgnoreCase),
+                "Safety reparse shortcut tooltip should explain no-follow/no-approval behavior.");
+            Assert(
+                window.SafetyReparsePointsButtonAutomationHelpTextValue.Contains("reparse point", StringComparison.OrdinalIgnoreCase)
+                && window.SafetyReparsePointsButtonAutomationHelpTextValue.Contains("does not follow links", StringComparison.OrdinalIgnoreCase)
+                && window.SafetyReparsePointsButtonAutomationHelpTextValue.Contains("approve cleanup", StringComparison.OrdinalIgnoreCase),
+                "Safety reparse shortcut automation help text should explain no-follow/no-approval behavior.");
+            Assert(
+                window.SafetyQuarantineCandidatesButtonToolTipValue.Contains("Quarantine candidate", StringComparison.OrdinalIgnoreCase)
+                && window.SafetyQuarantineCandidatesButtonToolTipValue.Contains("not Quarantine approval", StringComparison.OrdinalIgnoreCase)
+                && window.SafetyQuarantineCandidatesButtonToolTipValue.Contains("no files are modified", StringComparison.OrdinalIgnoreCase),
+                "Safety quarantine shortcut tooltip should separate candidates from approval.");
+            Assert(
+                window.SafetyQuarantineCandidatesButtonAutomationHelpTextValue.Contains("Quarantine candidate", StringComparison.OrdinalIgnoreCase)
+                && window.SafetyQuarantineCandidatesButtonAutomationHelpTextValue.Contains("not Quarantine approval", StringComparison.OrdinalIgnoreCase)
+                && window.SafetyQuarantineCandidatesButtonAutomationHelpTextValue.Contains("no files are modified", StringComparison.OrdinalIgnoreCase),
+                "Safety quarantine shortcut automation help text should separate candidates from approval.");
+            Assert(
+                window.SafetyNoCategoryButtonToolTipValue.Contains("No category", StringComparison.OrdinalIgnoreCase)
+                && window.SafetyNoCategoryButtonToolTipValue.Contains("need classification", StringComparison.OrdinalIgnoreCase)
+                && window.SafetyNoCategoryButtonToolTipValue.Contains("approve cleanup", StringComparison.OrdinalIgnoreCase),
+                "Safety no-category shortcut tooltip should explain classification-only review.");
+            Assert(
+                window.SafetyNoCategoryButtonAutomationHelpTextValue.Contains("No category", StringComparison.OrdinalIgnoreCase)
+                && window.SafetyNoCategoryButtonAutomationHelpTextValue.Contains("need classification", StringComparison.OrdinalIgnoreCase)
+                && window.SafetyNoCategoryButtonAutomationHelpTextValue.Contains("approve cleanup", StringComparison.OrdinalIgnoreCase),
+                "Safety no-category shortcut automation help text should explain classification-only review.");
+            Assert(
                 window.ClearSearchButtonToolTipValue.Contains("Storage Review Search", StringComparison.OrdinalIgnoreCase)
                 && window.ClearSearchButtonToolTipValue.Contains("does not rescan", StringComparison.OrdinalIgnoreCase)
                 && window.ClearSearchButtonToolTipValue.Contains("modify files", StringComparison.OrdinalIgnoreCase)

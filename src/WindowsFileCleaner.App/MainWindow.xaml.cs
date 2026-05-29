@@ -213,6 +213,30 @@ public partial class MainWindow : Window
 
     public string SafetySummaryTextValue => SafetySummaryText.Text;
 
+    public string SafetyHighRiskButtonToolTipValue => SafetyHighRiskButton.ToolTip?.ToString() ?? "";
+
+    public string SafetyHighRiskButtonAutomationHelpTextValue => AutomationProperties.GetHelpText(SafetyHighRiskButton);
+
+    public string SafetyProtectedButtonToolTipValue => SafetyProtectedButton.ToolTip?.ToString() ?? "";
+
+    public string SafetyProtectedButtonAutomationHelpTextValue => AutomationProperties.GetHelpText(SafetyProtectedButton);
+
+    public string SafetyAccessIssuesButtonToolTipValue => SafetyAccessIssuesButton.ToolTip?.ToString() ?? "";
+
+    public string SafetyAccessIssuesButtonAutomationHelpTextValue => AutomationProperties.GetHelpText(SafetyAccessIssuesButton);
+
+    public string SafetyReparsePointsButtonToolTipValue => SafetyReparsePointsButton.ToolTip?.ToString() ?? "";
+
+    public string SafetyReparsePointsButtonAutomationHelpTextValue => AutomationProperties.GetHelpText(SafetyReparsePointsButton);
+
+    public string SafetyQuarantineCandidatesButtonToolTipValue => SafetyQuarantineCandidatesButton.ToolTip?.ToString() ?? "";
+
+    public string SafetyQuarantineCandidatesButtonAutomationHelpTextValue => AutomationProperties.GetHelpText(SafetyQuarantineCandidatesButton);
+
+    public string SafetyNoCategoryButtonToolTipValue => SafetyNoCategoryButton.ToolTip?.ToString() ?? "";
+
+    public string SafetyNoCategoryButtonAutomationHelpTextValue => AutomationProperties.GetHelpText(SafetyNoCategoryButton);
+
     public string FilterSummaryTextValue => FilterSummaryText.Text;
 
     public string MatchedReviewMixTextValue => MatchedReviewMixText.Text;
