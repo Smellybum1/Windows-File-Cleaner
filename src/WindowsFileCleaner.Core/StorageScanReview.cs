@@ -92,6 +92,7 @@ public sealed record StorageScanReview(
         return search.Field switch
         {
             StorageReviewSearchField.Path => ContainsSearchText(entry.FullPath, query, normalizedQuery),
+            StorageReviewSearchField.Parent => ContainsSearchText(GetParentPath(entry.FullPath), query, normalizedQuery),
             StorageReviewSearchField.Name => ContainsSearchText(entry.Name, query, normalizedQuery),
             StorageReviewSearchField.Category => MatchesCategorySearch(entry, query, normalizedQuery),
             StorageReviewSearchField.Rating => ContainsSearchText(entry.ImportanceRating.ToString(), query, normalizedQuery),
@@ -101,12 +102,29 @@ public sealed record StorageScanReview(
             _ =>
                 ContainsSearchText(entry.Name, query, normalizedQuery)
                 || ContainsSearchText(entry.FullPath, query, normalizedQuery)
+                || ContainsSearchText(GetParentPath(entry.FullPath), query, normalizedQuery)
                 || ContainsSearchText(entry.Evidence, query, normalizedQuery)
                 || MatchesAccessIssueSearch(entry, query, normalizedQuery)
                 || ContainsSearchText(entry.ImportanceRating.ToString(), query, normalizedQuery)
                 || ContainsSearchText(entry.DeletionRecommendation.ToString(), query, normalizedQuery)
                 || MatchesCategorySearch(entry, query, normalizedQuery)
         };
+    }
+
+    private static string? GetParentPath(string fullPath)
+    {
+        try
+        {
+            return Path.GetDirectoryName(fullPath);
+        }
+        catch (ArgumentException)
+        {
+            return null;
+        }
+        catch (NotSupportedException)
+        {
+            return null;
+        }
     }
 
     private static bool MatchesCategorySearch(StorageEntry entry, string query, string normalizedQuery)

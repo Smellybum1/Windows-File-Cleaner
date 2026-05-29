@@ -30,8 +30,8 @@ The WPF app should provide Storage Review Search that:
 
 - Is enabled only after a Storage Scan completes.
 - Combines with the active Storage Review Filter and Bloat Category Filter.
-- Matches path, name, category, Importance Rating, Deletion Recommendation, evidence, Access Status, and access issue text.
-- Supports field prefixes such as `path:`, `category:`, `rating:`, and `recommendation:` for narrower searches.
+- Matches path, parent path, name, category, Importance Rating, Deletion Recommendation, evidence, Access Status, and access issue text.
+- Supports field prefixes such as `path:`, `parent:`, `category:`, `rating:`, and `recommendation:` for narrower searches.
 - Resets after a new Storage Scan completes.
 - Keeps all behavior read-only.
 
@@ -174,6 +174,7 @@ What changed:
 - Added tests for spaced category/rating search, combined filters, WPF search summary, and clearing search.
 - Later field-prefix packet added `StorageReviewSearchField`, restricted searches such as `path:` and `category:`, WPF tooltip examples, and fixture coverage for prefixed searches.
 - Later Access Status Search packet added broad and prefixed search for Access Status values such as `Readable` and `Access issue`.
+- Later Selected Folder Child Focus packet added `parent:` for immediate-parent matching.
 
 Files changed:
 

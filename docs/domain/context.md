@@ -540,17 +540,18 @@ Initial filters are All, Likely safe, Caution, High risk, Quarantine candidates,
 ### Storage Review Search
 
 Status: draft
-Last reviewed: 2026-05-28
+Last reviewed: 2026-05-29
 
 #### Definition
 
 Storage Review Search is a read-only text search applied to the current Storage Scan review results.
 
-By default, it matches path, name, category, Importance Rating, Deletion Recommendation, evidence, Access Status, and access issue text. It combines with the active Storage Review Filter and Bloat Category Filter.
+By default, it matches path, parent path, name, category, Importance Rating, Deletion Recommendation, evidence, Access Status, and access issue text. It combines with the active Storage Review Filter and Bloat Category Filter.
 
 Recognized field prefixes restrict search to one field:
 
 - `path:`
+- `parent:`
 - `name:`
 - `category:` or `cat:`
 - `rating:` or `importance:`
@@ -564,6 +565,7 @@ Recognized field prefixes restrict search to one field:
 - Search for `NVIDIA` to find GPU shader cache paths.
 - Search for `high risk` to find rows with the High risk Importance Rating.
 - Search for `path:pip` to search only full paths.
+- Search for `parent:C:\Users\moxhe\AppData` to search only immediate children whose parent is `AppData`.
 - Search for `category:Python package cache` to search only Bloat Category labels.
 - Search for `recommendation:Quarantine candidate` to search only Deletion Recommendation labels.
 - Search for `access:readable` to search only rows that were readable during scan.
@@ -593,6 +595,7 @@ Recognized field prefixes restrict search to one field:
 
 - Use `StorageReviewSearch` for the search query.
 - Parse recognized field prefixes into `StorageReviewSearchField`.
+- Treat `parent:` as an immediate-parent lens, not a recursive descendant tree.
 - Keep search in-memory and read-only.
 - Do not use search text to change Bloat Categories, Importance Ratings, Deletion Recommendations, or cleanup eligibility.
 
@@ -1093,7 +1096,7 @@ It summarizes safety-relevant scan signals such as high-risk rows, Protected Loc
 ### Child Breakdown
 
 Status: draft  
-Last reviewed: 2026-05-28
+Last reviewed: 2026-05-29
 
 #### Definition
 
@@ -1130,6 +1133,51 @@ It helps the user understand what is inside large container folders such as `App
 - Show only immediate children by default.
 - Sort children by size descending.
 - Keep the number of displayed children bounded.
+
+### Selected Folder Child Focus
+
+Status: draft
+Last reviewed: 2026-05-29
+
+#### Definition
+
+Selected Folder Child Focus is a read-only review action that narrows the Storage Scan results to the immediate children of the currently selected folder.
+
+It is a table-level follow-up to Child Breakdown: the detail pane shows a bounded summary, while Selected Folder Child Focus lets the user inspect and sort the matching child rows in the main grid.
+
+#### Examples
+
+- Select `AppData`, then show only rows whose immediate parent is `AppData`.
+- Select `Downloads`, then show its files and folders in the main review grid.
+- Select `pip`, then inspect only its direct cache buckets before deciding whether to drill deeper.
+
+#### Non-examples
+
+- A Cleanup Action.
+- A recursive tree expansion.
+- A claim that the selected folder or its children are safe to quarantine.
+- A filesystem rescan.
+
+#### Lifecycle
+
+- Available only after a Storage Scan completes and the selected row is a folder.
+- Applies a parent-prefixed Storage Review Search for the selected folder path.
+- Resets other review lenses to All so the selected folder's immediate children are visible.
+- Remains in-memory and read-only.
+- Clears or changes when the user edits search, changes filters, resets the review view, selects another focus, or starts a new scan.
+
+#### Relationships
+
+- Depends on Storage Review Search.
+- Complements Child Breakdown, Selected Path Hierarchy Context, Storage Review Display Window, and Review Shortlist.
+- Does not change Bloat Categories, Importance Ratings, Deletion Recommendations, Review Shortlist, Quarantine Preview, or cleanup eligibility.
+
+#### Code implications
+
+- Use `StorageReviewSearchField.Parent` for parent-prefixed search.
+- Use `ShowSelectedFolderChildren` for the WPF selected-row action.
+- Keep the action disabled for files and before a scan result exists.
+- Keep the action read-only and avoid rescanning, opening Explorer, previewing file content, or modifying files.
 
 ### Selected Path Inspection
 

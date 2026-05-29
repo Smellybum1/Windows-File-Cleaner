@@ -597,6 +597,7 @@ internal sealed class StorageScanTests
         Assert(!StorageReviewSearch.FromText("category: ").IsActive, "Prefixed search without a term should be inactive.");
         Assert(StorageReviewSearch.FromText("unknown:setup").Field == StorageReviewSearchField.Any, "Unrecognized prefixes should stay broad search.");
         Assert(StorageReviewSearch.FromText("unknown:setup").Term == "unknown:setup", "Unrecognized prefixes should remain literal search text.");
+        Assert(StorageReviewSearch.FromText("parent:Downloads").Field == StorageReviewSearchField.Parent, "Parent-prefixed search should record the parent field.");
 
         var categoryRows = review.ApplyFilter(
             StorageReviewFilter.All,
@@ -615,6 +616,17 @@ internal sealed class StorageScanTests
         Assert(
             pathRows.All(row => row.Entry.FullPath.Contains("pip", StringComparison.OrdinalIgnoreCase)),
             "Path-prefixed search should only match full paths.");
+
+        var downloadsPath = Path.Combine(fixture.RootPath, "Downloads");
+        var parentRows = review.ApplyFilter(
+            StorageReviewFilter.All,
+            StorageCategoryFilter.All,
+            StorageReviewSearch.FromText($"parent:{downloadsPath}"));
+        Assert(parentRows.Count == 1, "Parent-prefixed search should match direct children of the requested parent path.");
+        Assert(parentRows[0].Entry.FullPath.EndsWith(@"Downloads\setup.msi", StringComparison.OrdinalIgnoreCase), "Parent-prefixed search should return the direct fixture child.");
+        Assert(
+            parentRows.All(row => Path.GetDirectoryName(row.Entry.FullPath)?.Equals(downloadsPath, StringComparison.OrdinalIgnoreCase) == true),
+            "Parent-prefixed search should only match immediate parent path text.");
 
         var categoryTextInPathField = review.ApplyFilter(
             StorageReviewFilter.All,

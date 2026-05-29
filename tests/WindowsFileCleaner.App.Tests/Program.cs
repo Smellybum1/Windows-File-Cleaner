@@ -79,6 +79,7 @@ internal sealed class MainWindowSmokeTests
             Assert(!window.CanPreviewSelectedRestoreGate, "MainWindow should not enable selected restore gate preview before selected readiness.");
             Assert(!window.CanEnterSelectedRestoreConfirmation, "MainWindow should not allow selected restore confirmation before gate preview.");
             Assert(!window.CanExecuteSelectedRestore, "MainWindow should not allow selected restore execution before gate preview.");
+            Assert(!window.CanShowSelectedFolderChildren, "MainWindow should not allow selected-folder child focus before a scan result is selected.");
             Assert(window.BrowseQuarantineRootButtonText.Contains("Browse", StringComparison.OrdinalIgnoreCase), "Quarantine root browse action should be visible in the review toolbar.");
             Assert(
                 window.CurrentQuarantineRootPath == QuarantinePreviewBuilder.DefaultQuarantineRootPath,
@@ -121,6 +122,7 @@ internal sealed class MainWindowSmokeTests
                 window.QuarantineExecutionGateTextValue.Contains("Create a Quarantine Preview", StringComparison.OrdinalIgnoreCase),
                 "Quarantine execution gate should explain the preview dependency at startup.");
             Assert(window.SearchHelpToolTipValue.Contains("path:", StringComparison.OrdinalIgnoreCase), "Search tooltip should show field-prefix examples.");
+            Assert(window.SearchHelpToolTipValue.Contains("parent:", StringComparison.OrdinalIgnoreCase), "Search tooltip should include parent-prefix guidance.");
             Assert(window.SearchHelpToolTipValue.Contains("category:", StringComparison.OrdinalIgnoreCase), "Search tooltip should include category-prefix guidance.");
             Assert(window.SearchHelpToolTipValue.Contains("access:readable", StringComparison.OrdinalIgnoreCase), "Search tooltip should include readable access-prefix guidance.");
             Assert(window.SearchHelpToolTipValue.Contains("issue:denied", StringComparison.OrdinalIgnoreCase), "Search tooltip should include access issue message-prefix guidance.");
@@ -253,6 +255,7 @@ internal sealed class MainWindowSmokeTests
                 "Fixture Downloads folder should expose contents counts in the grid row.");
             Assert(downloads.ContainedTotalCount == 1, "Fixture Downloads contents sort value should total contained files and folders.");
             Assert(window.SelectDisplayedPath(downloads.FullPath), "Fixture Downloads folder should be selectable for contents context.");
+            Assert(window.CanShowSelectedFolderChildren, "Selected folder rows should enable selected-folder child focus.");
             Assert(downloads.Contents.Contains("1 file", StringComparison.OrdinalIgnoreCase), "Folder row should expose contained file count.");
             Assert(
                 window.DetailPathContextTextValue.Contains("Contents:", StringComparison.OrdinalIgnoreCase)
@@ -261,6 +264,19 @@ internal sealed class MainWindowSmokeTests
                 && window.DetailPathContextTextValue.Contains("1 file", StringComparison.OrdinalIgnoreCase),
                 "Selected folder detail pane should show relative path and contained file/folder counts.");
             Assert(window.DetailMetaTextValue.Contains("Access: Readable", StringComparison.OrdinalIgnoreCase), "Selected row detail pane should show access status.");
+            window.ShowSelectedFolderChildren();
+            Assert(window.CurrentSearchText.StartsWith("parent:", StringComparison.OrdinalIgnoreCase), "Selected-folder child focus should apply a parent-prefixed search.");
+            Assert(window.FilterSummaryTextValue.Contains("Search \"parent:", StringComparison.OrdinalIgnoreCase), "Selected-folder child focus should update the filter summary.");
+            Assert(window.CurrentStatusText.Contains("Focused review on immediate children", StringComparison.OrdinalIgnoreCase), "Selected-folder child focus should report a read-only focus action.");
+            Assert(window.CurrentStatusText.Contains("No files were modified", StringComparison.OrdinalIgnoreCase), "Selected-folder child focus status should preserve the read-only boundary.");
+            Assert(window.DisplayedRows.Count == 1, "Fixture Downloads focus should show its one immediate child.");
+            Assert(
+                window.DisplayedRows.All(row => row.ParentLocation.Equals(downloads.FullPath, StringComparison.OrdinalIgnoreCase)),
+                "Selected-folder child focus should show only immediate children of the selected folder.");
+            Assert(
+                window.DisplayedRows.Single().FullPath.EndsWith(@"Downloads\old-installer.msi", StringComparison.OrdinalIgnoreCase),
+                "Selected-folder child focus should include the fixture installer child.");
+            window.ResetReviewView();
 
             var exportCsv = window.CurrentScanReportExportCsv;
             Assert(
@@ -271,6 +287,7 @@ internal sealed class MainWindowSmokeTests
                 "Scan Report Export CSV should include fixture-relative paths for spreadsheet review.");
 
             Assert(window.SelectDisplayedPath(fixture.MarkerPath), "Fixture note file should be selectable for preview.");
+            Assert(!window.CanShowSelectedFolderChildren, "Selected files should not enable selected-folder child focus.");
             Assert(window.CanPreviewSelectedFile, "Selected file preview should be enabled for a selected file.");
             window.PreviewSelectedFileContent();
             Assert(

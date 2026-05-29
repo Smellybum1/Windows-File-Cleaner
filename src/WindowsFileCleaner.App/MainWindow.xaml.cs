@@ -225,6 +225,8 @@ public partial class MainWindow : Window
 
     public bool CanPreviewSelectedFile => PreviewFileButton.IsEnabled;
 
+    public bool CanShowSelectedFolderChildren => ShowChildrenButton.IsEnabled;
+
     public bool CanAddShownRowsToReviewShortlist => AddShownToShortlistButton.IsEnabled;
 
     public bool CanRemoveShownRowsFromReviewShortlist => RemoveShownFromShortlistButton.IsEnabled;
@@ -908,6 +910,7 @@ public partial class MainWindow : Window
             DetailChildrenText.Text = "";
             FilePreviewText.Text = "Preview appears after selecting a file and using Preview file.";
             CopyPathButton.IsEnabled = false;
+            ShowChildrenButton.IsEnabled = false;
             PreviewFileButton.IsEnabled = false;
             OpenInExplorerButton.IsEnabled = false;
             UpdateShortlistControls();
@@ -940,6 +943,34 @@ public partial class MainWindow : Window
         var plan = PathInspectionPlanBuilder.Build(_selectedRow.Entry);
         Clipboard.SetText(plan.PathToCopy);
         StatusText.Text = "Selected path copied. No files were modified.";
+    }
+
+    private void ShowChildrenButton_Click(object sender, RoutedEventArgs e)
+    {
+        ShowSelectedFolderChildren();
+    }
+
+    public void ShowSelectedFolderChildren()
+    {
+        if (_currentReview is null || _selectedRow is null || !_selectedRow.Entry.IsDirectory)
+        {
+            return;
+        }
+
+        var selectedFolderPath = _selectedRow.FullPath;
+        var selectedFolderName = _selectedRow.Entry.Name;
+        _currentFilter = StorageReviewFilter.All;
+        _currentCategoryFilter = StorageCategoryFilter.All;
+        _currentEntryTypeFilter = StorageEntryTypeFilter.All;
+        _currentSizeThresholdFilter = StorageSizeThresholdFilter.All;
+        _currentSearch = StorageReviewSearch.FromText($"parent:{selectedFolderPath}");
+        _currentDisplayStartIndex = 0;
+        SelectCategoryFilterOption(_currentCategoryFilter);
+        SelectEntryTypeFilterOption(_currentEntryTypeFilter);
+        SelectSizeThresholdFilterOption(_currentSizeThresholdFilter);
+        SetSearchTextSilently(_currentSearch.Query);
+        RefreshResults();
+        StatusText.Text = $"Focused review on immediate children of {selectedFolderName}. No files were modified.";
     }
 
     private void PreviewFileButton_Click(object sender, RoutedEventArgs e)
@@ -1682,6 +1713,7 @@ public partial class MainWindow : Window
         AddToShortlistButton.IsEnabled = hasSelectedRow && !isShortlisted && ScanButton.IsEnabled;
         RemoveFromShortlistButton.IsEnabled = hasSelectedRow && isShortlisted && ScanButton.IsEnabled;
         CopyPathButton.IsEnabled = hasSelectedRow && ScanButton.IsEnabled;
+        ShowChildrenButton.IsEnabled = hasSelectedRow && _selectedRow!.Entry.IsDirectory && ScanButton.IsEnabled;
         OpenInExplorerButton.IsEnabled = hasSelectedRow && ScanButton.IsEnabled;
         PreviewFileButton.IsEnabled = hasSelectedRow && !_selectedRow!.Entry.IsDirectory && ScanButton.IsEnabled;
 

@@ -34,6 +34,7 @@ public sealed record StorageReviewSearch(string Query, StorageReviewSearchField 
         var field = prefix.ToLowerInvariant() switch
         {
             "path" => StorageReviewSearchField.Path,
+            "parent" => StorageReviewSearchField.Parent,
             "name" => StorageReviewSearchField.Name,
             "category" or "cat" => StorageReviewSearchField.Category,
             "rating" or "importance" => StorageReviewSearchField.Rating,

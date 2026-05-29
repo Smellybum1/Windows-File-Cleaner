@@ -138,11 +138,12 @@ Use `README.md` as the current manual MVP checklist. The highest-value retest is
 7. Confirm whether the status/filter summary shows all matched rows or `2,000 shown of ... matched`.
 8. Test Safety Summary shortcuts.
 9. Test Access issues, Bloat Category, and No category filters.
-10. Add one likely-safe row to Review Shortlist.
-11. Create a Quarantine Preview.
-12. Confirm Restore Manifest Draft and Quarantine Confirmation Draft wording is understandable.
-13. After a fixture execution, use `Discover manifests`, select one Restore Manifest, use `Preview selected readiness`, use `Preview selected restore gate`, type `RESTORE`, and for fixture manifests try `Restore selected fixture manifest`.
-14. Export the Quarantine Preview CSV only to a user-selected report path.
+10. Select a folder and use `Show children`; confirm it applies a `parent:` search and keeps the action read-only.
+11. Add one likely-safe row to Review Shortlist.
+12. Create a Quarantine Preview.
+13. Confirm Restore Manifest Draft and Quarantine Confirmation Draft wording is understandable.
+14. After a fixture execution, use `Discover manifests`, select one Restore Manifest, use `Preview selected readiness`, use `Preview selected restore gate`, type `RESTORE`, and for fixture manifests try `Restore selected fixture manifest`.
+15. Export the Quarantine Preview CSV only to a user-selected report path.
 
 ## Decisions made
 

@@ -4,6 +4,7 @@ public enum StorageReviewSearchField
 {
     Any,
     Path,
+    Parent,
     Name,
     Category,
     Rating,
