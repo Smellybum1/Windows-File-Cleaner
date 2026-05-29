@@ -7011,6 +7011,45 @@ Rejected ideas buffer:
 
 - Do not make checklist-only mode perform visual verification or launch WPF; it stays terminal-output-only.
 
+### 2026-05-30: Retire Stale Grid-Mode Styling Follow-ups
+
+Status: completed
+
+Evidence:
+
+- `docs/features/2026-05-29-quarantine-preview-status-styling.md` still listed Review Grid Mode Status styling as a future follow-up even though it landed in `2026-05-29-review-grid-mode-status-styling.md`.
+- `docs/features/2026-05-29-review-grid-mode-status.md` still framed the question as badge versus plain text, but the current implementation is styled text.
+
+Implementation:
+
+- Updated the Quarantine Preview status-styling brief to mark Review Grid Mode Status styling as completed and leave only manual visual review open.
+- Updated the Review Grid Mode Status brief so the remaining question is badge versus styled text after manual fixture review, not badge versus plain text.
+- No code or app behavior changed.
+
+Verification:
+
+- `git -c safe.directory='D:/Codex/Windows File Cleaner' diff --check` passed with line-ending normalization warnings only.
+- `rg -n "Review Grid Mode Status get similar styling|plain text sufficient|badge or stay as plain text" docs README.md .codex/progress.md` found only historical progress entries and this verification note, not current feature guidance.
+
+Docs updated:
+
+- `docs/codex/thread-handoff.md`
+- `docs/features/2026-05-29-quarantine-preview-status-styling.md`
+- `docs/features/2026-05-29-review-grid-mode-status.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No ADR added. This is documentation cleanup only.
+
+Open questions:
+
+- Manual fixture review still needs to decide whether styled text is enough or a badge is worth adding.
+
+Rejected ideas buffer:
+
+- Do not let stale feature-brief follow-ups override newer completed packets.
+
 ### 2026-05-29: Harden Quarantine Preview Error Style Coverage
 
 Status: completed

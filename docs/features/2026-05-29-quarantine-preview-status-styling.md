@@ -49,7 +49,7 @@ Questions that must be answered before implementation:
 
 Questions that can be deferred:
 
-- Should Review Grid Mode Status get similar styling later?
+- Later packet `2026-05-29-review-grid-mode-status-styling.md` added similar styling for Review Grid Mode Status. The remaining deferred question is whether the styled inline preview status is noticeable enough without a popup after manual fixture review.
 
 ## Grill notes
 
@@ -193,11 +193,11 @@ ADRs added or skipped:
 Follow-up work:
 
 - Manual fixture visual pass to confirm the styled inline status is noticeable without reading like cleanup approval.
-- Consider similar styling for Review Grid Mode Status only if manual review shows it is still too easy to miss.
+- Later packet `2026-05-29-review-grid-mode-status-styling.md` added similar lightweight styling for Review Grid Mode Status, so only the manual visual pass remains.
 
 Open questions:
 
-- Should Review Grid Mode Status get similar styling later?
+- Does the next manual fixture pass show that the styled inline Quarantine Preview status is noticeable enough without a popup?
 
 Risky assumptions:
 

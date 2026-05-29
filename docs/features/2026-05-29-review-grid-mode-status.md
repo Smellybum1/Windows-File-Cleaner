@@ -36,7 +36,7 @@ As the project owner, I want the main grid to clearly say what it is showing, so
 
 ## Open questions
 
-- Should the mode status later include a small count badge or stay as plain text?
+- Later packet `2026-05-29-review-grid-mode-status-styling.md` chose lightweight styled text for now. The remaining open question is whether a small badge would help after manual fixture review.
 
 ## Decisions made
 
@@ -121,7 +121,7 @@ Follow-up work:
 
 Open questions:
 
-- Should the line later use a badge or remain plain text?
+- Lightweight styled text is implemented. After manual fixture review, decide whether a small badge would help more than styled text alone.
 
 Risky assumptions:
 
