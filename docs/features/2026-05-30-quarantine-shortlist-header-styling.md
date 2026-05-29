@@ -34,6 +34,7 @@ What changed:
 - Styled the header using the existing neutral/success/information/warning color vocabulary.
 - Added WPF smoke assertions for startup, needs-preview, invalid-root, clean preview, stale preview, blocked preview, current quarantined, and undo-completed header states.
 - Later packet `2026-05-30-collapsed-header-state-help-text.md` added textual header-state wording to the tooltip/help text so these states are not color-only.
+- Later packet `2026-05-30-collapsed-header-summary-labels.md` changed the visible prefix to `Quarantine Shortlist:` so the closed summary starts with the panel name.
 
 Tests run:
 

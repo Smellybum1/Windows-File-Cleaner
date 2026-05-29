@@ -86,6 +86,7 @@ What changed:
 - Later packet `2026-05-30-safety-summary-header-styling.md` updated the checklist to call out Safety Summary header state styling.
 - Later packet `2026-05-30-collapsed-header-state-help-text.md` updated the checklist to call out state-naming header tooltip/help text.
 - Later packet `2026-05-30-status-state-help-text.md` updated the checklist to call out state-naming Review Grid Mode Status and inline Quarantine Preview tooltip/help text.
+- Later packet `2026-05-30-collapsed-header-summary-labels.md` updated the checklist to call out panel-name prefixes on the collapsed Safety Summary and Quarantine Shortlist headers.
 
 Tests run:
 

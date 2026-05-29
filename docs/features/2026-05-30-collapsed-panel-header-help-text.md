@@ -54,6 +54,7 @@ What changed:
 - Later packet `2026-05-30-quarantine-shortlist-header-styling.md` added lightweight semantic styling to the Quarantine shortlist header while preserving the same compact summary and help text.
 - Later packet `2026-05-30-safety-summary-header-styling.md` added lightweight neutral/warning styling to the Safety Summary header while preserving the same compact summary and help text.
 - Later packet `2026-05-30-collapsed-header-state-help-text.md` added textual header-state wording to both collapsed header tooltips/help text so state is not color-only.
+- Later packet `2026-05-30-collapsed-header-summary-labels.md` made the compact headers start with the visible panel names: `Safety Summary:` and `Quarantine Shortlist:`.
 
 Docs updated:
 

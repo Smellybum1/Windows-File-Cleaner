@@ -31,6 +31,7 @@ What changed:
 - Added textual header-state wording to Safety Summary header tooltip/help text.
 - Added textual header-state wording to Quarantine shortlist header tooltip/help text.
 - Added WPF smoke assertions for startup neutral state, Safety Summary needs-review state, Quarantine shortlist needs-review state, preview-ready/completed state, and current-session quarantined review state.
+- Later packet `2026-05-30-collapsed-header-summary-labels.md` made the same compact headers start with the visible panel names without changing header state semantics.
 
 Tests run:
 

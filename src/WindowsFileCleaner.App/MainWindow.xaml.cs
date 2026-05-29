@@ -2534,7 +2534,7 @@ public partial class MainWindow : Window
             ? "undo available"
             : "undo unavailable";
         var headerText =
-            $"Quarantine shortlist: {_shortlist.Count:N0} shortlisted | {previewText} | {currentQuarantineText} | {undoText}";
+            $"Quarantine Shortlist: {_shortlist.Count:N0} shortlisted | {previewText} | {currentQuarantineText} | {undoText}";
         var style = GetQuarantineShortlistHeaderStatusStyle(movedCount);
         var helpText = $"{headerText}. Header state: {FormatQuarantineShortlistHeaderState(style)}. Header summary is read-only review context, not cleanup approval.";
         QuarantineShortlistHeaderText.Text = headerText;
@@ -3633,14 +3633,14 @@ public partial class MainWindow : Window
 
         if (_currentSafetySummary is null)
         {
-            const string waitingHeaderText = "Scan safety summary: waiting for scan";
+            const string waitingHeaderText = "Safety Summary: waiting for scan";
             SetSafetySummaryHeader(waitingHeaderText, SafetySummaryHeaderStatusStyle.Neutral);
             return;
         }
 
         var summary = _currentSafetySummary;
         var headerText =
-            $"Scan safety summary: {summary.StatusLabel} | " +
+            $"Safety Summary: {summary.StatusLabel} | " +
             $"High risk {summary.HighRiskCount:N0} | " +
             $"Protected {summary.ProtectedLocationCount:N0} | " +
             $"Access {summary.AccessIssueCount:N0} | " +

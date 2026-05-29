@@ -20,6 +20,58 @@ Storage Scan MVP packet implemented and tested by the user against `C:\Users\mox
 
 ## Completed packets
 
+### 2026-05-30: Add Collapsed Header Summary Labels
+
+Status: completed
+
+Evidence:
+
+- User agreed that a header panel summary while closed would be useful.
+- The existing collapsed headers already exposed compact summaries, state styling, and state-naming tooltip/help text.
+- The visible prefixes were sentence-style and less directly tied to the panel names than the surrounding UI.
+
+Implementation:
+
+- Changed the Safety Summary header prefix to `Safety Summary:`.
+- Changed the Quarantine Shortlist header prefix to `Quarantine Shortlist:`.
+- Aligned the initial Quarantine Shortlist XAML header with the dynamic runtime summary by including `undo unavailable`.
+- Added WPF smoke assertions that both collapsed headers start with their visible panel names.
+- Did not change scan behavior, Review Shortlist behavior, Quarantine Preview, fixture execution, undo, selected restore, manifests, or real-profile cleanup availability.
+
+Verification:
+
+- `dotnet build tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj "-p:BaseOutputPath=D:/Codex/Windows File Cleaner/.local/test-bin/app-tests/"` passed.
+- `D:\Codex\Windows File Cleaner\.local\test-bin\app-tests\Debug\net8.0-windows\WindowsFileCleaner.App.Tests.exe` passed.
+- `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\Start-MvpFixtureReview.ps1 -ChecklistOnly` passed and printed panel-name prefix checks for Safety Summary and Quarantine Shortlist collapsed headers without preflight, fixture creation, or WPF launch.
+- `dotnet build WindowsFileCleaner.sln --no-restore "-p:BaseOutputPath=D:/Codex/Windows File Cleaner/.local/test-bin/solution/"` passed.
+- `git -c safe.directory='D:/Codex/Windows File Cleaner' diff --check` passed with line-ending normalization warnings only.
+
+Docs updated:
+
+- `README.md`
+- `docs/domain/context.md`
+- `docs/domain/glossary.md`
+- `docs/features/2026-05-29-fixture-review-checklist-output.md`
+- `docs/features/2026-05-30-collapsed-header-state-help-text.md`
+- `docs/features/2026-05-30-collapsed-header-summary-labels.md`
+- `docs/features/2026-05-30-collapsed-panel-header-help-text.md`
+- `docs/features/2026-05-30-quarantine-shortlist-header-styling.md`
+- `docs/features/2026-05-30-safety-summary-header-styling.md`
+- `docs/codex/thread-handoff.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No ADR added. This is reversible WPF header readability polish with no persistence, cleanup execution, restore rule, data-model, or security change.
+
+Open questions:
+
+- During the next visible fixture pass, confirm whether the panel-name prefixes make the collapsed summaries easier to scan when both panels are collapsed.
+
+Rejected ideas buffer:
+
+- Do not add badges, help icons, or another visible row unless manual fixture review shows the panel-name prefixes and existing tooltip/help text are still insufficient.
+
 ### 2026-05-30: Add Status State Help Text
 
 Status: completed

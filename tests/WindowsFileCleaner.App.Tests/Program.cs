@@ -82,6 +82,9 @@ internal sealed class MainWindowSmokeTests
                 "Default Cleanup Scope safety note should remind the user to run preflight.");
             Assert(window.CurrentStatusText == "Ready", "MainWindow should not start scanning when constructed.");
             Assert(
+                window.SafetySummaryHeaderTextValue.StartsWith("Safety Summary:", StringComparison.OrdinalIgnoreCase),
+                "Safety Summary collapsed header should start with the visible panel name.");
+            Assert(
                 window.SafetySummaryHeaderToolTipValue.Contains("waiting for scan", StringComparison.OrdinalIgnoreCase)
                 && window.SafetySummaryHeaderToolTipValue.Contains("Header state: neutral", StringComparison.OrdinalIgnoreCase)
                 && window.SafetySummaryHeaderToolTipValue.Contains("read-only review context", StringComparison.OrdinalIgnoreCase)
@@ -96,6 +99,9 @@ internal sealed class MainWindowSmokeTests
             Assert(
                 window.SafetySummaryHeaderStatusStyleValue == "Neutral",
                 "Collapsed Safety Summary header should start with neutral styling before scan safety signals exist.");
+            Assert(
+                window.QuarantineShortlistHeaderTextValue.StartsWith("Quarantine Shortlist:", StringComparison.OrdinalIgnoreCase),
+                "Quarantine Shortlist collapsed header should start with the visible panel name.");
             Assert(
                 window.QuarantineShortlistHeaderToolTipValue.Contains("0 shortlisted", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantineShortlistHeaderToolTipValue.Contains("Header state: neutral", StringComparison.OrdinalIgnoreCase)
@@ -1482,7 +1488,7 @@ internal sealed class MainWindowSmokeTests
         {
             RunDispatcherTask(() => window.RunStorageScanForCurrentScopeAsync());
             Assert(
-                window.SafetySummaryHeaderTextValue.Contains("Scan safety summary:", StringComparison.OrdinalIgnoreCase)
+                window.SafetySummaryHeaderTextValue.Contains("Safety Summary:", StringComparison.OrdinalIgnoreCase)
                 && window.SafetySummaryHeaderTextValue.Contains("High risk", StringComparison.OrdinalIgnoreCase)
                 && window.SafetySummaryHeaderTextValue.Contains("Quarantine", StringComparison.OrdinalIgnoreCase),
                 "Collapsed Safety Summary header should preserve compact scan risk counts.");
@@ -1586,9 +1592,9 @@ internal sealed class MainWindowSmokeTests
             Assert(!window.IsQuarantineShortlistExpanded, "Quarantine shortlist area should be collapsible to recover grid height.");
             window.SetQuarantineShortlistExpanded(true);
             Assert(window.IsQuarantineShortlistExpanded, "Quarantine shortlist area should expand again without losing gate state.");
-            Assert(window.IsSafetySummaryExpanded, "Scan safety summary should start expanded for discoverability.");
+            Assert(window.IsSafetySummaryExpanded, "Safety Summary should start expanded for discoverability.");
             window.SetSafetySummaryExpanded(false);
-            Assert(!window.IsSafetySummaryExpanded, "Scan safety summary should be collapsible to recover grid height.");
+            Assert(!window.IsSafetySummaryExpanded, "Safety Summary should be collapsible to recover grid height.");
             window.SetSafetySummaryExpanded(true);
 
             window.SetQuarantineConfirmationText("QUARANTINE");

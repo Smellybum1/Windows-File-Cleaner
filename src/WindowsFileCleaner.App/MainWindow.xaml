@@ -150,13 +150,13 @@
                       IsExpanded="True">
                 <Expander.Header>
                     <TextBlock x:Name="SafetySummaryHeaderText"
-                               Text="Scan safety summary: waiting for scan"
+                               Text="Safety Summary: waiting for scan"
                                FontWeight="SemiBold"
                                Foreground="#526171"
                                Tag="Neutral"
                                TextTrimming="CharacterEllipsis"
-                               ToolTip="Scan safety summary: waiting for scan. Header state: neutral. Header summary is read-only review context, not cleanup approval."
-                               AutomationProperties.HelpText="Scan safety summary: waiting for scan. Header state: neutral. Header summary is read-only review context, not cleanup approval." />
+                               ToolTip="Safety Summary: waiting for scan. Header state: neutral. Header summary is read-only review context, not cleanup approval."
+                               AutomationProperties.HelpText="Safety Summary: waiting for scan. Header state: neutral. Header summary is read-only review context, not cleanup approval." />
                 </Expander.Header>
                 <StackPanel Margin="0,6,0,0">
                     <TextBlock x:Name="ReviewMixText"
@@ -447,13 +447,13 @@
                               IsExpanded="True">
                     <Expander.Header>
                         <TextBlock x:Name="QuarantineShortlistHeaderText"
-                                   Text="Quarantine shortlist: 0 shortlisted | no preview | no current quarantine"
+                                   Text="Quarantine Shortlist: 0 shortlisted | no preview | no current quarantine | undo unavailable"
                                    FontWeight="SemiBold"
                                    Foreground="#526171"
                                    Tag="Neutral"
                                    TextTrimming="CharacterEllipsis"
-                                   ToolTip="Quarantine shortlist: 0 shortlisted | no preview | no current quarantine. Header state: neutral. Header summary is read-only review context, not cleanup approval."
-                                   AutomationProperties.HelpText="Quarantine shortlist: 0 shortlisted | no preview | no current quarantine. Header state: neutral. Header summary is read-only review context, not cleanup approval." />
+                                   ToolTip="Quarantine Shortlist: 0 shortlisted | no preview | no current quarantine | undo unavailable. Header state: neutral. Header summary is read-only review context, not cleanup approval."
+                                   AutomationProperties.HelpText="Quarantine Shortlist: 0 shortlisted | no preview | no current quarantine | undo unavailable. Header state: neutral. Header summary is read-only review context, not cleanup approval." />
                     </Expander.Header>
                     <StackPanel Margin="0,6,0,0">
                         <WrapPanel>
