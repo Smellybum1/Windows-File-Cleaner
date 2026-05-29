@@ -101,16 +101,18 @@ Pushes and pull requests to `main` run the same MVP preflight on GitHub Actions 
 Use the fixture review launcher for the manual fixture UI pass:
 
 ```powershell
-.\tools\Start-MvpFixtureReview.ps1
+.\tools\Start-MvpFixtureReview.cmd
 ```
 
 The launcher runs preflight, creates a small synthetic Cleanup Scope inside the repo, and launches the WPF app with that scope. The app does not auto-scan; click `Scan` yourself after it opens.
 Before launching, the script prints a compact fixture review checklist with the main safety, search, collapsible Safety Summary and Quarantine Shortlist panels, panel-name collapsed-header summaries, collapsed-header summary state styling plus `?` help cues and state-naming tooltip/help text, styled Review Grid Mode Status plus `?` help cue and state-naming tooltip/help text, styled inline Quarantine Preview readiness plus `?` help cue and state-naming tooltip/help text, Review Shortlist Safety Mix `?` help cue, Review Shortlist labels/tooltips, preview/report tooltips, preview approval-boundary, fixture execution, undo, `Current quarantined` / `Back to scan rows`, manifest-review, all-manifest restore boundary, and selected-restore scope-status checks.
 
+The `.cmd` launcher calls the existing PowerShell script with process-scoped `-ExecutionPolicy Bypass`, so it works when direct `.ps1` execution is blocked without changing your machine or user execution policy. If your shell already allows scripts, `.\tools\Start-MvpFixtureReview.ps1` still works.
+
 To print only that checklist without running preflight, creating fixture files, or launching WPF:
 
 ```powershell
-.\tools\Start-MvpFixtureReview.ps1 -ChecklistOnly
+.\tools\Start-MvpFixtureReview.cmd -ChecklistOnly
 ```
 
 For focused troubleshooting, the individual fixture commands are:

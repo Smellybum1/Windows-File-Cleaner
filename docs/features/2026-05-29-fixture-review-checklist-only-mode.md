@@ -70,6 +70,7 @@ What changed:
 - Added `-ChecklistOnly` to `Start-MvpFixtureReview.ps1`.
 - Checklist-only mode prints the Fixture Cleanup Scope and manual review checklist, then exits before preflight, fixture creation, and WPF launch.
 - Kept repository containment validation for custom fixture roots.
+- Later packet `2026-05-30-execution-policy-friendly-fixture-launcher.md` added `Start-MvpFixtureReview.cmd`, so checklist-only mode can be launched as `.\tools\Start-MvpFixtureReview.cmd -ChecklistOnly` when direct `.ps1` execution is blocked.
 
 Tests run:
 

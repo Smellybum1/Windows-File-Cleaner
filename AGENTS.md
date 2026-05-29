@@ -40,6 +40,9 @@ dotnet run --project src/WindowsFileCleaner.App
 # Run preflight, create the synthetic fixture, and launch WPF against it
 .\tools\Start-MvpFixtureReview.ps1
 
+# Same fixture launcher through a .cmd wrapper when direct .ps1 execution is blocked
+.\tools\Start-MvpFixtureReview.cmd
+
 # Start local development against the synthetic Cleanup Scope
 dotnet run --project src/WindowsFileCleaner.App -- --scope "D:\Codex\Windows File Cleaner\.local\storage-scan-smoke-fixture"
 
