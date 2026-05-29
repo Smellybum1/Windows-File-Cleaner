@@ -6562,3 +6562,51 @@ Rejected ideas buffer:
 
 - Do not keep moved source rows artificially visible after a rescan; the refreshed Storage Scan should reflect the filesystem.
 - Do not add real-profile cleanup execution, real-profile Undo Quarantine, all-manifest restore, persisted cleanup history, or permanent deletion while fixing current-fixture undo reachability.
+
+### 2026-05-29: Add Shortlist-Level Quarantine Wording
+
+Status: completed
+
+Evidence:
+
+- During manual fixture review, the user expected a single button to quarantine files/folders on the Review Shortlist instead of needing to visit each file and type `QUARANTINE`.
+- Existing WPF execution already acts on the current Quarantine Preview built from Review Shortlist rows, but the visible `Execute quarantine` label did not make that scope clear.
+
+Implementation:
+
+- Renamed `Preview quarantine` to `Preview shortlist quarantine`.
+- Renamed `Execute quarantine` to `Quarantine included shortlist`.
+- Updated confirmation and execution tooltips/automation help text to say `QUARANTINE` is typed once and applies to all included Review Shortlist rows.
+- Added preview/gate/status wording that makes Review Shortlist the source and included rows the execution target.
+- Extended WPF smoke coverage from a one-row execution to a two-row Review Shortlist execution and undo.
+- Kept exact confirmation, blockers, real-profile/custom execution blockers, permanent deletion, and cleanup history unchanged.
+
+Verification:
+
+- `dotnet build tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj "-p:BaseOutputPath=D:/Codex/Windows File Cleaner/.local/test-bin/app-tests/"` passed.
+- `D:\Codex\Windows File Cleaner\.local\test-bin\app-tests\Debug\net8.0-windows\WindowsFileCleaner.App.Tests.exe` passed.
+- `dotnet build WindowsFileCleaner.sln --no-restore "-p:BaseOutputPath=D:/Codex/Windows File Cleaner/.local/test-bin/solution/"` passed.
+- `git -c safe.directory='D:/Codex/Windows File Cleaner' diff --check` passed with line-ending normalization warnings only.
+
+Docs updated:
+
+- `README.md`
+- `docs/domain/context.md`
+- `docs/domain/glossary.md`
+- `docs/features/2026-05-29-shortlist-level-quarantine-wording.md`
+- `docs/codex/thread-handoff.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No ADR added. This is reversible UI wording and WPF smoke coverage for existing fixture-only execution under ADR 0009.
+
+Open questions:
+
+- Should future real-profile execution keep `Quarantine included shortlist` as the exact label after the separate real-profile Grill with Docs pass?
+- Should a dedicated Quarantined Files area show included shortlist rows immediately after execution?
+
+Rejected ideas buffer:
+
+- Do not remove exact confirmation while clarifying shortlist-level execution.
+- Do not call the action `Quarantine all` without qualifying that only included rows move; blocked and redundant rows must stay out of execution.

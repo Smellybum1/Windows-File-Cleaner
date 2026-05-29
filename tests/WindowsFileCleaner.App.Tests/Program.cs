@@ -408,11 +408,13 @@ internal sealed class MainWindowSmokeTests
                 "Clear shortlist automation help text should explain that only in-memory review state changes.");
             Assert(
                 window.PreviewQuarantineButtonToolTipValue.Contains("read-only Quarantine Preview", StringComparison.OrdinalIgnoreCase)
+                && window.PreviewQuarantineButtonToolTipValue.Contains("every row in the Review Shortlist", StringComparison.OrdinalIgnoreCase)
                 && window.PreviewQuarantineButtonToolTipValue.Contains("does not create folders", StringComparison.OrdinalIgnoreCase)
                 && window.PreviewQuarantineButtonToolTipValue.Contains("approve cleanup", StringComparison.OrdinalIgnoreCase),
                 "Preview quarantine tooltip should explain dry-run preview behavior.");
             Assert(
                 window.PreviewQuarantineButtonAutomationHelpTextValue.Contains("read-only Quarantine Preview", StringComparison.OrdinalIgnoreCase)
+                && window.PreviewQuarantineButtonAutomationHelpTextValue.Contains("every row in the Review Shortlist", StringComparison.OrdinalIgnoreCase)
                 && window.PreviewQuarantineButtonAutomationHelpTextValue.Contains("does not create folders", StringComparison.OrdinalIgnoreCase)
                 && window.PreviewQuarantineButtonAutomationHelpTextValue.Contains("approve cleanup", StringComparison.OrdinalIgnoreCase),
                 "Preview quarantine automation help text should explain dry-run preview behavior.");
@@ -615,22 +617,30 @@ internal sealed class MainWindowSmokeTests
             Assert(!window.CanResetReviewView, "MainWindow should not allow review view reset before a scan.");
             Assert(!window.CanEnterQuarantineConfirmation, "MainWindow should not allow quarantine confirmation before a preview exists.");
             Assert(!window.CanExecuteQuarantine, "MainWindow should not allow quarantine execution before a preview exists.");
+            Assert(window.PreviewQuarantineButtonText == "Preview shortlist quarantine", "Preview quarantine button should name its Review Shortlist scope.");
+            Assert(window.ExecuteQuarantineButtonText == "Quarantine included shortlist", "Quarantine execution button should name its included-shortlist scope.");
             Assert(
-                window.QuarantineConfirmationToolTipValue.Contains("Fixture-only execution gate", StringComparison.OrdinalIgnoreCase)
+                window.QuarantineConfirmationToolTipValue.Contains("Type QUARANTINE once", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineConfirmationToolTipValue.Contains("all included Review Shortlist rows", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantineConfirmationToolTipValue.Contains("custom execution stay unavailable", StringComparison.OrdinalIgnoreCase),
-                "Quarantine confirmation tooltip should explain fixture-only execution and custom blockers.");
+                "Quarantine confirmation tooltip should explain single confirmation, shortlist scope, and custom blockers.");
             Assert(
-                window.QuarantineConfirmationAutomationHelpTextValue.Contains("Fixture-only execution gate", StringComparison.OrdinalIgnoreCase)
+                window.QuarantineConfirmationAutomationHelpTextValue.Contains("Type QUARANTINE once", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineConfirmationAutomationHelpTextValue.Contains("all included Review Shortlist rows", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantineConfirmationAutomationHelpTextValue.Contains("custom execution stay unavailable", StringComparison.OrdinalIgnoreCase),
-                "Quarantine confirmation automation help text should explain fixture-only execution and custom blockers.");
+                "Quarantine confirmation automation help text should explain single confirmation, shortlist scope, and custom blockers.");
             Assert(
-                window.ExecuteQuarantineButtonToolTipValue.Contains("Quarantine Preview readiness", StringComparison.OrdinalIgnoreCase)
+                window.ExecuteQuarantineButtonToolTipValue.Contains("all included rows", StringComparison.OrdinalIgnoreCase)
+                && window.ExecuteQuarantineButtonToolTipValue.Contains("Review Shortlist preview", StringComparison.OrdinalIgnoreCase)
+                && window.ExecuteQuarantineButtonToolTipValue.Contains("exact QUARANTINE", StringComparison.OrdinalIgnoreCase)
                 && window.ExecuteQuarantineButtonToolTipValue.Contains("real-profile/custom execution remains unavailable", StringComparison.OrdinalIgnoreCase),
-                "Execute quarantine tooltip should explain preview readiness and real/custom blockers.");
+                "Quarantine included shortlist tooltip should explain included-shortlist scope and real/custom blockers.");
             Assert(
-                window.ExecuteQuarantineButtonAutomationHelpTextValue.Contains("Quarantine Preview readiness", StringComparison.OrdinalIgnoreCase)
+                window.ExecuteQuarantineButtonAutomationHelpTextValue.Contains("all included rows", StringComparison.OrdinalIgnoreCase)
+                && window.ExecuteQuarantineButtonAutomationHelpTextValue.Contains("Review Shortlist preview", StringComparison.OrdinalIgnoreCase)
+                && window.ExecuteQuarantineButtonAutomationHelpTextValue.Contains("exact QUARANTINE", StringComparison.OrdinalIgnoreCase)
                 && window.ExecuteQuarantineButtonAutomationHelpTextValue.Contains("real-profile/custom execution remains unavailable", StringComparison.OrdinalIgnoreCase),
-                "Execute quarantine automation help text should explain preview readiness and real/custom blockers.");
+                "Quarantine included shortlist automation help text should explain included-shortlist scope and real/custom blockers.");
             Assert(
                 window.UndoQuarantineButtonToolTipValue.Contains("Current fixture execution only", StringComparison.OrdinalIgnoreCase)
                 && window.UndoQuarantineButtonToolTipValue.Contains("real-profile/custom undo remain unavailable", StringComparison.OrdinalIgnoreCase),
@@ -1400,8 +1410,13 @@ internal sealed class MainWindowSmokeTests
 
             var installer = window.DisplayedRows.Single(row =>
                 row.FullPath.EndsWith(@"Downloads\old-installer.msi", StringComparison.OrdinalIgnoreCase));
+            var pipCacheBody = window.DisplayedRows.Single(row =>
+                row.FullPath.EndsWith(@"AppData\Local\pip\Cache\http-v2\response.body", StringComparison.OrdinalIgnoreCase));
             Assert(window.SelectDisplayedPath(installer.FullPath), "Fixture installer should be selectable for execution smoke test.");
             window.AddSelectedPathToReviewShortlist();
+            Assert(window.SelectDisplayedPath(pipCacheBody.FullPath), "Fixture pip cache body should be selectable for execution smoke test.");
+            window.AddSelectedPathToReviewShortlist();
+            Assert(window.ReviewShortlistCount == 2, "Fixture execution smoke test should exercise a multi-row Review Shortlist.");
 
             var customQuarantineRoot = Path.GetFullPath(Path.Combine(fixture.RootPath, "..", "execution-quarantine-root"));
             window.SetQuarantineRootForPreview(customQuarantineRoot);
@@ -1409,15 +1424,27 @@ internal sealed class MainWindowSmokeTests
 
             Assert(!window.CanExecuteQuarantine, "Fixture execution should stay closed before exact confirmation.");
             Assert(
+                window.CurrentStatusText.Contains("Quarantine Preview created from Review Shortlist", StringComparison.OrdinalIgnoreCase)
+                && window.CurrentStatusText.Contains("2 included", StringComparison.OrdinalIgnoreCase),
+                "Fixture preview status should make the multi-row Review Shortlist scope visible.");
+            Assert(
+                window.QuarantinePreviewTextValue.Contains("Source: Review Shortlist", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantinePreviewTextValue.Contains("Only included rows can be quarantined", StringComparison.OrdinalIgnoreCase),
+                "Fixture preview pane should explain that execution targets included shortlist rows only.");
+            Assert(
                 window.QuarantineExecutionGateTextValue.Contains("Execution implemented: yes", StringComparison.OrdinalIgnoreCase),
                 "Fixture execution gate should show execution availability.");
+            Assert(
+                window.QuarantineExecutionGateTextValue.Contains("Execution target: all included Review Shortlist rows", StringComparison.OrdinalIgnoreCase),
+                "Fixture execution gate should name the included-shortlist execution target.");
 
             window.SetQuarantineConfirmationText("QUARANTINE");
             Assert(window.CanExecuteQuarantine, "Fixture execution should open after exact confirmation.");
             var manifestPath = window.CurrentRestoreManifestPath;
-            var quarantinePath = window.CurrentFirstQuarantinePath;
+            var quarantinePaths = window.CurrentQuarantinePaths.ToArray();
             Assert(!string.IsNullOrWhiteSpace(manifestPath), "Fixture execution should expose a planned Restore Manifest path before execution.");
-            Assert(!string.IsNullOrWhiteSpace(quarantinePath), "Fixture execution should expose a planned quarantine path before execution.");
+            Assert(quarantinePaths.Length == 2, "Fixture execution should expose planned quarantine paths for all included shortlist rows.");
+            Assert(quarantinePaths.All(path => !string.IsNullOrWhiteSpace(path)), "Fixture execution should expose non-empty planned quarantine paths.");
 
             window.ExecuteQuarantineForCurrentPreview();
 
@@ -1429,10 +1456,12 @@ internal sealed class MainWindowSmokeTests
             Assert(window.CurrentRestoreManifestStatus == RestoreManifestActionStatus.Completed.ToString(), "Successful fixture execution should complete the Restore Manifest.");
             Assert(File.Exists(manifestPath!), "Fixture execution should persist the action-scoped Restore Manifest.");
             Assert(!File.Exists(installer.FullPath), "Fixture execution should move the selected source file.");
-            Assert(File.Exists(quarantinePath!), "Fixture execution should place the selected file in quarantine.");
+            Assert(!File.Exists(pipCacheBody.FullPath), "Fixture execution should move every included Review Shortlist row.");
+            Assert(quarantinePaths.All(File.Exists), "Fixture execution should place every included Review Shortlist row in quarantine.");
             Assert(File.Exists(fixture.MarkerPath), "Fixture execution should leave unselected fixture files alone.");
             Assert(
                 window.CurrentStatusText.Contains("Fixture Quarantine execution completed", StringComparison.OrdinalIgnoreCase)
+                && window.CurrentStatusText.Contains("included Review Shortlist row", StringComparison.OrdinalIgnoreCase)
                 && window.CurrentStatusText.Contains("Undo fixture quarantine", StringComparison.OrdinalIgnoreCase)
                 && window.CurrentStatusText.Contains("rescan refreshes review rows", StringComparison.OrdinalIgnoreCase),
                 "Fixture execution status should report completion, undo availability, and stale scan state.");
@@ -1447,6 +1476,7 @@ internal sealed class MainWindowSmokeTests
 
             RunDispatcherTask(() => window.RunStorageScanForCurrentScopeAsync());
             Assert(!File.Exists(installer.FullPath), "Post-execution rescan should reflect that the original fixture file moved.");
+            Assert(!File.Exists(pipCacheBody.FullPath), "Post-execution rescan should reflect that every included source file moved.");
             Assert(window.CanUndoQuarantine, "Fixture undo should remain available after a post-execution rescan.");
             Assert(window.CurrentRestoreManifestStatus == RestoreManifestActionStatus.Completed.ToString(), "Post-execution rescan should keep current Restore Manifest evidence for undo.");
             Assert(
@@ -1459,7 +1489,8 @@ internal sealed class MainWindowSmokeTests
             Assert(!window.CanUndoQuarantine, "Fixture undo should disable after the undo attempt.");
             Assert(window.CurrentRestoreManifestStatus == RestoreManifestActionStatus.Restored.ToString(), "Successful fixture undo should mark the Restore Manifest restored.");
             Assert(File.Exists(installer.FullPath), "Fixture undo should restore the selected source file.");
-            Assert(!File.Exists(quarantinePath!), "Fixture undo should move the selected file out of quarantine.");
+            Assert(File.Exists(pipCacheBody.FullPath), "Fixture undo should restore every included Review Shortlist row.");
+            Assert(quarantinePaths.All(path => !File.Exists(path)), "Fixture undo should move every included Review Shortlist row out of quarantine.");
             Assert(File.Exists(manifestPath!), "Fixture undo should keep the Restore Manifest for recovery evidence.");
             Assert(
                 window.CurrentStatusText.Contains("Fixture Undo Quarantine completed", StringComparison.OrdinalIgnoreCase)

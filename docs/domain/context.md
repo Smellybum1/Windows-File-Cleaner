@@ -1729,6 +1729,7 @@ Preview and preview export control tooltips and automation help text should keep
 - Mark a child row as redundant when its selected parent is already included.
 - Show Quarantine Execution Scope Status so fixture-only availability and real-profile/custom preview-only status are clear before confirmation.
 - Show approval-boundary wording so Review Shortlist and Quarantine Preview are not mistaken for cleanup approval.
+- Show that the Review Shortlist is the source and only included rows can be quarantined; blocked and redundant rows stay out of execution.
 
 #### Non-examples
 
@@ -1745,6 +1746,7 @@ Preview and preview export control tooltips and automation help text should keep
 - Shows included, blocked, and redundant rows.
 - May be exported as a read-only CSV report, including Access Status and access issue text.
 - Is discarded when scan results, the Review Shortlist, or the Quarantine Root Selection change.
+- Feeds fixture-only shortlist-level execution; included rows execute together after exact confirmation, not one selected row at a time.
 
 #### Relationships
 
@@ -1768,6 +1770,7 @@ Preview and preview export control tooltips and automation help text should keep
 - Clear stale preview and draft readiness output when the Quarantine Root Selection changes.
 - Include Quarantine Execution Scope Status in the WPF preview pane.
 - Include approval-boundary wording in WPF preview and gate panes.
+- Include wording that makes the Review Shortlist source and all-included-row execution target visible.
 
 ### Quarantine Root Selection
 
@@ -2609,6 +2612,7 @@ It lets the WPF app call the core Quarantine Executor after Quarantine Preview r
 #### Examples
 
 - Running the WPF app against `...\test-fixtures\app\...`, shortlisting an eligible synthetic installer, previewing quarantine, typing `QUARANTINE`, then moving that synthetic file into the action-scoped quarantine items folder.
+- Shortlisting multiple eligible synthetic rows, previewing quarantine once, typing `QUARANTINE` once, then moving all included Review Shortlist rows together.
 - Writing `restore-manifest.json` under the selected action root for a fixture execution.
 - Showing that the current scan and review rows are stale after execution.
 
@@ -2627,6 +2631,7 @@ It lets the WPF app call the core Quarantine Executor after Quarantine Preview r
 - Requires a Quarantine Confirmation Draft with no data blockers.
 - Requires the exact confirmation text `QUARANTINE`.
 - Calls `QuarantineExecutor.Execute` with the planned Restore Manifest.
+- Executes all included rows in the current Quarantine Action Draft together.
 - Displays execution results and recovery-review need.
 - Clears stale Review Shortlist state, points the user to `Undo fixture quarantine`, and explains that rescan refreshes review rows.
 
@@ -2642,6 +2647,7 @@ It lets the WPF app call the core Quarantine Executor after Quarantine Preview r
 - Use `CleanupScopeSafetyNoteBuilder` to distinguish fixture scopes from real/custom scopes.
 - Use `QuarantineExecutor.Execute`; do not implement file movement in WPF code.
 - Keep real-profile and custom non-fixture execution blocked in WPF.
+- Label the WPF action around included Review Shortlist rows so it is not mistaken for selected-row execution.
 - After execution, disable re-execution for the current preview and mark scan state stale.
 - Preserve current-fixture undo state if a post-execution rescan clears stale preview state before undo is attempted.
 

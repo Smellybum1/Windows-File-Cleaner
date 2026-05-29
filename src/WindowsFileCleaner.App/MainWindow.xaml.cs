@@ -312,6 +312,8 @@ public partial class MainWindow : Window
 
     public string? CurrentFirstQuarantinePath => _currentRestoreManifest?.Entries.FirstOrDefault()?.QuarantinePath;
 
+    public IReadOnlyList<string> CurrentQuarantinePaths => _currentRestoreManifest?.Entries.Select(entry => entry.QuarantinePath).ToArray() ?? [];
+
     public bool CanUndoQuarantine => UndoQuarantineButton.IsEnabled;
 
     public string QuarantineConfirmationToolTipValue => QuarantineConfirmationBox.ToolTip?.ToString() ?? "";
@@ -321,6 +323,8 @@ public partial class MainWindow : Window
     public string ExecuteQuarantineButtonToolTipValue => ExecuteQuarantineButton.ToolTip?.ToString() ?? "";
 
     public string ExecuteQuarantineButtonAutomationHelpTextValue => AutomationProperties.GetHelpText(ExecuteQuarantineButton);
+
+    public string ExecuteQuarantineButtonText => ExecuteQuarantineButton.Content?.ToString() ?? "";
 
     public string UndoQuarantineButtonToolTipValue => UndoQuarantineButton.ToolTip?.ToString() ?? "";
 
@@ -453,6 +457,8 @@ public partial class MainWindow : Window
     public string PreviewQuarantineButtonToolTipValue => PreviewQuarantineButton.ToolTip?.ToString() ?? "";
 
     public string PreviewQuarantineButtonAutomationHelpTextValue => AutomationProperties.GetHelpText(PreviewQuarantineButton);
+
+    public string PreviewQuarantineButtonText => PreviewQuarantineButton.Content?.ToString() ?? "";
 
     public bool CanExportQuarantinePreview => ExportQuarantinePreviewButton.IsEnabled;
 
@@ -931,7 +937,7 @@ public partial class MainWindow : Window
             ? $"{_currentQuarantineConfirmationDraft.Blockers.Count:N0} readiness blocker(s)"
             : "no readiness blockers";
         StatusText.Text =
-            $"Quarantine Preview created: {_currentQuarantinePreview.IncludedCount:N0} included, " +
+            $"Quarantine Preview created from Review Shortlist: {_currentQuarantinePreview.IncludedCount:N0} included, " +
             $"{_currentQuarantinePreview.BlockedCount:N0} blocked, " +
             $"{_currentQuarantinePreview.RedundantCount:N0} redundant, " +
             $"{_currentQuarantinePreview.IncludedSizeDisplay} previewed, {blockerSummary}. No files were modified.";
@@ -2442,7 +2448,7 @@ public partial class MainWindow : Window
         UpdateQuarantineExecutionGate();
         if (_currentQuarantineExecutionGate?.CanExecute != true || _currentRestoreManifest is null)
         {
-            StatusText.Text = "Quarantine execution gate is not open. No files were modified.";
+            StatusText.Text = "Quarantine included shortlist gate is not open. No files were modified.";
             return;
         }
 
@@ -2458,8 +2464,8 @@ public partial class MainWindow : Window
 
         var result = _currentQuarantineExecutionResult;
         StatusText.Text = result.Succeeded
-            ? $"Fixture Quarantine execution completed: {result.MovedCount:N0} moved, {result.RestoreManifest.TotalSizeDisplay} quarantined. Use Undo fixture quarantine to restore; rescan refreshes review rows."
-            : $"Fixture Quarantine execution needs recovery review: {result.MovedCount:N0} moved, {result.FailedCount:N0} failed. Use Undo fixture quarantine when available; rescan refreshes review rows.";
+            ? $"Fixture Quarantine execution completed: {result.MovedCount:N0} included Review Shortlist row(s) moved, {result.RestoreManifest.TotalSizeDisplay} quarantined. Use Undo fixture quarantine to restore; rescan refreshes review rows."
+            : $"Fixture Quarantine execution needs recovery review: {result.MovedCount:N0} included Review Shortlist row(s) moved, {result.FailedCount:N0} failed. Use Undo fixture quarantine when available; rescan refreshes review rows.";
     }
 
     public void ExecuteSelectedRestoreForCurrentSelection()
@@ -2525,6 +2531,7 @@ public partial class MainWindow : Window
         const int maxRows = 12;
         var lines = new List<string>
         {
+            "Source: Review Shortlist. Only included rows can be quarantined; blocked and redundant rows stay out of execution.",
             $"Quarantine root: {preview.QuarantineRootPath}",
             $"Included: {preview.IncludedCount:N0} | Blocked: {preview.BlockedCount:N0} | Redundant: {preview.RedundantCount:N0}",
             $"Previewed size: {preview.IncludedSizeDisplay}",
@@ -2589,6 +2596,7 @@ public partial class MainWindow : Window
 
         if (actionDraft is not null)
         {
+            lines.Add("Execution target: all included Review Shortlist rows in this Quarantine Action Draft.");
             lines.Add($"Quarantine Action Draft: {actionDraft.ActionId} | Entries: {actionDraft.EntryCount:N0} | Bytes: {actionDraft.TotalSizeDisplay}");
             lines.Add($"Action items root: {actionDraft.ItemsRootPath}");
             lines.Add($"Restore manifest path: {actionDraft.RestoreManifestPath}");
