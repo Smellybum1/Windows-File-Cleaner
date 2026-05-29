@@ -38,6 +38,9 @@ tests.RestoreReadinessPreviewReportsRestorableDiscoveredManifest();
 tests.RestoreReadinessPreviewReportsCollisionAndMissingQuarantinePath();
 tests.RestoreReadinessPreviewReportsAlreadyRestoredManifestWithoutRestoring();
 tests.SelectedRestoreManifestReviewBuildsReadinessForSelectedManifestOnly();
+tests.SelectedRestoreConfirmationDraftSummarizesReadinessWithoutExecution();
+tests.SelectedRestoreConfirmationDraftReportsReadinessBlockers();
+tests.SelectedRestoreExecutionGateRequiresExactRestoreConfirmationAndImplementedExecution();
 tests.QuarantineExecutorMovesFixtureFilesWithWriteAheadManifest();
 tests.QuarantineExecutorRecordsPartialFailureWithoutOverwritingDestination();
 tests.QuarantineExecutorFailsMissingSourceWithoutCreatingDestination();
@@ -1730,6 +1733,100 @@ internal sealed class StorageScanTests
         Assert(!File.Exists(unselectedEntry.OriginalPath), "Selected review should not restore unselected original path.");
     }
 
+    public void SelectedRestoreConfirmationDraftSummarizesReadinessWithoutExecution()
+    {
+        using var fixture = TestFixture.Create();
+        fixture.WriteFile(@"Downloads\old-installer.msi", 1024 * 1024 * 4, DateTimeOffset.UtcNow.AddDays(-120));
+        var plan = BuildPlannedRestoreManifest(fixture, [@"Downloads\old-installer.msi"], "selected-confirmation");
+        var execution = QuarantineExecutor.Execute(plan.Manifest);
+        var entry = execution.RestoreManifest.Entries.Single();
+        var review = BuildSelectedRestoreManifestReview(plan.Manifest.QuarantineRootPath, execution.RestoreManifest.ManifestPath);
+
+        var draft = SelectedRestoreConfirmationDraftBuilder.Build(
+            review,
+            new DateTimeOffset(2026, 5, 29, 6, 7, 8, TimeSpan.Zero),
+            "selected-restore-confirmation-1");
+        var gate = SelectedRestoreExecutionGateBuilder.Build(draft, "RESTORE");
+
+        Assert(execution.Succeeded, "Fixture setup should move the file before selected restore confirmation.");
+        Assert(!draft.HasDataBlockers, "Restorable selected readiness should not produce confirmation data blockers.");
+        Assert(draft.RequiredConfirmationText == SelectedRestoreConfirmationDraft.DefaultRequiredConfirmationText, "Selected restore confirmation should expose the required RESTORE text.");
+        Assert(draft.RequiredConfirmationText == "RESTORE", "Selected restore confirmation phrase should be RESTORE.");
+        Assert(!draft.IsExecutionImplemented, "Selected restore execution should be unavailable by default.");
+        Assert(draft.RestorableEntryCount == 1, "Selected restore confirmation should count restorable entries.");
+        Assert(draft.RestorableBytes == entry.SizeBytes, "Selected restore confirmation should sum restorable bytes.");
+        Assert(draft.RestorableSizeDisplay == "4 MB", "Selected restore confirmation should format restorable size.");
+        Assert(draft.SelectedManifestPath == execution.RestoreManifest.ManifestPath, "Selected restore confirmation should identify the selected manifest.");
+        Assert(gate.IsConfirmationTextMatched, "Gate should recognize exact RESTORE confirmation.");
+        Assert(!gate.CanExecute, "Exact RESTORE should not execute while selected restore execution is unavailable.");
+        Assert(gate.Blockers.Any(blocker => blocker.Contains("not available", StringComparison.OrdinalIgnoreCase)), "Gate should report unavailable selected restore execution.");
+        Assert(File.Exists(entry.QuarantinePath), "Selected restore confirmation should leave the quarantined file in place.");
+        Assert(!File.Exists(entry.OriginalPath), "Selected restore confirmation should not restore the original file.");
+    }
+
+    public void SelectedRestoreConfirmationDraftReportsReadinessBlockers()
+    {
+        using var fixture = TestFixture.Create();
+        fixture.WriteFile(@"Downloads\old-installer.msi", 1024 * 1024, DateTimeOffset.UtcNow.AddDays(-120));
+        var plan = BuildPlannedRestoreManifest(fixture, [@"Downloads\old-installer.msi"], "selected-confirmation-blocked");
+        var execution = QuarantineExecutor.Execute(plan.Manifest);
+        var entry = execution.RestoreManifest.Entries.Single();
+        File.WriteAllText(entry.OriginalPath, "new file at original path");
+        var review = BuildSelectedRestoreManifestReview(plan.Manifest.QuarantineRootPath, execution.RestoreManifest.ManifestPath);
+
+        var draft = SelectedRestoreConfirmationDraftBuilder.Build(
+            review,
+            new DateTimeOffset(2026, 5, 29, 6, 7, 8, TimeSpan.Zero),
+            "selected-restore-confirmation-blocked",
+            isExecutionImplemented: true);
+        var gate = SelectedRestoreExecutionGateBuilder.Build(draft, "RESTORE");
+
+        Assert(execution.Succeeded, "Fixture setup should move the file before blocker confirmation.");
+        Assert(draft.HasDataBlockers, "Blocked selected readiness should produce confirmation data blockers.");
+        Assert(draft.BlockedEntryCount == 1, "Selected restore confirmation should count blocked readiness rows.");
+        Assert(draft.Blockers.Any(blocker => blocker.Contains("blocked restore readiness", StringComparison.OrdinalIgnoreCase)), "Selected restore confirmation should explain blocked readiness rows.");
+        Assert(gate.IsConfirmationTextMatched, "Exact RESTORE can match even when blockers remain.");
+        Assert(!gate.CanExecute, "Readiness blockers should keep selected restore execution closed.");
+        Assert(File.Exists(entry.OriginalPath), "Selected restore confirmation should not overwrite original-path collisions.");
+        Assert(File.Exists(entry.QuarantinePath), "Selected restore confirmation should leave quarantined file in place.");
+    }
+
+    public void SelectedRestoreExecutionGateRequiresExactRestoreConfirmationAndImplementedExecution()
+    {
+        using var fixture = TestFixture.Create();
+        fixture.WriteFile(@"Downloads\old-installer.msi", 1024 * 1024, DateTimeOffset.UtcNow.AddDays(-120));
+        var plan = BuildPlannedRestoreManifest(fixture, [@"Downloads\old-installer.msi"], "selected-gate");
+        var execution = QuarantineExecutor.Execute(plan.Manifest);
+        var entry = execution.RestoreManifest.Entries.Single();
+        var review = BuildSelectedRestoreManifestReview(plan.Manifest.QuarantineRootPath, execution.RestoreManifest.ManifestPath);
+        var unavailableDraft = SelectedRestoreConfirmationDraftBuilder.Build(
+            review,
+            new DateTimeOffset(2026, 5, 29, 6, 7, 8, TimeSpan.Zero),
+            "selected-restore-gate-unavailable");
+        var implementedDraft = SelectedRestoreConfirmationDraftBuilder.Build(
+            review,
+            new DateTimeOffset(2026, 5, 29, 6, 7, 9, TimeSpan.Zero),
+            "selected-restore-gate-implemented",
+            isExecutionImplemented: true);
+
+        var missingDraftGate = SelectedRestoreExecutionGateBuilder.Build(null, "RESTORE");
+        var blankGate = SelectedRestoreExecutionGateBuilder.Build(unavailableDraft, "");
+        var wrongGate = SelectedRestoreExecutionGateBuilder.Build(unavailableDraft, "QUARANTINE");
+        var matchedUnavailableGate = SelectedRestoreExecutionGateBuilder.Build(unavailableDraft, " RESTORE ");
+        var implementedGate = SelectedRestoreExecutionGateBuilder.Build(implementedDraft, "RESTORE");
+
+        Assert(execution.Succeeded, "Fixture setup should move the file before gate checks.");
+        Assert(!missingDraftGate.CanExecute, "Selected restore gate should stay closed before confirmation draft exists.");
+        Assert(!blankGate.IsConfirmationTextMatched, "Blank selected restore confirmation should not match.");
+        Assert(!wrongGate.IsConfirmationTextMatched, "Quarantine confirmation text should not match selected restore.");
+        Assert(matchedUnavailableGate.IsConfirmationTextMatched, "Gate should trim and match RESTORE exactly.");
+        Assert(!matchedUnavailableGate.CanExecute, "Matched RESTORE should not execute while selected restore execution is unavailable.");
+        Assert(implementedDraft.IsExecutionImplemented, "Test fixture should mark future execution availability explicitly.");
+        Assert(implementedGate.CanExecute, "Implemented selected restore execution with exact RESTORE and no blockers should open the core gate.");
+        Assert(File.Exists(entry.QuarantinePath), "Selected restore gate should leave quarantined file in place.");
+        Assert(!File.Exists(entry.OriginalPath), "Selected restore gate should not restore the original file.");
+    }
+
     public void QuarantineExecutorMovesFixtureFilesWithWriteAheadManifest()
     {
         using var fixture = TestFixture.Create();
@@ -2595,6 +2692,14 @@ internal sealed class StorageScanTests
             $"restore-manifest-{idSuffix}");
 
         return new PlannedQuarantineExecution(actionDraft, manifest);
+    }
+
+    private static SelectedRestoreManifestReview BuildSelectedRestoreManifestReview(
+        string quarantineRootPath,
+        string manifestPath)
+    {
+        var discovery = QuarantineManifestDiscoveryBuilder.Discover(quarantineRootPath);
+        return SelectedRestoreManifestReviewBuilder.Build(discovery, manifestPath);
     }
 
     private static StorageEntry Single(IEnumerable<StorageEntry> entries, string name)

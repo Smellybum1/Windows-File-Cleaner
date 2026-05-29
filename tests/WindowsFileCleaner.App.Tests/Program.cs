@@ -75,6 +75,8 @@ internal sealed class MainWindowSmokeTests
             Assert(window.CanPreviewRestoreReadiness, "MainWindow should allow read-only Restore Readiness Preview before scanning.");
             Assert(!window.CanSelectDiscoveredRestoreManifest, "MainWindow should not enable Restore Manifest selection before discovery.");
             Assert(!window.CanPreviewSelectedRestoreManifestReadiness, "MainWindow should not enable selected Restore Manifest review before discovery.");
+            Assert(!window.CanPreviewSelectedRestoreGate, "MainWindow should not enable selected restore gate preview before selected readiness.");
+            Assert(!window.CanEnterSelectedRestoreConfirmation, "MainWindow should not allow selected restore confirmation before gate preview.");
             Assert(window.BrowseQuarantineRootButtonText.Contains("Browse", StringComparison.OrdinalIgnoreCase), "Quarantine root browse action should be visible in the review toolbar.");
             Assert(
                 window.CurrentQuarantineRootPath == QuarantinePreviewBuilder.DefaultQuarantineRootPath,
@@ -92,6 +94,9 @@ internal sealed class MainWindowSmokeTests
             Assert(
                 window.SelectedRestoreManifestReviewTextValue.Contains("Selected Restore Manifest Review", StringComparison.OrdinalIgnoreCase),
                 "Selected Restore Manifest Review pane should start in a read-only placeholder state.");
+            Assert(
+                window.SelectedRestoreExecutionGateTextValue.Contains("Selected Restore Confirmation Draft", StringComparison.OrdinalIgnoreCase),
+                "Selected Restore Execution Gate pane should start in a read-only placeholder state.");
             Assert(window.BrowseCleanupScopeButtonText.Contains("Browse", StringComparison.OrdinalIgnoreCase), "Cleanup Scope browse action should be visible in the header.");
             Assert(window.IsRealProfilePreflightConfirmationVisible, "MainWindow should show the real-profile preflight acknowledgement.");
             Assert(!window.IsRealProfilePreflightConfirmed, "Real-profile preflight acknowledgement should start unchecked.");
@@ -792,8 +797,40 @@ internal sealed class MainWindowSmokeTests
                 && selectedReviewText.Contains("Restore readiness row | Restorable", StringComparison.OrdinalIgnoreCase)
                 && selectedReviewText.Contains("No restore action is available", StringComparison.OrdinalIgnoreCase),
                 "Selected Restore Manifest Review pane should show only selected readiness evidence. Text: " + selectedReviewText);
+            Assert(discoveryWindow.CanPreviewSelectedRestoreGate, "Selected readiness should enable selected restore gate preview.");
+            Assert(!discoveryWindow.CanEnterSelectedRestoreConfirmation, "Selected restore confirmation should stay disabled until gate preview exists.");
             Assert(File.Exists(quarantinePath), "Selected Restore Manifest Review should not move quarantined files.");
             Assert(!File.Exists(originalPath), "Selected Restore Manifest Review should not restore original paths.");
+
+            discoveryWindow.PreviewSelectedRestoreGateForCurrentSelection();
+            var selectedGateText = discoveryWindow.SelectedRestoreExecutionGateTextValue;
+
+            Assert(
+                discoveryWindow.CurrentStatusText.Contains("Selected Restore Confirmation Draft completed", StringComparison.OrdinalIgnoreCase)
+                && discoveryWindow.CurrentStatusText.Contains("No files were modified", StringComparison.OrdinalIgnoreCase),
+                "Selected restore gate status should report a read-only result.");
+            Assert(discoveryWindow.CanEnterSelectedRestoreConfirmation, "Selected restore confirmation should become editable after gate preview.");
+            Assert(
+                selectedGateText.Contains("Selected Restore Confirmation Draft:", StringComparison.OrdinalIgnoreCase)
+                && selectedGateText.Contains("Required future text: RESTORE", StringComparison.OrdinalIgnoreCase)
+                && selectedGateText.Contains("Selected Restore Execution Gate: read-only", StringComparison.OrdinalIgnoreCase)
+                && selectedGateText.Contains("Execution implemented: no", StringComparison.OrdinalIgnoreCase)
+                && selectedGateText.Contains("Can execute: no", StringComparison.OrdinalIgnoreCase)
+                && selectedGateText.Contains("No restore action is available", StringComparison.OrdinalIgnoreCase),
+                "Selected restore gate pane should show read-only confirmation evidence without enabling restore. Text: " + selectedGateText);
+            discoveryWindow.SetSelectedRestoreConfirmationText("NOPE");
+            Assert(
+                discoveryWindow.SelectedRestoreExecutionGateTextValue.Contains("Entered confirmation matches: no", StringComparison.OrdinalIgnoreCase),
+                "Wrong selected restore confirmation text should not match.");
+            discoveryWindow.SetSelectedRestoreConfirmationText("RESTORE");
+            var matchedSelectedGateText = discoveryWindow.SelectedRestoreExecutionGateTextValue;
+            Assert(
+                matchedSelectedGateText.Contains("Entered confirmation matches: yes", StringComparison.OrdinalIgnoreCase)
+                && matchedSelectedGateText.Contains("Execution implemented: no", StringComparison.OrdinalIgnoreCase)
+                && matchedSelectedGateText.Contains("Can execute: no", StringComparison.OrdinalIgnoreCase),
+                "Exact RESTORE should match but still not execute in this build. Text: " + matchedSelectedGateText);
+            Assert(File.Exists(quarantinePath), "Selected restore gate should not move quarantined files.");
+            Assert(!File.Exists(originalPath), "Selected restore gate should not restore original paths.");
 
             discoveryWindow.PreviewRestoreReadinessForCurrentRoot();
             var readinessText = discoveryWindow.RestoreReadinessPreviewTextValue;

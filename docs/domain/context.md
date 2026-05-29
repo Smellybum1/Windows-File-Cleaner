@@ -2451,6 +2451,7 @@ It is not approval to restore and does not restore files.
 - Depends on Quarantine Manifest Discovery.
 - Depends on Restore Manifest Summary and Restore Readiness Preview.
 - Implements ADR 0013.
+- Feeds Selected Restore Confirmation Draft.
 - Precedes broad WPF Undo Quarantine for discovered manifests.
 
 #### Code implications
@@ -2459,6 +2460,97 @@ It is not approval to restore and does not restore files.
 - Keep selection read-only and derived from current discovery results.
 - Keep selected readiness separate from approval and execution.
 - Do not call `UndoQuarantineExecutor.Undo`.
+
+### Selected Restore Confirmation Draft
+
+Status: draft
+Last reviewed: 2026-05-29
+
+#### Definition
+
+Selected Restore Confirmation Draft is the read-only confirmation readiness check for one Selected Restore Manifest Review.
+
+It summarizes the selected Restore Manifest, restorable entries, restorable bytes, required future confirmation text, and readiness blockers before any selected restore execution exists.
+
+#### Examples
+
+- Showing required future confirmation text `RESTORE` for one selected Restore Manifest.
+- Showing that one selected manifest has one restorable entry and no readiness blockers.
+- Showing that selected restore confirmation is blocked by original-path collisions or recovery-review rows.
+
+#### Non-examples
+
+- Approval to restore.
+- Broad WPF Undo Quarantine execution.
+- Real-profile WPF Undo Quarantine.
+- Writing an updated Restore Manifest.
+- Moving files out of quarantine.
+- Cleaning up empty action folders.
+
+#### Lifecycle
+
+- Created after Selected Restore Manifest Review has readiness output.
+- Is discarded when discovery is rerun, a different Restore Manifest is selected, selected readiness changes, or the Quarantine Root changes.
+- Feeds Selected Restore Execution Gate.
+- Does not create, move, delete, restore, write, or clean up files or folders.
+
+#### Relationships
+
+- Depends on Selected Restore Manifest Review.
+- Depends on Restore Readiness Preview.
+- Implements ADR 0014.
+- Precedes selected restore execution.
+
+#### Code implications
+
+- Use `SelectedRestoreConfirmationDraft` and `SelectedRestoreConfirmationDraftBuilder`.
+- Required future confirmation text is `RESTORE`.
+- Keep readiness blockers separate from execution availability.
+- Do not call `UndoQuarantineExecutor.Undo`.
+
+### Selected Restore Execution Gate
+
+Status: draft
+Last reviewed: 2026-05-29
+
+#### Definition
+
+Selected Restore Execution Gate is the read-only gate that combines a Selected Restore Confirmation Draft, typed confirmation text, and selected restore execution availability.
+
+In the current WPF app, selected restore execution availability is always false for discovered older manifests.
+
+#### Examples
+
+- Showing `Entered confirmation matches: yes` after the user types `RESTORE`.
+- Showing `Execution implemented: no` and `Can execute: no` in the current build.
+- Reporting confirmation-readiness blockers before any future restore action can open.
+
+#### Non-examples
+
+- A restore button.
+- Approval to restore.
+- WPF Undo Quarantine execution.
+- A persisted cleanup job.
+
+#### Lifecycle
+
+- Created after Selected Restore Confirmation Draft.
+- Refreshes when the selected restore confirmation text changes.
+- Is discarded when selected readiness, selected manifest, discovery, or Quarantine Root changes.
+- Does not create, move, delete, restore, write, or clean up files or folders.
+
+#### Relationships
+
+- Depends on Selected Restore Confirmation Draft.
+- Implements ADR 0014.
+- Precedes any future selected restore execution.
+
+#### Code implications
+
+- Use `SelectedRestoreExecutionGate` and `SelectedRestoreExecutionGateBuilder`.
+- Keep `CanExecute` false unless the exact `RESTORE` text matches, selected restore execution is implemented, and blockers are clear.
+- WPF must keep selected restore execution unavailable in the current build.
+- Do not expose a restore execution button from this gate yet.
 
 ### Restore Readiness Preview
 
@@ -2633,6 +2725,7 @@ The current core implementation is fixture-tested through Undo Quarantine Execut
 - Has read-only Quarantine Manifest Discovery for older action-scoped manifests.
 - Has read-only Restore Readiness Preview for discovered manifest blockers.
 - Has read-only Selected Restore Manifest Review for focusing one discovered manifest before any broad restore action exists.
+- Has read-only Selected Restore Confirmation Draft and Selected Restore Execution Gate for exact-confirmation semantics before any selected restore action exists.
 - Reverses a quarantine Cleanup Action.
 
 #### Code implications

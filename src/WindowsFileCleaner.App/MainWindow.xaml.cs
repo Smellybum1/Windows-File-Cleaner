@@ -25,6 +25,8 @@ public partial class MainWindow : Window
     private QuarantineManifestDiscovery? _currentQuarantineManifestDiscovery;
     private RestoreReadinessPreview? _currentRestoreReadinessPreview;
     private SelectedRestoreManifestReview? _currentSelectedRestoreManifestReview;
+    private SelectedRestoreConfirmationDraft? _currentSelectedRestoreConfirmationDraft;
+    private SelectedRestoreExecutionGate? _currentSelectedRestoreExecutionGate;
     private string? _currentCleanupScopePath;
     private StorageReviewFilter _currentFilter = StorageReviewFilter.All;
     private StorageCategoryFilter _currentCategoryFilter = StorageCategoryFilter.All;
@@ -40,6 +42,7 @@ public partial class MainWindow : Window
     private bool _isUpdatingSearchBox;
     private bool _isUpdatingQuarantineConfirmationBox;
     private bool _isUpdatingRestoreManifestSelectionBox;
+    private bool _isUpdatingSelectedRestoreConfirmationBox;
     private bool _isWindowInitialized;
 
     public MainWindow()
@@ -173,6 +176,8 @@ public partial class MainWindow : Window
 
     public string SelectedRestoreManifestReviewTextValue => SelectedRestoreManifestReviewText.Text;
 
+    public string SelectedRestoreExecutionGateTextValue => SelectedRestoreExecutionGateText.Text;
+
     public string CurrentQuarantineRootPath => QuarantineRootBox.Text;
 
     public string QuarantineRootSafetyNoteTextValue => QuarantineRootSafetyNoteText.Text;
@@ -194,6 +199,12 @@ public partial class MainWindow : Window
     public bool CanSelectDiscoveredRestoreManifest => RestoreManifestSelectionBox.IsEnabled;
 
     public bool CanPreviewSelectedRestoreManifestReadiness => PreviewSelectedRestoreManifestReadinessButton.IsEnabled;
+
+    public bool CanPreviewSelectedRestoreGate => PreviewSelectedRestoreGateButton.IsEnabled;
+
+    public bool CanEnterSelectedRestoreConfirmation => SelectedRestoreConfirmationBox.IsEnabled;
+
+    public string CurrentSelectedRestoreConfirmationText => SelectedRestoreConfirmationBox.Text;
 
     public int DiscoveredRestoreManifestCount => _currentQuarantineManifestDiscovery?.ManifestCount ?? 0;
 
@@ -325,6 +336,11 @@ public partial class MainWindow : Window
     private void PreviewSelectedRestoreManifestReadinessButton_Click(object sender, RoutedEventArgs e)
     {
         PreviewSelectedRestoreManifestReadiness();
+    }
+
+    private void PreviewSelectedRestoreGateButton_Click(object sender, RoutedEventArgs e)
+    {
+        PreviewSelectedRestoreGateForCurrentSelection();
     }
 
     public async Task RunStorageScanForCurrentScopeAsync(CancellationToken cancellationToken = default)
@@ -1185,6 +1201,11 @@ public partial class MainWindow : Window
         QuarantineConfirmationBox.Text = confirmationText;
     }
 
+    public void SetSelectedRestoreConfirmationText(string confirmationText)
+    {
+        SelectedRestoreConfirmationBox.Text = confirmationText;
+    }
+
     public bool SelectDiscoveredRestoreManifestByPath(string manifestPath)
     {
         foreach (var option in RestoreManifestSelectionBox.Items.OfType<RestoreManifestSelectionOption>())
@@ -1204,6 +1225,7 @@ public partial class MainWindow : Window
         _currentQuarantineManifestDiscovery = QuarantineManifestDiscoveryBuilder.Discover(QuarantineRootBox.Text);
         _currentRestoreReadinessPreview = null;
         _currentSelectedRestoreManifestReview = null;
+        ClearSelectedRestoreGate();
         QuarantineManifestDiscoveryText.Text = FormatQuarantineManifestDiscovery(_currentQuarantineManifestDiscovery);
         RestoreReadinessPreviewText.Text = "Read-only restore readiness appears after using Preview restore readiness.";
         SetRestoreManifestSelectionOptions(_currentQuarantineManifestDiscovery.Manifests);
@@ -1226,6 +1248,7 @@ public partial class MainWindow : Window
 
     public void PreviewSelectedRestoreManifestReadiness()
     {
+        ClearSelectedRestoreGate();
         _currentSelectedRestoreManifestReview = _currentQuarantineManifestDiscovery is null
             ? SelectedRestoreManifestReviewBuilder.BuildMissingDiscovery(QuarantineRootBox.Text, SelectedRestoreManifestPath)
             : SelectedRestoreManifestReviewBuilder.Build(_currentQuarantineManifestDiscovery, SelectedRestoreManifestPath);
@@ -1235,6 +1258,24 @@ public partial class MainWindow : Window
         StatusText.Text = _currentSelectedRestoreManifestReview.HasReadinessPreview
             ? $"Selected Restore Manifest Review completed: {_currentSelectedRestoreManifestReview.RestorableEntryCount:N0} restorable entries, {_currentSelectedRestoreManifestReview.BlockedEntryCount:N0} blocked. No files were modified."
             : $"Selected Restore Manifest Review completed with {_currentSelectedRestoreManifestReview.SelectionIssues.Count:N0} issue(s). No files were modified.";
+    }
+
+    public void PreviewSelectedRestoreGateForCurrentSelection()
+    {
+        _currentSelectedRestoreConfirmationDraft = SelectedRestoreConfirmationDraftBuilder.Build(
+            _currentSelectedRestoreManifestReview,
+            DateTimeOffset.UtcNow,
+            BuildDraftId("selected-restore-confirmation"),
+            isExecutionImplemented: false);
+        _currentSelectedRestoreExecutionGate = SelectedRestoreExecutionGateBuilder.Build(
+            _currentSelectedRestoreConfirmationDraft,
+            SelectedRestoreConfirmationBox.Text);
+        SelectedRestoreExecutionGateText.Text = FormatSelectedRestoreExecutionGate(
+            _currentSelectedRestoreConfirmationDraft,
+            _currentSelectedRestoreExecutionGate);
+        UpdateQuarantineManifestDiscoveryControls();
+
+        StatusText.Text = $"Selected Restore Confirmation Draft completed: {_currentSelectedRestoreConfirmationDraft.RestorableEntryCount:N0} restorable entries, {_currentSelectedRestoreConfirmationDraft.Blockers.Count:N0} blocker(s). No files were modified.";
     }
 
     public void ApplyStorageReviewSearch(string searchText)
@@ -1671,6 +1712,10 @@ public partial class MainWindow : Window
         PreviewSelectedRestoreManifestReadinessButton.IsEnabled = !_isScanning
             && hasDiscoveredManifest
             && SelectedRestoreManifestPath is not null;
+        PreviewSelectedRestoreGateButton.IsEnabled = !_isScanning
+            && _currentSelectedRestoreManifestReview?.HasReadinessPreview == true;
+        SelectedRestoreConfirmationBox.IsEnabled = !_isScanning
+            && _currentSelectedRestoreConfirmationDraft is not null;
     }
 
     private void SetSearchTextSilently(string text)
@@ -1743,11 +1788,23 @@ public partial class MainWindow : Window
         _currentQuarantineManifestDiscovery = null;
         _currentRestoreReadinessPreview = null;
         _currentSelectedRestoreManifestReview = null;
+        ClearSelectedRestoreGate();
         ClearRestoreManifestSelectionOptions();
         QuarantineManifestDiscoveryText.Text = "Read-only manifest discovery appears after using Discover manifests.";
         SelectedRestoreManifestReviewText.Text = "Selected Restore Manifest Review appears after discovery and Preview selected readiness.";
         RestoreReadinessPreviewText.Text = "Read-only restore readiness appears after using Preview restore readiness.";
         UpdateQuarantineManifestDiscoveryControls();
+    }
+
+    private void ClearSelectedRestoreGate()
+    {
+        _currentSelectedRestoreConfirmationDraft = null;
+        _currentSelectedRestoreExecutionGate = null;
+        SetSelectedRestoreConfirmationTextSilently("");
+        if (SelectedRestoreExecutionGateText is not null)
+        {
+            SelectedRestoreExecutionGateText.Text = "Selected Restore Confirmation Draft appears after Preview selected restore gate.";
+        }
     }
 
     private void SetRestoreManifestSelectionOptions(IReadOnlyList<RestoreManifestSummary> manifests)
@@ -1804,6 +1861,19 @@ public partial class MainWindow : Window
         }
     }
 
+    private void SetSelectedRestoreConfirmationTextSilently(string text)
+    {
+        _isUpdatingSelectedRestoreConfirmationBox = true;
+        try
+        {
+            SelectedRestoreConfirmationBox.Text = text;
+        }
+        finally
+        {
+            _isUpdatingSelectedRestoreConfirmationBox = false;
+        }
+    }
+
     private void QuarantineConfirmationBox_TextChanged(object sender, TextChangedEventArgs e)
     {
         if (!_isWindowInitialized || _isUpdatingQuarantineConfirmationBox)
@@ -1822,10 +1892,26 @@ public partial class MainWindow : Window
         }
 
         _currentSelectedRestoreManifestReview = null;
+        ClearSelectedRestoreGate();
         SelectedRestoreManifestReviewText.Text = SelectedRestoreManifestPath is null
             ? "Select a discovered Restore Manifest, then use Preview selected readiness."
             : "Selected Restore Manifest changed. Use Preview selected readiness to refresh read-only readiness.";
         UpdateQuarantineManifestDiscoveryControls();
+    }
+
+    private void SelectedRestoreConfirmationBox_TextChanged(object sender, TextChangedEventArgs e)
+    {
+        if (!_isWindowInitialized || _isUpdatingSelectedRestoreConfirmationBox || _currentSelectedRestoreConfirmationDraft is null)
+        {
+            return;
+        }
+
+        _currentSelectedRestoreExecutionGate = SelectedRestoreExecutionGateBuilder.Build(
+            _currentSelectedRestoreConfirmationDraft,
+            SelectedRestoreConfirmationBox.Text);
+        SelectedRestoreExecutionGateText.Text = FormatSelectedRestoreExecutionGate(
+            _currentSelectedRestoreConfirmationDraft,
+            _currentSelectedRestoreExecutionGate);
     }
 
     private void ExecuteQuarantineButton_Click(object sender, RoutedEventArgs e)
@@ -2175,6 +2261,44 @@ public partial class MainWindow : Window
         if (review.Readiness is not null)
         {
             AddRestoreReadinessManifestLines(lines, review.Readiness, 8);
+        }
+
+        return string.Join(Environment.NewLine, lines);
+    }
+
+    private static string FormatSelectedRestoreExecutionGate(
+        SelectedRestoreConfirmationDraft confirmationDraft,
+        SelectedRestoreExecutionGate gate)
+    {
+        var selectedPath = string.IsNullOrWhiteSpace(confirmationDraft.SelectedManifestPath)
+            ? "(none)"
+            : confirmationDraft.SelectedManifestPath;
+        var lines = new List<string>
+        {
+            $"Selected Restore Confirmation Draft: {confirmationDraft.ConfirmationId} | Required future text: {confirmationDraft.RequiredConfirmationText} | Execution implemented: {FormatYesNo(confirmationDraft.IsExecutionImplemented)}",
+            $"Selected manifest: {selectedPath}",
+            $"Restorable entries: {confirmationDraft.RestorableEntryCount:N0} | Restorable size: {confirmationDraft.RestorableSizeDisplay} | Blocked rows: {confirmationDraft.BlockedEntryCount:N0} | Recovery review rows: {confirmationDraft.RecoveryReviewEntryCount:N0} | Not moved rows: {confirmationDraft.NotMovedEntryCount:N0} | Already restored rows: {confirmationDraft.AlreadyRestoredEntryCount:N0}",
+            $"Selected Restore Execution Gate: read-only",
+            $"Required confirmation text: {gate.RequiredConfirmationText}",
+            $"Entered confirmation matches: {FormatYesNo(gate.IsConfirmationTextMatched)}",
+            $"Execution implemented: {FormatYesNo(gate.IsExecutionImplemented)}",
+            $"Can execute: {FormatYesNo(gate.CanExecute)}",
+            "No restore action is available from this selected restore gate."
+        };
+
+        foreach (var blocker in gate.Blockers.Take(8))
+        {
+            lines.Add($"Selected restore gate blocker | {blocker}");
+        }
+
+        if (gate.Blockers.Count > 8)
+        {
+            lines.Add($"... {gate.Blockers.Count - 8:N0} more selected restore gate blocker(s) not shown in this pane.");
+        }
+
+        foreach (var note in gate.ReviewNotes.Take(4))
+        {
+            lines.Add($"Selected restore gate note | {note}");
         }
 
         return string.Join(Environment.NewLine, lines);
