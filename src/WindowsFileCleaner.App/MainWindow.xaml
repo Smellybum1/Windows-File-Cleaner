@@ -828,7 +828,7 @@
                                       VerticalScrollBarVisibility="Auto"
                                       HorizontalScrollBarVisibility="Disabled">
                             <TextBlock x:Name="QuarantineExecutionGateText"
-                                       Text="Execution gate appears after using Preview quarantine."
+                                       Text="Execution gate appears after using Preview shortlist quarantine."
                                        FontFamily="Consolas"
                                        FontSize="12"
                                        TextWrapping="Wrap" />
@@ -1073,7 +1073,7 @@
                                        FontWeight="SemiBold"
                                        Margin="0,18,0,4" />
                             <TextBlock x:Name="QuarantinePreviewText"
-                                       Text="Preview and draft readiness appear after using Preview quarantine."
+                                       Text="Preview and draft readiness appear after using Preview shortlist quarantine."
                                        FontFamily="Consolas"
                                        FontSize="12"
                                        TextWrapping="Wrap" />

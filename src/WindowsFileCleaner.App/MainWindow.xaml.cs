@@ -3055,7 +3055,7 @@ public partial class MainWindow : Window
         SetQuarantineConfirmationTextSilently("");
         if (!preserveCurrentFixtureUndo)
         {
-            QuarantinePreviewText.Text = "Preview and draft readiness appear after using Preview quarantine.";
+            QuarantinePreviewText.Text = "Preview and draft readiness appear after using Preview shortlist quarantine.";
         }
 
         ExportQuarantinePreviewButton.IsEnabled = false;
