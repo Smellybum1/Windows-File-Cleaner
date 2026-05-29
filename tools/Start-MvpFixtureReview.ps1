@@ -29,7 +29,7 @@ function Write-FixtureReviewChecklist {
     Write-Host "  4. Try search examples: old-installer, parent:$FixturePath\Downloads, under:$FixturePath\AppData."
     Write-Host "  5. Select folders and try selected-row tooltips, Show children, Show descendants, hotspot trail, subtree summary, and file preview."
     Write-Host "  6. Shortlist fixture cleanup candidates, check the collapsible Quarantine shortlist header/details, Quarantine Root browse tooltip, styled inline preview readiness (neutral/success/warning/error), preview/export tooltips, Approval boundary, Execution scope status, and execution tooltips."
-    Write-Host "  7. For fixture only, type QUARANTINE, execute quarantine, use Quarantined / Back to scan rows plus Review Grid Mode Status, then Undo fixture quarantine and rescan before more review."
+    Write-Host "  7. For fixture only, type QUARANTINE, execute quarantine, use Quarantined / Back to scan rows plus styled Review Grid Mode Status (neutral/informational/warning), then Undo fixture quarantine and rescan before more review."
     Write-Host "  8. Use Discover manifests, selected manifest readiness/gate, and all-manifest readiness preview; check no all-manifest restore action plus readiness scope tooltips, selected restore Approval boundary, Execution scope status, and restore tooltips."
     Write-Host "  9. Confirm real-profile/custom Quarantine and selected restore execution remain unavailable in wording before any later real-profile work."
 }

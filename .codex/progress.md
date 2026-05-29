@@ -7135,3 +7135,45 @@ Open questions:
 Rejected ideas buffer:
 
 - Do not add tabs, modal explanations, persisted cleanup history, or discovered-manifest merging just to distinguish the current grid mode.
+
+### 2026-05-29: Align Fixture Checklist With Grid Mode Styling
+
+Status: completed
+
+Evidence:
+
+- Review Grid Mode Status Styling added neutral/informational/warning styling to the WPF grid-mode line.
+- `Start-MvpFixtureReview.ps1` checklist item 7 still mentioned generic Review Grid Mode Status and did not prompt the next manual pass to inspect the new semantic states.
+
+Implementation:
+
+- Updated fixture checklist item 7 to prompt styled Review Grid Mode Status review with neutral/informational/warning states.
+- Updated README launcher wording from Review Grid Mode Status to styled Review Grid Mode Status.
+- Updated the fixture checklist and grid-mode styling feature briefs to record this follow-up alignment.
+- Kept checklist-only and dry-run launcher paths read-only: no preflight, fixture creation, WPF launch, scan, move, restore, delete, or cleanup history.
+
+Verification:
+
+- `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\Start-MvpFixtureReview.ps1 -ChecklistOnly` passed and printed the updated checklist without preflight, fixture creation, or WPF launch.
+- `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\Start-MvpFixtureReview.ps1 -WhatIf -SkipPreflight -SkipLaunch` passed and preserved the updated checklist in dry-run launcher output.
+- `git -c safe.directory='D:/Codex/Windows File Cleaner' diff --check` passed with line-ending normalization warnings only.
+
+Docs updated:
+
+- `README.md`
+- `docs/features/2026-05-29-fixture-review-checklist-output.md`
+- `docs/features/2026-05-29-review-grid-mode-status-styling.md`
+- `docs/codex/thread-handoff.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No ADR added. This is local manual-review checklist wording with no persistence, cleanup execution, restore rule, data-model, or security change.
+
+Open questions:
+
+- Does the next visible fixture pass show that styled Review Grid Mode Status is noticeable without crowding the grid?
+
+Rejected ideas buffer:
+
+- Do not make checklist-only mode perform visual verification or launch WPF; it stays terminal-output-only.

@@ -158,16 +158,19 @@ What changed:
 - Stale Storage Scan rows after fixture Quarantine execution use warning styling.
 - Empty current-session quarantined rows after moved entries are gone use warning styling.
 - Added WPF smoke assertions for neutral, informational, warning, stale-return, and empty moved-entry styling.
+- Aligned the fixture review launcher checklist so the next manual pass prompts neutral/informational/warning grid-mode status review.
 
 Files changed:
 
 - `src/WindowsFileCleaner.App/MainWindow.xaml.cs`
 - `tests/WindowsFileCleaner.App.Tests/Program.cs`
+- `tools/Start-MvpFixtureReview.ps1`
 - `README.md`
 - `docs/domain/context.md`
 - `docs/domain/glossary.md`
 - `docs/features/2026-05-29-review-grid-mode-status.md`
 - `docs/features/2026-05-29-review-grid-mode-status-styling.md`
+- `docs/features/2026-05-29-fixture-review-checklist-output.md`
 - `docs/codex/thread-handoff.md`
 - `.codex/progress.md`
 
@@ -176,6 +179,8 @@ Tests run:
 - `dotnet build tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj "-p:BaseOutputPath=D:/Codex/Windows File Cleaner/.local/test-bin/app-tests/"`
 - `D:\Codex\Windows File Cleaner\.local\test-bin\app-tests\Debug\net8.0-windows\WindowsFileCleaner.App.Tests.exe`
 - `dotnet build WindowsFileCleaner.sln --no-restore "-p:BaseOutputPath=D:/Codex/Windows File Cleaner/.local/test-bin/solution/"`
+- `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\Start-MvpFixtureReview.ps1 -ChecklistOnly`
+- `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\Start-MvpFixtureReview.ps1 -WhatIf -SkipPreflight -SkipLaunch`
 - `git -c safe.directory='D:/Codex/Windows File Cleaner' diff --check`
 
 Docs updated:

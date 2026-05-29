@@ -9,7 +9,7 @@ Use this when starting a fresh Codex thread for this repository.
 - Repo: `D:\Codex\Windows File Cleaner`
 - GitHub: `Smellybum1/Windows-File-Cleaner`
 - Branch: `main`
-- Latest completed packet: Review Grid Mode Status Styling
+- Latest completed packet: Fixture Checklist Grid Mode Styling Alignment
 - Current app stack: C# / WPF / .NET 8
 - Desktop shortcut target: `D:\Codex\Windows File Cleaner\src\WindowsFileCleaner.App\bin\Debug\net8.0-windows\WindowsFileCleaner.App.exe`
 
@@ -98,6 +98,7 @@ Fixture-only cleanup execution exists for synthetic Cleanup Scopes. Real-profile
 - Quarantine Preview Error Style Coverage added WPF smoke coverage for invalid Quarantine Root preview attempts using the inline error status style.
 - Full Local MVP Preflight After Review Polish passed `Invoke-MvpPreflight.ps1`; restore, build, core tests, WPF app tests, fixture `-WhatIf`, and whitespace diff check all passed without scanning or modifying real user files.
 - Review Grid Mode Status Styling added neutral/informational/warning styling to distinguish ordinary scan rows, stale scan rows, and current-session quarantined review.
+- Fixture Checklist Grid Mode Styling Alignment updated `Start-MvpFixtureReview.ps1 -ChecklistOnly` prompts to include styled Review Grid Mode Status states.
 
 ## Best next work
 
