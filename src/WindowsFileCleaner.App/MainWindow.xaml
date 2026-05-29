@@ -258,6 +258,7 @@
                                  VerticalContentAlignment="Center"
                                  IsEnabled="False"
                                  ToolTip="Examples: pip, path:pip, parent:C:\Users\moxhe\AppData, under:C:\Users\moxhe\AppData, category:Python package cache, rating:High risk, recommendation:Quarantine candidate, access:readable, access:access issue, issue:denied"
+                                 AutomationProperties.HelpText="Searches completed Storage Scan review rows after a short pause. Examples: pip, path:pip, parent:C:\Users\moxhe\AppData, under:C:\Users\moxhe\AppData, category:Python package cache, rating:High risk, recommendation:Quarantine candidate, access:readable, access:access issue, issue:denied. Search is read-only and does not rescan, modify files, or approve cleanup."
                                  TextChanged="SearchBox_TextChanged" />
                     </StackPanel>
                     <Button x:Name="ClearSearchButton"

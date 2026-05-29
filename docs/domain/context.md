@@ -609,6 +609,7 @@ Recognized field prefixes restrict search to one field:
 - Treat `parent:` as an immediate-parent lens, not a recursive descendant tree.
 - Treat `under:` as a descendant lens that excludes the selected ancestor row.
 - Keep search in-memory and read-only.
+- Search input tooltip and automation help text should include prefix examples and say Storage Review Search is read-only, does not rescan, does not modify files, and does not approve cleanup.
 - Clear search tooltip and automation help text should say it clears only Storage Review Search, keeps Review Shortlist, and does not rescan or modify files.
 - Keep direct/programmatic search application immediate for shortcuts and tests, but debounce textbox typing before refreshing large review result sets.
 - Do not use search text to change Bloat Categories, Importance Ratings, Deletion Recommendations, or cleanup eligibility.

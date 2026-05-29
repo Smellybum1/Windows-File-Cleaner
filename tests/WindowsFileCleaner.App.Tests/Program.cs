@@ -476,6 +476,17 @@ internal sealed class MainWindowSmokeTests
             Assert(window.SearchHelpToolTipValue.Contains("category:", StringComparison.OrdinalIgnoreCase), "Search tooltip should include category-prefix guidance.");
             Assert(window.SearchHelpToolTipValue.Contains("access:readable", StringComparison.OrdinalIgnoreCase), "Search tooltip should include readable access-prefix guidance.");
             Assert(window.SearchHelpToolTipValue.Contains("issue:denied", StringComparison.OrdinalIgnoreCase), "Search tooltip should include access issue message-prefix guidance.");
+            Assert(window.SearchHelpAutomationHelpTextValue.Contains("path:", StringComparison.OrdinalIgnoreCase), "Search automation help text should show field-prefix examples.");
+            Assert(window.SearchHelpAutomationHelpTextValue.Contains("parent:", StringComparison.OrdinalIgnoreCase), "Search automation help text should include parent-prefix guidance.");
+            Assert(window.SearchHelpAutomationHelpTextValue.Contains("under:", StringComparison.OrdinalIgnoreCase), "Search automation help text should include under-prefix descendant guidance.");
+            Assert(window.SearchHelpAutomationHelpTextValue.Contains("category:", StringComparison.OrdinalIgnoreCase), "Search automation help text should include category-prefix guidance.");
+            Assert(window.SearchHelpAutomationHelpTextValue.Contains("access:readable", StringComparison.OrdinalIgnoreCase), "Search automation help text should include readable access-prefix guidance.");
+            Assert(window.SearchHelpAutomationHelpTextValue.Contains("issue:denied", StringComparison.OrdinalIgnoreCase), "Search automation help text should include access issue message-prefix guidance.");
+            Assert(
+                window.SearchHelpAutomationHelpTextValue.Contains("does not rescan", StringComparison.OrdinalIgnoreCase)
+                && window.SearchHelpAutomationHelpTextValue.Contains("modify files", StringComparison.OrdinalIgnoreCase)
+                && window.SearchHelpAutomationHelpTextValue.Contains("approve cleanup", StringComparison.OrdinalIgnoreCase),
+                "Search automation help text should explain read-only search boundaries.");
         }
         finally
         {

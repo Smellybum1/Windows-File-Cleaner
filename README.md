@@ -47,7 +47,7 @@ Fresh-thread handoff notes live in `docs/codex/thread-handoff.md`.
 - Scan-gate ready wording is scope-specific: fixture scopes point later cleanup actions back to preview and exact confirmation, while real-profile/custom scopes keep cleanup execution unavailable. The Scan button mirrors this wording in tooltips and automation help text.
 - Cleanup Scope typed/browse and Quarantine Root typed/browse controls use tooltips and automation help text to keep path-selection, scan-gate, preview-only, and no-folder-creation boundaries available.
 - Selected-row review actions use tooltips and automation help text to keep shortlist, focus, file-preview, copy, and Explorer inspection boundaries available.
-- User-typed Storage Review Search is debounced for large real-profile scans; the status bar is the only pending-search indicator for now.
+- User-typed Storage Review Search is debounced for large real-profile scans; its input tooltip and automation help text expose prefix examples and read-only boundaries, and the status bar is the only pending-search indicator for now.
 
 ## Requirements
 
@@ -150,7 +150,7 @@ After the app opens:
 7. If the status or filter summary says `rows 1-2,000 of ... matched`, use `Next rows` / `Previous rows` to move through matched in-memory rows, or narrow with search and filters. Their tooltips should keep no-rescan and no-file-modified wording visible.
 8. Treat row sizes as triage clues, not storage savings; folder rows include children and can overlap with child rows.
 9. Use Review Mix, Matched Review Mix, and Safety Summary to inspect the cleanup scope root, high-risk, protected, access issue examples, Quarantine candidate examples, No category examples, reparse point, quarantine candidate, and no-category rows. Review Mix summarizes the whole scan; Matched Review Mix summarizes the current filters/search/focus.
-10. Use Storage Review Search for specific names such as `pip`, `NVIDIA`, `Codex`, app names, or game/mod-manager folders; use prefixes such as `path:pip`, `parent:C:\Users\moxhe\AppData`, `under:C:\Users\moxhe\AppData`, `category:Python package cache`, `rating:High risk`, `recommendation:Quarantine candidate`, `access:readable`, or `access:access issue` when you want one field.
+10. Use Storage Review Search for specific names such as `pip`, `NVIDIA`, `Codex`, app names, or game/mod-manager folders; use prefixes such as `path:pip`, `parent:C:\Users\moxhe\AppData`, `under:C:\Users\moxhe\AppData`, `category:Python package cache`, `rating:High risk`, `recommendation:Quarantine candidate`, `access:readable`, or `access:access issue` when you want one field. The search input tooltip and automation help text should keep those examples plus read-only/no-rescan/no-cleanup-approval wording available.
     Search typed into the box applies after a short pause so large scan results do not re-filter on every keystroke.
 11. Use the `Relative path`, `Parent`, `Contents`, and `Access` columns for short, hashed, container, or unreadable row names; sort `Contents` when you want to compare rows by total contained items, then select large folders and inspect relative path, parent/depth context, Evidence, cache-specific Review guidance, Descendant review summary, Largest immediate children, the Largest hotspot trail, and selected-row action tooltips.
 12. Use the Descendant review summary to see the selected folder's descendant mix by rating, quarantine candidate count, protected rows, access issues, reparse points, and no-category rows; these counts are review context, not cleanup approval.

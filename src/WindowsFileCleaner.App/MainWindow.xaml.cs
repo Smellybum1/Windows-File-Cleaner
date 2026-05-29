@@ -203,6 +203,8 @@ public partial class MainWindow : Window
 
     public string SearchHelpToolTipValue => SearchBox.ToolTip?.ToString() ?? "";
 
+    public string SearchHelpAutomationHelpTextValue => AutomationProperties.GetHelpText(SearchBox);
+
     public string DetailGuidanceTextValue => DetailGuidanceText.Text;
 
     public string DetailPathContextTextValue => DetailPathContextText.Text;
