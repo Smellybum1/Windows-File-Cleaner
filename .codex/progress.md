@@ -20,6 +20,45 @@ Storage Scan MVP packet implemented and tested by the user against `C:\Users\mox
 
 ## Completed packets
 
+### 2026-05-30: Run Full Local MVP Preflight After Hoverable Checklist
+
+Status: completed
+
+Evidence:
+
+- Fixture Checklist Hoverable Help Cues changed the manual fixture launcher checklist and durable docs after the previous full `.cmd` preflight.
+- A full local preflight through the preferred `.cmd` wrapper gives stronger evidence that the current command path still restores, builds, tests, dry-runs the fixture generator, and runs whitespace checks cleanly before the next visible fixture review.
+
+Implementation:
+
+- Ran `Invoke-MvpPreflight.cmd` from the repository root after the hoverable checklist packet was pushed.
+- Preflight restored packages, built the solution, ran core tests, ran WPF app tests, ran the synthetic fixture generator in `-WhatIf` mode, and ran whitespace diff checking.
+- No real user files were scanned or modified.
+
+Verification:
+
+- `cmd.exe /c tools\Invoke-MvpPreflight.cmd` passed.
+- Preflight output ended with `MVP preflight passed. No real user files were scanned or modified.`
+- Preflight suggested `.\tools\Start-MvpFixtureReview.cmd -SkipPreflight` as the next manual fixture step.
+- `git status --short` showed a clean tree before recording this docs-only verification note.
+
+Docs updated:
+
+- `docs/codex/thread-handoff.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No ADR added. This is verification evidence only, with no architecture, persistence, cleanup execution, restore rule, data-model, or security change.
+
+Open questions:
+
+- The next useful product signal remains a visible fixture review pass using the `.cmd` launcher and updated hoverable help-cue checklist wording.
+
+Rejected ideas buffer:
+
+- Do not treat preflight as a replacement for manual visible fixture review; it proves automated gates only.
+
 ### 2026-05-30: Fixture Checklist Hoverable Help Cues
 
 Status: completed
