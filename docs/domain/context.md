@@ -2794,6 +2794,8 @@ Pre-Execution Revalidation is the immediate live-filesystem check that reruns af
 
 It proves that the files and destinations about to be touched still match the Review Shortlist, Quarantine Preview, Restore Manifest Draft, and Quarantine Action Draft that the user reviewed.
 
+The current core model is read-only and not wired to WPF execution controls.
+
 #### Examples
 
 - Block execution when an included source path no longer exists.
@@ -2801,6 +2803,7 @@ It proves that the files and destinations about to be touched still match the Re
 - Block execution when a planned destination path now exists.
 - Block execution when preview/draft counts, bytes, paths, or action paths no longer match.
 - Block execution when the action root or Restore Manifest path already exists.
+- Block execution when a reviewed source file size or modified timestamp changed after preview.
 
 #### Non-examples
 
@@ -2814,6 +2817,7 @@ It proves that the files and destinations about to be touched still match the Re
 - Runs only after review readiness and explicit real-profile approval are otherwise clean.
 - Runs immediately before the first write-ahead Restore Manifest write.
 - If any blocker appears, execution stays closed and the user must rescan or re-preview.
+- Does not create folders, move files, write manifests, delete files, restore files, or approve cleanup by itself.
 
 #### Relationships
 
@@ -2823,6 +2827,7 @@ It proves that the files and destinations about to be touched still match the Re
 
 #### Code implications
 
+- Use `PreExecutionRevalidation` and `PreExecutionRevalidationBuilder`.
 - Use path APIs rather than string-only path checks.
 - Revalidate source existence, scope containment, reparse-point status, access, size/path metadata, destination availability, action-root availability, and Restore Manifest path availability.
 - Keep all blockers path-specific enough for the WPF readiness output to explain the next manual step.

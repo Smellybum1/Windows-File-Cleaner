@@ -34,6 +34,10 @@ tests.QuarantineRootExecutionSafetyAllowsSafeNonPreferredRootWithAcknowledgement
 tests.QuarantineRootExecutionSafetyBlocksUnsafeContainmentAndRelativeRoots();
 tests.QuarantineRootExecutionSafetyBlocksCapacityAndCollisions();
 tests.QuarantineExecutionReadinessConsumesRootExecutionSafety();
+tests.PreExecutionRevalidationPassesUnchangedFixtureAction();
+tests.PreExecutionRevalidationBlocksMissingChangedAndDestinationCollision();
+tests.PreExecutionRevalidationBlocksStaleActionDraftMismatch();
+tests.QuarantineExecutionReadinessConsumesPreExecutionRevalidation();
 tests.RestoreManifestBuildsWriteAheadActionRecordFromActionDraft();
 tests.RestoreManifestTracksPartialFailureStatusForFutureExecution();
 tests.RestoreManifestFileStoreWritesAndReplacesManifestWithoutMovingSources();
@@ -1569,7 +1573,7 @@ internal sealed class StorageScanTests
             confirmation,
             isSelectedManifestRealProfileUndoAvailable: true,
             nonPreferredQuarantineRootAcknowledged: true);
-        Assert(withoutRootSafety.Blockers.Any(blocker => blocker.Contains("has not been checked", StringComparison.OrdinalIgnoreCase)), "Readiness should ask for root safety when none is supplied.");
+        Assert(withoutRootSafety.Blockers.Any(blocker => blocker.Contains("Quarantine Root Execution Safety has not been checked", StringComparison.OrdinalIgnoreCase)), "Readiness should ask for root safety when none is supplied.");
 
         var withRootSafety = QuarantineExecutionReadinessBuilder.Build(
             preview,
@@ -1577,10 +1581,154 @@ internal sealed class StorageScanTests
             isSelectedManifestRealProfileUndoAvailable: true,
             nonPreferredQuarantineRootAcknowledged: true,
             quarantineRootExecutionSafety: rootSafety);
-        Assert(!withRootSafety.Blockers.Any(blocker => blocker.Contains("has not been checked", StringComparison.OrdinalIgnoreCase)), "Readiness should consume supplied root safety.");
+        Assert(!withRootSafety.Blockers.Any(blocker => blocker.Contains("Quarantine Root Execution Safety has not been checked", StringComparison.OrdinalIgnoreCase)), "Readiness should consume supplied root safety.");
         Assert(!withRootSafety.Blockers.Any(blocker => blocker.Contains("Quarantine Root Execution Safety:", StringComparison.OrdinalIgnoreCase)), "Clean root safety should add no root safety blockers.");
         Assert(withRootSafety.Blockers.Any(blocker => blocker.Contains("Pre-Execution Revalidation", StringComparison.OrdinalIgnoreCase)), "Real-profile readiness should still require pre-execution revalidation.");
         Assert(withRootSafety.Blockers.Any(blocker => blocker.Contains("remains unavailable", StringComparison.OrdinalIgnoreCase)), "Real-profile movement should remain unavailable after clean root safety.");
+    }
+
+    public void PreExecutionRevalidationPassesUnchangedFixtureAction()
+    {
+        using var fixture = TestFixture.Create();
+        var plan = BuildFixtureRevalidationPlan(fixture, "preexec-clean");
+
+        var revalidation = PreExecutionRevalidationBuilder.Build(
+            plan.Preview,
+            plan.Confirmation,
+            plan.ActionDraft,
+            plan.RootExecutionSafety,
+            new DateTimeOffset(2026, 5, 31, 4, 5, 6, TimeSpan.Zero));
+
+        Assert(revalidation.CanProceed, "Unchanged fixture action should pass pre-execution revalidation.");
+        Assert(revalidation.IsRootExecutionSafetyClean, "Clean root safety should be recorded in revalidation.");
+        Assert(revalidation.IncludedCount == plan.Preview.IncludedCount, "Revalidation should preserve included count evidence.");
+        Assert(revalidation.IncludedBytes == plan.Preview.IncludedBytes, "Revalidation should preserve included byte evidence.");
+        Assert(revalidation.ReviewNotes.Any(note => note.Contains("No folders were created", StringComparison.OrdinalIgnoreCase)), "Revalidation notes should preserve the no-write boundary.");
+        Assert(!Directory.Exists(plan.ActionDraft.ActionRootPath), "Pre-Execution Revalidation should not create the action root.");
+    }
+
+    public void PreExecutionRevalidationBlocksMissingChangedAndDestinationCollision()
+    {
+        using var missingFixture = TestFixture.Create();
+        var missingPlan = BuildFixtureRevalidationPlan(missingFixture, "preexec-missing");
+        File.Delete(missingPlan.SourcePath);
+
+        var missing = PreExecutionRevalidationBuilder.Build(
+            missingPlan.Preview,
+            missingPlan.Confirmation,
+            missingPlan.ActionDraft,
+            missingPlan.RootExecutionSafety,
+            DateTimeOffset.UtcNow);
+        Assert(!missing.CanProceed, "Missing source should block pre-execution revalidation.");
+        Assert(missing.Blockers.Any(blocker => blocker.Contains("no longer exists", StringComparison.OrdinalIgnoreCase)), "Missing source blocker should be explicit.");
+
+        using var changedFixture = TestFixture.Create();
+        var changedPlan = BuildFixtureRevalidationPlan(changedFixture, "preexec-changed");
+        File.AppendAllText(changedPlan.SourcePath, "changed after preview");
+
+        var changed = PreExecutionRevalidationBuilder.Build(
+            changedPlan.Preview,
+            changedPlan.Confirmation,
+            changedPlan.ActionDraft,
+            changedPlan.RootExecutionSafety,
+            DateTimeOffset.UtcNow);
+        Assert(!changed.CanProceed, "Changed source should block pre-execution revalidation.");
+        Assert(changed.Blockers.Any(blocker => blocker.Contains("size changed", StringComparison.OrdinalIgnoreCase)), "Changed source size blocker should be explicit.");
+
+        using var collisionFixture = TestFixture.Create();
+        var collisionPlan = BuildFixtureRevalidationPlan(collisionFixture, "preexec-collision");
+        var destination = collisionPlan.ActionDraft.Entries.Single().ActionQuarantinePath;
+        Directory.CreateDirectory(Path.GetDirectoryName(destination)!);
+        File.WriteAllText(destination, "existing destination");
+
+        var collision = PreExecutionRevalidationBuilder.Build(
+            collisionPlan.Preview,
+            collisionPlan.Confirmation,
+            collisionPlan.ActionDraft,
+            collisionPlan.RootExecutionSafety,
+            DateTimeOffset.UtcNow);
+        Assert(!collision.CanProceed, "Destination collision should block pre-execution revalidation.");
+        Assert(collision.Blockers.Any(blocker => blocker.Contains("item destination now exists", StringComparison.OrdinalIgnoreCase)), "Destination collision blocker should be explicit.");
+        Assert(collision.Blockers.Any(blocker => blocker.Contains("action root now exists", StringComparison.OrdinalIgnoreCase)), "Action root collision should be explicit.");
+    }
+
+    public void PreExecutionRevalidationBlocksStaleActionDraftMismatch()
+    {
+        using var fixture = TestFixture.Create();
+        var plan = BuildFixtureRevalidationPlan(fixture, "preexec-stale");
+        var staleActionDraft = plan.ActionDraft with
+        {
+            Entries = []
+        };
+
+        var revalidation = PreExecutionRevalidationBuilder.Build(
+            plan.Preview,
+            plan.Confirmation,
+            staleActionDraft,
+            plan.RootExecutionSafety,
+            DateTimeOffset.UtcNow);
+
+        Assert(!revalidation.CanProceed, "Stale action draft should block pre-execution revalidation.");
+        Assert(revalidation.Blockers.Any(blocker => blocker.Contains("Included row count changed", StringComparison.OrdinalIgnoreCase)), "Stale action draft should report count mismatch.");
+        Assert(revalidation.Blockers.Any(blocker => blocker.Contains("missing included preview row", StringComparison.OrdinalIgnoreCase)), "Stale action draft should report missing included preview row.");
+    }
+
+    public void QuarantineExecutionReadinessConsumesPreExecutionRevalidation()
+    {
+        var preview = BuildPreviewForManualRows(
+            @"C:\Users\moxhe",
+            $@"C:\WindowsFileCleanerQuarantine-{Guid.NewGuid():N}",
+            ManualReviewEntry(@"C:\Users\moxhe\Downloads\old-installer.msi"));
+        var manifestDraft = RestoreManifestDraftBuilder.Build(
+            preview,
+            new DateTimeOffset(2026, 5, 31, 1, 2, 3, TimeSpan.Zero),
+            "manifest-draft-preexec-readiness");
+        var confirmation = QuarantineConfirmationDraftBuilder.Build(
+            preview,
+            manifestDraft,
+            new DateTimeOffset(2026, 5, 31, 2, 3, 4, TimeSpan.Zero),
+            "confirmation-draft-preexec-readiness");
+        var actionDraft = QuarantineActionDraftBuilder.Build(
+            preview,
+            manifestDraft,
+            confirmation,
+            new DateTimeOffset(2026, 5, 31, 3, 4, 5, TimeSpan.Zero),
+            "quarantine-action-preexec-readiness");
+        var rootSafety = QuarantineRootExecutionSafetyBuilder.Build(
+            actionDraft,
+            nonPreferredQuarantineRootAcknowledged: true,
+            availableFreeBytesOverride: actionDraft.TotalBytes + QuarantineRootExecutionSafety.DefaultManifestOverheadBytes + 1024);
+        var cleanRevalidation = new PreExecutionRevalidation(
+            new DateTimeOffset(2026, 5, 31, 4, 5, 6, TimeSpan.Zero),
+            preview.CleanupScopePath,
+            preview.QuarantineRootPath,
+            actionDraft.ActionRootPath,
+            actionDraft.ItemsRootPath,
+            actionDraft.RestoreManifestPath,
+            preview.IncludedCount,
+            preview.IncludedBytes,
+            IsRootExecutionSafetyClean: true,
+            Blockers: [],
+            ReviewNotes: ["No files were modified by this test revalidation."]);
+
+        var withoutRevalidation = QuarantineExecutionReadinessBuilder.Build(
+            preview,
+            confirmation,
+            isSelectedManifestRealProfileUndoAvailable: true,
+            nonPreferredQuarantineRootAcknowledged: true,
+            quarantineRootExecutionSafety: rootSafety);
+        Assert(withoutRevalidation.Blockers.Any(blocker => blocker.Contains("Pre-Execution Revalidation has not been checked", StringComparison.OrdinalIgnoreCase)), "Readiness should ask for revalidation when none is supplied.");
+
+        var withRevalidation = QuarantineExecutionReadinessBuilder.Build(
+            preview,
+            confirmation,
+            isSelectedManifestRealProfileUndoAvailable: true,
+            nonPreferredQuarantineRootAcknowledged: true,
+            quarantineRootExecutionSafety: rootSafety,
+            preExecutionRevalidation: cleanRevalidation);
+        Assert(!withRevalidation.Blockers.Any(blocker => blocker.Contains("Pre-Execution Revalidation has not been checked", StringComparison.OrdinalIgnoreCase)), "Readiness should consume supplied pre-execution revalidation.");
+        Assert(!withRevalidation.Blockers.Any(blocker => blocker.Contains("Pre-Execution Revalidation:", StringComparison.OrdinalIgnoreCase)), "Clean revalidation should add no revalidation blockers.");
+        Assert(withRevalidation.Blockers.Any(blocker => blocker.Contains("remains unavailable", StringComparison.OrdinalIgnoreCase)), "Real-profile movement should remain unavailable after clean revalidation.");
     }
 
     public void RestoreManifestBuildsWriteAheadActionRecordFromActionDraft()
@@ -3278,6 +3426,47 @@ internal sealed class StorageScanTests
             actionId);
     }
 
+    private static PreExecutionTestPlan BuildFixtureRevalidationPlan(
+        TestFixture fixture,
+        string actionId)
+    {
+        var sourceLastModified = new DateTimeOffset(2026, 5, 1, 1, 2, 3, TimeSpan.Zero);
+        fixture.WriteFile(@"cleanup-scope\Downloads\old-installer.msi", 1024, sourceLastModified);
+        var cleanupScopePath = Path.Combine(fixture.RootPath, "cleanup-scope");
+        var quarantineRootPath = Path.Combine(fixture.RootPath, "quarantine-root");
+        var scanner = new StorageScanner();
+        var result = scanner.Scan(new StorageScanOptions(cleanupScopePath));
+        var review = StorageScanReviewBuilder.Build(result);
+        var installer = SingleReviewEntry(review.Entries, @"Downloads\old-installer.msi");
+        var preview = QuarantinePreviewBuilder.Build([installer], cleanupScopePath, quarantineRootPath);
+        var manifestDraft = RestoreManifestDraftBuilder.Build(
+            preview,
+            new DateTimeOffset(2026, 5, 31, 1, 2, 3, TimeSpan.Zero),
+            $"manifest-draft-{actionId}");
+        var confirmation = QuarantineConfirmationDraftBuilder.Build(
+            preview,
+            manifestDraft,
+            new DateTimeOffset(2026, 5, 31, 2, 3, 4, TimeSpan.Zero),
+            $"confirmation-draft-{actionId}");
+        var actionDraft = QuarantineActionDraftBuilder.Build(
+            preview,
+            manifestDraft,
+            confirmation,
+            new DateTimeOffset(2026, 5, 31, 3, 4, 5, TimeSpan.Zero),
+            actionId);
+        var rootSafety = QuarantineRootExecutionSafetyBuilder.Build(
+            actionDraft,
+            nonPreferredQuarantineRootAcknowledged: true,
+            availableFreeBytesOverride: actionDraft.TotalBytes + QuarantineRootExecutionSafety.DefaultManifestOverheadBytes + 1024);
+
+        return new PreExecutionTestPlan(
+            preview,
+            confirmation,
+            actionDraft,
+            rootSafety,
+            installer.Entry.FullPath);
+    }
+
     private static StorageReviewEntry ManualReviewEntry(
         string fullPath,
         bool isDirectory = false,
@@ -3392,6 +3581,13 @@ internal sealed class StorageScanTests
     private sealed record PlannedQuarantineExecution(
         QuarantineActionDraft ActionDraft,
         RestoreManifest Manifest);
+
+    private sealed record PreExecutionTestPlan(
+        QuarantinePreview Preview,
+        QuarantineConfirmationDraft Confirmation,
+        QuarantineActionDraft ActionDraft,
+        QuarantineRootExecutionSafety RootExecutionSafety,
+        string SourcePath);
 }
 
 internal sealed class TestFixture : IDisposable

@@ -15,7 +15,7 @@ This packet validates whether an action-scoped Quarantine Root looks safe for fu
 - Do not wire root execution safety into WPF controls yet.
 - Do not enable real-profile Quarantine execution.
 - Do not enable real-profile Undo Quarantine.
-- Do not implement Pre-Execution Revalidation yet.
+- Pre-Execution Revalidation was implemented in the next non-moving core packet.
 - Do not create quarantine folders or manifests.
 - Do not modify real-profile files.
 
@@ -84,7 +84,6 @@ Tests run:
 
 Follow-up work:
 
-- Add Pre-Execution Revalidation as the next non-moving core packet.
 - Add WPF readiness output only after the core model, root safety, and revalidation are stable, keeping execution disabled.
 
 Open questions:

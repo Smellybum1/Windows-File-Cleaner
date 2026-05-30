@@ -7,7 +7,8 @@ public static class QuarantineExecutionReadinessBuilder
         QuarantineConfirmationDraft? confirmationDraft,
         bool isSelectedManifestRealProfileUndoAvailable = false,
         bool nonPreferredQuarantineRootAcknowledged = false,
-        QuarantineRootExecutionSafety? quarantineRootExecutionSafety = null)
+        QuarantineRootExecutionSafety? quarantineRootExecutionSafety = null,
+        PreExecutionRevalidation? preExecutionRevalidation = null)
     {
         if (preview is null)
         {
@@ -68,6 +69,7 @@ public static class QuarantineExecutionReadinessBuilder
                     isPreferredRoot,
                     nonPreferredQuarantineRootAcknowledged,
                     isSelectedManifestRealProfileUndoAvailable,
+                    preExecutionRevalidation,
                     blockers);
                 break;
             case QuarantineExecutionReadinessScopeKind.RealProfileChild:
@@ -122,11 +124,12 @@ public static class QuarantineExecutionReadinessBuilder
         bool isPreferredRoot,
         bool nonPreferredQuarantineRootAcknowledged,
         bool isSelectedManifestRealProfileUndoAvailable,
+        PreExecutionRevalidation? preExecutionRevalidation,
         List<string> blockers)
     {
         blockers.Add("Real-profile WPF Quarantine execution remains unavailable in this build.");
         AddRootSafetyBlockers(preview, quarantineRootExecutionSafety, blockers);
-        blockers.Add("Pre-Execution Revalidation is not implemented for real-profile execution yet.");
+        AddPreExecutionRevalidationBlockers(preview, preExecutionRevalidation, blockers);
 
         if (!isSelectedManifestRealProfileUndoAvailable)
         {
@@ -151,6 +154,33 @@ public static class QuarantineExecutionReadinessBuilder
         foreach (var includedEntry in preview.Entries.Where(entry => entry.IsIncluded))
         {
             AddIncludedEntryBlockers(includedEntry, blockers);
+        }
+    }
+
+    private static void AddPreExecutionRevalidationBlockers(
+        QuarantinePreview preview,
+        PreExecutionRevalidation? preExecutionRevalidation,
+        List<string> blockers)
+    {
+        if (preExecutionRevalidation is null)
+        {
+            blockers.Add("Pre-Execution Revalidation has not been checked for real-profile execution yet.");
+            return;
+        }
+
+        if (!SamePath(preview.CleanupScopePath, preExecutionRevalidation.CleanupScopePath))
+        {
+            blockers.Add("Pre-Execution Revalidation Cleanup Scope does not match the Quarantine Preview.");
+        }
+
+        if (!SamePath(preview.QuarantineRootPath, preExecutionRevalidation.QuarantineRootPath))
+        {
+            blockers.Add("Pre-Execution Revalidation Quarantine Root does not match the Quarantine Preview.");
+        }
+
+        foreach (var blocker in preExecutionRevalidation.Blockers)
+        {
+            blockers.Add($"Pre-Execution Revalidation: {blocker}");
         }
     }
 

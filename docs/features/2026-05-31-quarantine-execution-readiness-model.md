@@ -14,7 +14,7 @@ Add the first non-moving core model from ADR 0018 so the app can name fixture-ex
 - Do not move, restore, delete, create, or modify real-profile files.
 - Do not enable real-profile Quarantine execution.
 - Do not enable real-profile Undo Quarantine.
-- Quarantine Root Execution Safety was implemented in the next non-moving core packet. Do not implement Pre-Execution Revalidation yet.
+- Quarantine Root Execution Safety and Pre-Execution Revalidation were implemented in later non-moving core packets.
 
 ## Current behavior
 
@@ -74,8 +74,8 @@ Tests run:
 
 Follow-up work:
 
-- Add Pre-Execution Revalidation as a separate tested core packet.
-- Add WPF readiness output only after the core model is stable, keeping execution disabled.
+- Pre-Execution Revalidation was implemented in a later non-moving core packet.
+- Add WPF readiness output only after the core model, root safety, revalidation, and real-profile restore readiness are stable, keeping execution disabled.
 
 Open questions:
 

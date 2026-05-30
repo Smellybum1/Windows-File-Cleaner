@@ -9,7 +9,7 @@ Use this when starting a fresh Codex thread for this repository.
 - Repo: `D:\Codex\Windows File Cleaner`
 - GitHub: `Smellybum1/Windows-File-Cleaner`
 - Branch: `main`
-- Latest completed packet: Quarantine Root Execution Safety
+- Latest completed packet: Pre-Execution Revalidation
 - Current app stack: C# / WPF / .NET 8
 - Desktop shortcut target: `D:\Codex\Windows File Cleaner\src\WindowsFileCleaner.App\bin\Debug\net8.0-windows\WindowsFileCleaner.App.exe`
 
@@ -21,7 +21,7 @@ The current MVP has a read-only Storage Scan that can inspect large real-profile
 
 Fixture-only cleanup execution exists for synthetic Cleanup Scopes. Real-profile cleanup execution remains intentionally unavailable until ADR 0017's readiness contract is implemented.
 
-The latest code packet added non-moving core `QuarantineRootExecutionSafety` checks for fully qualified roots, root/scope containment, preferred `D:` plus safe non-`D:` acknowledgement, capacity evidence, action-root collisions, Restore Manifest path collisions, and item destination collisions. `QuarantineExecutionReadiness` can consume root safety when supplied, but real-profile/custom execution remains unavailable.
+The latest code packet added non-moving core `PreExecutionRevalidation` checks for preview/confirmation/action/root-safety consistency, live source existence, source file size/timestamp drift, reparse status, action-root collisions, Restore Manifest path collisions, and item destination collisions. `QuarantineExecutionReadiness` can consume revalidation when supplied, but real-profile/custom execution remains unavailable.
 
 ## Safety boundary
 
@@ -29,6 +29,7 @@ The latest code packet added non-moving core `QuarantineRootExecutionSafety` che
 - Do not enable real-profile file movement by flipping the current fixture-only execution flag; ADR 0017 and accepted ADR 0018 require the richer readiness path first.
 - Do not treat `QuarantineExecutionReadiness` as execution enablement for real-profile scopes; it currently names blockers while keeping real-profile movement disabled.
 - Do not treat `QuarantineRootExecutionSafety` as execution approval; it is one input to readiness and does not move files or write manifests.
+- Do not treat `PreExecutionRevalidation` as execution approval; it is one input to readiness and does not move files or write manifests.
 - Do not implement permanent deletion as the next step.
 - Keep Storage Scan read-only.
 - Keep Review Shortlist as review context, not cleanup approval.
@@ -86,6 +87,7 @@ The latest code packet added non-moving core `QuarantineRootExecutionSafety` che
 - Real-Profile Quarantine Design Pass added ADR 0018, a feature brief, and domain/glossary terms for execution readiness, root execution safety, pre-execution revalidation, and restore readiness; docs-only whitespace diff passed, and no scan/execution/restore behavior changed. ADR 0018 was later accepted after user decisions.
 - Quarantine Execution Readiness Model accepted ADR 0018 with the user's first-phase decisions and added the non-moving core readiness model/tests for fixture-executable, real-profile-candidate, custom-preview-only, caps, root acknowledgement, row/folder eligibility, Undo prerequisite, manual rescan, and Restore Manifest-only records; core tests passed and no WPF execution behavior changed.
 - Quarantine Root Execution Safety added the non-moving core root-safety model/tests and optional readiness consumption for fully qualified roots, containment, capacity, action-root collisions, manifest-path collisions, and item destination collisions; core tests passed and no WPF execution behavior changed.
+- Pre-Execution Revalidation added the non-moving core revalidation model/tests and optional readiness consumption for source missing/changed, destination collisions, stale action draft mismatches, action/manifest collisions, and root safety recheck; core tests passed and no WPF execution behavior changed.
 - Quarantine Execution Scope Status added plain-language fixture-only versus preview-only scope wording to Quarantine Preview and Quarantine Execution Gate output.
 - Fixture Review Checklist Output added a compact terminal checklist to `Start-MvpFixtureReview.ps1`.
 - Fixture Review Checklist-Only Mode added `Start-MvpFixtureReview.ps1 -ChecklistOnly`, which prints the same checklist without preflight, fixture creation, or WPF launch.
