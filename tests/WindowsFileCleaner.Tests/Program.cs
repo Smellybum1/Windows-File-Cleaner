@@ -38,6 +38,9 @@ tests.PreExecutionRevalidationPassesUnchangedFixtureAction();
 tests.PreExecutionRevalidationBlocksMissingChangedAndDestinationCollision();
 tests.PreExecutionRevalidationBlocksStaleActionDraftMismatch();
 tests.QuarantineExecutionReadinessConsumesPreExecutionRevalidation();
+tests.RealProfileRestoreReadinessRequiresSelectedManifestBoundary();
+tests.RealProfileRestoreReadinessBlocksFixtureAndReadinessProblems();
+tests.QuarantineExecutionReadinessConsumesRealProfileRestoreReadiness();
 tests.RestoreManifestBuildsWriteAheadActionRecordFromActionDraft();
 tests.RestoreManifestTracksPartialFailureStatusForFutureExecution();
 tests.RestoreManifestFileStoreWritesAndReplacesManifestWithoutMovingSources();
@@ -1571,14 +1574,12 @@ internal sealed class StorageScanTests
         var withoutRootSafety = QuarantineExecutionReadinessBuilder.Build(
             preview,
             confirmation,
-            isSelectedManifestRealProfileUndoAvailable: true,
             nonPreferredQuarantineRootAcknowledged: true);
         Assert(withoutRootSafety.Blockers.Any(blocker => blocker.Contains("Quarantine Root Execution Safety has not been checked", StringComparison.OrdinalIgnoreCase)), "Readiness should ask for root safety when none is supplied.");
 
         var withRootSafety = QuarantineExecutionReadinessBuilder.Build(
             preview,
             confirmation,
-            isSelectedManifestRealProfileUndoAvailable: true,
             nonPreferredQuarantineRootAcknowledged: true,
             quarantineRootExecutionSafety: rootSafety);
         Assert(!withRootSafety.Blockers.Any(blocker => blocker.Contains("Quarantine Root Execution Safety has not been checked", StringComparison.OrdinalIgnoreCase)), "Readiness should consume supplied root safety.");
@@ -1714,7 +1715,6 @@ internal sealed class StorageScanTests
         var withoutRevalidation = QuarantineExecutionReadinessBuilder.Build(
             preview,
             confirmation,
-            isSelectedManifestRealProfileUndoAvailable: true,
             nonPreferredQuarantineRootAcknowledged: true,
             quarantineRootExecutionSafety: rootSafety);
         Assert(withoutRevalidation.Blockers.Any(blocker => blocker.Contains("Pre-Execution Revalidation has not been checked", StringComparison.OrdinalIgnoreCase)), "Readiness should ask for revalidation when none is supplied.");
@@ -1722,13 +1722,131 @@ internal sealed class StorageScanTests
         var withRevalidation = QuarantineExecutionReadinessBuilder.Build(
             preview,
             confirmation,
-            isSelectedManifestRealProfileUndoAvailable: true,
             nonPreferredQuarantineRootAcknowledged: true,
             quarantineRootExecutionSafety: rootSafety,
             preExecutionRevalidation: cleanRevalidation);
         Assert(!withRevalidation.Blockers.Any(blocker => blocker.Contains("Pre-Execution Revalidation has not been checked", StringComparison.OrdinalIgnoreCase)), "Readiness should consume supplied pre-execution revalidation.");
         Assert(!withRevalidation.Blockers.Any(blocker => blocker.Contains("Pre-Execution Revalidation:", StringComparison.OrdinalIgnoreCase)), "Clean revalidation should add no revalidation blockers.");
         Assert(withRevalidation.Blockers.Any(blocker => blocker.Contains("remains unavailable", StringComparison.OrdinalIgnoreCase)), "Real-profile movement should remain unavailable after clean revalidation.");
+    }
+
+    public void RealProfileRestoreReadinessRequiresSelectedManifestBoundary()
+    {
+        var review = BuildManualSelectedRestoreReview(
+            @"C:\Users\moxhe",
+            @"D:\WindowsFileCleanerQuarantine",
+            "real-profile-restore-readiness");
+        var unavailableDraft = SelectedRestoreConfirmationDraftBuilder.Build(
+            review,
+            new DateTimeOffset(2026, 5, 31, 5, 6, 7, TimeSpan.Zero),
+            "real-profile-restore-unavailable");
+        var unavailableGate = SelectedRestoreExecutionGateBuilder.Build(unavailableDraft, "RESTORE");
+
+        var unavailable = RealProfileRestoreReadinessBuilder.Build(
+            review,
+            unavailableDraft,
+            unavailableGate,
+            new DateTimeOffset(2026, 5, 31, 6, 7, 8, TimeSpan.Zero));
+        Assert(!unavailable.CanUseForForwardQuarantine, "Real-profile restore readiness should stay closed while real-profile Undo implementation is unavailable.");
+        Assert(unavailable.IsSelectedManifestRealProfileScope, "Exact default profile manifests should be recognized as real-profile restore scope.");
+        Assert(unavailable.UsesRestoreManifestOnly, "Real-profile restore readiness should preserve Restore Manifest-only durable record scope.");
+        Assert(unavailable.Blockers.Any(blocker => blocker.Contains("remains unavailable", StringComparison.OrdinalIgnoreCase)), "Unavailable real-profile selected restore should be explicit.");
+        Assert(unavailable.ReviewNotes.Any(note => note.Contains("No files were modified", StringComparison.OrdinalIgnoreCase)), "Restore readiness notes should preserve the no-write boundary.");
+
+        var implementedDraft = SelectedRestoreConfirmationDraftBuilder.Build(
+            review,
+            new DateTimeOffset(2026, 5, 31, 5, 6, 9, TimeSpan.Zero),
+            "real-profile-restore-implemented",
+            isExecutionImplemented: true);
+        var implementedGate = SelectedRestoreExecutionGateBuilder.Build(implementedDraft, "RESTORE");
+
+        var implemented = RealProfileRestoreReadinessBuilder.Build(
+            review,
+            implementedDraft,
+            implementedGate,
+            new DateTimeOffset(2026, 5, 31, 6, 7, 9, TimeSpan.Zero),
+            isSelectedManifestRealProfileUndoImplemented: true);
+        Assert(implemented.CanUseForForwardQuarantine, "Clean selected real-profile restore readiness should be usable as a future forward-quarantine prerequisite when implementation is supplied.");
+        Assert(implemented.RestorableEntryCount == 1, "Restore readiness should preserve selected restorable entry count.");
+        Assert(implemented.RestorableBytes == 1024, "Restore readiness should preserve selected restorable bytes.");
+        Assert(implemented.Blockers.Count == 0, "Clean implemented selected real-profile restore readiness should have no blockers.");
+    }
+
+    public void RealProfileRestoreReadinessBlocksFixtureAndReadinessProblems()
+    {
+        var fixtureReview = BuildManualSelectedRestoreReview(
+            @"D:\Codex\Windows File Cleaner\.local\storage-scan-smoke-fixture",
+            @"D:\WindowsFileCleanerQuarantine",
+            "fixture-restore-readiness");
+        var fixtureDraft = SelectedRestoreConfirmationDraftBuilder.Build(
+            fixtureReview,
+            new DateTimeOffset(2026, 5, 31, 5, 6, 7, TimeSpan.Zero),
+            "fixture-restore-readiness",
+            isExecutionImplemented: true);
+        var fixtureGate = SelectedRestoreExecutionGateBuilder.Build(fixtureDraft, "RESTORE");
+
+        var fixtureReadiness = RealProfileRestoreReadinessBuilder.Build(
+            fixtureReview,
+            fixtureDraft,
+            fixtureGate,
+            new DateTimeOffset(2026, 5, 31, 6, 7, 8, TimeSpan.Zero),
+            isSelectedManifestRealProfileUndoImplemented: true);
+        Assert(!fixtureReadiness.CanUseForForwardQuarantine, "Fixture selected restore should not satisfy real-profile restore readiness.");
+        Assert(!fixtureReadiness.IsSelectedManifestRealProfileScope, "Fixture selected restore should not be recorded as real-profile scope.");
+        Assert(fixtureReadiness.Blockers.Any(blocker => blocker.Contains("exact real-profile scope", StringComparison.OrdinalIgnoreCase)), "Fixture selected restore blocker should name the real-profile scope requirement.");
+
+        var blockedReview = BuildManualSelectedRestoreReview(
+            @"C:\Users\moxhe",
+            @"D:\WindowsFileCleanerQuarantine",
+            "blocked-restore-readiness",
+            disposition: RestoreReadinessDisposition.Blocked,
+            entryBlockers: ["Original path already exists: C:\\Users\\moxhe\\Downloads\\old-installer.msi"]);
+        var blockedDraft = SelectedRestoreConfirmationDraftBuilder.Build(
+            blockedReview,
+            new DateTimeOffset(2026, 5, 31, 5, 6, 7, TimeSpan.Zero),
+            "blocked-restore-readiness",
+            isExecutionImplemented: true);
+        var blockedGate = SelectedRestoreExecutionGateBuilder.Build(blockedDraft, "RESTORE");
+
+        var blocked = RealProfileRestoreReadinessBuilder.Build(
+            blockedReview,
+            blockedDraft,
+            blockedGate,
+            new DateTimeOffset(2026, 5, 31, 6, 7, 8, TimeSpan.Zero),
+            isSelectedManifestRealProfileUndoImplemented: true);
+        Assert(!blocked.CanUseForForwardQuarantine, "Blocked selected restore readiness should not satisfy real-profile restore readiness.");
+        Assert(blocked.BlockedEntryCount == 1, "Blocked restore readiness should preserve blocked entry count.");
+        Assert(blocked.Blockers.Any(blocker => blocker.Contains("blocked selected-restore", StringComparison.OrdinalIgnoreCase)), "Blocked restore readiness should explain blocked selected rows.");
+        Assert(blocked.Blockers.Any(blocker => blocker.Contains("Selected Restore Confirmation Draft", StringComparison.OrdinalIgnoreCase)), "Restore readiness should consume confirmation draft blockers.");
+    }
+
+    public void QuarantineExecutionReadinessConsumesRealProfileRestoreReadiness()
+    {
+        var preview = BuildPreviewForManualRows(
+            @"C:\Users\moxhe",
+            @"D:\WindowsFileCleanerQuarantine",
+            ManualReviewEntry(@"C:\Users\moxhe\Downloads\old-installer.msi"));
+        var confirmation = BuildConfirmationForPreview(preview, "real-profile-restore-readiness-consumption");
+        var cleanRestoreReadiness = BuildCleanRealProfileRestoreReadiness(
+            preview.CleanupScopePath,
+            preview.QuarantineRootPath,
+            "real-profile-restore-readiness-consumption");
+
+        var withoutRestoreReadiness = QuarantineExecutionReadinessBuilder.Build(
+            preview,
+            confirmation,
+            nonPreferredQuarantineRootAcknowledged: true);
+        Assert(withoutRestoreReadiness.Blockers.Any(blocker => blocker.Contains("Real-Profile Restore Readiness has not been checked", StringComparison.OrdinalIgnoreCase)), "Real-profile execution readiness should ask for restore readiness when none is supplied.");
+
+        var withRestoreReadiness = QuarantineExecutionReadinessBuilder.Build(
+            preview,
+            confirmation,
+            nonPreferredQuarantineRootAcknowledged: true,
+            realProfileRestoreReadiness: cleanRestoreReadiness);
+        Assert(!withRestoreReadiness.Blockers.Any(blocker => blocker.Contains("Real-Profile Restore Readiness has not been checked", StringComparison.OrdinalIgnoreCase)), "Real-profile execution readiness should consume supplied restore readiness.");
+        Assert(!withRestoreReadiness.Blockers.Any(blocker => blocker.Contains("Real-Profile Restore Readiness:", StringComparison.OrdinalIgnoreCase)), "Clean restore readiness should add no restore readiness blockers.");
+        Assert(withRestoreReadiness.Blockers.Any(blocker => blocker.Contains("Quarantine Root Execution Safety", StringComparison.OrdinalIgnoreCase)), "Other real-profile readiness prerequisites should remain blocked.");
+        Assert(withRestoreReadiness.Blockers.Any(blocker => blocker.Contains("remains unavailable", StringComparison.OrdinalIgnoreCase)), "Real-profile movement should remain unavailable after clean restore readiness.");
     }
 
     public void RestoreManifestBuildsWriteAheadActionRecordFromActionDraft()
@@ -3341,6 +3459,89 @@ internal sealed class StorageScanTests
     {
         var discovery = QuarantineManifestDiscoveryBuilder.Discover(quarantineRootPath);
         return SelectedRestoreManifestReviewBuilder.Build(discovery, manifestPath);
+    }
+
+    private static RealProfileRestoreReadiness BuildCleanRealProfileRestoreReadiness(
+        string cleanupScopePath,
+        string quarantineRootPath,
+        string actionId)
+    {
+        var review = BuildManualSelectedRestoreReview(
+            cleanupScopePath,
+            quarantineRootPath,
+            actionId);
+        var draft = SelectedRestoreConfirmationDraftBuilder.Build(
+            review,
+            new DateTimeOffset(2026, 5, 31, 5, 6, 7, TimeSpan.Zero),
+            $"selected-restore-confirmation-{actionId}",
+            isExecutionImplemented: true);
+        var gate = SelectedRestoreExecutionGateBuilder.Build(draft, "RESTORE");
+        return RealProfileRestoreReadinessBuilder.Build(
+            review,
+            draft,
+            gate,
+            new DateTimeOffset(2026, 5, 31, 6, 7, 8, TimeSpan.Zero),
+            isSelectedManifestRealProfileUndoImplemented: true);
+    }
+
+    private static SelectedRestoreManifestReview BuildManualSelectedRestoreReview(
+        string cleanupScopePath,
+        string quarantineRootPath,
+        string actionId,
+        RestoreReadinessDisposition disposition = RestoreReadinessDisposition.Restorable,
+        IReadOnlyList<string>? entryBlockers = null)
+    {
+        var relativePath = @"Downloads\old-installer.msi";
+        var actionRootPath = Path.Combine(quarantineRootPath, "actions", actionId);
+        var actionsRootPath = Path.Combine(quarantineRootPath, "actions");
+        var itemsRootPath = Path.Combine(actionRootPath, "items");
+        var manifestPath = Path.Combine(actionRootPath, RestoreManifestFileStore.RestoreManifestFileName);
+        var originalPath = Path.Combine(cleanupScopePath, relativePath);
+        var quarantinePath = Path.Combine(itemsRootPath, relativePath);
+        var updatedAtUtc = new DateTimeOffset(2026, 5, 31, 4, 5, 6, TimeSpan.Zero);
+        var blockers = entryBlockers ?? [];
+        var entry = new RestoreReadinessEntryPreview(
+            originalPath,
+            quarantinePath,
+            relativePath,
+            IsDirectory: false,
+            SizeBytes: 1024,
+            RestoreManifestEntryStatus.Moved,
+            disposition,
+            blockers);
+        var readiness = new RestoreReadinessManifestPreview(
+            manifestPath,
+            actionId,
+            RestoreManifestActionStatus.Completed,
+            updatedAtUtc,
+            EntryCount: 1,
+            TotalBytes: 1024,
+            RequiresRecoveryReview: false,
+            Blockers: [],
+            Entries: [entry]);
+        var summary = new RestoreManifestSummary(
+            manifestPath,
+            actionId,
+            actionRootPath,
+            cleanupScopePath,
+            RestoreManifestActionStatus.Completed,
+            updatedAtUtc.AddMinutes(-1),
+            updatedAtUtc,
+            EntryCount: 1,
+            TotalBytes: 1024,
+            MovedCount: disposition == RestoreReadinessDisposition.Restorable ? 1 : 0,
+            RestoredCount: disposition == RestoreReadinessDisposition.AlreadyRestored ? 1 : 0,
+            FailedCount: 0,
+            RestoreFailedCount: 0,
+            RequiresRecoveryReview: false);
+
+        return new SelectedRestoreManifestReview(
+            quarantineRootPath,
+            actionsRootPath,
+            manifestPath,
+            summary,
+            readiness,
+            SelectionIssues: []);
     }
 
     private static QuarantinePreview BuildPreviewForManualRows(

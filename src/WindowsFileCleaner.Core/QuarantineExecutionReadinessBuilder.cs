@@ -5,10 +5,10 @@ public static class QuarantineExecutionReadinessBuilder
     public static QuarantineExecutionReadiness Build(
         QuarantinePreview? preview,
         QuarantineConfirmationDraft? confirmationDraft,
-        bool isSelectedManifestRealProfileUndoAvailable = false,
         bool nonPreferredQuarantineRootAcknowledged = false,
         QuarantineRootExecutionSafety? quarantineRootExecutionSafety = null,
-        PreExecutionRevalidation? preExecutionRevalidation = null)
+        PreExecutionRevalidation? preExecutionRevalidation = null,
+        RealProfileRestoreReadiness? realProfileRestoreReadiness = null)
     {
         if (preview is null)
         {
@@ -68,8 +68,8 @@ public static class QuarantineExecutionReadinessBuilder
                     quarantineRootExecutionSafety,
                     isPreferredRoot,
                     nonPreferredQuarantineRootAcknowledged,
-                    isSelectedManifestRealProfileUndoAvailable,
                     preExecutionRevalidation,
+                    realProfileRestoreReadiness,
                     blockers);
                 break;
             case QuarantineExecutionReadinessScopeKind.RealProfileChild:
@@ -123,18 +123,14 @@ public static class QuarantineExecutionReadinessBuilder
         QuarantineRootExecutionSafety? quarantineRootExecutionSafety,
         bool isPreferredRoot,
         bool nonPreferredQuarantineRootAcknowledged,
-        bool isSelectedManifestRealProfileUndoAvailable,
         PreExecutionRevalidation? preExecutionRevalidation,
+        RealProfileRestoreReadiness? realProfileRestoreReadiness,
         List<string> blockers)
     {
         blockers.Add("Real-profile WPF Quarantine execution remains unavailable in this build.");
         AddRootSafetyBlockers(preview, quarantineRootExecutionSafety, blockers);
         AddPreExecutionRevalidationBlockers(preview, preExecutionRevalidation, blockers);
-
-        if (!isSelectedManifestRealProfileUndoAvailable)
-        {
-            blockers.Add("Selected-manifest real-profile Undo Quarantine must be implemented and tested before forward real-profile movement.");
-        }
+        AddRealProfileRestoreReadinessBlockers(preview, realProfileRestoreReadiness, blockers);
 
         if (preview.IncludedCount > QuarantineExecutionReadiness.DefaultRealProfileIncludedRowLimit)
         {
@@ -154,6 +150,33 @@ public static class QuarantineExecutionReadinessBuilder
         foreach (var includedEntry in preview.Entries.Where(entry => entry.IsIncluded))
         {
             AddIncludedEntryBlockers(includedEntry, blockers);
+        }
+    }
+
+    private static void AddRealProfileRestoreReadinessBlockers(
+        QuarantinePreview preview,
+        RealProfileRestoreReadiness? realProfileRestoreReadiness,
+        List<string> blockers)
+    {
+        if (realProfileRestoreReadiness is null)
+        {
+            blockers.Add("Real-Profile Restore Readiness has not been checked for selected-manifest Undo Quarantine yet.");
+            return;
+        }
+
+        if (!SamePath(preview.CleanupScopePath, realProfileRestoreReadiness.CleanupScopePath))
+        {
+            blockers.Add("Real-Profile Restore Readiness Cleanup Scope does not match the Quarantine Preview.");
+        }
+
+        if (!SamePath(preview.QuarantineRootPath, realProfileRestoreReadiness.QuarantineRootPath))
+        {
+            blockers.Add("Real-Profile Restore Readiness Quarantine Root does not match the Quarantine Preview.");
+        }
+
+        foreach (var blocker in realProfileRestoreReadiness.Blockers)
+        {
+            blockers.Add($"Real-Profile Restore Readiness: {blocker}");
         }
     }
 

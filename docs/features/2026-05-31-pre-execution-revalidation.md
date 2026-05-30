@@ -84,7 +84,7 @@ Tests run:
 
 Follow-up work:
 
-- Design selected-manifest real-profile Undo Quarantine readiness/execution boundary before forward real-profile movement.
+- Design selected-manifest real-profile Undo Quarantine execution boundary before forward real-profile movement. The read-only Real-Profile Restore Readiness model was added in the next safety packet.
 - Add WPF readiness output only after the core model, root safety, revalidation, and real-profile restore readiness are stable, keeping execution disabled.
 
 Open questions:

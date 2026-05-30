@@ -2693,7 +2693,7 @@ Real-Profile Quarantine Execution Readiness is the future composite readiness re
 
 It is stricter than Quarantine Confirmation Draft and Quarantine Execution Gate. It combines scope eligibility, review readiness, Quarantine Root Execution Safety, Pre-Execution Revalidation, recovery readiness, and explicit real-profile approval semantics.
 
-The current core model can name fixture-executable, real-profile-candidate, and custom-preview-only states without enabling real-profile movement.
+The current core model can name fixture-executable, real-profile-candidate, and custom-preview-only states without enabling real-profile movement. It can also consume Quarantine Root Execution Safety, Pre-Execution Revalidation, and Real-Profile Restore Readiness when those evidence models are supplied.
 
 #### Examples
 
@@ -2729,7 +2729,7 @@ The current core model can name fixture-executable, real-profile-candidate, and 
 #### Code implications
 
 - Use `QuarantineExecutionReadiness`, `QuarantineExecutionReadinessBuilder`, `QuarantineExecutionReadinessScopeKind`, and `QuarantineExecutionReadinessDisposition`.
-- Use a named readiness result, not the current fixture-only `IsExecutionImplemented` flag, for future real-profile execution availability.
+- Use a named readiness result, not the current fixture-only `IsExecutionImplemented` flag or a standalone selected-restore availability boolean, for future real-profile execution availability.
 - Keep custom non-fixture Cleanup Scopes preview-only until a later design explicitly includes them.
 - Make blockers visible by readiness dimension so disabled execution controls explain why real-profile movement is unavailable.
 
@@ -2839,15 +2839,18 @@ Last reviewed: 2026-05-31
 
 #### Definition
 
-Real-Profile Restore Readiness is the future recovery prerequisite that must be designed and tested before forward real-profile Quarantine movement is exposed.
+Real-Profile Restore Readiness is the recovery prerequisite that must be designed and tested before forward real-profile Quarantine movement is exposed.
 
 It means the app can inspect real-profile Restore Manifests, explain restorable versus recovery-review states, and provide a trusted selected-manifest Undo Quarantine path without overwriting original paths.
+
+The current core model is read-only and not wired to WPF execution controls. It can prove selected-manifest real-profile restore readiness evidence for future forward-Quarantine gating, but selected real-profile restore execution remains unavailable in the visible app.
 
 #### Examples
 
 - A real-profile Restore Manifest with Moved entries can be selected, previewed, confirmed, and restored only when original paths are clear.
 - A Moving, Failed, Restoring, or Restore failed entry is routed to recovery review instead of automatic restore.
 - A manifest write failure after partial movement leaves visible recovery evidence.
+- Forward real-profile Quarantine readiness reports that selected-manifest real-profile Undo has not been checked when no Real-Profile Restore Readiness evidence is supplied.
 
 #### Non-examples
 
@@ -2860,6 +2863,8 @@ It means the app can inspect real-profile Restore Manifests, explain restorable 
 
 - Must exist before future forward real-profile movement is enabled.
 - Uses Restore Manifest, Restore Readiness Preview, Selected Restore Manifest Review, Selected Restore Confirmation Draft, Selected Restore Execution Gate, and Undo Quarantine Executor concepts.
+- In the current core packet, consumes selected-manifest review, selected restore confirmation draft, and selected restore execution gate evidence without restoring files.
+- Blocks fixture, custom, child-scope, blocked, recovery-review, not-moved, wrong-confirmation, and unavailable-implementation states.
 - Does not imply persisted cleanup history.
 
 #### Relationships
@@ -2870,6 +2875,7 @@ It means the app can inspect real-profile Restore Manifests, explain restorable 
 
 #### Code implications
 
+- Use `RealProfileRestoreReadiness` and `RealProfileRestoreReadinessBuilder`.
 - Design and test selected-manifest real-profile Undo Quarantine before enabling real-profile forward Quarantine.
 - Keep all-manifest real-profile restore out of scope unless a later design explicitly includes it.
 - Continue refusing to overwrite original paths during restore.
