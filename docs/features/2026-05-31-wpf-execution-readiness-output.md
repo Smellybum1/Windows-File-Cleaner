@@ -52,6 +52,7 @@ What changed:
 - Added read-only execution-readiness contract text to WPF Quarantine Preview and Quarantine Execution Gate output.
 - Grouped readiness blockers by dimension in display text.
 - Added WPF smoke assertions for fixture and custom preview/gate readiness contract output.
+- Later packet `2026-05-31-real-profile-readiness-output-regression.md` added synthetic real-profile preview/gate readiness-output coverage without scanning or touching `C:\Users\moxhe`.
 
 Open questions:
 

@@ -9,7 +9,7 @@ Use this when starting a fresh Codex thread for this repository.
 - Repo: `D:\Codex\Windows File Cleaner`
 - GitHub: `Smellybum1/Windows-File-Cleaner`
 - Branch: `main`
-- Latest completed packet: Fixture Checklist Selected Restore Boundary
+- Latest completed packet: Real-Profile Readiness Output Regression
 - Current app stack: C# / WPF / .NET 8
 - Desktop shortcut target: `D:\Codex\Windows File Cleaner\src\WindowsFileCleaner.App\bin\Debug\net8.0-windows\WindowsFileCleaner.App.exe`
 
@@ -21,7 +21,7 @@ The current MVP has a read-only Storage Scan that can inspect large real-profile
 
 Fixture-only cleanup execution exists for synthetic Cleanup Scopes. Real-profile cleanup execution remains intentionally unavailable until ADR 0017's readiness contract is implemented.
 
-The latest docs/tooling packet aligned the fixture launcher checklist and README wording so the final real-profile/custom boundary prompt names both ADR 0017 Quarantine blockers and ADR 0019 selected-restore blockers. The latest code packet added WPF regression coverage proving selected real-profile Restore Manifests still cannot execute while ADR 0019 remains design-only. Real-profile/custom execution remains unavailable.
+The latest code packet added WPF regression coverage for synthetic real-profile Quarantine readiness output. The test loads synthetic `C:\Users\moxhe` scan-result metadata without scanning the real profile, creates a dry-run preview, types exact `QUARANTINE`, and verifies the preview/gate show real-profile candidate readiness plus missing root-safety, revalidation, and restore-readiness blockers while execution stays closed. Real-profile/custom execution remains unavailable.
 
 ## Safety boundary
 
@@ -95,6 +95,7 @@ The latest docs/tooling packet aligned the fixture launcher checklist and README
 - Real-Profile Selected Restore Execution Contract added ADR 0019 and a feature brief for the future selected-manifest-only real-profile restore path; no execution behavior changed.
 - Real-Profile Selected Restore Regression added WPF smoke coverage that exact `RESTORE` and clean selected readiness for a synthetic real-profile Restore Manifest still leaves selected restore execution unavailable; no execution behavior changed.
 - Fixture Checklist Selected Restore Boundary aligned `Start-MvpFixtureReview.cmd -ChecklistOnly` and README wording so the final real-profile/custom blocker prompt names ADR 0017 Quarantine blockers and ADR 0019 selected-restore blockers together.
+- Real-Profile Readiness Output Regression added WPF smoke coverage that synthetic exact `C:\Users\moxhe` Quarantine Preview/gate output shows real-profile candidate readiness and missing readiness dimensions while exact `QUARANTINE` still cannot execute; no real-profile scan or movement occurred.
 - Quarantine Execution Scope Status added plain-language fixture-only versus preview-only scope wording to Quarantine Preview and Quarantine Execution Gate output.
 - Fixture Review Checklist Output added a compact terminal checklist to `Start-MvpFixtureReview.ps1`.
 - Fixture Review Checklist-Only Mode added `Start-MvpFixtureReview.ps1 -ChecklistOnly`, which prints the same checklist without preflight, fixture creation, or WPF launch.
@@ -229,9 +230,9 @@ We are continuing Windows File Cleaner in D:\Codex\Windows File Cleaner.
 
 Read AGENTS.md, .codex/progress.md, README.md, docs/codex/thread-handoff.md, docs/domain/context.md, docs/domain/glossary.md, and relevant docs/features/ and docs/decisions/ before implementing.
 
-Current state: main is pushed through the latest Fixture Checklist Selected Restore Boundary packet. The app is a C#/.NET 8 WPF local Windows cleanup reviewer for C:\Users\moxhe. Storage Scan is read-only. Fixture-only Quarantine execution and fixture-only selected restore exist, but real-profile Quarantine execution, real-profile Undo Quarantine, permanent deletion, and persisted cleanup history remain intentionally unavailable.
+Current state: main is pushed through the latest Real-Profile Readiness Output Regression packet. The app is a C#/.NET 8 WPF local Windows cleanup reviewer for C:\Users\moxhe. Storage Scan is read-only. Fixture-only Quarantine execution and fixture-only selected restore exist, but real-profile Quarantine execution, real-profile Undo Quarantine, permanent deletion, and persisted cleanup history remain intentionally unavailable.
 
-Recent completed packets added visible hoverable ? cues for Restore Manifest selection, Discover manifests, and Preview all-manifest readiness; grouped those manifest review controls with their cues so wrapping keeps cue/control pairs together; refreshed handoff docs; passed full cmd MVP preflight after manifest control grouping; split the fixture launcher checklist so manifest discovery/all-manifest readiness checks are separate from selected restore gate checks; added `Remove overlapping parents` for redundant parent/child Quarantine Preview blockers; compacted the scan-header status into one wrapping strip; trimmed `AGENTS.md` so detailed workflow instructions live in linked Codex docs; added ADR 0017 plus WPF regression coverage for the real/custom Quarantine execution boundary; added ADR 0019 plus WPF regression coverage for the selected real-profile restore boundary; and aligned checklist/README wording so Review Shortlist, clean Quarantine Preview, exact `QUARANTINE`, real-profile scan acknowledgement, and exact `RESTORE` do not unlock real-profile/custom Quarantine or selected restore execution. WPF smoke coverage tracks 18 circular help cues.
+Recent completed packets added visible hoverable ? cues for Restore Manifest selection, Discover manifests, and Preview all-manifest readiness; grouped those manifest review controls with their cues so wrapping keeps cue/control pairs together; refreshed handoff docs; passed full cmd MVP preflight after manifest control grouping; split the fixture launcher checklist so manifest discovery/all-manifest readiness checks are separate from selected restore gate checks; added `Remove overlapping parents` for redundant parent/child Quarantine Preview blockers; compacted the scan-header status into one wrapping strip; trimmed `AGENTS.md` so detailed workflow instructions live in linked Codex docs; added ADR 0017 plus WPF regression coverage for the real/custom Quarantine execution boundary; added ADR 0019 plus WPF regression coverage for the selected real-profile restore boundary; aligned checklist/README wording so Review Shortlist, clean Quarantine Preview, exact `QUARANTINE`, real-profile scan acknowledgement, and exact `RESTORE` do not unlock real-profile/custom Quarantine or selected restore execution; and added synthetic real-profile WPF readiness-output coverage without scanning `C:\Users\moxhe`. WPF smoke coverage tracks 18 circular help cues.
 
 User verification: real-profile scan works; search typing was sluggish, then debounced search fixed it; the status-bar message is enough. Keep this as a local-first, safety-gated app. Do not move or delete real-profile files unless I explicitly ask after a Grill with Docs pass.
 

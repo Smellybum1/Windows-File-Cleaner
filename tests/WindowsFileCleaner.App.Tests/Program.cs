@@ -1,4 +1,5 @@
 using System.IO;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Threading;
 using WindowsFileCleaner.App;
@@ -30,6 +31,7 @@ internal static class Program
                 tests.MainWindowRunsFixtureReviewInteractionsThroughWpfShell();
                 tests.MainWindowExecutesQuarantineForFixtureScopeOnly();
                 tests.MainWindowDiscoversQuarantineManifestsReadOnly();
+                tests.MainWindowShowsRealProfileReadinessContractForSyntheticPreview();
                 tests.MainWindowKeepsQuarantineExecutionUnavailableForCustomScope();
                 tests.MainWindowKeepsSelectedRestoreUnavailableForCustomScope();
                 tests.MainWindowKeepsSelectedRestoreUnavailableForRealProfileManifest();
@@ -2353,6 +2355,76 @@ internal sealed class MainWindowSmokeTests
         }
     }
 
+    public void MainWindowShowsRealProfileReadinessContractForSyntheticPreview()
+    {
+        var cleanupScopePath = StorageScanOptions.DefaultForCurrentUser().CleanupScopePath;
+        using var fixture = SmokeFixture.CreateCustomScope();
+        var quarantineRoot = Path.Combine(fixture.RootPath, "synthetic-real-profile-quarantine-root");
+        var syntheticCandidatePath = Path.Combine(
+            cleanupScopePath,
+            "AppData",
+            "Local",
+            "WindowsFileCleanerRegression",
+            Guid.NewGuid().ToString("N"),
+            "cache.bin");
+
+        var window = new MainWindow();
+        try
+        {
+            window.ConfirmRealProfilePreflightForRealProfileScan();
+            ApplySyntheticStorageScanResult(
+                window,
+                BuildSyntheticRealProfileScanResult(cleanupScopePath, syntheticCandidatePath));
+
+            Assert(
+                window.CurrentCleanupScopePath == cleanupScopePath,
+                "Synthetic real-profile readiness test should keep the exact real-profile Cleanup Scope.");
+            Assert(window.CanStartStorageScan, "Real-profile acknowledgement should leave the read-only Scan action available.");
+            Assert(
+                window.DisplayedRows.Any(row => row.FullPath.Equals(syntheticCandidatePath, StringComparison.OrdinalIgnoreCase)),
+                "Synthetic real-profile review should show the fake cleanup candidate without scanning the real profile.");
+
+            Assert(window.SelectDisplayedPath(syntheticCandidatePath), "Synthetic real-profile candidate should be selectable.");
+            window.AddSelectedPathToReviewShortlist();
+            window.SetQuarantineRootForPreview(quarantineRoot);
+            window.PreviewQuarantineForReviewShortlist();
+            window.SetQuarantineConfirmationText("QUARANTINE");
+
+            Assert(!window.CanExecuteQuarantine, "Synthetic real-profile readiness output must not open WPF Quarantine execution.");
+            Assert(!Directory.Exists(quarantineRoot), "Synthetic real-profile preview must not create the Quarantine Root.");
+            Assert(
+                window.QuarantinePreviewTextValue.Contains("Execution readiness contract", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantinePreviewTextValue.Contains("real-profile candidate", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantinePreviewTextValue.Contains("Scope: real profile", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantinePreviewTextValue.Contains("Current build can execute from this readiness model: no", StringComparison.OrdinalIgnoreCase),
+                "Synthetic real-profile preview should show candidate readiness while keeping current-build execution closed.");
+            Assert(
+                window.QuarantinePreviewTextValue.Contains("Readiness blocker | Quarantine Root Execution Safety", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantinePreviewTextValue.Contains("Readiness blocker | Pre-Execution Revalidation", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantinePreviewTextValue.Contains("Readiness blocker | Real-Profile Restore Readiness", StringComparison.OrdinalIgnoreCase),
+                "Synthetic real-profile preview should group the missing readiness dimensions.");
+            Assert(
+                window.QuarantineExecutionGateTextValue.Contains("Entered confirmation matches: yes", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineExecutionGateTextValue.Contains("Can execute: no", StringComparison.OrdinalIgnoreCase),
+                "Exact QUARANTINE should match but still leave the real-profile gate closed.");
+            Assert(
+                window.QuarantineExecutionGateTextValue.Contains("Execution readiness contract", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineExecutionGateTextValue.Contains("real-profile candidate", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineExecutionGateTextValue.Contains("Scope: real profile", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineExecutionGateTextValue.Contains("Current build can execute from this readiness model: no", StringComparison.OrdinalIgnoreCase),
+                "Synthetic real-profile gate should preserve the readiness contract after exact QUARANTINE.");
+            Assert(
+                window.QuarantineExecutionGateTextValue.Contains("Readiness blocker | Quarantine Root Execution Safety", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineExecutionGateTextValue.Contains("Readiness blocker | Pre-Execution Revalidation", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineExecutionGateTextValue.Contains("Readiness blocker | Real-Profile Restore Readiness", StringComparison.OrdinalIgnoreCase),
+                "Synthetic real-profile gate should keep grouped missing readiness dimensions visible.");
+        }
+        finally
+        {
+            window.Close();
+        }
+    }
+
     public void MainWindowKeepsSelectedRestoreUnavailableForCustomScope()
     {
         using var fixture = SmokeFixture.CreateCustomScope();
@@ -3119,6 +3191,56 @@ internal sealed class MainWindowSmokeTests
             $"restore-manifest-{idSuffix}");
 
         return QuarantineExecutor.Execute(manifest);
+    }
+
+    private static void ApplySyntheticStorageScanResult(MainWindow window, StorageScanResult result)
+    {
+        var method = typeof(MainWindow).GetMethod(
+            "ApplyStorageScanResult",
+            BindingFlags.Instance | BindingFlags.NonPublic);
+        Assert(method is not null, "MainWindow should keep the scan-result application method available for WPF smoke setup.");
+        method!.Invoke(window, [result]);
+    }
+
+    private static StorageScanResult BuildSyntheticRealProfileScanResult(
+        string cleanupScopePath,
+        string syntheticCandidatePath)
+    {
+        var now = new DateTimeOffset(2026, 5, 31, 14, 15, 16, TimeSpan.Zero);
+        var candidate = new StorageEntry(
+            Path.GetFullPath(syntheticCandidatePath),
+            Path.GetFileName(syntheticCandidatePath),
+            IsDirectory: false,
+            SizeBytes: 64,
+            LastModifiedUtc: now,
+            IsAccessible: true,
+            IsReparsePoint: false,
+            ErrorMessage: null,
+            [BloatCategory.AppCache],
+            ImportanceRating.LikelySafe,
+            DeletionRecommendation.QuarantineCandidate,
+            "Synthetic real-profile readiness regression row. No filesystem scan was run.",
+            []);
+        var root = new StorageEntry(
+            Path.GetFullPath(cleanupScopePath),
+            Path.GetFileName(cleanupScopePath),
+            IsDirectory: true,
+            SizeBytes: candidate.SizeBytes,
+            LastModifiedUtc: now,
+            IsAccessible: true,
+            IsReparsePoint: false,
+            ErrorMessage: null,
+            [BloatCategory.CleanupScopeRoot, BloatCategory.ProtectedLocation],
+            ImportanceRating.HighRisk,
+            DeletionRecommendation.Keep,
+            "Synthetic real-profile scan root for readiness-output regression. No filesystem scan was run.",
+            [candidate]);
+
+        return new StorageScanResult(
+            Path.GetFullPath(cleanupScopePath),
+            StartedAtUtc: now,
+            CompletedAtUtc: now,
+            root);
     }
 
     private static SyntheticRestoreManifestSetup CreateSyntheticRealProfileRestoreManifest(

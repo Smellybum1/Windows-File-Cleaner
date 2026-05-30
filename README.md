@@ -141,7 +141,7 @@ This only fills the Cleanup Scope box. Click `Scan` yourself after the app opens
 
 Use `-SkipChecklist` only when you intentionally want the launcher output without the reminder checklist.
 
-The automated `WindowsFileCleaner.App.Tests` project also scans a synthetic fixture through the WPF shell, exercises read-only review interactions, proves fixture-only Quarantine execution and undo, verifies manifest discovery, selected manifest review, selected restore confirmation gate, fixture-only selected restore execution, and all-manifest readiness preview, verifies custom non-fixture execution and selected real-profile restore remain blocked, checks review navigation/export, report/preview, browse, selected-row, execution-gate, selected-restore gate, and restore-readiness tooltip and automation help text boundaries, and checks that the review toolbars use wrapping layout, but it does not replace checking the visible layout and controls by eye.
+The automated `WindowsFileCleaner.App.Tests` project also scans a synthetic fixture through the WPF shell, exercises read-only review interactions, proves fixture-only Quarantine execution and undo, verifies manifest discovery, selected manifest review, selected restore confirmation gate, fixture-only selected restore execution, and all-manifest readiness preview, verifies custom non-fixture execution, synthetic real-profile readiness output, and selected real-profile restore remain blocked, checks review navigation/export, report/preview, browse, selected-row, execution-gate, selected-restore gate, and restore-readiness tooltip and automation help text boundaries, and checks that the review toolbars use wrapping layout, but it does not replace checking the visible layout and controls by eye.
 
 ## Run The App
 
