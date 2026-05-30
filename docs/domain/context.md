@@ -2796,7 +2796,7 @@ Pre-Execution Revalidation is the immediate live-filesystem check that reruns af
 
 It proves that the files and destinations about to be touched still match the Review Shortlist, Quarantine Preview, Restore Manifest Draft, and Quarantine Action Draft that the user reviewed.
 
-The current core model is read-only and not wired to WPF execution controls.
+The current core model is read-only. WPF shows its evidence in Quarantine Preview and Quarantine Execution Gate output when a Quarantine Action Draft and Quarantine Root Execution Safety exist, but does not use it to enable real-profile execution.
 
 #### Examples
 
@@ -2833,6 +2833,7 @@ The current core model is read-only and not wired to WPF execution controls.
 - Use path APIs rather than string-only path checks.
 - Revalidate source existence, scope containment, reparse-point status, access, size/path metadata, destination availability, action-root availability, and Restore Manifest path availability.
 - Keep all blockers path-specific enough for the WPF readiness output to explain the next manual step.
+- In WPF, show revalidation as read-only evidence; do not treat preview-time revalidation as final approval because it must run again immediately before any future real-profile movement.
 
 ### Real-Profile Restore Readiness
 

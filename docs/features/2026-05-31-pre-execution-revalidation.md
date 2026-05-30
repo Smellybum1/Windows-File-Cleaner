@@ -36,7 +36,7 @@ Core code has a read-only `PreExecutionRevalidation` model that checks:
 - Planned item destinations do not already exist.
 - Quarantine Root Execution Safety remains clean.
 
-`QuarantineExecutionReadiness` can optionally consume this result. If WPF or a future caller does not provide revalidation yet, real-profile readiness still reports that Pre-Execution Revalidation has not been checked.
+`QuarantineExecutionReadiness` can optionally consume this result. If a caller does not provide revalidation yet, real-profile readiness still reports that Pre-Execution Revalidation has not been checked. WPF now provides read-only revalidation evidence for preview/gate display when a Quarantine Action Draft and Quarantine Root Execution Safety exist, without enabling real-profile movement.
 
 ## Decisions made
 
@@ -85,7 +85,8 @@ Tests run:
 Follow-up work:
 
 - Design selected-manifest real-profile Undo Quarantine execution boundary before forward real-profile movement. The read-only Real-Profile Restore Readiness model was added in the next safety packet.
-- Add WPF readiness output only after the core model, root safety, revalidation, and real-profile restore readiness are stable, keeping execution disabled.
+- WPF display-only revalidation evidence was added in `2026-05-31-wpf-pre-execution-revalidation-evidence.md`, keeping execution disabled.
+- Wire WPF Real-Profile Restore Readiness evidence later, keeping real-profile execution disabled.
 
 Open questions:
 

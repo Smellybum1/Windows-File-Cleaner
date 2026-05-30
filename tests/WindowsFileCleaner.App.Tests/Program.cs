@@ -1584,6 +1584,12 @@ internal sealed class MainWindowSmokeTests
                 && window.QuarantinePreviewTextValue.Contains("Root safety boundary", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantinePreviewTextValue.Contains("does not create folders", StringComparison.OrdinalIgnoreCase),
                 "Fixture preview pane should show read-only Quarantine Root Execution Safety evidence.");
+            Assert(
+                window.QuarantinePreviewTextValue.Contains("Pre-Execution Revalidation: checked", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantinePreviewTextValue.Contains("Can proceed: yes", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantinePreviewTextValue.Contains("Revalidation boundary", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantinePreviewTextValue.Contains("must run again immediately", StringComparison.OrdinalIgnoreCase),
+                "Fixture preview pane should show read-only Pre-Execution Revalidation evidence.");
             Assert(window.QuarantinePreviewTextValue.Contains("Preview rows:", StringComparison.OrdinalIgnoreCase), "Preview pane should label row-level preview details.");
             Assert(window.QuarantinePreviewTextValue.Contains("Preview row | Included", StringComparison.OrdinalIgnoreCase), "Preview pane should distinguish included row details from readiness blockers.");
             Assert(window.CanEnterQuarantineConfirmation, "Quarantine confirmation text should be enabled after preview readiness exists.");
@@ -1617,6 +1623,11 @@ internal sealed class MainWindowSmokeTests
                 && window.QuarantineExecutionGateTextValue.Contains("Can use for execution: yes", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantineExecutionGateTextValue.Contains("Root safety boundary", StringComparison.OrdinalIgnoreCase),
                 "Fixture execution gate should keep read-only Quarantine Root Execution Safety evidence visible.");
+            Assert(
+                window.QuarantineExecutionGateTextValue.Contains("Pre-Execution Revalidation: checked", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineExecutionGateTextValue.Contains("Can proceed: yes", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineExecutionGateTextValue.Contains("Revalidation boundary", StringComparison.OrdinalIgnoreCase),
+                "Fixture execution gate should keep read-only Pre-Execution Revalidation evidence visible.");
             Assert(
                 window.QuarantineExecutionGateTextValue.Contains("Quarantine Action Draft", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantineExecutionGateTextValue.Contains("Action items root:", StringComparison.OrdinalIgnoreCase)
@@ -2414,9 +2425,12 @@ internal sealed class MainWindowSmokeTests
                 !window.QuarantinePreviewTextValue.Contains("Quarantine Root Execution Safety has not been checked", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantinePreviewTextValue.Contains("Quarantine Root Execution Safety: checked", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantinePreviewTextValue.Contains("Can use for execution: yes", StringComparison.OrdinalIgnoreCase)
-                && window.QuarantinePreviewTextValue.Contains("Readiness blocker | Pre-Execution Revalidation", StringComparison.OrdinalIgnoreCase)
+                && !window.QuarantinePreviewTextValue.Contains("Pre-Execution Revalidation has not been checked", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantinePreviewTextValue.Contains("Pre-Execution Revalidation: checked", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantinePreviewTextValue.Contains("Can proceed: no", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantinePreviewTextValue.Contains("Included source no longer exists", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantinePreviewTextValue.Contains("Readiness blocker | Real-Profile Restore Readiness", StringComparison.OrdinalIgnoreCase),
-                "Synthetic real-profile preview should consume root safety evidence while keeping later readiness dimensions blocked.");
+                "Synthetic real-profile preview should consume root safety and revalidation evidence while keeping restore readiness blocked.");
             Assert(
                 window.QuarantineExecutionGateTextValue.Contains("Entered confirmation matches: yes", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantineExecutionGateTextValue.Contains("Can execute: no", StringComparison.OrdinalIgnoreCase),
@@ -2430,9 +2444,12 @@ internal sealed class MainWindowSmokeTests
             Assert(
                 !window.QuarantineExecutionGateTextValue.Contains("Quarantine Root Execution Safety has not been checked", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantineExecutionGateTextValue.Contains("Quarantine Root Execution Safety: checked", StringComparison.OrdinalIgnoreCase)
-                && window.QuarantineExecutionGateTextValue.Contains("Readiness blocker | Pre-Execution Revalidation", StringComparison.OrdinalIgnoreCase)
+                && !window.QuarantineExecutionGateTextValue.Contains("Pre-Execution Revalidation has not been checked", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineExecutionGateTextValue.Contains("Pre-Execution Revalidation: checked", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineExecutionGateTextValue.Contains("Can proceed: no", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineExecutionGateTextValue.Contains("Included source no longer exists", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantineExecutionGateTextValue.Contains("Readiness blocker | Real-Profile Restore Readiness", StringComparison.OrdinalIgnoreCase),
-                "Synthetic real-profile gate should keep root safety evidence and later grouped missing readiness dimensions visible.");
+                "Synthetic real-profile gate should keep root safety and revalidation evidence while restore readiness remains blocked.");
         }
         finally
         {

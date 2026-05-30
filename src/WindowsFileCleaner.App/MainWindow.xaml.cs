@@ -26,6 +26,7 @@ public partial class MainWindow : Window
     private QuarantineExecutionGate? _currentQuarantineExecutionGate;
     private QuarantineActionDraft? _currentQuarantineActionDraft;
     private QuarantineRootExecutionSafety? _currentQuarantineRootExecutionSafety;
+    private PreExecutionRevalidation? _currentPreExecutionRevalidation;
     private QuarantineExecutionResult? _currentQuarantineExecutionResult;
     private UndoQuarantineResult? _currentUndoQuarantineResult;
     private QuarantineManifestDiscovery? _currentQuarantineManifestDiscovery;
@@ -1229,6 +1230,14 @@ public partial class MainWindow : Window
         _currentQuarantineRootExecutionSafety = _currentQuarantineActionDraft is null
             ? null
             : QuarantineRootExecutionSafetyBuilder.Build(_currentQuarantineActionDraft);
+        _currentPreExecutionRevalidation = _currentQuarantineActionDraft is null || _currentQuarantineRootExecutionSafety is null
+            ? null
+            : PreExecutionRevalidationBuilder.Build(
+                _currentQuarantinePreview,
+                _currentQuarantineConfirmationDraft,
+                _currentQuarantineActionDraft,
+                _currentQuarantineRootExecutionSafety,
+                DateTimeOffset.UtcNow);
         _currentRestoreManifest = _currentQuarantineActionDraft is null
             ? null
             : RestoreManifestBuilder.BuildPlanned(
@@ -1244,7 +1253,8 @@ public partial class MainWindow : Window
             _currentRestoreManifestDraft,
             _currentQuarantineConfirmationDraft,
             BuildQuarantineExecutionReadinessForDisplay(),
-            _currentQuarantineRootExecutionSafety);
+            _currentQuarantineRootExecutionSafety,
+            _currentPreExecutionRevalidation);
         ExportQuarantinePreviewButton.IsEnabled = ScanButton.IsEnabled;
         RemoveOverlappingParentsButton.IsEnabled = _currentQuarantinePreview.RedundantCount > 0 && ScanButton.IsEnabled;
         var blockerSummary = _currentQuarantineConfirmationDraft.HasDataBlockers
@@ -1922,6 +1932,7 @@ public partial class MainWindow : Window
             _currentQuarantineExecutionGate,
             BuildQuarantineExecutionReadinessForDisplay(),
             _currentQuarantineRootExecutionSafety,
+            _currentPreExecutionRevalidation,
             _currentQuarantineActionDraft,
             _currentRestoreManifest,
             _currentQuarantineExecutionResult,
@@ -3196,6 +3207,7 @@ public partial class MainWindow : Window
         _currentQuarantineExecutionGate = null;
         _currentQuarantineActionDraft = null;
         _currentQuarantineRootExecutionSafety = null;
+        _currentPreExecutionRevalidation = null;
         var preserveCurrentFixtureUndo = CanUndoCurrentQuarantineExecution();
         if (!preserveCurrentFixtureUndo)
         {
@@ -3482,7 +3494,8 @@ public partial class MainWindow : Window
         RestoreManifestDraft restoreManifestDraft,
         QuarantineConfirmationDraft confirmationDraft,
         QuarantineExecutionReadiness? executionReadiness,
-        QuarantineRootExecutionSafety? rootExecutionSafety)
+        QuarantineRootExecutionSafety? rootExecutionSafety,
+        PreExecutionRevalidation? preExecutionRevalidation)
     {
         const int maxRows = 12;
         var lines = new List<string>
@@ -3513,6 +3526,7 @@ public partial class MainWindow : Window
 
         AddQuarantineExecutionReadinessLines(lines, executionReadiness);
         AddQuarantineRootExecutionSafetyLines(lines, rootExecutionSafety);
+        AddPreExecutionRevalidationLines(lines, preExecutionRevalidation);
 
         lines.Add("Preview rows:");
         foreach (var entry in preview.Entries.Take(maxRows))
@@ -3535,6 +3549,7 @@ public partial class MainWindow : Window
         QuarantineExecutionGate gate,
         QuarantineExecutionReadiness? executionReadiness,
         QuarantineRootExecutionSafety? rootExecutionSafety,
+        PreExecutionRevalidation? preExecutionRevalidation,
         QuarantineActionDraft? actionDraft,
         RestoreManifest? restoreManifest,
         QuarantineExecutionResult? executionResult,
@@ -3620,6 +3635,7 @@ public partial class MainWindow : Window
 
         AddQuarantineExecutionReadinessLines(lines, executionReadiness);
         AddQuarantineRootExecutionSafetyLines(lines, rootExecutionSafety);
+        AddPreExecutionRevalidationLines(lines, preExecutionRevalidation);
 
         return string.Join(Environment.NewLine, lines);
     }
@@ -3634,7 +3650,8 @@ public partial class MainWindow : Window
         return QuarantineExecutionReadinessBuilder.Build(
             _currentQuarantinePreview,
             _currentQuarantineConfirmationDraft,
-            quarantineRootExecutionSafety: _currentQuarantineRootExecutionSafety);
+            quarantineRootExecutionSafety: _currentQuarantineRootExecutionSafety,
+            preExecutionRevalidation: _currentPreExecutionRevalidation);
     }
 
     private static void AddQuarantineExecutionReadinessLines(
@@ -3696,6 +3713,32 @@ public partial class MainWindow : Window
         if (rootExecutionSafety.Blockers.Count > 6)
         {
             lines.Add($"... {rootExecutionSafety.Blockers.Count - 6:N0} more root safety blocker(s) not shown in this pane.");
+        }
+    }
+
+    private static void AddPreExecutionRevalidationLines(
+        List<string> lines,
+        PreExecutionRevalidation? preExecutionRevalidation)
+    {
+        if (preExecutionRevalidation is null)
+        {
+            return;
+        }
+
+        lines.Add(
+            $"Pre-Execution Revalidation: checked | Can proceed: {FormatYesNo(preExecutionRevalidation.CanProceed)} | " +
+            $"Included: {preExecutionRevalidation.IncludedCount:N0} row(s), {preExecutionRevalidation.IncludedSizeDisplay} | " +
+            $"Root safety clean: {FormatYesNo(preExecutionRevalidation.IsRootExecutionSafetyClean)}");
+        lines.Add("Revalidation boundary: read-only evidence only; it does not create folders, write manifests, move files, or approve cleanup, and must run again immediately before future real-profile movement.");
+
+        foreach (var blocker in preExecutionRevalidation.Blockers.Take(6))
+        {
+            lines.Add($"Revalidation blocker | {blocker}");
+        }
+
+        if (preExecutionRevalidation.Blockers.Count > 6)
+        {
+            lines.Add($"... {preExecutionRevalidation.Blockers.Count - 6:N0} more revalidation blocker(s) not shown in this pane.");
         }
     }
 

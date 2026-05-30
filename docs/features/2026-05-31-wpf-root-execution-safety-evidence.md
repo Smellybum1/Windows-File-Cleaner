@@ -14,7 +14,7 @@ This packet should make one real-profile readiness dimension more concrete witho
 
 - Do not enable real-profile Quarantine execution.
 - Do not enable real-profile Undo Quarantine or selected restore.
-- Do not run Pre-Execution Revalidation from WPF.
+- Do not run Pre-Execution Revalidation from WPF in this packet; a later display-only packet wires it.
 - Do not run Real-Profile Restore Readiness from WPF.
 - Do not create folders, write manifests, move files, restore files, delete files, or add cleanup history.
 - Do not add non-`D:` Quarantine Root acknowledgement UI yet.
@@ -71,7 +71,7 @@ No ADR added. ADR 0018 already records Quarantine Root Execution Safety as a req
 
 ## Follow-up work
 
-- Wire WPF Pre-Execution Revalidation evidence as a later read-only packet while keeping real-profile execution disabled.
+- WPF display-only Pre-Execution Revalidation evidence was added in `2026-05-31-wpf-pre-execution-revalidation-evidence.md`, keeping real-profile execution disabled.
 - Add non-`D:` acknowledgement UI only after a small Grill with Docs pass, because that affects real-profile approval semantics.
 
 ## Risky assumptions
