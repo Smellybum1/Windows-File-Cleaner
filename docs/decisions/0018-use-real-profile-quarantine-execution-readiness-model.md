@@ -105,7 +105,7 @@ Medium. If this model proves too heavy, reverting would require simplifying the 
 ## Follow-up work
 
 - Add a core `QuarantineExecutionReadiness` model that represents fixture, real-profile, and custom non-fixture scope eligibility without enabling new movement.
-- Add `QuarantineRootExecutionSafety` checks separate from the existing preview-only Quarantine Root Safety Note.
+- Add `QuarantineRootExecutionSafety` checks separate from the existing preview-only Quarantine Root Safety Note. Core model added 2026-05-31; WPF remains unwired.
 - Add Pre-Execution Revalidation tests over synthetic fixtures that simulate missing, changed, reparse, destination-collision, stale-preview, and action-collision cases.
 - Add WPF readiness output that names missing real-profile prerequisites while keeping the execution button disabled.
 - Design and test real-profile selected-manifest Undo Quarantine readiness before any forward real-profile execution.

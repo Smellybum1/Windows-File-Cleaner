@@ -2740,9 +2740,11 @@ Last reviewed: 2026-05-31
 
 #### Definition
 
-Quarantine Root Execution Safety is the future validation that decides whether the current Quarantine Root Selection is safe for an actual Quarantine action.
+Quarantine Root Execution Safety is the validation that decides whether the current Quarantine Root Selection and action-scoped destination layout look safe for an actual Quarantine action.
 
-It is separate from Quarantine Root Safety Note, which is preview-only. Execution safety can check containment, drive policy, capacity, action-root collisions, and destination collisions before any real-profile movement is allowed.
+It is separate from Quarantine Root Safety Note, which is preview-only. Execution safety checks containment, drive policy, capacity, action-root collisions, and destination collisions before any real-profile movement can be considered.
+
+The current core model is read-only and not wired to WPF execution controls.
 
 #### Examples
 
@@ -2751,6 +2753,7 @@ It is separate from Quarantine Root Safety Note, which is preview-only. Executio
 - Block a root that is a parent of the active Cleanup Scope.
 - Block a planned action root that already exists.
 - Block a planned item destination that already exists.
+- Block when available free-space evidence is missing or insufficient.
 
 #### Non-examples
 
@@ -2774,6 +2777,8 @@ It is separate from Quarantine Root Safety Note, which is preview-only. Executio
 #### Code implications
 
 - Keep preview-root safety and execution-root safety as separate concepts.
+- Use `QuarantineRootExecutionSafety` and `QuarantineRootExecutionSafetyBuilder`.
+- Build from `QuarantineActionDraft` for normal action-scoped checks.
 - Check that the root and Cleanup Scope are not inside each other.
 - Check capacity and collision evidence before movement.
 - For the first real-profile phase, prefer `D:` roots and require an extra acknowledgement for non-`D:` roots after all other safety checks pass.

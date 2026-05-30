@@ -30,6 +30,10 @@ tests.QuarantineExecutionReadinessNamesFixtureRealProfileAndCustomStates();
 tests.QuarantineExecutionReadinessAppliesRealProfileFirstPhaseDecisions();
 tests.QuarantineExecutionReadinessKeepsRealProfileChildrenPreviewOnly();
 tests.QuarantineActionDraftBuildsActionScopedLayoutWithoutWritingFiles();
+tests.QuarantineRootExecutionSafetyAllowsSafeNonPreferredRootWithAcknowledgement();
+tests.QuarantineRootExecutionSafetyBlocksUnsafeContainmentAndRelativeRoots();
+tests.QuarantineRootExecutionSafetyBlocksCapacityAndCollisions();
+tests.QuarantineExecutionReadinessConsumesRootExecutionSafety();
 tests.RestoreManifestBuildsWriteAheadActionRecordFromActionDraft();
 tests.RestoreManifestTracksPartialFailureStatusForFutureExecution();
 tests.RestoreManifestFileStoreWritesAndReplacesManifestWithoutMovingSources();
@@ -1445,6 +1449,138 @@ internal sealed class StorageScanTests
         }
 
         Assert(mismatchedConfirmationFailed, "Action draft should require matching preview, manifest draft, and confirmation draft metadata.");
+    }
+
+    public void QuarantineRootExecutionSafetyAllowsSafeNonPreferredRootWithAcknowledgement()
+    {
+        var actionDraft = BuildManualActionDraft(
+            @"C:\Users\moxhe",
+            $@"C:\WindowsFileCleanerQuarantine-{Guid.NewGuid():N}",
+            @"Downloads\old-installer.msi",
+            "root-safety-safe");
+
+        var safety = QuarantineRootExecutionSafetyBuilder.Build(
+            actionDraft,
+            nonPreferredQuarantineRootAcknowledged: true,
+            availableFreeBytesOverride: actionDraft.TotalBytes + QuarantineRootExecutionSafety.DefaultManifestOverheadBytes + 1024);
+
+        Assert(safety.IsFullyQualifiedQuarantineRoot, "Execution root safety should require and record fully qualified roots.");
+        Assert(!safety.IsPreferredQuarantineRoot, "C: root should be non-preferred for quarantine execution.");
+        Assert(safety.IsNonPreferredQuarantineRootAcknowledged, "Non-D acknowledgement should be recorded.");
+        Assert(safety.HasCapacityEvidence, "Root safety should record capacity evidence.");
+        Assert(safety.HasEnoughFreeSpace, "Root safety should pass when available space covers planned bytes plus manifest overhead.");
+        Assert(safety.CanUseForExecution, "Safe non-D root with acknowledgement and capacity evidence should pass root execution safety.");
+        Assert(safety.ReviewNotes.Any(note => note.Contains("No folders were created", StringComparison.OrdinalIgnoreCase)), "Root safety notes should preserve the no-write boundary.");
+        Assert(!Directory.Exists(actionDraft.ActionRootPath), "Root execution safety must not create the action root.");
+    }
+
+    public void QuarantineRootExecutionSafetyBlocksUnsafeContainmentAndRelativeRoots()
+    {
+        var insideScope = QuarantineRootExecutionSafetyBuilder.Build(
+            @"C:\Users\moxhe",
+            @"C:\Users\moxhe\Quarantine",
+            @"C:\Users\moxhe\Quarantine\actions\action-one",
+            @"C:\Users\moxhe\Quarantine\actions\action-one\items",
+            @"C:\Users\moxhe\Quarantine\actions\action-one\restore-manifest.json",
+            [@"C:\Users\moxhe\Quarantine\actions\action-one\items\Downloads\old-installer.msi"],
+            plannedMoveBytes: 1024,
+            nonPreferredQuarantineRootAcknowledged: true,
+            availableFreeBytesOverride: 2048 + QuarantineRootExecutionSafety.DefaultManifestOverheadBytes);
+
+        Assert(!insideScope.CanUseForExecution, "Quarantine Root inside Cleanup Scope should be blocked.");
+        Assert(insideScope.Blockers.Any(blocker => blocker.Contains("inside the Cleanup Scope", StringComparison.OrdinalIgnoreCase)), "Inside-scope root should explain the containment blocker.");
+
+        var parentScope = QuarantineRootExecutionSafetyBuilder.Build(
+            @"C:\Users\moxhe",
+            @"C:\Users",
+            @"C:\Users\actions\action-two",
+            @"C:\Users\actions\action-two\items",
+            @"C:\Users\actions\action-two\restore-manifest.json",
+            [@"C:\Users\actions\action-two\items\Downloads\old-installer.msi"],
+            plannedMoveBytes: 1024,
+            nonPreferredQuarantineRootAcknowledged: true,
+            availableFreeBytesOverride: 2048 + QuarantineRootExecutionSafety.DefaultManifestOverheadBytes);
+
+        Assert(!parentScope.CanUseForExecution, "Quarantine Root that is a parent of Cleanup Scope should be blocked.");
+        Assert(parentScope.Blockers.Any(blocker => blocker.Contains("parent of the Cleanup Scope", StringComparison.OrdinalIgnoreCase)), "Parent root should explain the containment blocker.");
+
+        var relativeRoot = QuarantineRootExecutionSafetyBuilder.Build(
+            @"C:\Users\moxhe",
+            @"relative-quarantine-root",
+            @"relative-quarantine-root\actions\action-three",
+            @"relative-quarantine-root\actions\action-three\items",
+            @"relative-quarantine-root\actions\action-three\restore-manifest.json",
+            [@"relative-quarantine-root\actions\action-three\items\Downloads\old-installer.msi"],
+            plannedMoveBytes: 1024,
+            nonPreferredQuarantineRootAcknowledged: true,
+            availableFreeBytesOverride: 2048 + QuarantineRootExecutionSafety.DefaultManifestOverheadBytes);
+
+        Assert(!relativeRoot.IsFullyQualifiedQuarantineRoot, "Relative roots should not be treated as fully qualified.");
+        Assert(relativeRoot.Blockers.Any(blocker => blocker.Contains("fully qualified", StringComparison.OrdinalIgnoreCase)), "Relative root should explain the fully qualified blocker.");
+    }
+
+    public void QuarantineRootExecutionSafetyBlocksCapacityAndCollisions()
+    {
+        using var fixture = TestFixture.Create();
+        var actionDraft = BuildFixtureActionDraftForRootSafety(fixture, "root-safety-collision");
+        var destination = actionDraft.Entries.Single().ActionQuarantinePath;
+        Directory.CreateDirectory(Path.GetDirectoryName(destination)!);
+        File.WriteAllText(destination, "existing destination");
+
+        var safety = QuarantineRootExecutionSafetyBuilder.Build(
+            actionDraft,
+            nonPreferredQuarantineRootAcknowledged: true,
+            availableFreeBytesOverride: 1);
+
+        Assert(!safety.CanUseForExecution, "Destination collisions and insufficient capacity should block root execution safety.");
+        Assert(safety.Blockers.Any(blocker => blocker.Contains("action root already exists", StringComparison.OrdinalIgnoreCase)), "Existing action root should be blocked.");
+        Assert(safety.Blockers.Any(blocker => blocker.Contains("item destination already exists", StringComparison.OrdinalIgnoreCase)), "Existing item destination should be blocked.");
+        Assert(safety.Blockers.Any(blocker => blocker.Contains("insufficient free space", StringComparison.OrdinalIgnoreCase)), "Insufficient capacity should be blocked.");
+    }
+
+    public void QuarantineExecutionReadinessConsumesRootExecutionSafety()
+    {
+        var preview = BuildPreviewForManualRows(
+            @"C:\Users\moxhe",
+            $@"C:\WindowsFileCleanerQuarantine-{Guid.NewGuid():N}",
+            ManualReviewEntry(@"C:\Users\moxhe\Downloads\old-installer.msi"));
+        var manifestDraft = RestoreManifestDraftBuilder.Build(
+            preview,
+            new DateTimeOffset(2026, 5, 31, 1, 2, 3, TimeSpan.Zero),
+            "manifest-draft-root-safety-readiness");
+        var confirmation = QuarantineConfirmationDraftBuilder.Build(
+            preview,
+            manifestDraft,
+            new DateTimeOffset(2026, 5, 31, 2, 3, 4, TimeSpan.Zero),
+            "confirmation-draft-root-safety-readiness");
+        var actionDraft = QuarantineActionDraftBuilder.Build(
+            preview,
+            manifestDraft,
+            confirmation,
+            new DateTimeOffset(2026, 5, 31, 3, 4, 5, TimeSpan.Zero),
+            "quarantine-action-root-safety-readiness");
+        var rootSafety = QuarantineRootExecutionSafetyBuilder.Build(
+            actionDraft,
+            nonPreferredQuarantineRootAcknowledged: true,
+            availableFreeBytesOverride: actionDraft.TotalBytes + QuarantineRootExecutionSafety.DefaultManifestOverheadBytes + 1024);
+
+        var withoutRootSafety = QuarantineExecutionReadinessBuilder.Build(
+            preview,
+            confirmation,
+            isSelectedManifestRealProfileUndoAvailable: true,
+            nonPreferredQuarantineRootAcknowledged: true);
+        Assert(withoutRootSafety.Blockers.Any(blocker => blocker.Contains("has not been checked", StringComparison.OrdinalIgnoreCase)), "Readiness should ask for root safety when none is supplied.");
+
+        var withRootSafety = QuarantineExecutionReadinessBuilder.Build(
+            preview,
+            confirmation,
+            isSelectedManifestRealProfileUndoAvailable: true,
+            nonPreferredQuarantineRootAcknowledged: true,
+            quarantineRootExecutionSafety: rootSafety);
+        Assert(!withRootSafety.Blockers.Any(blocker => blocker.Contains("has not been checked", StringComparison.OrdinalIgnoreCase)), "Readiness should consume supplied root safety.");
+        Assert(!withRootSafety.Blockers.Any(blocker => blocker.Contains("Quarantine Root Execution Safety:", StringComparison.OrdinalIgnoreCase)), "Clean root safety should add no root safety blockers.");
+        Assert(withRootSafety.Blockers.Any(blocker => blocker.Contains("Pre-Execution Revalidation", StringComparison.OrdinalIgnoreCase)), "Real-profile readiness should still require pre-execution revalidation.");
+        Assert(withRootSafety.Blockers.Any(blocker => blocker.Contains("remains unavailable", StringComparison.OrdinalIgnoreCase)), "Real-profile movement should remain unavailable after clean root safety.");
     }
 
     public void RestoreManifestBuildsWriteAheadActionRecordFromActionDraft()
@@ -3081,6 +3217,65 @@ internal sealed class StorageScanTests
             manifestDraft,
             new DateTimeOffset(2026, 5, 31, 2, 3, 4, TimeSpan.Zero),
             $"confirmation-draft-{idSuffix}");
+    }
+
+    private static QuarantineActionDraft BuildManualActionDraft(
+        string cleanupScopePath,
+        string quarantineRootPath,
+        string relativePath,
+        string actionId)
+    {
+        var sourcePath = Path.GetFullPath(Path.Combine(cleanupScopePath, relativePath));
+        var preview = BuildPreviewForManualRows(
+            cleanupScopePath,
+            quarantineRootPath,
+            ManualReviewEntry(sourcePath));
+        var manifestDraft = RestoreManifestDraftBuilder.Build(
+            preview,
+            new DateTimeOffset(2026, 5, 31, 1, 2, 3, TimeSpan.Zero),
+            $"manifest-draft-{actionId}");
+        var confirmation = QuarantineConfirmationDraftBuilder.Build(
+            preview,
+            manifestDraft,
+            new DateTimeOffset(2026, 5, 31, 2, 3, 4, TimeSpan.Zero),
+            $"confirmation-draft-{actionId}");
+
+        return QuarantineActionDraftBuilder.Build(
+            preview,
+            manifestDraft,
+            confirmation,
+            new DateTimeOffset(2026, 5, 31, 3, 4, 5, TimeSpan.Zero),
+            actionId);
+    }
+
+    private static QuarantineActionDraft BuildFixtureActionDraftForRootSafety(
+        TestFixture fixture,
+        string actionId)
+    {
+        fixture.WriteFile(@"cleanup-scope\Downloads\old-installer.msi", 1024, DateTimeOffset.UtcNow.AddDays(-120));
+        var cleanupScopePath = Path.Combine(fixture.RootPath, "cleanup-scope");
+        var quarantineRootPath = Path.Combine(fixture.RootPath, "quarantine-root");
+        var scanner = new StorageScanner();
+        var result = scanner.Scan(new StorageScanOptions(cleanupScopePath));
+        var review = StorageScanReviewBuilder.Build(result);
+        var installer = SingleReviewEntry(review.Entries, @"Downloads\old-installer.msi");
+        var preview = QuarantinePreviewBuilder.Build([installer], cleanupScopePath, quarantineRootPath);
+        var manifestDraft = RestoreManifestDraftBuilder.Build(
+            preview,
+            new DateTimeOffset(2026, 5, 31, 1, 2, 3, TimeSpan.Zero),
+            $"manifest-draft-{actionId}");
+        var confirmation = QuarantineConfirmationDraftBuilder.Build(
+            preview,
+            manifestDraft,
+            new DateTimeOffset(2026, 5, 31, 2, 3, 4, TimeSpan.Zero),
+            $"confirmation-draft-{actionId}");
+
+        return QuarantineActionDraftBuilder.Build(
+            preview,
+            manifestDraft,
+            confirmation,
+            new DateTimeOffset(2026, 5, 31, 3, 4, 5, TimeSpan.Zero),
+            actionId);
     }
 
     private static StorageReviewEntry ManualReviewEntry(

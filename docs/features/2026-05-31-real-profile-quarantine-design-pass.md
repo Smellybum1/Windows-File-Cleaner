@@ -151,7 +151,7 @@ ADR-worthy decisions:
 ## Implementation plan
 
 1. Add `QuarantineExecutionReadiness` core model and tests that report fixture-executable, real-profile-candidate, and custom-preview-only states without changing WPF execution availability. Completed in the first code packet.
-2. Add `QuarantineRootExecutionSafety` checks and tests for fully qualified path, preferred `D:` execution root, root/scope containment, free space, action-root collision, and item destination collision.
+2. Add `QuarantineRootExecutionSafety` checks and tests for fully qualified path, preferred `D:` execution root, root/scope containment, free space, action-root collision, and item destination collision. Completed in the root execution safety packet.
 3. Add Pre-Execution Revalidation tests using synthetic fixtures for missing source, changed source, reparse source, outside-scope source, destination collision, stale preview, redundant overlap, and manifest/action mismatch.
 4. Add WPF readiness output that names missing real-profile prerequisites while keeping real-profile execution disabled.
 5. Design and test selected-manifest real-profile Restore Readiness and Undo Quarantine before forward real-profile movement.

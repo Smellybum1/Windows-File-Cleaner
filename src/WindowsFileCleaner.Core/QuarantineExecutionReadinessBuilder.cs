@@ -6,7 +6,8 @@ public static class QuarantineExecutionReadinessBuilder
         QuarantinePreview? preview,
         QuarantineConfirmationDraft? confirmationDraft,
         bool isSelectedManifestRealProfileUndoAvailable = false,
-        bool nonPreferredQuarantineRootAcknowledged = false)
+        bool nonPreferredQuarantineRootAcknowledged = false,
+        QuarantineRootExecutionSafety? quarantineRootExecutionSafety = null)
     {
         if (preview is null)
         {
@@ -63,6 +64,7 @@ public static class QuarantineExecutionReadinessBuilder
             case QuarantineExecutionReadinessScopeKind.RealProfile:
                 AddRealProfileBlockers(
                     preview,
+                    quarantineRootExecutionSafety,
                     isPreferredRoot,
                     nonPreferredQuarantineRootAcknowledged,
                     isSelectedManifestRealProfileUndoAvailable,
@@ -116,13 +118,14 @@ public static class QuarantineExecutionReadinessBuilder
 
     private static void AddRealProfileBlockers(
         QuarantinePreview preview,
+        QuarantineRootExecutionSafety? quarantineRootExecutionSafety,
         bool isPreferredRoot,
         bool nonPreferredQuarantineRootAcknowledged,
         bool isSelectedManifestRealProfileUndoAvailable,
         List<string> blockers)
     {
         blockers.Add("Real-profile WPF Quarantine execution remains unavailable in this build.");
-        blockers.Add("Quarantine Root Execution Safety is not implemented for real-profile execution yet.");
+        AddRootSafetyBlockers(preview, quarantineRootExecutionSafety, blockers);
         blockers.Add("Pre-Execution Revalidation is not implemented for real-profile execution yet.");
 
         if (!isSelectedManifestRealProfileUndoAvailable)
@@ -148,6 +151,33 @@ public static class QuarantineExecutionReadinessBuilder
         foreach (var includedEntry in preview.Entries.Where(entry => entry.IsIncluded))
         {
             AddIncludedEntryBlockers(includedEntry, blockers);
+        }
+    }
+
+    private static void AddRootSafetyBlockers(
+        QuarantinePreview preview,
+        QuarantineRootExecutionSafety? quarantineRootExecutionSafety,
+        List<string> blockers)
+    {
+        if (quarantineRootExecutionSafety is null)
+        {
+            blockers.Add("Quarantine Root Execution Safety has not been checked for real-profile execution yet.");
+            return;
+        }
+
+        if (!SamePath(preview.CleanupScopePath, quarantineRootExecutionSafety.CleanupScopePath))
+        {
+            blockers.Add("Quarantine Root Execution Safety Cleanup Scope does not match the Quarantine Preview.");
+        }
+
+        if (!SamePath(preview.QuarantineRootPath, quarantineRootExecutionSafety.QuarantineRootPath))
+        {
+            blockers.Add("Quarantine Root Execution Safety Quarantine Root does not match the Quarantine Preview.");
+        }
+
+        foreach (var blocker in quarantineRootExecutionSafety.Blockers)
+        {
+            blockers.Add($"Quarantine Root Execution Safety: {blocker}");
         }
     }
 
