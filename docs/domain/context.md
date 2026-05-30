@@ -2745,7 +2745,7 @@ Quarantine Root Execution Safety is the validation that decides whether the curr
 
 It is separate from Quarantine Root Safety Note, which is preview-only. Execution safety checks containment, drive policy, capacity, action-root collisions, and destination collisions before any real-profile movement can be considered.
 
-The current core model is read-only and not wired to WPF execution controls.
+The current core model is read-only. WPF shows its evidence in Quarantine Preview and Quarantine Execution Gate output when a Quarantine Action Draft exists, but does not use it to enable real-profile execution.
 
 #### Examples
 
@@ -2782,6 +2782,7 @@ The current core model is read-only and not wired to WPF execution controls.
 - Build from `QuarantineActionDraft` for normal action-scoped checks.
 - Check that the root and Cleanup Scope are not inside each other.
 - Check capacity and collision evidence before movement.
+- In WPF, show root execution safety as read-only evidence; do not treat it as approval or a substitute for Pre-Execution Revalidation, Real-Profile Restore Readiness, exact confirmation, or future explicit execution approval.
 - For the first real-profile phase, prefer `D:` roots and require an extra acknowledgement for non-`D:` roots after all other safety checks pass.
 
 ### Pre-Execution Revalidation

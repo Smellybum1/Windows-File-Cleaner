@@ -25,6 +25,7 @@ public partial class MainWindow : Window
     private QuarantineConfirmationDraft? _currentQuarantineConfirmationDraft;
     private QuarantineExecutionGate? _currentQuarantineExecutionGate;
     private QuarantineActionDraft? _currentQuarantineActionDraft;
+    private QuarantineRootExecutionSafety? _currentQuarantineRootExecutionSafety;
     private QuarantineExecutionResult? _currentQuarantineExecutionResult;
     private UndoQuarantineResult? _currentUndoQuarantineResult;
     private QuarantineManifestDiscovery? _currentQuarantineManifestDiscovery;
@@ -1225,6 +1226,9 @@ public partial class MainWindow : Window
                 _currentQuarantineConfirmationDraft,
                 DateTimeOffset.UtcNow,
                 BuildDraftId("quarantine-action-draft"));
+        _currentQuarantineRootExecutionSafety = _currentQuarantineActionDraft is null
+            ? null
+            : QuarantineRootExecutionSafetyBuilder.Build(_currentQuarantineActionDraft);
         _currentRestoreManifest = _currentQuarantineActionDraft is null
             ? null
             : RestoreManifestBuilder.BuildPlanned(
@@ -1239,7 +1243,8 @@ public partial class MainWindow : Window
             _currentQuarantinePreview,
             _currentRestoreManifestDraft,
             _currentQuarantineConfirmationDraft,
-            BuildQuarantineExecutionReadinessForDisplay());
+            BuildQuarantineExecutionReadinessForDisplay(),
+            _currentQuarantineRootExecutionSafety);
         ExportQuarantinePreviewButton.IsEnabled = ScanButton.IsEnabled;
         RemoveOverlappingParentsButton.IsEnabled = _currentQuarantinePreview.RedundantCount > 0 && ScanButton.IsEnabled;
         var blockerSummary = _currentQuarantineConfirmationDraft.HasDataBlockers
@@ -1916,6 +1921,7 @@ public partial class MainWindow : Window
         QuarantineExecutionGateText.Text = FormatQuarantineExecutionGate(
             _currentQuarantineExecutionGate,
             BuildQuarantineExecutionReadinessForDisplay(),
+            _currentQuarantineRootExecutionSafety,
             _currentQuarantineActionDraft,
             _currentRestoreManifest,
             _currentQuarantineExecutionResult,
@@ -3189,6 +3195,7 @@ public partial class MainWindow : Window
         _currentQuarantineConfirmationDraft = null;
         _currentQuarantineExecutionGate = null;
         _currentQuarantineActionDraft = null;
+        _currentQuarantineRootExecutionSafety = null;
         var preserveCurrentFixtureUndo = CanUndoCurrentQuarantineExecution();
         if (!preserveCurrentFixtureUndo)
         {
@@ -3474,7 +3481,8 @@ public partial class MainWindow : Window
         QuarantinePreview preview,
         RestoreManifestDraft restoreManifestDraft,
         QuarantineConfirmationDraft confirmationDraft,
-        QuarantineExecutionReadiness? executionReadiness)
+        QuarantineExecutionReadiness? executionReadiness,
+        QuarantineRootExecutionSafety? rootExecutionSafety)
     {
         const int maxRows = 12;
         var lines = new List<string>
@@ -3504,6 +3512,7 @@ public partial class MainWindow : Window
         }
 
         AddQuarantineExecutionReadinessLines(lines, executionReadiness);
+        AddQuarantineRootExecutionSafetyLines(lines, rootExecutionSafety);
 
         lines.Add("Preview rows:");
         foreach (var entry in preview.Entries.Take(maxRows))
@@ -3525,6 +3534,7 @@ public partial class MainWindow : Window
     private static string FormatQuarantineExecutionGate(
         QuarantineExecutionGate gate,
         QuarantineExecutionReadiness? executionReadiness,
+        QuarantineRootExecutionSafety? rootExecutionSafety,
         QuarantineActionDraft? actionDraft,
         RestoreManifest? restoreManifest,
         QuarantineExecutionResult? executionResult,
@@ -3609,6 +3619,7 @@ public partial class MainWindow : Window
         }
 
         AddQuarantineExecutionReadinessLines(lines, executionReadiness);
+        AddQuarantineRootExecutionSafetyLines(lines, rootExecutionSafety);
 
         return string.Join(Environment.NewLine, lines);
     }
@@ -3622,7 +3633,8 @@ public partial class MainWindow : Window
 
         return QuarantineExecutionReadinessBuilder.Build(
             _currentQuarantinePreview,
-            _currentQuarantineConfirmationDraft);
+            _currentQuarantineConfirmationDraft,
+            quarantineRootExecutionSafety: _currentQuarantineRootExecutionSafety);
     }
 
     private static void AddQuarantineExecutionReadinessLines(
@@ -3658,6 +3670,32 @@ public partial class MainWindow : Window
         if (executionReadiness.Blockers.Count > 8)
         {
             lines.Add($"... {executionReadiness.Blockers.Count - 8:N0} more readiness blocker(s) not shown in this pane.");
+        }
+    }
+
+    private static void AddQuarantineRootExecutionSafetyLines(
+        List<string> lines,
+        QuarantineRootExecutionSafety? rootExecutionSafety)
+    {
+        if (rootExecutionSafety is null)
+        {
+            return;
+        }
+
+        lines.Add(
+            $"Quarantine Root Execution Safety: checked | Can use for execution: {FormatYesNo(rootExecutionSafety.CanUseForExecution)} | " +
+            $"Required: {rootExecutionSafety.RequiredSizeDisplay} | Available: {rootExecutionSafety.AvailableFreeSizeDisplay ?? "not checked"} | " +
+            $"Preferred D: root: {FormatYesNo(rootExecutionSafety.IsPreferredQuarantineRoot)} | Non-D acknowledgement: {FormatYesNo(rootExecutionSafety.IsNonPreferredQuarantineRootAcknowledged)}");
+        lines.Add("Root safety boundary: read-only evidence only; it does not create folders, write manifests, move files, or approve cleanup.");
+
+        foreach (var blocker in rootExecutionSafety.Blockers.Take(6))
+        {
+            lines.Add($"Root safety blocker | {blocker}");
+        }
+
+        if (rootExecutionSafety.Blockers.Count > 6)
+        {
+            lines.Add($"... {rootExecutionSafety.Blockers.Count - 6:N0} more root safety blocker(s) not shown in this pane.");
         }
     }
 

@@ -22,7 +22,7 @@ The WPF app test suite should be able to load synthetic scan-result metadata who
 - the preview and gate show `real-profile candidate` readiness,
 - the readiness scope is `real profile`,
 - current-build execution remains `no`,
-- missing Quarantine Root Execution Safety, Pre-Execution Revalidation, and Real-Profile Restore Readiness blockers are grouped visibly,
+- read-only Quarantine Root Execution Safety evidence is consumed when available, while missing Pre-Execution Revalidation and Real-Profile Restore Readiness blockers remain grouped visibly,
 - `CanExecuteQuarantine` remains false,
 - no Quarantine Root folder is created.
 
@@ -49,6 +49,7 @@ Validation gate:
 - Added `MainWindowShowsRealProfileReadinessContractForSyntheticPreview`.
 - The test invokes the existing WPF scan-result application path with a synthetic `StorageScanResult` for exact `C:\Users\moxhe`.
 - The synthetic candidate path is real-profile-shaped but never created, read, moved, restored, or deleted.
+- Later WPF root-safety evidence wiring updated the test to assert Quarantine Root Execution Safety is checked while Pre-Execution Revalidation and Real-Profile Restore Readiness blockers remain grouped.
 - The test does not call Quarantine execution; it asserts the gate remains closed after exact `QUARANTINE`.
 
 ## Verification
@@ -66,7 +67,7 @@ No ADR added. ADR 0018 already records the durable readiness-output requirement.
 
 ## Follow-up work
 
-- Later WPF implementation can wire real Quarantine Root Execution Safety, Pre-Execution Revalidation, and Real-Profile Restore Readiness evidence into the readiness output without enabling movement.
+- WPF now wires read-only Quarantine Root Execution Safety evidence. Later packets can wire Pre-Execution Revalidation and Real-Profile Restore Readiness evidence without enabling movement.
 
 ## Risky assumptions
 

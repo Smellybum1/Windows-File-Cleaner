@@ -8,7 +8,7 @@ Owner: project-owner
 
 Show the core Quarantine Execution Readiness contract in the existing WPF Quarantine Preview and Quarantine Execution Gate panes.
 
-This packet makes readiness blockers visible by dimension before any real-profile execution is enabled. It does not run real-profile Quarantine Root Execution Safety, Pre-Execution Revalidation, or Real-Profile Restore Readiness from WPF yet; absent evidence is shown as a blocker.
+This packet made readiness blockers visible by dimension before any real-profile execution was enabled. A later packet wires read-only Quarantine Root Execution Safety evidence into WPF preview/gate output; Pre-Execution Revalidation and Real-Profile Restore Readiness remain absent WPF evidence and still show as blockers.
 
 ## Non-goals
 
@@ -54,6 +54,7 @@ What changed:
 - Added WPF smoke assertions for fixture and custom preview/gate readiness contract output.
 - Later packet `2026-05-31-real-profile-readiness-output-regression.md` added synthetic real-profile preview/gate readiness-output coverage without scanning or touching `C:\Users\moxhe`.
 - Later packet `2026-05-31-real-profile-child-readiness-output-regression.md` added synthetic real-profile child preview/gate readiness-output coverage for the exact-scope blocker.
+- Later packet `2026-05-31-wpf-root-execution-safety-evidence.md` wired read-only Quarantine Root Execution Safety evidence into WPF preview/gate output while keeping real-profile execution disabled.
 
 Open questions:
 
@@ -61,4 +62,4 @@ Open questions:
 
 Risky assumptions:
 
-- Showing missing root safety/revalidation/restore readiness as blockers is useful before those WPF checks are wired.
+- Showing missing revalidation/restore readiness as blockers is useful before those WPF checks are wired.

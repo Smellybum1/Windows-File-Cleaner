@@ -37,7 +37,7 @@ Core code has a read-only `QuarantineRootExecutionSafety` model that checks:
 - Action root, Restore Manifest path, and item destinations do not already exist.
 - Available free-space evidence exists and is enough for planned bytes plus manifest overhead.
 
-`QuarantineExecutionReadiness` can optionally consume this result. If WPF or a future caller does not provide root safety yet, real-profile readiness still reports that root safety has not been checked.
+`QuarantineExecutionReadiness` can optionally consume this result. If a caller does not provide root safety yet, real-profile readiness still reports that root safety has not been checked. WPF now provides read-only root-safety evidence for preview/gate display when a Quarantine Action Draft exists, without enabling real-profile movement.
 
 ## Decisions made
 
@@ -84,7 +84,8 @@ Tests run:
 
 Follow-up work:
 
-- Add WPF readiness output only after the core model, root safety, and revalidation are stable, keeping execution disabled.
+- WPF display-only root-safety evidence was added in `2026-05-31-wpf-root-execution-safety-evidence.md`, keeping execution disabled.
+- Wire WPF Pre-Execution Revalidation evidence later, keeping real-profile execution disabled.
 
 Open questions:
 
