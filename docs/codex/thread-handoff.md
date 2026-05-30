@@ -9,7 +9,7 @@ Use this when starting a fresh Codex thread for this repository.
 - Repo: `D:\Codex\Windows File Cleaner`
 - GitHub: `Smellybum1/Windows-File-Cleaner`
 - Branch: `main`
-- Latest completed packet: Fresh Thread Handoff Polish
+- Latest completed packet: Manifest Fixture Checklist Split
 - Current app stack: C# / WPF / .NET 8
 - Desktop shortcut target: `D:\Codex\Windows File Cleaner\src\WindowsFileCleaner.App\bin\Debug\net8.0-windows\WindowsFileCleaner.App.exe`
 
@@ -72,6 +72,7 @@ Fixture-only cleanup execution exists for synthetic Cleanup Scopes. Real-profile
 - Manifest Review Control Grouping keeps `Discover manifests`, `Preview all-manifest readiness`, and `Selected manifest` controls visually grouped with their `?` help cues when wrapping.
 - Full Local MVP Preflight After Manifest Control Grouping passed `cmd.exe /c tools\Invoke-MvpPreflight.cmd`; restore, build, core tests, WPF app tests, fixture `-WhatIf`, fixture checklist-only output with the manifest cue/control wrapping check, and whitespace diff check all passed without scanning or modifying real user files.
 - Fresh Thread Handoff Polish refreshed this handoff and `.codex/progress.md` so a new thread starts from the current pushed safety boundary: eighteen hoverable `?` cues, manifest cue/control grouping, full `.cmd` MVP preflight evidence, fixture-only execution/selected restore, and real-profile cleanup still unavailable.
+- Manifest Fixture Checklist Split separated the launcher checklist's manifest discovery/all-manifest readiness checks from selected manifest readiness/selected restore gate checks, making the manual fixture prompt easier to follow without changing WPF behavior.
 - Quarantine Execution Scope Status added plain-language fixture-only versus preview-only scope wording to Quarantine Preview and Quarantine Execution Gate output.
 - Fixture Review Checklist Output added a compact terminal checklist to `Start-MvpFixtureReview.ps1`.
 - Fixture Review Checklist-Only Mode added `Start-MvpFixtureReview.ps1 -ChecklistOnly`, which prints the same checklist without preflight, fixture creation, or WPF launch.
@@ -175,7 +176,7 @@ Fixture-only cleanup execution exists for synthetic Cleanup Scopes. Real-profile
 
 Prefer a small packet. Good candidates:
 
-1. Run a manual fixture visual polish pass with `.\tools\Start-MvpFixtureReview.cmd -ChecklistOnly` and then `.\tools\Start-MvpFixtureReview.cmd`; verify the updated prompts match the visible app, including the scan-gate summary `?` help cue, Review Mix / Matched Review Mix / Review Shortlist Safety Mix / Review Grid Mode Status / inline Quarantine Preview status / Quarantine Execution Gate / Selected Restore Execution Gate / collapsed panel header hoverable `?` help cues and prompt tooltip/help text, Selected Restore Execution Gate cue waiting/closed/open/restored states without crowding the gate area, `Discover manifests`, selected-manifest, and `Preview all-manifest readiness` `?` help cues staying paired with their controls as rows wrap, panel-name collapsed header summaries/state styling and state-naming tooltip/help text, styled inline Quarantine Preview readiness state-naming tooltip/help text, and `Current quarantined (N)` / `Back to scan rows` help text.
+1. Run a manual fixture visual polish pass with `.\tools\Start-MvpFixtureReview.cmd -ChecklistOnly` and then `.\tools\Start-MvpFixtureReview.cmd`; verify the updated prompts match the visible app, including the scan-gate summary `?` help cue, Review Mix / Matched Review Mix / Review Shortlist Safety Mix / Review Grid Mode Status / inline Quarantine Preview status / Quarantine Execution Gate / Selected Restore Execution Gate / collapsed panel header hoverable `?` help cues and prompt tooltip/help text, the separated manifest-review checklist step for `Discover manifests`, selected-manifest, and `Preview all-manifest readiness` `?` help cues staying paired with their controls as rows wrap, the separated selected-restore gate step for waiting/closed/open/restored states without crowding the gate area, panel-name collapsed header summaries/state styling and state-naming tooltip/help text, styled inline Quarantine Preview readiness state-naming tooltip/help text, and `Current quarantined (N)` / `Back to scan rows` help text.
 2. If the user wants broader restore/history browsing, start a new Grill with Docs packet for a dedicated restore/history surface instead of expanding `Current quarantined` into all quarantined history.
 3. Continue Quarantine Preview/readiness wording review in the visible app, still without enabling real-profile execution.
 4. Retest review navigation/export tooltips, Cleanup Scope/Quarantine Root browse tooltips, the scan-gate summary `?` help cue, the real-profile acknowledgement `?` help cue, selected-row action tooltips, visible-row shortlist labels/tooltips, report/preview tooltips, execution-control tooltips, readiness tooltips, and Quarantine Execution Scope Status in the visible app during fixture or real-profile review; consider whether always-visible help icons are needed for other safety-critical gates.
@@ -206,9 +207,9 @@ We are continuing Windows File Cleaner in D:\Codex\Windows File Cleaner.
 
 Read AGENTS.md, .codex/progress.md, README.md, docs/codex/thread-handoff.md, docs/domain/context.md, docs/domain/glossary.md, and relevant docs/features/ and docs/decisions/ before implementing.
 
-Current state: main is pushed through the latest handoff polish packet. The app is a C#/.NET 8 WPF local Windows cleanup reviewer for C:\Users\moxhe. Storage Scan is read-only. Fixture-only Quarantine execution and fixture-only selected restore exist, but real-profile Quarantine execution, real-profile Undo Quarantine, permanent deletion, and persisted cleanup history remain intentionally unavailable.
+Current state: main is pushed through the latest manifest fixture checklist split packet. The app is a C#/.NET 8 WPF local Windows cleanup reviewer for C:\Users\moxhe. Storage Scan is read-only. Fixture-only Quarantine execution and fixture-only selected restore exist, but real-profile Quarantine execution, real-profile Undo Quarantine, permanent deletion, and persisted cleanup history remain intentionally unavailable.
 
-Recent completed packets added visible hoverable ? cues for Restore Manifest selection, Discover manifests, and Preview all-manifest readiness; grouped those manifest review controls with their cues so wrapping keeps cue/control pairs together; refreshed handoff docs; and passed full cmd MVP preflight after manifest control grouping. WPF smoke coverage tracks 18 circular help cues.
+Recent completed packets added visible hoverable ? cues for Restore Manifest selection, Discover manifests, and Preview all-manifest readiness; grouped those manifest review controls with their cues so wrapping keeps cue/control pairs together; refreshed handoff docs; passed full cmd MVP preflight after manifest control grouping; and split the fixture launcher checklist so manifest discovery/all-manifest readiness checks are separate from selected restore gate checks. WPF smoke coverage tracks 18 circular help cues.
 
 User verification: real-profile scan works; search typing was sluggish, then debounced search fixed it; the status-bar message is enough. Keep this as a local-first, safety-gated app. Do not move or delete real-profile files unless I explicitly ask after a Grill with Docs pass.
 
