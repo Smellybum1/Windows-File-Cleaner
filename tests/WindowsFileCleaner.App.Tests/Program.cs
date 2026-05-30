@@ -496,6 +496,19 @@ internal sealed class MainWindowSmokeTests
                 && window.ExportQuarantinePreviewButtonAutomationHelpTextValue.Contains("does not execute Quarantine", StringComparison.OrdinalIgnoreCase)
                 && window.ExportQuarantinePreviewButtonAutomationHelpTextValue.Contains("modify scanned files", StringComparison.OrdinalIgnoreCase),
                 "Export preview automation help text should explain report-only behavior.");
+            Assert(!window.CanRemoveOverlappingParentRows, "Remove overlapping parents should start disabled before a redundant preview exists.");
+            Assert(
+                window.RemoveOverlappingParentRowsButtonToolTipValue.Contains("broader parent rows", StringComparison.OrdinalIgnoreCase)
+                && window.RemoveOverlappingParentRowsButtonToolTipValue.Contains("narrower redundant child rows", StringComparison.OrdinalIgnoreCase)
+                && window.RemoveOverlappingParentRowsButtonToolTipValue.Contains("No files are modified", StringComparison.OrdinalIgnoreCase)
+                && window.RemoveOverlappingParentRowsButtonToolTipValue.Contains("preview again", StringComparison.OrdinalIgnoreCase),
+                "Remove overlapping parents tooltip should explain overlap cleanup and no-file-modified behavior.");
+            Assert(
+                window.RemoveOverlappingParentRowsButtonAutomationHelpTextValue.Contains("broader parent rows", StringComparison.OrdinalIgnoreCase)
+                && window.RemoveOverlappingParentRowsButtonAutomationHelpTextValue.Contains("narrower redundant child rows", StringComparison.OrdinalIgnoreCase)
+                && window.RemoveOverlappingParentRowsButtonAutomationHelpTextValue.Contains("No files are modified", StringComparison.OrdinalIgnoreCase)
+                && window.RemoveOverlappingParentRowsButtonAutomationHelpTextValue.Contains("preview again", StringComparison.OrdinalIgnoreCase),
+                "Remove overlapping parents automation help text should explain overlap cleanup and no-file-modified behavior.");
             Assert(!window.CanPreviewSelectedRestoreGate, "MainWindow should not enable selected restore gate preview before selected manifest readiness.");
             Assert(!window.CanEnterSelectedRestoreConfirmation, "MainWindow should not allow selected restore confirmation before gate preview.");
             Assert(!window.CanExecuteSelectedRestore, "MainWindow should not allow selected restore execution before gate preview.");
@@ -1628,6 +1641,55 @@ internal sealed class MainWindowSmokeTests
             Assert(
                 window.ShortlistSafetyMixTextValue.Contains("Review Shortlist is empty", StringComparison.OrdinalIgnoreCase),
                 "Clearing should refresh Shortlist Safety Mix to empty.");
+
+            window.ResetReviewView();
+            var cacheParent = window.DisplayedRows.Single(row =>
+                row.FullPath.EndsWith(@"AppData\Local\pip\Cache", StringComparison.OrdinalIgnoreCase));
+            var cacheChild = window.DisplayedRows.Single(row =>
+                row.FullPath.EndsWith(@"AppData\Local\pip\Cache\http-v2", StringComparison.OrdinalIgnoreCase));
+            Assert(window.SelectDisplayedPath(cacheParent.FullPath), "Fixture pip cache parent should be selectable for overlap cleanup.");
+            window.AddSelectedPathToReviewShortlist();
+            Assert(window.SelectDisplayedPath(cacheChild.FullPath), "Fixture pip cache child should be selectable for overlap cleanup.");
+            window.AddSelectedPathToReviewShortlist();
+            Assert(window.ReviewShortlistCount == 2, "Overlap cleanup should start from parent and child rows in the Review Shortlist.");
+            Assert(!window.CanRemoveOverlappingParentRows, "Overlap cleanup should stay disabled until Quarantine Preview identifies redundancy.");
+
+            window.SetQuarantineRootForPreview(Path.GetFullPath(Path.Combine(fixture.RootPath, "..", "overlap-quarantine-root")));
+            window.PreviewQuarantineForReviewShortlist();
+            Assert(
+                window.QuarantinePreviewTextValue.Contains("Included: 1", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantinePreviewTextValue.Contains("Redundant: 1", StringComparison.OrdinalIgnoreCase),
+                "Overlapping parent and child rows should create one redundant preview row.");
+            Assert(
+                window.QuarantineExecutionGateTextValue.Contains("redundant preview row", StringComparison.OrdinalIgnoreCase),
+                "Redundant preview rows should block the execution gate.");
+            window.SetQuarantineConfirmationText("QUARANTINE");
+            Assert(!window.CanExecuteQuarantine, "Exact confirmation should not open the gate while redundant rows remain.");
+            Assert(window.CanRemoveOverlappingParentRows, "Remove overlapping parents should enable after a redundant preview exists.");
+
+            window.RemoveOverlappingParentRowsFromReviewShortlist();
+            Assert(window.ReviewShortlistCount == 1, "Removing overlapping parents should leave the narrower child row shortlisted.");
+            Assert(
+                window.DisplayedRows.Any(row => row.FullPath == cacheParent.FullPath && row.Shortlist == "")
+                && window.DisplayedRows.Any(row => row.FullPath == cacheChild.FullPath && row.Shortlist == "Yes"),
+                "Overlap cleanup should remove the broader parent row and keep the narrower child row.");
+            Assert(
+                window.CurrentStatusText.Contains("Removed 1 overlapping parent row", StringComparison.OrdinalIgnoreCase)
+                && window.CurrentStatusText.Contains("Preview shortlist quarantine again", StringComparison.OrdinalIgnoreCase)
+                && window.CurrentStatusText.Contains("No files were modified", StringComparison.OrdinalIgnoreCase),
+                "Overlap cleanup status should explain the one-click fix and no-file-modified boundary.");
+            Assert(!window.CanRemoveOverlappingParentRows, "Overlap cleanup should disable after it clears stale preview state.");
+            Assert(!window.CanExportQuarantinePreview, "Overlap cleanup should clear stale preview export.");
+            Assert(!window.CanEnterQuarantineConfirmation, "Overlap cleanup should clear stale confirmation readiness.");
+            Assert(window.CurrentQuarantineConfirmationText == "", "Overlap cleanup should clear stale QUARANTINE confirmation text.");
+
+            window.PreviewQuarantineForReviewShortlist();
+            Assert(
+                window.QuarantinePreviewTextValue.Contains("Included: 1", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantinePreviewTextValue.Contains("Redundant: 0", StringComparison.OrdinalIgnoreCase),
+                "Re-preview after overlap cleanup should remove redundant blockers.");
+            window.SetQuarantineConfirmationText("QUARANTINE");
+            Assert(window.CanExecuteQuarantine, "Fixture gate should open after overlap cleanup and fresh preview.");
         }
         finally
         {

@@ -737,6 +737,16 @@
                                     AutomationProperties.HelpText="Exports the current Quarantine Preview as a CSV report only; it does not execute Quarantine or modify scanned files."
                                     ToolTipService.ShowOnDisabled="True"
                                     Click="ExportQuarantinePreviewButton_Click" />
+                            <Button x:Name="RemoveOverlappingParentsButton"
+                                    Content="Remove overlapping parents"
+                                    MinWidth="205"
+                                    Height="34"
+                                    VerticalAlignment="Top"
+                                    IsEnabled="False"
+                                    ToolTip="Removes broader parent rows from the Review Shortlist when the current Quarantine Preview shows they overlap narrower redundant child rows; no files are modified and you must preview again."
+                                    AutomationProperties.HelpText="Removes broader parent rows from the Review Shortlist when the current Quarantine Preview shows they overlap narrower redundant child rows; no files are modified and you must preview again."
+                                    ToolTipService.ShowOnDisabled="True"
+                                    Click="RemoveOverlappingParentsButton_Click" />
                             <Button x:Name="ShowQuarantinedButton"
                                     Content="Current quarantined"
                                     MinWidth="155"

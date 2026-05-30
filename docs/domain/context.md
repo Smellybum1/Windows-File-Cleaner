@@ -1634,7 +1634,7 @@ Selected Path Review Guidance is read-only wording shown for the currently selec
 ### Review Shortlist
 
 Status: draft
-Last reviewed: 2026-05-29
+Last reviewed: 2026-05-30
 
 #### Definition
 
@@ -1661,6 +1661,7 @@ It is not a cleanup approval and does not modify files.
 
 - Starts empty after each new Storage Scan.
 - Changes only when the user adds selected rows, shortlists visible rows, removes selected rows, or clears the shortlist.
+- May remove broader overlapping parent rows after Quarantine Preview identifies parent/child redundancy, keeping narrower reviewed rows and requiring a fresh preview.
 - Can be exported as a read-only CSV report.
 - Is discarded when a new Storage Scan completes.
 
@@ -1675,6 +1676,7 @@ It is not a cleanup approval and does not modify files.
 - Use `StorageReviewShortlist` for the in-memory selection model.
 - Bulk additions and removals should use only currently displayed rows, not hidden matched rows beyond the Storage Review Display Limit.
 - Selected-row and visible-row control tooltips and automation help text should keep row/display-window scope, no-file-modified behavior, and not-cleanup-approval boundaries available.
+- `RemoveOverlappingParentsButton` should remove only included parent rows that cover redundant child rows in the current Quarantine Preview, clear stale preview/gate state, and require the user to preview again.
 - Export and clear control tooltips and automation help text should keep report-only and in-memory-only behavior available before use.
 - Keep shortlisted paths separate from Cleanup Actions and Quarantine manifests.
 - Do not persist or execute the Review Shortlist as an action without a future explicit approval workflow.
@@ -1729,7 +1731,7 @@ It is not cleanup approval, Quarantine Preview readiness, or a storage-savings e
 ### Quarantine Preview
 
 Status: draft
-Last reviewed: 2026-05-29
+Last reviewed: 2026-05-30
 
 #### Definition
 
@@ -1747,6 +1749,7 @@ Preview and preview export control tooltips and automation help text should keep
 - Block a broad `.cache` parent row when its scanned subtree contains protected Codex runtime data.
 - Show blocked descendant examples as cleanup-scope-relative paths so broad-parent blockers stay readable.
 - Mark a child row as redundant when its selected parent is already included.
+- Offer `Remove overlapping parents` so the user can remove broader parent rows from the Review Shortlist, keep narrower child rows, and re-run preview before confirmation.
 - Show Quarantine Execution Scope Status so fixture-only availability and real-profile/custom preview-only status are clear before confirmation.
 - Show approval-boundary wording so Review Shortlist and Quarantine Preview are not mistaken for cleanup approval.
 - Show that the Review Shortlist is the source and only included rows can be quarantined; blocked and redundant rows stay out of execution.
@@ -1764,6 +1767,7 @@ Preview and preview export control tooltips and automation help text should keep
 - Generated from the current Review Shortlist on user request.
 - Uses the current Cleanup Scope and Quarantine Root Selection.
 - Shows included, blocked, and redundant rows.
+- Keeps redundant parent/child overlaps as confirmation blockers until the Review Shortlist is corrected manually or through `Remove overlapping parents`, then preview is rerun.
 - May be exported as a read-only CSV report, including Access Status and access issue text.
 - Is discarded when scan results, the Review Shortlist, or the Quarantine Root Selection change.
 - Feeds fixture-only shortlist-level execution; included rows execute together after exact confirmation, not one selected row at a time.
@@ -1791,6 +1795,7 @@ Preview and preview export control tooltips and automation help text should keep
 - Include Quarantine Execution Scope Status in the WPF preview pane.
 - Include approval-boundary wording in WPF preview and gate panes.
 - Include wording that makes the Review Shortlist source and all-included-row execution target visible.
+- Keep overlapping parent/child rows blocked from execution; the WPF one-click fix should prefer narrower rows by removing broader included parents from the Review Shortlist.
 
 ### Quarantine Root Selection
 

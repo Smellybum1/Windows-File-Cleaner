@@ -709,6 +709,12 @@ public partial class MainWindow : Window
 
     public string ExportQuarantinePreviewButtonAutomationHelpTextValue => AutomationProperties.GetHelpText(ExportQuarantinePreviewButton);
 
+    public bool CanRemoveOverlappingParentRows => RemoveOverlappingParentsButton.IsEnabled;
+
+    public string RemoveOverlappingParentRowsButtonToolTipValue => RemoveOverlappingParentsButton.ToolTip?.ToString() ?? "";
+
+    public string RemoveOverlappingParentRowsButtonAutomationHelpTextValue => AutomationProperties.GetHelpText(RemoveOverlappingParentsButton);
+
     public bool CanEnterQuarantineConfirmation => QuarantineConfirmationBox.IsEnabled;
 
     public string CurrentQuarantineConfirmationText => QuarantineConfirmationBox.Text;
@@ -1038,6 +1044,11 @@ public partial class MainWindow : Window
         PreviewQuarantineForReviewShortlist();
     }
 
+    private void RemoveOverlappingParentsButton_Click(object sender, RoutedEventArgs e)
+    {
+        RemoveOverlappingParentRowsFromReviewShortlist();
+    }
+
     private void ShowQuarantinedButton_Click(object sender, RoutedEventArgs e)
     {
         ShowQuarantinedRows();
@@ -1134,6 +1145,39 @@ public partial class MainWindow : Window
             "No files were modified.";
     }
 
+    public void RemoveOverlappingParentRowsFromReviewShortlist()
+    {
+        if (_currentQuarantinePreview is null)
+        {
+            StatusText.Text = "Create a Quarantine Preview before removing overlapping parent rows. No files were modified.";
+            UpdateShortlistControls();
+            return;
+        }
+
+        var parentEntries = FindOverlappingParentPreviewEntries(_currentQuarantinePreview).ToArray();
+        if (parentEntries.Length == 0)
+        {
+            StatusText.Text = "No overlapping parent rows were found in the current Quarantine Preview. No files were modified.";
+            UpdateShortlistControls();
+            return;
+        }
+
+        var removedCount = _shortlist.RemoveMany(parentEntries.Select(entry => entry.Entry));
+        if (removedCount == 0)
+        {
+            StatusText.Text = "Overlapping parent rows were already absent from the Review Shortlist. No files were modified.";
+            UpdateShortlistControls();
+            return;
+        }
+
+        ClearQuarantinePreview();
+        var selectedPath = _selectedRow?.FullPath;
+        RefreshResults(selectedPath);
+        StatusText.Text =
+            $"Removed {removedCount:N0} overlapping parent row(s) from Review Shortlist ({_shortlist.Count:N0} total). " +
+            "Review the narrower rows, then use Preview shortlist quarantine again. No files were modified.";
+    }
+
     public void ClearReviewShortlist()
     {
         _shortlist.Clear();
@@ -1194,6 +1238,7 @@ public partial class MainWindow : Window
             _currentRestoreManifestDraft,
             _currentQuarantineConfirmationDraft);
         ExportQuarantinePreviewButton.IsEnabled = ScanButton.IsEnabled;
+        RemoveOverlappingParentsButton.IsEnabled = _currentQuarantinePreview.RedundantCount > 0 && ScanButton.IsEnabled;
         var blockerSummary = _currentQuarantineConfirmationDraft.HasDataBlockers
             ? $"{_currentQuarantineConfirmationDraft.Blockers.Count:N0} readiness blocker(s)"
             : "no readiness blockers";
@@ -2432,6 +2477,7 @@ public partial class MainWindow : Window
             ClearShortlistButton.IsEnabled = false;
             PreviewQuarantineButton.IsEnabled = false;
             ExportQuarantinePreviewButton.IsEnabled = false;
+            RemoveOverlappingParentsButton.IsEnabled = false;
             UndoQuarantineButton.IsEnabled = false;
             AddShownToShortlistButton.IsEnabled = false;
             RemoveShownFromShortlistButton.IsEnabled = false;
@@ -2458,6 +2504,7 @@ public partial class MainWindow : Window
         ClearShortlistButton.IsEnabled = _shortlist.Count > 0;
         PreviewQuarantineButton.IsEnabled = _shortlist.Count > 0 && CanUseQuarantineRootForPreview();
         ExportQuarantinePreviewButton.IsEnabled = _currentQuarantinePreview is not null && _currentQuarantineExecutionResult is null;
+        RemoveOverlappingParentsButton.IsEnabled = _currentQuarantinePreview?.RedundantCount > 0 && _currentQuarantineExecutionResult is null;
         SearchBox.IsEnabled = true;
         SizeThresholdFilterBox.IsEnabled = true;
         ClearSearchButton.IsEnabled = _currentSearch.IsActive;
@@ -3004,6 +3051,7 @@ public partial class MainWindow : Window
         ClearShortlistButton.IsEnabled = hasShortlist && ScanButton.IsEnabled;
         PreviewQuarantineButton.IsEnabled = _currentReview is not null && hasShortlist && !hasExecutedCurrentPreview && ScanButton.IsEnabled && CanUseQuarantineRootForPreview();
         ExportQuarantinePreviewButton.IsEnabled = _currentQuarantinePreview is not null && !hasExecutedCurrentPreview && ScanButton.IsEnabled;
+        RemoveOverlappingParentsButton.IsEnabled = _currentQuarantinePreview?.RedundantCount > 0 && !hasExecutedCurrentPreview && ScanButton.IsEnabled;
         SearchBox.IsEnabled = _currentReview is not null && ScanButton.IsEnabled;
         ClearSearchButton.IsEnabled = _currentReview is not null && _currentSearch.IsActive && ScanButton.IsEnabled;
         SizeThresholdFilterBox.IsEnabled = _currentReview is not null && ScanButton.IsEnabled;
@@ -3053,6 +3101,31 @@ public partial class MainWindow : Window
     private bool CanUseQuarantineRootForPreview()
     {
         return QuarantineRootSafetyNoteBuilder.Build(QuarantineRootBox.Text).CanPreview;
+    }
+
+    private static IEnumerable<QuarantinePreviewEntry> FindOverlappingParentPreviewEntries(QuarantinePreview preview)
+    {
+        var includedEntries = preview.Entries
+            .Where(entry => entry.Disposition == QuarantinePreviewDisposition.Included)
+            .ToArray();
+        var redundantEntries = preview.Entries
+            .Where(entry => entry.Disposition == QuarantinePreviewDisposition.Redundant)
+            .ToArray();
+
+        return includedEntries
+            .Where(included => redundantEntries.Any(redundant => IsAncestorPath(included.SourcePath, redundant.SourcePath)))
+            .GroupBy(entry => entry.SourcePath, StringComparer.OrdinalIgnoreCase)
+            .Select(group => group.First())
+            .ToArray();
+    }
+
+    private static bool IsAncestorPath(string parentPath, string candidatePath)
+    {
+        var parent = Path.GetFullPath(parentPath).TrimEnd(Path.DirectorySeparatorChar);
+        var candidate = Path.GetFullPath(candidatePath).TrimEnd(Path.DirectorySeparatorChar);
+
+        return !candidate.Equals(parent, StringComparison.OrdinalIgnoreCase)
+            && candidate.StartsWith(parent + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase);
     }
 
     private bool IsFixtureQuarantineExecutionAvailable()
@@ -3127,6 +3200,7 @@ public partial class MainWindow : Window
         }
 
         ExportQuarantinePreviewButton.IsEnabled = false;
+        RemoveOverlappingParentsButton.IsEnabled = false;
         UpdateQuarantineExecutionGate();
         UpdateQuarantinePreviewStatus();
         RefreshQuarantinedRowsIfVisible();
