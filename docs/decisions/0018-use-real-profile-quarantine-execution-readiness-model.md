@@ -1,7 +1,7 @@
 # ADR 0018: Use Real-Profile Quarantine Execution Readiness Model
 
 Date: 2026-05-31
-Status: proposed
+Status: accepted
 Owner: project-owner
 
 ## Context
@@ -10,7 +10,7 @@ ADR 0017 keeps real-profile WPF Quarantine execution unavailable until the app h
 
 That shape is good proof for fixture movement, but it is too coarse for real-profile movement from `C:\Users\moxhe`. A real-profile cleanup action needs to prove more than "the preview looked clean when it was generated." It must re-check the live filesystem immediately before moving files, prove the Quarantine Root is safe for execution, preserve recovery evidence, and make Undo Quarantine trustworthy enough before the first forward action is exposed.
 
-This ADR does not enable real-profile movement. It records the proposed model future implementation should build before any real-profile Quarantine execution can be considered.
+This ADR does not enable real-profile movement. It records the accepted model future implementation must build before any real-profile Quarantine execution can be considered.
 
 ## Decision
 
@@ -18,16 +18,20 @@ Introduce a composite Real-Profile Quarantine Execution Readiness model before e
 
 Future real-profile `CanExecute` must not be unlocked by flipping the current fixture-only `IsExecutionImplemented` flag. It must require all of these readiness dimensions to pass in the same execution attempt:
 
-- Scope eligibility: the Cleanup Scope is a recognized real-profile scope such as `C:\Users\moxhe`. Custom non-fixture scopes remain preview-only for the first real-profile phase unless a later ADR includes them.
-- Review readiness: the Review Shortlist, Quarantine Preview, Restore Manifest Draft, Quarantine Confirmation Draft, and Quarantine Action Draft agree and have no blocked, redundant, stale, high-risk, protected, inaccessible, reparse-point, outside-scope, or destination-mismatch blockers.
-- Quarantine Root Execution Safety: the chosen Quarantine Root is fully qualified, execution-eligible, on the preferred `D:` storage for the first real-profile phase, outside the Cleanup Scope, not a parent of the Cleanup Scope, has enough free space for the planned move plus manifest overhead, and has no action-root or item destination collision.
+- Scope eligibility: the first real-profile phase is limited to the exact recognized Cleanup Scope `C:\Users\moxhe`. Child scopes, `ProgramData`, `Program Files`, and custom non-fixture scopes remain preview-only unless a later design includes them. Future `ProgramData` support should be a separate cautious mode; future `Program Files` support should prefer report/uninstall guidance before file movement.
+- Review readiness: the Review Shortlist, Quarantine Preview, Restore Manifest Draft, Quarantine Confirmation Draft, and Quarantine Action Draft agree and have no blocked, redundant, stale, high-risk, protected, inaccessible, reparse-point, outside-scope, no-category, or destination-mismatch blockers. First-phase real-profile execution is limited to `Likely safe` rows with `Quarantine candidate` recommendation.
+- Batch limits: a single first-phase real-profile Quarantine action is capped at 10 included rows and 1 GB total previewed size.
+- Folder eligibility: files are allowed, and folders are allowed only when they are narrow, `Likely safe`, `Quarantine candidate`, readable, and strict descendant checks find no protected, high-risk, inaccessible, reparse-point, no-category, outside-scope, or otherwise blocked descendants.
+- Quarantine Root Execution Safety: the chosen Quarantine Root is fully qualified, execution-eligible, outside the Cleanup Scope, not a parent of the Cleanup Scope, has enough free space for the planned move plus manifest overhead, and has no action-root or item destination collision. `D:` remains the default/preferred root. Non-`D:` roots are allowed only with an extra acknowledgement after all other root safety checks pass. Unsafe roots are blocked with no override.
 - Pre-Execution Revalidation: immediately before executing, the app re-checks every included source and planned destination against the live filesystem and blocks movement if the evidence no longer matches the approved preview/action draft.
 - Recovery readiness: real-profile Restore Manifest writing, manifest failure handling, recovery-review wording, and at least selected-manifest real-profile Undo Quarantine readiness are designed and tested before exposing forward real-profile movement.
-- Explicit real-profile approval: exact `QUARANTINE` alone is not enough for real-profile movement. The UI must require a real-profile-specific approval step or phrase after readiness is clean.
+- Explicit confirmation and approval: the typed confirmation phrase remains exact `QUARANTINE` for real-profile and fixture workflows. The phrase is necessary but not sufficient; every readiness dimension must still pass before future real-profile movement can be enabled.
+- Post-execution scan behavior: after a future real-profile Quarantine action, the app should show stale-scan guidance and ask the user to rescan manually rather than auto-rescanning.
+- Durable record: Restore Manifest remains the only durable cleanup record for the first real-profile phase. Persisted cleanup history remains unavailable.
 
 The first implementation packets should build this model and its tests while keeping the WPF real-profile button disabled. Only a later explicit user-approved packet may wire real-profile file movement.
 
-Permanent deletion, persisted cleanup history, real-profile all-manifest restore, and custom non-fixture execution stay outside this decision.
+Permanent deletion, persisted cleanup history, real-profile all-manifest restore, `ProgramData` execution, `Program Files` execution, and custom non-fixture execution stay outside this decision.
 
 ## Options considered
 
@@ -92,6 +96,7 @@ Negative consequences:
 - The first real-profile cleanup action requires several preparatory packets.
 - Existing gate builders will need a careful refactor from `IsExecutionImplemented` toward a named readiness result.
 - The user will have more readiness information to review before execution.
+- Non-`D:` roots add one more acknowledgement path to design and test.
 
 ## Reversal cost
 
@@ -104,7 +109,7 @@ Medium. If this model proves too heavy, reverting would require simplifying the 
 - Add Pre-Execution Revalidation tests over synthetic fixtures that simulate missing, changed, reparse, destination-collision, stale-preview, and action-collision cases.
 - Add WPF readiness output that names missing real-profile prerequisites while keeping the execution button disabled.
 - Design and test real-profile selected-manifest Undo Quarantine readiness before any forward real-profile execution.
-- Ask the project owner to decide the first real-profile batch cap, real-profile approval phrase, and whether non-`D:` quarantine roots are blocked or require an explicit override in the first real-profile phase.
+- Keep the real-profile confirmation phrase as `QUARANTINE` while preserving readiness blockers that make the phrase insufficient by itself.
 
 ## Supersedes
 

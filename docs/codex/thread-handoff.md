@@ -9,7 +9,7 @@ Use this when starting a fresh Codex thread for this repository.
 - Repo: `D:\Codex\Windows File Cleaner`
 - GitHub: `Smellybum1/Windows-File-Cleaner`
 - Branch: `main`
-- Latest completed packet: Real-Profile Quarantine Design Pass
+- Latest completed packet: Quarantine Execution Readiness Model
 - Current app stack: C# / WPF / .NET 8
 - Desktop shortcut target: `D:\Codex\Windows File Cleaner\src\WindowsFileCleaner.App\bin\Debug\net8.0-windows\WindowsFileCleaner.App.exe`
 
@@ -21,13 +21,13 @@ The current MVP has a read-only Storage Scan that can inspect large real-profile
 
 Fixture-only cleanup execution exists for synthetic Cleanup Scopes. Real-profile cleanup execution remains intentionally unavailable until ADR 0017's readiness contract is implemented.
 
-The latest design packet adds proposed ADR 0018, a feature brief, and draft domain/glossary terms for Real-Profile Quarantine Execution Readiness, Quarantine Root Execution Safety, Pre-Execution Revalidation, and Real-Profile Restore Readiness. It is docs-only: Review Shortlist, clean Quarantine Preview, exact `QUARANTINE`, real-profile scan acknowledgement, and exact `RESTORE` still do not unlock real-profile movement.
+The latest code packet accepted ADR 0018 and added a non-moving core `QuarantineExecutionReadiness` model. It names fixture-executable, real-profile-candidate, custom-preview-only, and real-profile-child preview-only states while keeping real-profile/custom execution unavailable. First-phase decisions are exact `C:\Users\moxhe`, exact `QUARANTINE`, 10 rows / 1 GB, default/preferred `D:` with safe non-`D:` acknowledgement, Likely safe + Quarantine candidate only, files plus narrow folders after strict descendant checks, selected-manifest real-profile Undo before forward movement, manual rescan after future execution, and Restore Manifest-only durable records.
 
 ## Safety boundary
 
 - Do not enable real-profile file movement without a new Grill with Docs pass, feature brief, tests, and ADR review if needed.
-- Do not enable real-profile file movement by flipping the current fixture-only execution flag; ADR 0017 and proposed ADR 0018 require a richer readiness model first.
-- Do not implement proposed ADR 0018's readiness model as execution enablement; first packets should add named readiness blockers while keeping real-profile movement disabled.
+- Do not enable real-profile file movement by flipping the current fixture-only execution flag; ADR 0017 and accepted ADR 0018 require the richer readiness path first.
+- Do not treat `QuarantineExecutionReadiness` as execution enablement for real-profile scopes; it currently names blockers while keeping real-profile movement disabled.
 - Do not implement permanent deletion as the next step.
 - Keep Storage Scan read-only.
 - Keep Review Shortlist as review context, not cleanup approval.
@@ -82,7 +82,8 @@ The latest design packet adds proposed ADR 0018, a feature brief, and draft doma
 - Trim AGENTS Workflow Doc reduced `AGENTS.md` from 139 to 74 lines by keeping the repo control-layer rules and linking detailed workflow guidance back to `docs/codex/grill-with-docs.md` and `docs/codex/skillopt-inspired-workflow.md`.
 - Real-Profile Quarantine Readiness Contract added ADR 0017, feature/domain docs, and WPF regression coverage that real-profile acknowledgement unlocks only read-only scanning and custom non-fixture clean preview plus exact `QUARANTINE` still cannot execute. First WPF test run was blocked by stale running app process `5492`; after stopping it, the app tests passed. `git diff --check` passed with line-ending normalization warnings only.
 - Fixture Checklist Readiness-Contract Boundary updated `Start-MvpFixtureReview.cmd -ChecklistOnly`, README manual review wording, and the MVP readiness-audit follow-up so ADR 0017 blockers stay explicit before any future real-profile work; checklist-only output and whitespace diff passed.
-- Real-Profile Quarantine Design Pass added proposed ADR 0018, a feature brief, and domain/glossary terms for execution readiness, root execution safety, pre-execution revalidation, and restore readiness; docs-only whitespace diff passed, and no scan/execution/restore behavior changed.
+- Real-Profile Quarantine Design Pass added ADR 0018, a feature brief, and domain/glossary terms for execution readiness, root execution safety, pre-execution revalidation, and restore readiness; docs-only whitespace diff passed, and no scan/execution/restore behavior changed. ADR 0018 was later accepted after user decisions.
+- Quarantine Execution Readiness Model accepted ADR 0018 with the user's first-phase decisions and added the non-moving core readiness model/tests for fixture-executable, real-profile-candidate, custom-preview-only, caps, root acknowledgement, row/folder eligibility, Undo prerequisite, manual rescan, and Restore Manifest-only records; core tests passed and no WPF execution behavior changed.
 - Quarantine Execution Scope Status added plain-language fixture-only versus preview-only scope wording to Quarantine Preview and Quarantine Execution Gate output.
 - Fixture Review Checklist Output added a compact terminal checklist to `Start-MvpFixtureReview.ps1`.
 - Fixture Review Checklist-Only Mode added `Start-MvpFixtureReview.ps1 -ChecklistOnly`, which prints the same checklist without preflight, fixture creation, or WPF launch.

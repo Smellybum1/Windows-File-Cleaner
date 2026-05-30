@@ -2693,11 +2693,15 @@ Real-Profile Quarantine Execution Readiness is the future composite readiness re
 
 It is stricter than Quarantine Confirmation Draft and Quarantine Execution Gate. It combines scope eligibility, review readiness, Quarantine Root Execution Safety, Pre-Execution Revalidation, recovery readiness, and explicit real-profile approval semantics.
 
+The current core model can name fixture-executable, real-profile-candidate, and custom-preview-only states without enabling real-profile movement.
+
 #### Examples
 
 - Report that a clean Quarantine Preview is not enough because real-profile restore readiness is still unavailable.
 - Report that the Quarantine Root is usable for preview but blocked for execution because it is not on the preferred `D:` drive or is inside the Cleanup Scope.
 - Report that a source file changed after preview and must be re-previewed before movement.
+- Report that exact `C:\Users\moxhe` is a real-profile candidate, while child scopes and custom scopes remain preview-only.
+- Report that a real-profile candidate is over the 10-row or 1 GB first-phase cap.
 
 #### Non-examples
 
@@ -2713,16 +2717,18 @@ It is stricter than Quarantine Confirmation Draft and Quarantine Execution Gate.
 - Rebuilt immediately before any future real-profile move attempt.
 - Remains closed when any readiness dimension has blockers.
 - Does not move files, write manifests, or approve cleanup by itself.
+- For the first real-profile phase, uses exact `QUARANTINE` as the confirmation phrase, limits execution candidates to 10 included rows and 1 GB, allows files and narrow folders only when strict descendant checks pass, requires selected-manifest real-profile Undo readiness before forward movement, asks for manual rescan after execution, and uses Restore Manifest as the only durable cleanup record.
 
 #### Relationships
 
 - Implements the Real-Profile Quarantine Readiness Contract from ADR 0017.
-- Is proposed by ADR 0018.
+- Is accepted by ADR 0018.
 - Depends on Quarantine Root Execution Safety and Pre-Execution Revalidation.
 - Requires Real-Profile Restore Readiness before forward real-profile movement is exposed.
 
 #### Code implications
 
+- Use `QuarantineExecutionReadiness`, `QuarantineExecutionReadinessBuilder`, `QuarantineExecutionReadinessScopeKind`, and `QuarantineExecutionReadinessDisposition`.
 - Use a named readiness result, not the current fixture-only `IsExecutionImplemented` flag, for future real-profile execution availability.
 - Keep custom non-fixture Cleanup Scopes preview-only until a later design explicitly includes them.
 - Make blockers visible by readiness dimension so disabled execution controls explain why real-profile movement is unavailable.
@@ -2770,7 +2776,7 @@ It is separate from Quarantine Root Safety Note, which is preview-only. Executio
 - Keep preview-root safety and execution-root safety as separate concepts.
 - Check that the root and Cleanup Scope are not inside each other.
 - Check capacity and collision evidence before movement.
-- For the first real-profile phase, treat non-`D:` roots as blocked unless a later decision adds an explicit override.
+- For the first real-profile phase, prefer `D:` roots and require an extra acknowledgement for non-`D:` roots after all other safety checks pass.
 
 ### Pre-Execution Revalidation
 
@@ -2854,7 +2860,7 @@ It means the app can inspect real-profile Restore Manifests, explain restorable 
 
 #### Code implications
 
-- Design real-profile selected restore before enabling real-profile forward Quarantine.
+- Design and test selected-manifest real-profile Undo Quarantine before enabling real-profile forward Quarantine.
 - Keep all-manifest real-profile restore out of scope unless a later design explicitly includes it.
 - Continue refusing to overwrite original paths during restore.
 

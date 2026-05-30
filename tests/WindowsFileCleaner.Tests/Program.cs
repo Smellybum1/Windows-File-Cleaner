@@ -26,6 +26,9 @@ tests.RestoreManifestDraftBuildsJsonUndoMetadataFromIncludedPreviewRows();
 tests.QuarantineConfirmationDraftChecksPreviewAndManifestReadiness();
 tests.QuarantineConfirmationDraftReportsPreviewAndManifestBlockers();
 tests.QuarantineExecutionGateRequiresExactConfirmationAndImplementedExecution();
+tests.QuarantineExecutionReadinessNamesFixtureRealProfileAndCustomStates();
+tests.QuarantineExecutionReadinessAppliesRealProfileFirstPhaseDecisions();
+tests.QuarantineExecutionReadinessKeepsRealProfileChildrenPreviewOnly();
 tests.QuarantineActionDraftBuildsActionScopedLayoutWithoutWritingFiles();
 tests.RestoreManifestBuildsWriteAheadActionRecordFromActionDraft();
 tests.RestoreManifestTracksPartialFailureStatusForFutureExecution();
@@ -1199,6 +1202,139 @@ internal sealed class StorageScanTests
         Assert(!blockedGate.CanExecute, "Confirmation data blockers should keep execution closed.");
         Assert(blockedGate.Blockers.Any(blocker => blocker.Contains("blocked preview row", StringComparison.OrdinalIgnoreCase)), "Gate should carry confirmation data blockers forward.");
         Assert(!Directory.Exists(quarantineRoot), "Building execution gates should not create the quarantine root folder.");
+    }
+
+    public void QuarantineExecutionReadinessNamesFixtureRealProfileAndCustomStates()
+    {
+        using var fixture = TestFixture.Create();
+
+        fixture.WriteFile(@"Downloads\old-installer.msi", 1024 * 1024, DateTimeOffset.UtcNow.AddDays(-120));
+        var scanner = new StorageScanner();
+        var result = scanner.Scan(new StorageScanOptions(fixture.RootPath));
+        var review = StorageScanReviewBuilder.Build(result);
+        var installer = SingleReviewEntry(review.Entries, @"Downloads\old-installer.msi");
+        var quarantineRoot = Path.Combine(fixture.RootPath, "quarantine-root");
+        var fixturePreview = QuarantinePreviewBuilder.Build([installer], fixture.RootPath, quarantineRoot);
+        var fixtureDraft = RestoreManifestDraftBuilder.Build(
+            fixturePreview,
+            new DateTimeOffset(2026, 5, 31, 1, 2, 3, TimeSpan.Zero),
+            "manifest-draft-readiness-fixture");
+        var fixtureConfirmation = QuarantineConfirmationDraftBuilder.Build(
+            fixturePreview,
+            fixtureDraft,
+            new DateTimeOffset(2026, 5, 31, 2, 3, 4, TimeSpan.Zero),
+            "confirmation-draft-readiness-fixture",
+            isExecutionImplemented: true);
+
+        var fixtureReadiness = QuarantineExecutionReadinessBuilder.Build(fixturePreview, fixtureConfirmation);
+        Assert(fixtureReadiness.ScopeKind == QuarantineExecutionReadinessScopeKind.Fixture, "Fixture readiness should identify fixture Cleanup Scopes.");
+        Assert(fixtureReadiness.Disposition == QuarantineExecutionReadinessDisposition.FixtureExecutable, "Fixture readiness should name fixture-executable state.");
+        Assert(fixtureReadiness.CanExecuteInCurrentBuild, "Clean fixture readiness should be executable in the current build before the existing exact-confirmation gate.");
+        Assert(fixtureReadiness.RequiredConfirmationText == "QUARANTINE", "Readiness should keep the existing confirmation phrase.");
+
+        var realPreview = BuildPreviewForManualRows(
+            @"C:\Users\moxhe",
+            @"D:\WindowsFileCleanerQuarantine",
+            ManualReviewEntry(@"C:\Users\moxhe\Downloads\old-installer.msi"));
+        var realConfirmation = BuildConfirmationForPreview(realPreview, "real");
+
+        var realReadiness = QuarantineExecutionReadinessBuilder.Build(realPreview, realConfirmation);
+        Assert(realReadiness.ScopeKind == QuarantineExecutionReadinessScopeKind.RealProfile, "Default profile scope should be identified as real-profile.");
+        Assert(realReadiness.Disposition == QuarantineExecutionReadinessDisposition.RealProfileCandidate, "Real-profile readiness should name candidate state.");
+        Assert(!realReadiness.CanExecuteInCurrentBuild, "Real-profile candidate state must not execute in the current build.");
+        Assert(realReadiness.Blockers.Any(blocker => blocker.Contains("remains unavailable", StringComparison.OrdinalIgnoreCase)), "Real-profile readiness should keep movement unavailable.");
+
+        var customPreview = BuildPreviewForManualRows(
+            @"D:\Scratch\ReviewOnly",
+            @"D:\WindowsFileCleanerQuarantine",
+            ManualReviewEntry(@"D:\Scratch\ReviewOnly\Downloads\old-installer.msi"));
+        var customConfirmation = BuildConfirmationForPreview(customPreview, "custom");
+
+        var customReadiness = QuarantineExecutionReadinessBuilder.Build(customPreview, customConfirmation);
+        Assert(customReadiness.ScopeKind == QuarantineExecutionReadinessScopeKind.Custom, "Custom scope should be identified separately.");
+        Assert(customReadiness.Disposition == QuarantineExecutionReadinessDisposition.CustomPreviewOnly, "Custom scope should stay preview-only.");
+        Assert(!customReadiness.CanExecuteInCurrentBuild, "Custom non-fixture readiness must not execute in the current build.");
+        Assert(customReadiness.Blockers.Any(blocker => blocker.Contains("Custom non-fixture", StringComparison.OrdinalIgnoreCase)), "Custom readiness should explain the preview-only boundary.");
+
+        Assert(!Directory.Exists(quarantineRoot), "Readiness checks should not create fixture quarantine folders.");
+    }
+
+    public void QuarantineExecutionReadinessAppliesRealProfileFirstPhaseDecisions()
+    {
+        var rows = Enumerable.Range(0, 11)
+            .Select(index => ManualReviewEntry($@"C:\Users\moxhe\Downloads\old-{index}.msi"))
+            .ToArray();
+        var oversizedRow = ManualReviewEntry(
+            @"C:\Users\moxhe\AppData\Local\Cache\large.bin",
+            sizeBytes: QuarantineExecutionReadiness.DefaultRealProfileIncludedByteLimit + 1);
+        var cautionRow = ManualReviewEntry(
+            @"C:\Users\moxhe\AppData\Local\Cache\caution.bin",
+            importanceRating: ImportanceRating.Caution);
+        var noCategoryRow = ManualReviewEntry(
+            @"C:\Users\moxhe\AppData\Local\Cache\unknown.bin",
+            categories: []);
+        var narrowFolder = ManualReviewEntry(
+            @"C:\Users\moxhe\AppData\Local\pip\Cache\http-v2",
+            isDirectory: true,
+            children:
+            [
+                ManualStorageEntry(@"C:\Users\moxhe\AppData\Local\pip\Cache\http-v2\response.body")
+            ]);
+        var broadFolder = ManualReviewEntry(
+            @"C:\Users\moxhe\AppData\Local\PackageCache",
+            isDirectory: true,
+            children:
+            [
+                ManualStorageEntry(
+                    @"C:\Users\moxhe\AppData\Local\PackageCache\secret.dat",
+                    categories: [])
+            ]);
+        var preview = BuildPreviewForManualRows(
+            @"C:\Users\moxhe",
+            @"C:\WindowsFileCleanerQuarantine",
+            [.. rows, oversizedRow, cautionRow, noCategoryRow, narrowFolder, broadFolder]);
+        var confirmation = BuildConfirmationForPreview(preview, "real-decisions");
+
+        var readiness = QuarantineExecutionReadinessBuilder.Build(preview, confirmation);
+        Assert(readiness.Disposition == QuarantineExecutionReadinessDisposition.RealProfileCandidate, "Exact default profile should be a real-profile candidate.");
+        Assert(readiness.RequiredConfirmationText == "QUARANTINE", "User decision keeps QUARANTINE as the exact approval phrase.");
+        Assert(readiness.RealProfileIncludedRowLimit == 10, "First real-profile execution should carry the 10-row cap.");
+        Assert(readiness.RealProfileIncludedByteLimit == 1024L * 1024L * 1024L, "First real-profile execution should carry the 1 GB cap.");
+        Assert(readiness.AllowsNarrowFolders, "First real-profile readiness should allow narrow folders.");
+        Assert(readiness.RequiresSelectedManifestRealProfileUndoBeforeForwardQuarantine, "Selected-manifest real-profile Undo should be required before forward movement.");
+        Assert(readiness.RequiresManualRescanAfterExecution, "Real-profile execution should prefer manual rescan guidance after movement.");
+        Assert(readiness.UsesRestoreManifestOnly, "Restore Manifest should remain the only durable cleanup record.");
+        Assert(!readiness.IsPreferredQuarantineRoot, "C: quarantine root should be non-preferred.");
+        Assert(readiness.Blockers.Any(blocker => blocker.Contains("10", StringComparison.OrdinalIgnoreCase)), "Readiness should block over the row cap.");
+        Assert(readiness.Blockers.Any(blocker => blocker.Contains("1 GB", StringComparison.OrdinalIgnoreCase)), "Readiness should block over the byte cap.");
+        Assert(readiness.Blockers.Any(blocker => blocker.Contains("Non-D:", StringComparison.OrdinalIgnoreCase)), "Non-D roots should require extra acknowledgement.");
+        Assert(readiness.Blockers.Any(blocker => blocker.Contains("Only Likely safe", StringComparison.OrdinalIgnoreCase)), "First phase should block non-Likely-safe included rows.");
+        Assert(readiness.Blockers.Any(blocker => blocker.Contains("No-category", StringComparison.OrdinalIgnoreCase)), "First phase should block no-category included rows.");
+        Assert(readiness.Blockers.Any(blocker => blocker.Contains("strict descendant checks", StringComparison.OrdinalIgnoreCase)), "Broad folders with blocked descendants should be blocked.");
+        Assert(!readiness.Blockers.Any(blocker => blocker.Contains("QUARANTINE REAL PROFILE", StringComparison.Ordinal)), "Readiness should not require the rejected stronger phrase.");
+
+        var acknowledged = QuarantineExecutionReadinessBuilder.Build(
+            preview,
+            confirmation,
+            nonPreferredQuarantineRootAcknowledged: true);
+        Assert(acknowledged.IsNonPreferredQuarantineRootAcknowledged, "Readiness should record non-D acknowledgement.");
+        Assert(!acknowledged.Blockers.Any(blocker => blocker.Contains("Non-D:", StringComparison.OrdinalIgnoreCase)), "Non-D acknowledgement should clear only the non-D root acknowledgement blocker.");
+        Assert(acknowledged.Blockers.Any(blocker => blocker.Contains("remains unavailable", StringComparison.OrdinalIgnoreCase)), "Real-profile movement should remain unavailable even with non-D acknowledgement.");
+    }
+
+    public void QuarantineExecutionReadinessKeepsRealProfileChildrenPreviewOnly()
+    {
+        var childPreview = BuildPreviewForManualRows(
+            @"C:\Users\moxhe\AppData\Local",
+            @"D:\WindowsFileCleanerQuarantine",
+            ManualReviewEntry(@"C:\Users\moxhe\AppData\Local\pip\Cache\http-v2"));
+        var childConfirmation = BuildConfirmationForPreview(childPreview, "real-child");
+
+        var childReadiness = QuarantineExecutionReadinessBuilder.Build(childPreview, childConfirmation);
+        Assert(childReadiness.ScopeKind == QuarantineExecutionReadinessScopeKind.RealProfileChild, "Child scopes under the real profile should be recognized.");
+        Assert(childReadiness.Disposition == QuarantineExecutionReadinessDisposition.CustomPreviewOnly, "Child scopes should remain preview-only in the first real-profile phase.");
+        Assert(!childReadiness.CanExecuteInCurrentBuild, "Real-profile child scopes must not execute in the current build.");
+        Assert(childReadiness.Blockers.Any(blocker => blocker.Contains(@"C:\Users\moxhe", StringComparison.OrdinalIgnoreCase)), "Child-scope blocker should name the exact first real-profile scope.");
     }
 
     public void QuarantineActionDraftBuildsActionScopedLayoutWithoutWritingFiles()
@@ -2921,6 +3057,76 @@ internal sealed class StorageScanTests
     {
         var discovery = QuarantineManifestDiscoveryBuilder.Discover(quarantineRootPath);
         return SelectedRestoreManifestReviewBuilder.Build(discovery, manifestPath);
+    }
+
+    private static QuarantinePreview BuildPreviewForManualRows(
+        string cleanupScopePath,
+        string quarantineRootPath,
+        params StorageReviewEntry[] rows)
+    {
+        return QuarantinePreviewBuilder.Build(rows, cleanupScopePath, quarantineRootPath);
+    }
+
+    private static QuarantineConfirmationDraft BuildConfirmationForPreview(
+        QuarantinePreview preview,
+        string idSuffix)
+    {
+        var manifestDraft = RestoreManifestDraftBuilder.Build(
+            preview,
+            new DateTimeOffset(2026, 5, 31, 1, 2, 3, TimeSpan.Zero),
+            $"manifest-draft-{idSuffix}");
+
+        return QuarantineConfirmationDraftBuilder.Build(
+            preview,
+            manifestDraft,
+            new DateTimeOffset(2026, 5, 31, 2, 3, 4, TimeSpan.Zero),
+            $"confirmation-draft-{idSuffix}");
+    }
+
+    private static StorageReviewEntry ManualReviewEntry(
+        string fullPath,
+        bool isDirectory = false,
+        long sizeBytes = 1024,
+        ImportanceRating importanceRating = ImportanceRating.LikelySafe,
+        DeletionRecommendation deletionRecommendation = DeletionRecommendation.QuarantineCandidate,
+        BloatCategory[]? categories = null,
+        StorageEntry[]? children = null)
+    {
+        return new StorageReviewEntry(
+            ManualStorageEntry(
+                fullPath,
+                isDirectory,
+                sizeBytes,
+                importanceRating,
+                deletionRecommendation,
+                categories,
+                children),
+            Depth: 1);
+    }
+
+    private static StorageEntry ManualStorageEntry(
+        string fullPath,
+        bool isDirectory = false,
+        long sizeBytes = 1024,
+        ImportanceRating importanceRating = ImportanceRating.LikelySafe,
+        DeletionRecommendation deletionRecommendation = DeletionRecommendation.QuarantineCandidate,
+        BloatCategory[]? categories = null,
+        StorageEntry[]? children = null)
+    {
+        return new StorageEntry(
+            PathSafety.GetFullPath(fullPath),
+            Path.GetFileName(fullPath.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)),
+            isDirectory,
+            sizeBytes,
+            new DateTimeOffset(2026, 5, 31, 1, 2, 3, TimeSpan.Zero),
+            IsAccessible: true,
+            IsReparsePoint: false,
+            ErrorMessage: null,
+            categories ?? [BloatCategory.AppCache],
+            importanceRating,
+            deletionRecommendation,
+            "Manual test row.",
+            children ?? []);
     }
 
     private static StorageEntry Single(IEnumerable<StorageEntry> entries, string name)

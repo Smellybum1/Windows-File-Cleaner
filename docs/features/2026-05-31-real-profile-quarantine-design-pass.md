@@ -36,12 +36,15 @@ As the local app owner, I want the app to define the exact real-profile Quaranti
 
 Future real-profile Quarantine implementation should use a composite readiness contract before enabling movement:
 
-- Scope eligibility: first real-profile phase targets the recognized real-profile Cleanup Scope only. Custom non-fixture scopes remain preview-only unless a later design includes them.
+- Scope eligibility: first real-profile phase targets exact `C:\Users\moxhe` only. Child scopes, `ProgramData`, `Program Files`, and custom non-fixture scopes remain preview-only unless a later design includes them.
 - Review readiness: Review Shortlist, Quarantine Preview, Restore Manifest Draft, Quarantine Confirmation Draft, and Quarantine Action Draft must agree with no blockers or redundant parent/child overlap.
-- Quarantine Root Execution Safety: the root must be safe for execution, not merely usable for preview.
+- First-phase eligibility: real-profile execution is capped at 10 included rows and 1 GB, limited to `Likely safe` + `Quarantine candidate` rows, and may include files plus narrow folders only when strict descendant checks pass.
+- Quarantine Root Execution Safety: the root must be safe for execution, not merely usable for preview. `D:` is default/preferred; non-`D:` roots are allowed only with an extra acknowledgement after all other root safety checks pass.
 - Pre-Execution Revalidation: immediately before execution, every included source, planned destination, action root, and manifest path must be checked against the live filesystem.
 - Recovery readiness: real-profile Restore Manifest write-ahead behavior, partial-failure guidance, recovery-review states, and selected-manifest real-profile Undo Quarantine readiness must exist before forward movement.
-- Explicit real-profile approval: exact `QUARANTINE` remains necessary but is not sufficient. The real-profile phase needs a stronger, real-profile-specific approval step or phrase.
+- Explicit confirmation and approval: exact `QUARANTINE` remains the typed confirmation phrase. It is necessary but not sufficient; all readiness dimensions must still pass.
+- Post-execution behavior: after future real-profile movement, show stale-scan guidance and ask the user to rescan manually.
+- Durable record: Restore Manifest remains the only durable cleanup record for now.
 
 ## Domain language changes
 
@@ -54,13 +57,19 @@ Future real-profile Quarantine implementation should use a composite readiness c
 
 ## Open questions
 
-Questions that must be answered before implementation:
+Answered before implementation:
 
-- Should the first real-profile execution phase support only `C:\Users\moxhe`, leaving all custom non-fixture Cleanup Scopes preview-only? Recommendation: yes.
-- Should the first real-profile execution phase require a `D:` Quarantine Root instead of allowing a non-`D:` override? Recommendation: require `D:` first.
-- What first-batch cap should apply to real-profile movement, if any? Recommendation: start with a small explicit row and byte cap.
-- Should selected-manifest real-profile Undo Quarantine execution be implemented before the first forward real-profile Quarantine action? Recommendation: yes.
-- What real-profile approval phrase should be required beyond exact `QUARANTINE`? Recommendation: use a phrase that names real-profile movement, such as `QUARANTINE REAL PROFILE`.
+- First real-profile execution phase supports only exact `C:\Users\moxhe`; custom non-fixture scopes remain preview-only.
+- Other folders can be considered later: `ProgramData` should be a separate cautious mode, while `Program Files` should prefer report/uninstall guidance before file movement.
+- `D:` is the default/preferred Quarantine Root, but the user can choose another safe fully qualified root.
+- Non-`D:` roots are allowed only with an extra acknowledgement; unsafe roots stay blocked.
+- First real-profile execution is capped at 10 included rows and 1 GB total previewed size.
+- Selected-manifest real-profile Undo Quarantine must be implemented and tested before forward real-profile Quarantine execution.
+- The typed approval phrase remains `QUARANTINE`.
+- First real-profile execution is limited to `Likely safe` + `Quarantine candidate` rows.
+- Files and narrow folders are allowed; folders must pass strict descendant checks.
+- After real-profile Quarantine, the app should ask the user to rescan manually rather than auto-rescanning.
+- Restore Manifest remains the only durable cleanup record for now.
 
 Questions that can be deferred:
 
@@ -92,6 +101,7 @@ Questions that can be deferred:
 - Quarantine Root execution safety depends on deciding whether `D:` is mandatory for the first real-profile phase.
 - Real-profile approval wording depends on how much risk the UI should make the user restate before movement.
 - Batch caps depend on the first execution scope and how much manual review evidence the user wants per action.
+- The real-profile confirmation phrase stays aligned with fixture confirmation, so the extra safety must come from readiness blockers and clear scope wording rather than a different typed phrase.
 
 ## Evidence and validation gate
 
@@ -114,7 +124,7 @@ Validation gate before implementation:
 - [x] Domain terms are clear enough for the design pass.
 - [x] Required lifecycle, permission, and persistence rules are clear enough for a proposed ADR.
 - [x] The narrowest relevant verification path is known.
-- [x] Open questions are explicitly deferred before implementation.
+- [x] Open questions are answered or explicitly deferred before implementation.
 
 Rejected ideas buffer:
 
@@ -131,15 +141,16 @@ Small feature-level decisions:
 - This packet is documentation and design only.
 - New terms are added as draft domain language so future code can use one vocabulary.
 - Future implementation should be staged so each readiness dimension can be tested while movement remains blocked.
+- User decisions above are accepted input for the first non-moving readiness model packet.
 
 ADR-worthy decisions:
 
 - [ ] None
-- [x] ADR needed: ADR 0018 proposes a composite real-profile Quarantine execution readiness model.
+- [x] ADR needed: ADR 0018 accepts a composite real-profile Quarantine execution readiness model.
 
 ## Implementation plan
 
-1. Add `QuarantineExecutionReadiness` core model and tests that report fixture-executable, real-profile-candidate, and custom-preview-only states without changing WPF execution availability.
+1. Add `QuarantineExecutionReadiness` core model and tests that report fixture-executable, real-profile-candidate, and custom-preview-only states without changing WPF execution availability. Completed in the first code packet.
 2. Add `QuarantineRootExecutionSafety` checks and tests for fully qualified path, preferred `D:` execution root, root/scope containment, free space, action-root collision, and item destination collision.
 3. Add Pre-Execution Revalidation tests using synthetic fixtures for missing source, changed source, reparse source, outside-scope source, destination collision, stale preview, redundant overlap, and manifest/action mismatch.
 4. Add WPF readiness output that names missing real-profile prerequisites while keeping real-profile execution disabled.
@@ -170,7 +181,7 @@ Possible future implementation files:
 
 Manual checks:
 
-- Review the proposed open questions before any implementation packet.
+- Review the answered first-phase decisions before any implementation packet.
 - Keep running fixture review before any later real-profile movement work.
 
 Automated tests:
@@ -186,7 +197,7 @@ Risks:
 
 - The readiness model could become too noisy unless WPF groups blockers by readiness dimension.
 - Revalidation could block legitimate cleanup if source metadata changes for harmless reasons.
-- Requiring `D:` for the first real-profile phase may be too strict for some future machines, but it matches the current project preference.
+- Allowing non-`D:` roots with acknowledgement adds a branch that must be tested carefully so unsafe roots still have no override.
 
 Assumptions:
 
@@ -200,10 +211,11 @@ Completed on: 2026-05-31
 
 What changed:
 
-- Added a proposed ADR for the composite Real-Profile Quarantine Execution Readiness model.
+- Added ADR 0018 for the composite Real-Profile Quarantine Execution Readiness model; it was later accepted after user decisions.
 - Added this feature brief with readiness dimensions, implementation staging, open questions, and non-goals.
 - Added draft domain/glossary terms for execution readiness, root execution safety, pre-execution revalidation, and restore readiness.
 - Updated handoff/progress docs so the next packet can start from the design contract.
+- Later recorded user decisions for exact scope, root policy, batch cap, row/folder eligibility, Undo prerequisite, `QUARANTINE` phrase, manual rescan, and Restore Manifest-only durable record.
 
 Files changed:
 
@@ -224,16 +236,16 @@ Docs updated:
 
 ADRs added or skipped:
 
-- Added proposed ADR 0018.
+- Added ADR 0018; it was later accepted after user decisions.
 
 Follow-up work:
 
-- Decide first real-profile scope limit, root rule, batch cap, real-profile approval phrase, and restore prerequisite.
-- Implement the core readiness model while keeping real-profile movement blocked.
+- Implement Quarantine Root Execution Safety while keeping real-profile movement blocked.
+- Implement Pre-Execution Revalidation while keeping real-profile movement blocked.
 
 Open questions:
 
-- See the Open questions section above.
+- Deferred questions remain: whether custom non-fixture scopes ever become executable, whether all-manifest real-profile restore should exist, and whether permanent deletion should ever exist.
 
 Risky assumptions:
 
