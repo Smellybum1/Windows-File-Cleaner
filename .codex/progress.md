@@ -20,6 +20,43 @@ Storage Scan MVP packet implemented and tested by the user against `C:\Users\mox
 
 ## Completed packets
 
+### 2026-05-30: Manifest Review Control Grouping
+
+Status: completed
+
+Evidence:
+
+- The manifest-review row now has visible `?` cues for `Discover manifests`, Restore Manifest selection, and `Preview all-manifest readiness`.
+- As separate `WrapPanel` siblings, a help cue could wrap away from its related control in a narrower layout.
+
+Implementation:
+
+- Grouped `Discover manifests` with its `?` help cue.
+- Grouped `Preview all-manifest readiness` with its `?` help cue.
+- Grouped `Selected manifest`, its `?` help cue, and the Restore Manifest selector.
+- Updated README and fixture checklist wording so visible review checks cue/control pairing when rows wrap.
+- No scan, discovery, readiness, restore, cleanup execution, deletion, or cleanup history behavior changed.
+
+Verification:
+
+- `dotnet run --project tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj` passed.
+
+Docs updated:
+
+- `README.md`
+- `docs/features/2026-05-30-all-manifest-readiness-help-cue.md`
+- `docs/features/2026-05-30-manifest-review-control-grouping.md`
+- `tools/Start-MvpFixtureReview.ps1`
+- `.codex/progress.md`
+
+ADRs:
+
+- No ADR added. This is reversible WPF layout polish with no persistence, cleanup execution, restore rule, data-model, or security change.
+
+Open questions:
+
+- During visible fixture review, confirm the grouped manifest controls fit comfortably at normal window sizes.
+
 ### 2026-05-30: All-Manifest Readiness Help Cue
 
 Status: completed

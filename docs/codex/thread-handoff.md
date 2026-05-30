@@ -9,7 +9,7 @@ Use this when starting a fresh Codex thread for this repository.
 - Repo: `D:\Codex\Windows File Cleaner`
 - GitHub: `Smellybum1/Windows-File-Cleaner`
 - Branch: `main`
-- Latest completed packet: All-Manifest Readiness Help Cue
+- Latest completed packet: Manifest Review Control Grouping
 - Current app stack: C# / WPF / .NET 8
 - Desktop shortcut target: `D:\Codex\Windows File Cleaner\src\WindowsFileCleaner.App\bin\Debug\net8.0-windows\WindowsFileCleaner.App.exe`
 
@@ -69,6 +69,7 @@ Fixture-only cleanup execution exists for synthetic Cleanup Scopes. Real-profile
 - Restore Manifest Selection Help Cue added a visible hoverable `?` cue beside the selected-manifest picker, mirrors the picker tooltip/help text, and expanded WPF smoke affordance coverage to sixteen cues.
 - Quarantine Manifest Discovery Help Cue added a visible hoverable `?` cue beside `Discover manifests`, mirrors the discovery tooltip/help text, and expands WPF smoke affordance coverage to seventeen cues.
 - All-Manifest Readiness Help Cue added a visible hoverable `?` cue beside `Preview all-manifest readiness`, mirrors the readiness tooltip/help text, and expands WPF smoke affordance coverage to eighteen cues.
+- Manifest Review Control Grouping keeps `Discover manifests`, `Preview all-manifest readiness`, and `Selected manifest` controls visually grouped with their `?` help cues when wrapping.
 - Quarantine Execution Scope Status added plain-language fixture-only versus preview-only scope wording to Quarantine Preview and Quarantine Execution Gate output.
 - Fixture Review Checklist Output added a compact terminal checklist to `Start-MvpFixtureReview.ps1`.
 - Fixture Review Checklist-Only Mode added `Start-MvpFixtureReview.ps1 -ChecklistOnly`, which prints the same checklist without preflight, fixture creation, or WPF launch.

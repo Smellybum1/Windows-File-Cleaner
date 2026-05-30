@@ -54,6 +54,7 @@ ADRs added or skipped:
 Open questions:
 
 - During visible fixture review, confirm the manifest discovery/readiness row still fits comfortably with the added cue.
+- Later packet `2026-05-30-manifest-review-control-grouping.md` grouped manifest controls with their `?` cues so wrapping keeps each cue next to its related control.
 
 Risky assumptions:
 
