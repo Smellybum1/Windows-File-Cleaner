@@ -2642,7 +2642,7 @@ It is shown in Quarantine Preview and Quarantine Execution Gate output so real-p
 ### Real-Profile Quarantine Readiness Contract
 
 Status: draft
-Last reviewed: 2026-05-30
+Last reviewed: 2026-05-31
 
 #### Definition
 
@@ -2681,6 +2681,182 @@ It keeps real-profile execution unavailable until the app has more than a clean 
 - Do not enable real-profile WPF Quarantine execution by reusing the current fixture-only `IsExecutionImplemented` flag.
 - Future real-profile execution should use a richer execution availability/readiness model that can name blockers and prerequisites.
 - Keep real-profile and custom non-fixture WPF execution blocked until immediate revalidation, Undo Quarantine readiness, recovery UX, and Quarantine Root safety checks are designed and tested.
+
+### Real-Profile Quarantine Execution Readiness
+
+Status: draft
+Last reviewed: 2026-05-31
+
+#### Definition
+
+Real-Profile Quarantine Execution Readiness is the future composite readiness result that must pass before WPF Quarantine execution can move files from a recognized real-profile Cleanup Scope.
+
+It is stricter than Quarantine Confirmation Draft and Quarantine Execution Gate. It combines scope eligibility, review readiness, Quarantine Root Execution Safety, Pre-Execution Revalidation, recovery readiness, and explicit real-profile approval semantics.
+
+#### Examples
+
+- Report that a clean Quarantine Preview is not enough because real-profile restore readiness is still unavailable.
+- Report that the Quarantine Root is usable for preview but blocked for execution because it is not on the preferred `D:` drive or is inside the Cleanup Scope.
+- Report that a source file changed after preview and must be re-previewed before movement.
+
+#### Non-examples
+
+- Fixture-only WPF Quarantine Execution.
+- Quarantine Preview.
+- A single boolean execution-implemented flag.
+- Permanent deletion.
+- Persisted cleanup history.
+
+#### Lifecycle
+
+- Built after Quarantine Preview, Restore Manifest Draft, Quarantine Confirmation Draft, and Quarantine Action Draft have no data blockers.
+- Rebuilt immediately before any future real-profile move attempt.
+- Remains closed when any readiness dimension has blockers.
+- Does not move files, write manifests, or approve cleanup by itself.
+
+#### Relationships
+
+- Implements the Real-Profile Quarantine Readiness Contract from ADR 0017.
+- Is proposed by ADR 0018.
+- Depends on Quarantine Root Execution Safety and Pre-Execution Revalidation.
+- Requires Real-Profile Restore Readiness before forward real-profile movement is exposed.
+
+#### Code implications
+
+- Use a named readiness result, not the current fixture-only `IsExecutionImplemented` flag, for future real-profile execution availability.
+- Keep custom non-fixture Cleanup Scopes preview-only until a later design explicitly includes them.
+- Make blockers visible by readiness dimension so disabled execution controls explain why real-profile movement is unavailable.
+
+### Quarantine Root Execution Safety
+
+Status: draft
+Last reviewed: 2026-05-31
+
+#### Definition
+
+Quarantine Root Execution Safety is the future validation that decides whether the current Quarantine Root Selection is safe for an actual Quarantine action.
+
+It is separate from Quarantine Root Safety Note, which is preview-only. Execution safety can check containment, drive policy, capacity, action-root collisions, and destination collisions before any real-profile movement is allowed.
+
+#### Examples
+
+- Allow a fully qualified `D:\WindowsFileCleanerQuarantine` root for execution after capacity and collision checks pass.
+- Block a root inside the active Cleanup Scope.
+- Block a root that is a parent of the active Cleanup Scope.
+- Block a planned action root that already exists.
+- Block a planned item destination that already exists.
+
+#### Non-examples
+
+- Quarantine Root Safety Note.
+- Approval to move files.
+- Folder creation during preview.
+- A cleanup history store.
+
+#### Lifecycle
+
+- Evaluated before future execution readiness can open.
+- Re-evaluated during Pre-Execution Revalidation.
+- Does not create folders or write manifests until execution has actually started.
+
+#### Relationships
+
+- Uses Quarantine Root Selection.
+- Feeds Real-Profile Quarantine Execution Readiness.
+- Complements Quarantine Action Draft's action-scoped path checks.
+
+#### Code implications
+
+- Keep preview-root safety and execution-root safety as separate concepts.
+- Check that the root and Cleanup Scope are not inside each other.
+- Check capacity and collision evidence before movement.
+- For the first real-profile phase, treat non-`D:` roots as blocked unless a later decision adds an explicit override.
+
+### Pre-Execution Revalidation
+
+Status: draft
+Last reviewed: 2026-05-31
+
+#### Definition
+
+Pre-Execution Revalidation is the immediate live-filesystem check that reruns after explicit approval and before any future real-profile Quarantine move.
+
+It proves that the files and destinations about to be touched still match the Review Shortlist, Quarantine Preview, Restore Manifest Draft, and Quarantine Action Draft that the user reviewed.
+
+#### Examples
+
+- Block execution when an included source path no longer exists.
+- Block execution when an included source path became a reparse point.
+- Block execution when a planned destination path now exists.
+- Block execution when preview/draft counts, bytes, paths, or action paths no longer match.
+- Block execution when the action root or Restore Manifest path already exists.
+
+#### Non-examples
+
+- A background scanner.
+- A replacement for Quarantine Preview.
+- Permission to ignore blockers.
+- Restore execution.
+
+#### Lifecycle
+
+- Runs only after review readiness and explicit real-profile approval are otherwise clean.
+- Runs immediately before the first write-ahead Restore Manifest write.
+- If any blocker appears, execution stays closed and the user must rescan or re-preview.
+
+#### Relationships
+
+- Feeds Real-Profile Quarantine Execution Readiness.
+- Rechecks Quarantine Root Execution Safety.
+- Protects the gap between read-only review and a future file-moving Cleanup Action.
+
+#### Code implications
+
+- Use path APIs rather than string-only path checks.
+- Revalidate source existence, scope containment, reparse-point status, access, size/path metadata, destination availability, action-root availability, and Restore Manifest path availability.
+- Keep all blockers path-specific enough for the WPF readiness output to explain the next manual step.
+
+### Real-Profile Restore Readiness
+
+Status: draft
+Last reviewed: 2026-05-31
+
+#### Definition
+
+Real-Profile Restore Readiness is the future recovery prerequisite that must be designed and tested before forward real-profile Quarantine movement is exposed.
+
+It means the app can inspect real-profile Restore Manifests, explain restorable versus recovery-review states, and provide a trusted selected-manifest Undo Quarantine path without overwriting original paths.
+
+#### Examples
+
+- A real-profile Restore Manifest with Moved entries can be selected, previewed, confirmed, and restored only when original paths are clear.
+- A Moving, Failed, Restoring, or Restore failed entry is routed to recovery review instead of automatic restore.
+- A manifest write failure after partial movement leaves visible recovery evidence.
+
+#### Non-examples
+
+- All-manifest restore.
+- Permanent deletion.
+- Cleaning up empty quarantine folders.
+- Reconstructing missing quarantined files.
+
+#### Lifecycle
+
+- Must exist before future forward real-profile movement is enabled.
+- Uses Restore Manifest, Restore Readiness Preview, Selected Restore Manifest Review, Selected Restore Confirmation Draft, Selected Restore Execution Gate, and Undo Quarantine Executor concepts.
+- Does not imply persisted cleanup history.
+
+#### Relationships
+
+- Supports Real-Profile Quarantine Execution Readiness.
+- Builds on Undo Quarantine and fixture-only Selected Restore Execution.
+- Keeps recovery and forward movement coupled for safety.
+
+#### Code implications
+
+- Design real-profile selected restore before enabling real-profile forward Quarantine.
+- Keep all-manifest real-profile restore out of scope unless a later design explicitly includes it.
+- Continue refusing to overwrite original paths during restore.
 
 ### Fixture-only WPF Quarantine Execution
 

@@ -8,19 +8,66 @@ Use it to preserve what was completed, what was verified, what was rejected, and
 
 Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. The app has a broad read-only review workflow, manual fixture Show children/Clipboard crash fix, scan cancel help text, scan-gate summary help text plus a visible hoverable `?` help cue in a compact wrapping scan-header status strip, real-profile acknowledgement help text plus a visible hoverable `?` help cue, Cleanup Scope Safety Note and Quarantine Root Safety Note help text plus visible hoverable `?` help cues, Review Mix, Matched Review Mix, Review Shortlist Safety Mix, Review Grid Mode Status, inline Quarantine Preview status, Quarantine Execution Gate, Selected Restore Execution Gate, exact-confirmation fields, Quarantine Manifest Discovery, Restore Manifest selection, Restore Readiness Preview, Safety Summary header, and Quarantine Shortlist header hoverable `?` help cues with tooltip/help text and affordance smoke coverage plus a full `.cmd` MVP preflight after scan-gate cue coverage, Safety Summary shortcut help text, Safety Summary collapsed-header state styling, review-lens filter help text, manifest discovery/selection help text, debounced Storage Review Search for large real-profile scans, Storage Review Search input automation help text, scan-gate automation help text, Cleanup Scope input/browse automation help text, Quarantine Root input/browse automation help text, selected-row action automation help text, visible-row shortlist automation help text, execution/readiness automation help text, review report/preview automation help text, review toolbar automation help text, review navigation/export tooltip clarity, Review Grid Mode Status tooltip/help text, scope-specific Cleanup Scope Scan Gate discoverability polish, Cleanup Scope and Quarantine Root browse tooltip clarity, selected-row action tooltip clarity, Matched Review Mix, Review Shortlist Safety Mix, visible-row Review Shortlist bulk labels/tooltips, review toolbar report/preview tooltip clarity, Selected Folder Subtree Summary, Storage Hotspot Trail, Selected Folder Child Focus, Selected Folder Descendant Focus, execution-policy-friendly fixture/preflight tooling with checklist output, checklist-only mode now covered by MVP preflight and GitHub Actions now running preflight through the same `.cmd` wrapper as local user instructions, hoverable help-cue checklist wording, approval-boundary prompt coverage, selected-restore scope-status checklist coverage, all-manifest restore boundary checklist coverage, manifest review and selected-restore gate checklist steps split for easier fixture review, redundant parent/child preview overlap cleanup through `Remove overlapping parents`, execution-control tooltip clarity, readiness scope tooltip clarity, Undo Quarantine domain consistency, Restore Manifest wording polish, Selected Manifest Readiness label polish, and All-Manifest Readiness label polish, Quarantine Preview and Quarantine Execution Gate scope-status/approval-boundary wording without technical implementation-flag wording plus a full `.cmd` MVP preflight after that wording packet, fixture checklist wording aligned to the visible `Quarantine included shortlist` button plus a full `.cmd` MVP preflight after that checklist label packet, WPF Quarantine Preview and Execution Gate placeholder text aligned to the visible `Preview shortlist quarantine` button plus a full `.cmd` MVP preflight after that placeholder label packet, WPF Quarantine Execution Gate missing-preview blocker aligned to the visible `Preview shortlist quarantine` button, Quarantine Execution Gate help cue plus a full `.cmd` MVP preflight after that help-cue packet, Restore Manifest Draft, Quarantine Confirmation Draft, confirmation label wording polish, Quarantine Action Draft, write-ahead Restore Manifest persistence, core Quarantine execution, core Undo Quarantine, fixture-only WPF Quarantine execution, WPF undo for the current fixture execution, Current quarantined grid switching with a moved-entry count label for current-session moved entries plus a full `.cmd` MVP preflight after that count-label packet, Quarantine Manifest Discovery with all-manifest restore wording and a visible discovery `?` help cue, Selected Restore Manifest Review with readiness-evidence wording and a visible selection `?` help cue, Selected Restore Confirmation Gate with scope-status/approval-boundary wording, visible help cue, and without technical implementation-flag wording, Fixture-only Selected Restore Execution, Restore Readiness Preview with all-manifest restore wording and a visible all-manifest readiness `?` help cue, a Real-Profile Quarantine Readiness Contract in ADR 0017 with WPF regression coverage for real/custom execution blockers, and a compact `AGENTS.md` that points to detailed workflow docs instead of duplicating them. Real-profile WPF Quarantine execution, real-profile WPF Undo Quarantine, permanent deletion, and persisted cleanup history remain unavailable. Fresh-thread handoff notes and a startup prompt live in `docs/codex/thread-handoff.md`.
 
-Latest small packet aligned the fixture launcher checklist, README manual review wording, and MVP readiness audit follow-up with ADR 0017 so manual prompts state that Review Shortlist, clean Quarantine Preview, exact `QUARANTINE`, real-profile scan acknowledgement, and exact `RESTORE` do not unlock real-profile movement.
+Latest small packet added a real-profile Quarantine design pass: proposed ADR 0018, a feature brief, and draft domain/glossary terms for Real-Profile Quarantine Execution Readiness, Quarantine Root Execution Safety, Pre-Execution Revalidation, and Real-Profile Restore Readiness. No real-profile movement, restore, deletion, persisted cleanup history, fixture behavior, scan behavior, or WPF gate behavior changed.
 
 ## Next recommended work
 
-1. Start the next thread from `docs/codex/thread-handoff.md`, optionally print the manual prompts with `.\tools\Start-MvpFixtureReview.cmd -ChecklistOnly`, then run `.\tools\Start-MvpFixtureReview.cmd`, confirm the launched app shows Fixture Cleanup Scope and its compact wrapping header status strip with the Cleanup Scope Safety Note `?` help cue, scope-specific scan-gate wording, scan-gate summary `?` help cue, Cleanup Scope browse tooltip, click `Scan`, and manually inspect layout, visible wording, Storage Review Search, Clear search tooltip, `parent:` search, `under:` search, Matched Review Mix, Review Shortlist Safety Mix, Selected Folder Subtree Summary, Storage Hotspot Trail, Selected Folder Child Focus (`Show children`), Selected Folder Descendant Focus (`Show descendants`), selected-row action tooltips, Storage Review Display Window controls and Previous/Next rows tooltips, Scan Report Export tooltip, Reset view tooltip, the `Relative path` and `Parent` columns, Selected Path Hierarchy Context, Selected File Content Preview, Selected Path Review Guidance, export dialogs, Safety Summary shortcuts, Review Shortlist, `Shortlist visible rows`, `Remove visible rows`, visible-row shortlist tooltips, Review Shortlist export/clear tooltips, typed/browsed Quarantine Root Selection, Quarantine Root browse tooltip, Quarantine Root Safety Note and its `?` help cue, Quarantine Preview, `Preview shortlist quarantine`, `Export preview`, `Remove overlapping parents` for redundant parent/child previews, shortlist confirmation `?` help cue, Quarantine Execution Gate and its `?` help cue, Quarantine Action Draft, execution-control tooltips, fixture-only `Quarantine included shortlist`, `Current quarantined (N)`, current-fixture `Undo fixture quarantine`, `Discover manifests` and its `?` help cue, selected manifest `?` help cue, `Preview selected manifest readiness`, `Preview selected restore gate` tooltip, selected restore confirmation `?` help cue, scope status, approval boundary, Selected Restore Execution Gate `?` help cue, fixture-only `Restore selected fixture manifest`, `Preview all-manifest readiness` and its `?` help cue, Review Mix, Access issues filter, category filter, No category filter, Size filter, filter wording, and the final ADR 0017 real-profile/custom readiness-contract blocker wording.
-2. Use `README.md` and `docs/features/2026-05-28-mvp-readiness-audit.md` to rerun the WPF app against `C:\Users\moxhe`; confirm `Scan` is disabled until the real-profile preflight acknowledgement is checked and the acknowledgement `?` help cue mirrors the tooltip/help boundary.
-3. Run `.\tools\Invoke-MvpPreflight.cmd` before any later real-profile scan if the worktree changes.
-4. Rerun the real scan and check whether the cleanup scope root row, `Relative path`, `Parent`, `Contents`, and `Access` columns, Size filter, `parent:` / `under:` / `access:readable` / `access:access issue` search, Matched Review Mix, Selected Folder Subtree Summary, Storage Hotspot Trail, `Show children`, `Show descendants`, Previous rows / Next rows, Safety Summary candidate and no-category examples, selected-row relative/parent/depth/access context, cache-specific Review guidance, specific rebuildable cache candidates such as `DXCache` and `pip\Cache`, conservative game/mod-manager labels such as OptiFine/CurseForge/Vortex, Cloud sync data and Credential data labels, and `Preview file` action make unfamiliar rows easier to triage.
-5. Retest the Quarantine Readiness UI with a real scan and confirm typed Quarantine root destinations, broad-parent protected descendant blockers, readable relative examples, draft/readiness wording, and ADR 0017 real-profile readiness-contract blockers are understandable.
-6. Defer real-profile Quarantine execution and broad WPF Undo Quarantine that restores discovered manifests until the Real-Profile Quarantine Readiness Contract has a richer readiness model, immediate pre-execution revalidation, Quarantine Root safety checks, trusted Undo Quarantine/recovery behavior, and explicit approval semantics.
-7. Revisit .NET 10 before packaging or long-term distribution.
+1. Review `docs/features/2026-05-31-real-profile-quarantine-design-pass.md` and decide the first real-profile scope limit, `D:` root rule, first-batch cap, real-profile approval phrase, and whether selected-manifest real-profile Undo Quarantine must ship before forward movement.
+2. Implement the first code packet from proposed ADR 0018: a core `QuarantineExecutionReadiness` model and tests that name fixture-executable, real-profile-candidate, and custom-preview-only states while keeping real-profile movement blocked.
+3. Start the next manual fixture review from `docs/codex/thread-handoff.md`, optionally print the prompts with `.\tools\Start-MvpFixtureReview.cmd -ChecklistOnly`, then run `.\tools\Start-MvpFixtureReview.cmd` and inspect the visible fixture-only/readiness boundaries.
+4. Use `README.md` and `docs/features/2026-05-28-mvp-readiness-audit.md` to rerun the WPF app against `C:\Users\moxhe`; confirm `Scan` is disabled until the real-profile preflight acknowledgement is checked and the acknowledgement `?` help cue mirrors the tooltip/help boundary.
+5. Run `.\tools\Invoke-MvpPreflight.cmd` before any later real-profile scan if the worktree changes.
+6. Rerun the real scan and check whether the cleanup scope root row, `Relative path`, `Parent`, `Contents`, and `Access` columns, Size filter, `parent:` / `under:` / `access:readable` / `access:access issue` search, Matched Review Mix, Selected Folder Subtree Summary, Storage Hotspot Trail, `Show children`, `Show descendants`, Previous rows / Next rows, Safety Summary candidate and no-category examples, selected-row relative/parent/depth/access context, cache-specific Review guidance, specific rebuildable cache candidates such as `DXCache` and `pip\Cache`, conservative game/mod-manager labels such as OptiFine/CurseForge/Vortex, Cloud sync data and Credential data labels, and `Preview file` action make unfamiliar rows easier to triage.
+7. Retest the Quarantine Readiness UI with a real scan and confirm typed Quarantine root destinations, broad-parent protected descendant blockers, readable relative examples, draft/readiness wording, and ADR 0017/0018 real-profile readiness-contract blockers are understandable.
+8. Defer real-profile Quarantine execution and broad WPF Undo Quarantine that restores discovered manifests until the Real-Profile Quarantine Readiness Contract has a richer readiness model, immediate pre-execution revalidation, Quarantine Root execution safety checks, trusted Undo Quarantine/recovery behavior, and explicit approval semantics.
+9. Revisit .NET 10 before packaging or long-term distribution.
 
 ## Completed packets
+
+### 2026-05-31: Real-Profile Quarantine Design Pass
+
+Status: completed
+
+Evidence:
+
+- User asked for a real-profile Quarantine design pass after fixture review and readiness-contract work.
+- ADR 0017 already blocks real-profile movement until the app has a richer execution-readiness contract.
+- Code inspection showed the current gate still hinges on fixture-only execution availability and does not yet model real-profile root safety, pre-execution revalidation, or real-profile restore readiness as first-class blockers.
+
+Implementation:
+
+- Added proposed ADR 0018 for a composite Real-Profile Quarantine Execution Readiness model.
+- Added a feature brief with readiness dimensions, implementation staging, open questions, and explicit non-goals.
+- Added draft domain/glossary language for Real-Profile Quarantine Execution Readiness, Quarantine Root Execution Safety, Pre-Execution Revalidation, and Real-Profile Restore Readiness.
+- Updated handoff and progress docs so the next packet can start from the design contract.
+- No WPF behavior, scan behavior, fixture Quarantine behavior, real-profile/custom execution availability, restore availability, permanent deletion, or cleanup history changed.
+
+Verification:
+
+- `git -c safe.directory='D:/Codex/Windows File Cleaner' diff --check`
+
+Docs updated:
+
+- `docs/decisions/0018-use-real-profile-quarantine-execution-readiness-model.md`
+- `docs/features/2026-05-31-real-profile-quarantine-design-pass.md`
+- `docs/domain/context.md`
+- `docs/domain/glossary.md`
+- `docs/codex/thread-handoff.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- Added proposed ADR 0018.
+
+Open questions:
+
+- Decide first real-profile scope limit, root rule, first-batch cap, selected-restore prerequisite, and real-profile approval phrase before implementation.
+
+Rejected ideas buffer:
+
+- Do not flip `IsExecutionImplemented` for real-profile scopes.
+- Do not treat preview-only Quarantine Root Safety Note as execution-root safety.
+- Do not treat exact `QUARANTINE` alone as sufficient real-profile approval.
 
 ### 2026-05-31: Fixture Checklist Readiness-Contract Boundary
 
