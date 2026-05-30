@@ -9,7 +9,7 @@ Use this when starting a fresh Codex thread for this repository.
 - Repo: `D:\Codex\Windows File Cleaner`
 - GitHub: `Smellybum1/Windows-File-Cleaner`
 - Branch: `main`
-- Latest completed packet: Compact Scan Header Status
+- Latest completed packet: Trim AGENTS Workflow Doc
 - Current app stack: C# / WPF / .NET 8
 - Desktop shortcut target: `D:\Codex\Windows File Cleaner\src\WindowsFileCleaner.App\bin\Debug\net8.0-windows\WindowsFileCleaner.App.exe`
 
@@ -75,6 +75,7 @@ Fixture-only cleanup execution exists for synthetic Cleanup Scopes. Real-profile
 - Manifest Fixture Checklist Split separated the launcher checklist's manifest discovery/all-manifest readiness checks from selected manifest readiness/selected restore gate checks, making the manual fixture prompt easier to follow without changing WPF behavior.
 - Redundant Shortlist Overlap Cleanup added `Remove overlapping parents` so redundant parent/child Quarantine Preview blockers can be fixed by removing broader parent rows from Review Shortlist, clearing stale preview/gate state, and re-previewing; WPF smoke coverage passed.
 - Compact Scan Header Status moved the Cleanup Scope Safety Note, scan-gate summary, and scan-gate detail into one wrapping WPF header status strip so wide windows recover review height without removing safety wording or changing scan/cleanup behavior; WPF smoke coverage passed.
+- Trim AGENTS Workflow Doc reduced `AGENTS.md` from 139 to 74 lines by keeping the repo control-layer rules and linking detailed workflow guidance back to `docs/codex/grill-with-docs.md` and `docs/codex/skillopt-inspired-workflow.md`.
 - Quarantine Execution Scope Status added plain-language fixture-only versus preview-only scope wording to Quarantine Preview and Quarantine Execution Gate output.
 - Fixture Review Checklist Output added a compact terminal checklist to `Start-MvpFixtureReview.ps1`.
 - Fixture Review Checklist-Only Mode added `Start-MvpFixtureReview.ps1 -ChecklistOnly`, which prints the same checklist without preflight, fixture creation, or WPF launch.
@@ -209,9 +210,9 @@ We are continuing Windows File Cleaner in D:\Codex\Windows File Cleaner.
 
 Read AGENTS.md, .codex/progress.md, README.md, docs/codex/thread-handoff.md, docs/domain/context.md, docs/domain/glossary.md, and relevant docs/features/ and docs/decisions/ before implementing.
 
-Current state: main is pushed through the latest compact scan-header status packet. The app is a C#/.NET 8 WPF local Windows cleanup reviewer for C:\Users\moxhe. Storage Scan is read-only. Fixture-only Quarantine execution and fixture-only selected restore exist, but real-profile Quarantine execution, real-profile Undo Quarantine, permanent deletion, and persisted cleanup history remain intentionally unavailable.
+Current state: main is pushed through the latest compact `AGENTS.md` workflow-doc trim packet. The app is a C#/.NET 8 WPF local Windows cleanup reviewer for C:\Users\moxhe. Storage Scan is read-only. Fixture-only Quarantine execution and fixture-only selected restore exist, but real-profile Quarantine execution, real-profile Undo Quarantine, permanent deletion, and persisted cleanup history remain intentionally unavailable.
 
-Recent completed packets added visible hoverable ? cues for Restore Manifest selection, Discover manifests, and Preview all-manifest readiness; grouped those manifest review controls with their cues so wrapping keeps cue/control pairs together; refreshed handoff docs; passed full cmd MVP preflight after manifest control grouping; split the fixture launcher checklist so manifest discovery/all-manifest readiness checks are separate from selected restore gate checks; added `Remove overlapping parents` for redundant parent/child Quarantine Preview blockers; and compacted the scan-header status into one wrapping strip. WPF smoke coverage tracks 18 circular help cues.
+Recent completed packets added visible hoverable ? cues for Restore Manifest selection, Discover manifests, and Preview all-manifest readiness; grouped those manifest review controls with their cues so wrapping keeps cue/control pairs together; refreshed handoff docs; passed full cmd MVP preflight after manifest control grouping; split the fixture launcher checklist so manifest discovery/all-manifest readiness checks are separate from selected restore gate checks; added `Remove overlapping parents` for redundant parent/child Quarantine Preview blockers; compacted the scan-header status into one wrapping strip; and trimmed `AGENTS.md` so detailed workflow instructions live in linked Codex docs. WPF smoke coverage tracks 18 circular help cues.
 
 User verification: real-profile scan works; search typing was sluggish, then debounced search fixed it; the status-bar message is enough. Keep this as a local-first, safety-gated app. Do not move or delete real-profile files unless I explicitly ask after a Grill with Docs pass.
 
