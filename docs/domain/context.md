@@ -2846,7 +2846,7 @@ Real-Profile Restore Readiness is the recovery prerequisite that must be designe
 
 It means the app can inspect real-profile Restore Manifests, explain restorable versus recovery-review states, and provide a trusted selected-manifest Undo Quarantine path without overwriting original paths.
 
-The current core model is read-only and not wired to WPF execution controls. It can prove selected-manifest real-profile restore readiness evidence for future forward-Quarantine gating, but selected real-profile restore execution remains unavailable in the visible app. ADR 0019 records the future Real-Profile Selected Restore Execution contract that would turn this evidence into a narrow selected-manifest restore path.
+The current core model is read-only. WPF shows its evidence in the Selected Restore Execution Gate when selected manifest review and selected restore gate evidence exist, but does not use it to enable selected real-profile restore or forward real-profile Quarantine. ADR 0019 records the future Real-Profile Selected Restore Execution contract that would turn this evidence into a narrow selected-manifest restore path.
 
 #### Examples
 
@@ -2883,6 +2883,7 @@ The current core model is read-only and not wired to WPF execution controls. It 
 - Design and test selected-manifest real-profile Undo Quarantine before enabling real-profile forward Quarantine.
 - Keep all-manifest real-profile restore out of scope unless a later design explicitly includes it.
 - Continue refusing to overwrite original paths during restore.
+- In WPF, show restore readiness as read-only selected-manifest evidence; do not treat it as approval or a substitute for selected real-profile restore implementation.
 
 ### Real-Profile Selected Restore Execution
 

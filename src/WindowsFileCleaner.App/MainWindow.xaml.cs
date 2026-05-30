@@ -34,6 +34,7 @@ public partial class MainWindow : Window
     private SelectedRestoreManifestReview? _currentSelectedRestoreManifestReview;
     private SelectedRestoreConfirmationDraft? _currentSelectedRestoreConfirmationDraft;
     private SelectedRestoreExecutionGate? _currentSelectedRestoreExecutionGate;
+    private RealProfileRestoreReadiness? _currentRealProfileRestoreReadiness;
     private UndoQuarantineResult? _currentSelectedRestoreResult;
     private string? _currentCleanupScopePath;
     private StorageReviewFilter _currentFilter = StorageReviewFilter.All;
@@ -1254,7 +1255,8 @@ public partial class MainWindow : Window
             _currentQuarantineConfirmationDraft,
             BuildQuarantineExecutionReadinessForDisplay(),
             _currentQuarantineRootExecutionSafety,
-            _currentPreExecutionRevalidation);
+            _currentPreExecutionRevalidation,
+            _currentRealProfileRestoreReadiness);
         ExportQuarantinePreviewButton.IsEnabled = ScanButton.IsEnabled;
         RemoveOverlappingParentsButton.IsEnabled = _currentQuarantinePreview.RedundantCount > 0 && ScanButton.IsEnabled;
         var blockerSummary = _currentQuarantineConfirmationDraft.HasDataBlockers
@@ -1933,6 +1935,7 @@ public partial class MainWindow : Window
             BuildQuarantineExecutionReadinessForDisplay(),
             _currentQuarantineRootExecutionSafety,
             _currentPreExecutionRevalidation,
+            _currentRealProfileRestoreReadiness,
             _currentQuarantineActionDraft,
             _currentRestoreManifest,
             _currentQuarantineExecutionResult,
@@ -2111,13 +2114,16 @@ public partial class MainWindow : Window
         _currentSelectedRestoreExecutionGate = SelectedRestoreExecutionGateBuilder.Build(
             _currentSelectedRestoreConfirmationDraft,
             SelectedRestoreConfirmationBox.Text);
+        _currentRealProfileRestoreReadiness = BuildRealProfileRestoreReadinessForDisplay();
         SetSelectedRestoreExecutionGateText(
             FormatSelectedRestoreExecutionGate(
                 _currentSelectedRestoreConfirmationDraft,
                 _currentSelectedRestoreExecutionGate,
+                _currentRealProfileRestoreReadiness,
                 _currentSelectedRestoreResult),
             _currentSelectedRestoreExecutionGate,
             _currentSelectedRestoreResult);
+        UpdateQuarantineExecutionGate();
         UpdateQuarantineManifestDiscoveryControls();
 
         StatusText.Text = $"Selected Restore Confirmation Draft completed: {_currentSelectedRestoreConfirmationDraft.RestorableEntryCount:N0} restorable entries, {_currentSelectedRestoreConfirmationDraft.Blockers.Count:N0} blocker(s). No files were modified.";
@@ -3252,6 +3258,7 @@ public partial class MainWindow : Window
     {
         _currentSelectedRestoreConfirmationDraft = null;
         _currentSelectedRestoreExecutionGate = null;
+        _currentRealProfileRestoreReadiness = null;
         _currentSelectedRestoreResult = null;
         SetSelectedRestoreConfirmationTextSilently("");
         if (SelectedRestoreExecutionGateText is not null)
@@ -3375,13 +3382,16 @@ public partial class MainWindow : Window
         _currentSelectedRestoreExecutionGate = SelectedRestoreExecutionGateBuilder.Build(
             _currentSelectedRestoreConfirmationDraft,
             SelectedRestoreConfirmationBox.Text);
+        _currentRealProfileRestoreReadiness = BuildRealProfileRestoreReadinessForDisplay();
         SetSelectedRestoreExecutionGateText(
             FormatSelectedRestoreExecutionGate(
                 _currentSelectedRestoreConfirmationDraft,
                 _currentSelectedRestoreExecutionGate,
+                _currentRealProfileRestoreReadiness,
                 _currentSelectedRestoreResult),
             _currentSelectedRestoreExecutionGate,
             _currentSelectedRestoreResult);
+        UpdateQuarantineExecutionGate();
         UpdateQuarantineManifestDiscoveryControls();
     }
 
@@ -3455,6 +3465,7 @@ public partial class MainWindow : Window
             FormatSelectedRestoreExecutionGate(
                 _currentSelectedRestoreConfirmationDraft,
                 _currentSelectedRestoreExecutionGate,
+                _currentRealProfileRestoreReadiness,
                 _currentSelectedRestoreResult),
             _currentSelectedRestoreExecutionGate,
             _currentSelectedRestoreResult);
@@ -3495,7 +3506,8 @@ public partial class MainWindow : Window
         QuarantineConfirmationDraft confirmationDraft,
         QuarantineExecutionReadiness? executionReadiness,
         QuarantineRootExecutionSafety? rootExecutionSafety,
-        PreExecutionRevalidation? preExecutionRevalidation)
+        PreExecutionRevalidation? preExecutionRevalidation,
+        RealProfileRestoreReadiness? restoreReadiness)
     {
         const int maxRows = 12;
         var lines = new List<string>
@@ -3527,6 +3539,7 @@ public partial class MainWindow : Window
         AddQuarantineExecutionReadinessLines(lines, executionReadiness);
         AddQuarantineRootExecutionSafetyLines(lines, rootExecutionSafety);
         AddPreExecutionRevalidationLines(lines, preExecutionRevalidation);
+        AddRealProfileRestoreReadinessLines(lines, restoreReadiness);
 
         lines.Add("Preview rows:");
         foreach (var entry in preview.Entries.Take(maxRows))
@@ -3550,6 +3563,7 @@ public partial class MainWindow : Window
         QuarantineExecutionReadiness? executionReadiness,
         QuarantineRootExecutionSafety? rootExecutionSafety,
         PreExecutionRevalidation? preExecutionRevalidation,
+        RealProfileRestoreReadiness? restoreReadiness,
         QuarantineActionDraft? actionDraft,
         RestoreManifest? restoreManifest,
         QuarantineExecutionResult? executionResult,
@@ -3636,6 +3650,7 @@ public partial class MainWindow : Window
         AddQuarantineExecutionReadinessLines(lines, executionReadiness);
         AddQuarantineRootExecutionSafetyLines(lines, rootExecutionSafety);
         AddPreExecutionRevalidationLines(lines, preExecutionRevalidation);
+        AddRealProfileRestoreReadinessLines(lines, restoreReadiness);
 
         return string.Join(Environment.NewLine, lines);
     }
@@ -3651,7 +3666,8 @@ public partial class MainWindow : Window
             _currentQuarantinePreview,
             _currentQuarantineConfirmationDraft,
             quarantineRootExecutionSafety: _currentQuarantineRootExecutionSafety,
-            preExecutionRevalidation: _currentPreExecutionRevalidation);
+            preExecutionRevalidation: _currentPreExecutionRevalidation,
+            realProfileRestoreReadiness: _currentRealProfileRestoreReadiness);
     }
 
     private static void AddQuarantineExecutionReadinessLines(
@@ -3739,6 +3755,38 @@ public partial class MainWindow : Window
         if (preExecutionRevalidation.Blockers.Count > 6)
         {
             lines.Add($"... {preExecutionRevalidation.Blockers.Count - 6:N0} more revalidation blocker(s) not shown in this pane.");
+        }
+    }
+
+    private static void AddRealProfileRestoreReadinessLines(
+        List<string> lines,
+        RealProfileRestoreReadiness? restoreReadiness)
+    {
+        if (restoreReadiness is null)
+        {
+            return;
+        }
+
+        var selectedPath = string.IsNullOrWhiteSpace(restoreReadiness.SelectedManifestPath)
+            ? "(none)"
+            : restoreReadiness.SelectedManifestPath;
+        lines.Add(
+            $"Real-Profile Restore Readiness: checked | Can support forward Quarantine: {FormatYesNo(restoreReadiness.CanUseForForwardQuarantine)} | " +
+            $"Selected manifest real-profile scope: {FormatYesNo(restoreReadiness.IsSelectedManifestRealProfileScope)} | " +
+            $"Selected real-profile Undo implemented: {FormatYesNo(restoreReadiness.IsSelectedManifestRealProfileUndoImplemented)}");
+        lines.Add(
+            $"Restore readiness entries: restorable {restoreReadiness.RestorableEntryCount:N0}, blocked {restoreReadiness.BlockedEntryCount:N0}, recovery review {restoreReadiness.RecoveryReviewEntryCount:N0}, already restored {restoreReadiness.AlreadyRestoredEntryCount:N0}, not moved {restoreReadiness.NotMovedEntryCount:N0}, size {restoreReadiness.RestorableSizeDisplay}.");
+        lines.Add($"Restore readiness selected manifest: {selectedPath}");
+        lines.Add("Restore readiness boundary: read-only evidence only; it does not restore files, write manifests, move files, or approve cleanup.");
+
+        foreach (var blocker in restoreReadiness.Blockers.Take(6))
+        {
+            lines.Add($"Real-profile restore readiness blocker | {blocker}");
+        }
+
+        if (restoreReadiness.Blockers.Count > 6)
+        {
+            lines.Add($"... {restoreReadiness.Blockers.Count - 6:N0} more real-profile restore readiness blocker(s) not shown in this pane.");
         }
     }
 
@@ -4011,6 +4059,7 @@ public partial class MainWindow : Window
     private static string FormatSelectedRestoreExecutionGate(
         SelectedRestoreConfirmationDraft confirmationDraft,
         SelectedRestoreExecutionGate gate,
+        RealProfileRestoreReadiness? realProfileRestoreReadiness,
         UndoQuarantineResult? selectedRestoreResult = null)
     {
         var selectedPath = string.IsNullOrWhiteSpace(confirmationDraft.SelectedManifestPath)
@@ -4047,6 +4096,8 @@ public partial class MainWindow : Window
             lines.Add($"Selected restore gate note | {note}");
         }
 
+        AddRealProfileRestoreReadinessLines(lines, realProfileRestoreReadiness);
+
         if (selectedRestoreResult is not null)
         {
             lines.Add($"Selected restore result: Restored {selectedRestoreResult.RestoredCount:N0} | Failed {selectedRestoreResult.FailedCount:N0} | Recovery review: {FormatYesNo(selectedRestoreResult.RequiresRecoveryReview)}");
@@ -4072,6 +4123,23 @@ public partial class MainWindow : Window
         }
 
         return string.Join(Environment.NewLine, lines);
+    }
+
+    private RealProfileRestoreReadiness? BuildRealProfileRestoreReadinessForDisplay()
+    {
+        if (_currentSelectedRestoreManifestReview is null
+            && _currentSelectedRestoreConfirmationDraft is null
+            && _currentSelectedRestoreExecutionGate is null)
+        {
+            return null;
+        }
+
+        return RealProfileRestoreReadinessBuilder.Build(
+            _currentSelectedRestoreManifestReview,
+            _currentSelectedRestoreConfirmationDraft,
+            _currentSelectedRestoreExecutionGate,
+            DateTimeOffset.UtcNow,
+            isSelectedManifestRealProfileUndoImplemented: false);
     }
 
     private static string FormatSelectedRestoreExecutionGateHelpText(

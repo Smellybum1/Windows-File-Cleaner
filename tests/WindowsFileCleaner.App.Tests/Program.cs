@@ -2626,6 +2626,13 @@ internal sealed class MainWindowSmokeTests
                 && window.SelectedRestoreExecutionGateTextValue.Contains("real-profile and custom selected restore remain unavailable", StringComparison.OrdinalIgnoreCase)
                 && window.SelectedRestoreExecutionGateTextValue.Contains("Selected restore execution is not available", StringComparison.OrdinalIgnoreCase),
                 "Real-profile selected restore gate should match RESTORE but stay closed. Text: " + window.SelectedRestoreExecutionGateTextValue);
+            Assert(
+                window.SelectedRestoreExecutionGateTextValue.Contains("Real-Profile Restore Readiness: checked", StringComparison.OrdinalIgnoreCase)
+                && window.SelectedRestoreExecutionGateTextValue.Contains("Can support forward Quarantine: no", StringComparison.OrdinalIgnoreCase)
+                && window.SelectedRestoreExecutionGateTextValue.Contains("Selected manifest real-profile scope: yes", StringComparison.OrdinalIgnoreCase)
+                && window.SelectedRestoreExecutionGateTextValue.Contains("Selected real-profile Undo implemented: no", StringComparison.OrdinalIgnoreCase)
+                && window.SelectedRestoreExecutionGateTextValue.Contains("Selected-manifest real-profile Undo Quarantine remains unavailable", StringComparison.OrdinalIgnoreCase),
+                "Real-profile selected restore gate should show read-only restore readiness evidence without enabling restore. Text: " + window.SelectedRestoreExecutionGateTextValue);
             AssertSelectedRestoreExecutionGateHelpCue(
                 window,
                 "Real-profile selected restore gate cue should stay blocked after exact RESTORE.",

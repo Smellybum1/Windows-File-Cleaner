@@ -34,7 +34,7 @@ Core code has a read-only `RealProfileRestoreReadiness` model that checks select
 - The caller explicitly records whether selected-manifest real-profile Undo is implemented.
 - Restore Manifest remains the only durable cleanup record.
 
-`QuarantineExecutionReadiness` can consume this result. If WPF or a future caller does not provide Real-Profile Restore Readiness yet, real-profile readiness still reports that selected-manifest Undo readiness has not been checked.
+`QuarantineExecutionReadiness` can consume this result. If a caller does not provide Real-Profile Restore Readiness yet, real-profile readiness still reports that selected-manifest Undo readiness has not been checked. WPF now provides read-only restore-readiness evidence from selected manifest review and selected restore gate evidence without enabling real-profile restore or forward Quarantine.
 
 ## Decisions made
 
@@ -76,7 +76,7 @@ What changed:
 
 Follow-up work:
 
-- WPF readiness output was added in the next display-only packet; it groups root safety, pre-execution revalidation, and real-profile restore readiness blockers while keeping execution disabled.
+- WPF readiness output was added in later display-only packets; it now shows root safety, pre-execution revalidation, and real-profile restore readiness evidence while keeping execution disabled.
 - Real-profile selected restore execution design was recorded in ADR 0019; implementation remains unavailable until a later explicit safety packet.
 
 Open questions:

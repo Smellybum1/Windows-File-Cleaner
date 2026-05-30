@@ -29,7 +29,7 @@ As the local app owner, I want the app to define exactly how selected real-profi
 
 - WPF can restore selected discovered fixture Restore Manifests after selected readiness and exact `RESTORE`.
 - WPF keeps selected restore unavailable for real-profile and custom non-fixture Restore Manifests.
-- Core Real-Profile Restore Readiness can model selected-manifest recovery evidence, but it does not restore files and is not wired to WPF execution.
+- Core Real-Profile Restore Readiness can model selected-manifest recovery evidence, and WPF now shows that evidence in the selected restore gate, but it does not restore files and is not wired to WPF execution.
 - Real-profile Quarantine execution, broad Undo Quarantine, permanent deletion, and persisted cleanup history remain unavailable.
 
 ## Desired behavior
@@ -141,7 +141,7 @@ ADR-worthy decisions:
 1. Add ADR 0019 for the selected real-profile restore execution contract. Completed in this packet.
 2. Add domain and glossary language for Real-Profile Selected Restore Execution. Completed in this packet.
 3. Update progress and handoff docs so future work starts from the new contract. Completed in this packet.
-4. Future packet: add regression coverage showing selected real-profile restore remains unavailable until implementation.
+4. Add regression coverage showing selected real-profile restore remains unavailable until implementation. Completed in the Real-Profile Selected Restore Regression packet; later WPF restore-readiness evidence now also shows the selected-manifest real-profile Undo blocker in the selected restore gate.
 5. Future packet: implement selected real-profile restore behind the ADR 0019 contract after explicit approval.
 
 ## Files expected to change
