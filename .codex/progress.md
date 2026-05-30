@@ -20,6 +20,39 @@ Storage Scan MVP packet implemented and tested by the user against `C:\Users\mox
 
 ## Completed packets
 
+### 2026-05-30: Fresh Thread Handoff Polish
+
+Status: completed
+
+Evidence:
+
+- The current thread is getting slow and the user plans to archive it after receiving a fresh-thread prompt.
+- The handoff already contained the recent safety boundary, but the embedded startup prompt still used a generic latest-packet phrase and the best-next-work section did not explicitly call out the newest manifest cue/control wrapping check.
+
+Implementation:
+
+- Refreshed `docs/codex/thread-handoff.md` so the latest completed packet names this handoff polish.
+- Added a verified-recently note for the handoff polish and current safety boundary.
+- Updated the handoff best-next-work and embedded startup prompt to mention the recent Restore Manifest selection, `Discover manifests`, and `Preview all-manifest readiness` `?` cues, manifest cue/control grouping, eighteen-cue WPF smoke coverage, and full `.cmd` MVP preflight evidence after manifest control grouping.
+- No app code, scan behavior, Quarantine behavior, selected restore behavior, real-profile/custom execution availability, permanent deletion, or cleanup history changed.
+
+Verification:
+
+- `git -c safe.directory='D:/Codex/Windows File Cleaner' diff --check` passed.
+
+Docs updated:
+
+- `docs/codex/thread-handoff.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No ADR added. This is handoff/documentation alignment only.
+
+Open questions:
+
+- The next thread should still do a manual fixture visual pass before choosing any larger UX or cleanup-execution packet.
+
 ### 2026-05-30: Full Local MVP Preflight After Manifest Control Grouping
 
 Status: completed
