@@ -32,6 +32,7 @@ internal static class Program
                 tests.MainWindowExecutesQuarantineForFixtureScopeOnly();
                 tests.MainWindowDiscoversQuarantineManifestsReadOnly();
                 tests.MainWindowShowsRealProfileReadinessContractForSyntheticPreview();
+                tests.MainWindowShowsRealProfileChildReadinessContractForSyntheticPreview();
                 tests.MainWindowKeepsQuarantineExecutionUnavailableForCustomScope();
                 tests.MainWindowKeepsSelectedRestoreUnavailableForCustomScope();
                 tests.MainWindowKeepsSelectedRestoreUnavailableForRealProfileManifest();
@@ -2374,7 +2375,7 @@ internal sealed class MainWindowSmokeTests
             window.ConfirmRealProfilePreflightForRealProfileScan();
             ApplySyntheticStorageScanResult(
                 window,
-                BuildSyntheticRealProfileScanResult(cleanupScopePath, syntheticCandidatePath));
+                BuildSyntheticRealProfileShapedScanResult(cleanupScopePath, syntheticCandidatePath));
 
             Assert(
                 window.CurrentCleanupScopePath == cleanupScopePath,
@@ -2418,6 +2419,72 @@ internal sealed class MainWindowSmokeTests
                 && window.QuarantineExecutionGateTextValue.Contains("Readiness blocker | Pre-Execution Revalidation", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantineExecutionGateTextValue.Contains("Readiness blocker | Real-Profile Restore Readiness", StringComparison.OrdinalIgnoreCase),
                 "Synthetic real-profile gate should keep grouped missing readiness dimensions visible.");
+        }
+        finally
+        {
+            window.Close();
+        }
+    }
+
+    public void MainWindowShowsRealProfileChildReadinessContractForSyntheticPreview()
+    {
+        var realProfileScopePath = StorageScanOptions.DefaultForCurrentUser().CleanupScopePath;
+        var cleanupScopePath = Path.Combine(realProfileScopePath, "AppData", "Local");
+        using var fixture = SmokeFixture.CreateCustomScope();
+        var quarantineRoot = Path.Combine(fixture.RootPath, "synthetic-real-profile-child-quarantine-root");
+        var syntheticCandidatePath = Path.Combine(
+            cleanupScopePath,
+            "WindowsFileCleanerRegression",
+            Guid.NewGuid().ToString("N"),
+            "cache.bin");
+
+        var window = new MainWindow(cleanupScopePath);
+        try
+        {
+            ApplySyntheticStorageScanResult(
+                window,
+                BuildSyntheticRealProfileShapedScanResult(cleanupScopePath, syntheticCandidatePath));
+
+            Assert(
+                window.CurrentCleanupScopePath == cleanupScopePath,
+                "Synthetic real-profile child readiness test should keep the child Cleanup Scope.");
+            Assert(
+                window.DisplayedRows.Any(row => row.FullPath.Equals(syntheticCandidatePath, StringComparison.OrdinalIgnoreCase)),
+                "Synthetic real-profile child review should show the fake cleanup candidate without scanning the real profile.");
+
+            Assert(window.SelectDisplayedPath(syntheticCandidatePath), "Synthetic real-profile child candidate should be selectable.");
+            window.AddSelectedPathToReviewShortlist();
+            window.SetQuarantineRootForPreview(quarantineRoot);
+            window.PreviewQuarantineForReviewShortlist();
+            window.SetQuarantineConfirmationText("QUARANTINE");
+
+            Assert(!window.CanExecuteQuarantine, "Synthetic real-profile child readiness output must not open WPF Quarantine execution.");
+            Assert(!Directory.Exists(quarantineRoot), "Synthetic real-profile child preview must not create the Quarantine Root.");
+            Assert(
+                window.QuarantinePreviewTextValue.Contains("Execution readiness contract", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantinePreviewTextValue.Contains("preview only", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantinePreviewTextValue.Contains("Scope: real-profile child", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantinePreviewTextValue.Contains("Current build can execute from this readiness model: no", StringComparison.OrdinalIgnoreCase),
+                "Synthetic real-profile child preview should show preview-only readiness while keeping current-build execution closed.");
+            Assert(
+                window.QuarantinePreviewTextValue.Contains("Readiness blocker | Scope and policy", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantinePreviewTextValue.Contains("first real-profile Quarantine phase is limited to C:\\Users\\moxhe", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantinePreviewTextValue.Contains("Child scopes under the profile remain preview-only", StringComparison.OrdinalIgnoreCase),
+                "Synthetic real-profile child preview should name the exact first-phase real-profile scope blocker.");
+            Assert(
+                window.QuarantineExecutionGateTextValue.Contains("Entered confirmation matches: yes", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineExecutionGateTextValue.Contains("Can execute: no", StringComparison.OrdinalIgnoreCase),
+                "Exact QUARANTINE should match but still leave the real-profile child gate closed.");
+            Assert(
+                window.QuarantineExecutionGateTextValue.Contains("Execution readiness contract", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineExecutionGateTextValue.Contains("preview only", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineExecutionGateTextValue.Contains("Scope: real-profile child", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineExecutionGateTextValue.Contains("Current build can execute from this readiness model: no", StringComparison.OrdinalIgnoreCase),
+                "Synthetic real-profile child gate should preserve the readiness contract after exact QUARANTINE.");
+            Assert(
+                window.QuarantineExecutionGateTextValue.Contains("Readiness blocker | Scope and policy", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineExecutionGateTextValue.Contains("first real-profile Quarantine phase is limited to C:\\Users\\moxhe", StringComparison.OrdinalIgnoreCase),
+                "Synthetic real-profile child gate should keep the exact-scope blocker visible.");
         }
         finally
         {
@@ -3202,7 +3269,7 @@ internal sealed class MainWindowSmokeTests
         method!.Invoke(window, [result]);
     }
 
-    private static StorageScanResult BuildSyntheticRealProfileScanResult(
+    private static StorageScanResult BuildSyntheticRealProfileShapedScanResult(
         string cleanupScopePath,
         string syntheticCandidatePath)
     {
