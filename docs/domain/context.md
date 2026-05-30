@@ -2693,7 +2693,7 @@ Real-Profile Quarantine Execution Readiness is the future composite readiness re
 
 It is stricter than Quarantine Confirmation Draft and Quarantine Execution Gate. It combines scope eligibility, review readiness, Quarantine Root Execution Safety, Pre-Execution Revalidation, recovery readiness, and explicit real-profile approval semantics.
 
-The current core model can name fixture-executable, real-profile-candidate, and custom-preview-only states without enabling real-profile movement. It can also consume Quarantine Root Execution Safety, Pre-Execution Revalidation, and Real-Profile Restore Readiness when those evidence models are supplied.
+The current core model can name fixture-executable, real-profile-candidate, and custom-preview-only states without enabling real-profile movement. It can also consume Quarantine Root Execution Safety, Pre-Execution Revalidation, and Real-Profile Restore Readiness when those evidence models are supplied. The current WPF app shows this readiness contract in the existing Quarantine Preview and Quarantine Execution Gate panes as read-only output.
 
 #### Examples
 
@@ -2732,6 +2732,7 @@ The current core model can name fixture-executable, real-profile-candidate, and 
 - Use a named readiness result, not the current fixture-only `IsExecutionImplemented` flag or a standalone selected-restore availability boolean, for future real-profile execution availability.
 - Keep custom non-fixture Cleanup Scopes preview-only until a later design explicitly includes them.
 - Make blockers visible by readiness dimension so disabled execution controls explain why real-profile movement is unavailable.
+- In WPF, keep readiness output in preview/gate text until a later packet designs a richer real-profile readiness surface.
 
 ### Quarantine Root Execution Safety
 

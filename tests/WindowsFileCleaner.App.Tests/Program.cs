@@ -1568,6 +1568,12 @@ internal sealed class MainWindowSmokeTests
                 && window.QuarantinePreviewTextValue.Contains("not cleanup approval", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantinePreviewTextValue.Contains("only fixture execution", StringComparison.OrdinalIgnoreCase),
                 "Fixture preview pane should keep shortlist/preview separate from cleanup approval.");
+            Assert(
+                window.QuarantinePreviewTextValue.Contains("Execution readiness contract", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantinePreviewTextValue.Contains("fixture executable", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantinePreviewTextValue.Contains("Readiness blockers: 0", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantinePreviewTextValue.Contains("exact confirmation and fixture-only gate still control movement", StringComparison.OrdinalIgnoreCase),
+                "Fixture preview pane should show the read-only execution readiness contract without replacing exact confirmation.");
             Assert(window.QuarantinePreviewTextValue.Contains("Preview rows:", StringComparison.OrdinalIgnoreCase), "Preview pane should label row-level preview details.");
             Assert(window.QuarantinePreviewTextValue.Contains("Preview row | Included", StringComparison.OrdinalIgnoreCase), "Preview pane should distinguish included row details from readiness blockers.");
             Assert(window.CanEnterQuarantineConfirmation, "Quarantine confirmation text should be enabled after preview readiness exists.");
@@ -1590,6 +1596,12 @@ internal sealed class MainWindowSmokeTests
                 && window.QuarantineExecutionGateTextValue.Contains("not cleanup approval", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantineExecutionGateTextValue.Contains("only fixture execution", StringComparison.OrdinalIgnoreCase),
                 "Fixture execution gate should keep exact confirmation separate from broad cleanup approval.");
+            Assert(
+                window.QuarantineExecutionGateTextValue.Contains("Execution readiness contract", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineExecutionGateTextValue.Contains("fixture executable", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineExecutionGateTextValue.Contains("Readiness blockers: 0", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineExecutionGateTextValue.Contains("review context only", StringComparison.OrdinalIgnoreCase),
+                "Fixture execution gate should include the read-only execution readiness contract.");
             Assert(
                 window.QuarantineExecutionGateTextValue.Contains("Quarantine Action Draft", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantineExecutionGateTextValue.Contains("Action items root:", StringComparison.OrdinalIgnoreCase)
@@ -2298,6 +2310,13 @@ internal sealed class MainWindowSmokeTests
                 && window.QuarantinePreviewTextValue.Contains("real-profile and custom execution remain unavailable", StringComparison.OrdinalIgnoreCase),
                 "Custom-scope preview should keep shortlist/preview separate from cleanup approval.");
             Assert(
+                window.QuarantinePreviewTextValue.Contains("Execution readiness contract", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantinePreviewTextValue.Contains("preview only", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantinePreviewTextValue.Contains("Scope: custom", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantinePreviewTextValue.Contains("Readiness blocker | Scope and policy", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantinePreviewTextValue.Contains("Custom non-fixture Cleanup Scopes remain preview-only", StringComparison.OrdinalIgnoreCase),
+                "Custom-scope preview should show the readiness contract and custom preview-only blocker.");
+            Assert(
                 window.QuarantineExecutionGateTextValue.Contains("Execution scope status", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantineExecutionGateTextValue.Contains("Preview only for this Cleanup Scope", StringComparison.OrdinalIgnoreCase),
                 "Custom-scope gate should clearly state preview-only scope status.");
@@ -2310,6 +2329,11 @@ internal sealed class MainWindowSmokeTests
                 window.QuarantineExecutionGateTextValue.Contains("Entered confirmation matches: yes", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantineExecutionGateTextValue.Contains("Can execute: no", StringComparison.OrdinalIgnoreCase),
                 "Custom-scope gate should match QUARANTINE but stay closed.");
+            Assert(
+                window.QuarantineExecutionGateTextValue.Contains("Execution readiness contract", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineExecutionGateTextValue.Contains("Current build can execute from this readiness model: no", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineExecutionGateTextValue.Contains("Readiness blocker | Scope and policy", StringComparison.OrdinalIgnoreCase),
+                "Custom-scope gate should keep the readiness contract visible after exact QUARANTINE.");
             Assert(
                 window.QuarantineExecutionGateTextValue.Contains("not available for this Cleanup Scope", StringComparison.OrdinalIgnoreCase),
                 "Custom-scope gate should explain the scope-specific execution blocker.");

@@ -1238,7 +1238,8 @@ public partial class MainWindow : Window
         QuarantinePreviewText.Text = FormatQuarantinePreview(
             _currentQuarantinePreview,
             _currentRestoreManifestDraft,
-            _currentQuarantineConfirmationDraft);
+            _currentQuarantineConfirmationDraft,
+            BuildQuarantineExecutionReadinessForDisplay());
         ExportQuarantinePreviewButton.IsEnabled = ScanButton.IsEnabled;
         RemoveOverlappingParentsButton.IsEnabled = _currentQuarantinePreview.RedundantCount > 0 && ScanButton.IsEnabled;
         var blockerSummary = _currentQuarantineConfirmationDraft.HasDataBlockers
@@ -1914,6 +1915,7 @@ public partial class MainWindow : Window
         UndoQuarantineButton.IsEnabled = CanUndoCurrentQuarantineExecution() && ScanButton.IsEnabled;
         QuarantineExecutionGateText.Text = FormatQuarantineExecutionGate(
             _currentQuarantineExecutionGate,
+            BuildQuarantineExecutionReadinessForDisplay(),
             _currentQuarantineActionDraft,
             _currentRestoreManifest,
             _currentQuarantineExecutionResult,
@@ -3471,7 +3473,8 @@ public partial class MainWindow : Window
     private static string FormatQuarantinePreview(
         QuarantinePreview preview,
         RestoreManifestDraft restoreManifestDraft,
-        QuarantineConfirmationDraft confirmationDraft)
+        QuarantineConfirmationDraft confirmationDraft,
+        QuarantineExecutionReadiness? executionReadiness)
     {
         const int maxRows = 12;
         var lines = new List<string>
@@ -3500,6 +3503,8 @@ public partial class MainWindow : Window
             lines.Add($"... {confirmationDraft.Blockers.Count - 6:N0} more readiness blocker(s) not shown in this pane.");
         }
 
+        AddQuarantineExecutionReadinessLines(lines, executionReadiness);
+
         lines.Add("Preview rows:");
         foreach (var entry in preview.Entries.Take(maxRows))
         {
@@ -3519,6 +3524,7 @@ public partial class MainWindow : Window
 
     private static string FormatQuarantineExecutionGate(
         QuarantineExecutionGate gate,
+        QuarantineExecutionReadiness? executionReadiness,
         QuarantineActionDraft? actionDraft,
         RestoreManifest? restoreManifest,
         QuarantineExecutionResult? executionResult,
@@ -3602,7 +3608,116 @@ public partial class MainWindow : Window
             lines.Add($"... {gate.Blockers.Count - 6:N0} more execution gate blocker(s) not shown in this pane.");
         }
 
+        AddQuarantineExecutionReadinessLines(lines, executionReadiness);
+
         return string.Join(Environment.NewLine, lines);
+    }
+
+    private QuarantineExecutionReadiness? BuildQuarantineExecutionReadinessForDisplay()
+    {
+        if (_currentQuarantinePreview is null)
+        {
+            return null;
+        }
+
+        return QuarantineExecutionReadinessBuilder.Build(
+            _currentQuarantinePreview,
+            _currentQuarantineConfirmationDraft);
+    }
+
+    private static void AddQuarantineExecutionReadinessLines(
+        List<string> lines,
+        QuarantineExecutionReadiness? executionReadiness)
+    {
+        if (executionReadiness is null)
+        {
+            return;
+        }
+
+        lines.Add(
+            $"Execution readiness contract: {FormatQuarantineExecutionReadinessDisposition(executionReadiness.Disposition)} | " +
+            $"Scope: {FormatQuarantineExecutionReadinessScopeKind(executionReadiness.ScopeKind)} | " +
+            $"Current build can execute from this readiness model: {FormatYesNo(executionReadiness.CanExecuteInCurrentBuild)}");
+        lines.Add(
+            $"Readiness limits: included {executionReadiness.IncludedCount:N0} row(s), {executionReadiness.IncludedSizeDisplay}; " +
+            $"first real-profile cap {executionReadiness.RealProfileIncludedRowLimit:N0} row(s), {executionReadiness.RealProfileIncludedByteLimitDisplay}.");
+        lines.Add("Readiness boundary: this is review context only; exact confirmation and fixture-only gate still control movement in this build.");
+
+        if (executionReadiness.Blockers.Count == 0)
+        {
+            lines.Add("Readiness blockers: 0");
+            return;
+        }
+
+        lines.Add($"Readiness blockers: {executionReadiness.Blockers.Count:N0}");
+        foreach (var blocker in executionReadiness.Blockers.Take(8))
+        {
+            lines.Add($"Readiness blocker | {FormatQuarantineExecutionReadinessBlocker(blocker)}");
+        }
+
+        if (executionReadiness.Blockers.Count > 8)
+        {
+            lines.Add($"... {executionReadiness.Blockers.Count - 8:N0} more readiness blocker(s) not shown in this pane.");
+        }
+    }
+
+    private static string FormatQuarantineExecutionReadinessBlocker(string blocker)
+    {
+        var dimension = GetQuarantineExecutionReadinessDimension(blocker);
+        return $"{dimension} | {blocker}";
+    }
+
+    private static string GetQuarantineExecutionReadinessDimension(string blocker)
+    {
+        if (blocker.Contains("Quarantine Root Execution Safety", StringComparison.OrdinalIgnoreCase))
+        {
+            return "Quarantine Root Execution Safety";
+        }
+
+        if (blocker.Contains("Pre-Execution Revalidation", StringComparison.OrdinalIgnoreCase))
+        {
+            return "Pre-Execution Revalidation";
+        }
+
+        if (blocker.Contains("Real-Profile Restore Readiness", StringComparison.OrdinalIgnoreCase)
+            || blocker.Contains("Selected-manifest real-profile Undo", StringComparison.OrdinalIgnoreCase))
+        {
+            return "Real-Profile Restore Readiness";
+        }
+
+        if (blocker.Contains("Real-profile WPF Quarantine execution", StringComparison.OrdinalIgnoreCase)
+            || blocker.Contains("Custom non-fixture", StringComparison.OrdinalIgnoreCase)
+            || blocker.Contains("first real-profile", StringComparison.OrdinalIgnoreCase)
+            || blocker.Contains("Non-D:", StringComparison.OrdinalIgnoreCase))
+        {
+            return "Scope and policy";
+        }
+
+        return "Review readiness";
+    }
+
+    private static string FormatQuarantineExecutionReadinessDisposition(QuarantineExecutionReadinessDisposition disposition)
+    {
+        return disposition switch
+        {
+            QuarantineExecutionReadinessDisposition.WaitingForPreview => "waiting for preview",
+            QuarantineExecutionReadinessDisposition.FixtureExecutable => "fixture executable",
+            QuarantineExecutionReadinessDisposition.RealProfileCandidate => "real-profile candidate",
+            QuarantineExecutionReadinessDisposition.CustomPreviewOnly => "preview only",
+            _ => disposition.ToString()
+        };
+    }
+
+    private static string FormatQuarantineExecutionReadinessScopeKind(QuarantineExecutionReadinessScopeKind scopeKind)
+    {
+        return scopeKind switch
+        {
+            QuarantineExecutionReadinessScopeKind.Fixture => "fixture",
+            QuarantineExecutionReadinessScopeKind.RealProfile => "real profile",
+            QuarantineExecutionReadinessScopeKind.RealProfileChild => "real-profile child",
+            QuarantineExecutionReadinessScopeKind.Custom => "custom",
+            _ => "unknown"
+        };
     }
 
     private static string FormatQuarantineExecutionGateHelpText(

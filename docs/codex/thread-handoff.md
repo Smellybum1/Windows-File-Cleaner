@@ -9,7 +9,7 @@ Use this when starting a fresh Codex thread for this repository.
 - Repo: `D:\Codex\Windows File Cleaner`
 - GitHub: `Smellybum1/Windows-File-Cleaner`
 - Branch: `main`
-- Latest completed packet: Real-Profile Restore Readiness
+- Latest completed packet: WPF Execution Readiness Output
 - Current app stack: C# / WPF / .NET 8
 - Desktop shortcut target: `D:\Codex\Windows File Cleaner\src\WindowsFileCleaner.App\bin\Debug\net8.0-windows\WindowsFileCleaner.App.exe`
 
@@ -21,7 +21,7 @@ The current MVP has a read-only Storage Scan that can inspect large real-profile
 
 Fixture-only cleanup execution exists for synthetic Cleanup Scopes. Real-profile cleanup execution remains intentionally unavailable until ADR 0017's readiness contract is implemented.
 
-The latest code packet added non-moving core `RealProfileRestoreReadiness` checks for selected Restore Manifest review, selected restore confirmation draft, selected restore execution gate, exact real-profile Cleanup Scope, restorable entries, blocked/recovery/not-moved selected readiness, exact `RESTORE`, Restore Manifest-only durable record scope, and unavailable selected real-profile restore implementation. `QuarantineExecutionReadiness` can consume restore readiness when supplied, but real-profile/custom execution remains unavailable.
+The latest code packet added read-only WPF Execution Readiness output to Quarantine Preview and Quarantine Execution Gate text. It names fixture-executable, real-profile-candidate, and custom-preview-only states, shows current-build readiness-model execution availability, and groups blockers by Quarantine Root Execution Safety, Pre-Execution Revalidation, Real-Profile Restore Readiness, Scope and policy, or Review readiness. Real-profile/custom execution remains unavailable.
 
 ## Safety boundary
 
@@ -90,6 +90,7 @@ The latest code packet added non-moving core `RealProfileRestoreReadiness` check
 - Quarantine Root Execution Safety added the non-moving core root-safety model/tests and optional readiness consumption for fully qualified roots, containment, capacity, action-root collisions, manifest-path collisions, and item destination collisions; core tests passed and no WPF execution behavior changed.
 - Pre-Execution Revalidation added the non-moving core revalidation model/tests and optional readiness consumption for source missing/changed, destination collisions, stale action draft mismatches, action/manifest collisions, and root safety recheck; core tests passed and no WPF execution behavior changed.
 - Real-Profile Restore Readiness added the non-moving core restore-readiness model/tests and optional readiness consumption for selected-manifest real-profile Undo evidence; core tests passed and no WPF execution behavior changed.
+- WPF Execution Readiness Output added read-only readiness contract output to Quarantine Preview and Quarantine Execution Gate, with grouped blockers and WPF smoke assertions; no execution behavior changed.
 - Quarantine Execution Scope Status added plain-language fixture-only versus preview-only scope wording to Quarantine Preview and Quarantine Execution Gate output.
 - Fixture Review Checklist Output added a compact terminal checklist to `Start-MvpFixtureReview.ps1`.
 - Fixture Review Checklist-Only Mode added `Start-MvpFixtureReview.ps1 -ChecklistOnly`, which prints the same checklist without preflight, fixture creation, or WPF launch.
