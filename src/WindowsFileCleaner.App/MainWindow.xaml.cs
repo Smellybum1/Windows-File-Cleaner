@@ -96,6 +96,8 @@ public partial class MainWindow : Window
 
     public string CleanupScopeSafetyNoteHelpCueAutomationHelpTextValue => AutomationProperties.GetHelpText(CleanupScopeSafetyNoteHelpCue);
 
+    public bool ScopeStatusUsesWrappingLayout => ScopeStatusPanel is WrapPanel;
+
     public string CurrentStatusText => StatusText.Text;
 
     public bool CanStartStorageScan => ScanButton.IsEnabled;

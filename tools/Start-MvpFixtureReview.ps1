@@ -23,7 +23,7 @@ function Write-FixtureReviewChecklist {
 
     Write-Host ""
     Write-Host "Manual fixture review checklist:"
-    Write-Host "  1. Confirm the header says Fixture Cleanup Scope, the Cleanup Scope Safety Note ? help cue mirrors read-only scope wording, Scan ready for fixture, the scan-gate ? help cue mirrors read-only/gated wording, Cleanup Scope browse tooltip is path-only, and fixture cleanup actions stay gated."
+    Write-Host "  1. Confirm the header says Fixture Cleanup Scope, the Cleanup Scope Safety Note / scan-gate status share a compact wrapping strip, their ? help cues stay paired with the related text and mirror read-only/gated wording, Cleanup Scope browse tooltip is path-only, and fixture cleanup actions stay gated."
     Write-Host "  2. Click Scan manually; confirm the status says no files were modified."
     Write-Host "  3. Check Review Mix, Matched Review Mix, and Review Shortlist Safety Mix hoverable ? help cues plus prompt tooltip/help text, collapsible Safety Summary header/details with the Safety Summary panel-name prefix plus hoverable ? header help cue, header state styling, and state-naming tooltip/help text, review navigation/export tooltips, and Review Shortlist labels/tooltips."
     Write-Host "  4. Try search examples: old-installer, parent:$FixturePath\Downloads, under:$FixturePath\AppData."

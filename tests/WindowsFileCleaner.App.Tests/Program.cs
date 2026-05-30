@@ -88,6 +88,9 @@ internal sealed class MainWindowSmokeTests
                 "start scanning by itself",
                 "persist approval",
                 "approve cleanup");
+            Assert(
+                window.ScopeStatusUsesWrappingLayout,
+                "Cleanup Scope status lines should use a wrapping header layout so the top-right scan area stays compact.");
             Assert(window.CurrentStatusText == "Ready", "MainWindow should not start scanning when constructed.");
             Assert(
                 window.SafetySummaryHeaderTextValue.StartsWith("Safety Summary:", StringComparison.OrdinalIgnoreCase),

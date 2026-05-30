@@ -38,13 +38,19 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <Grid Grid.Row="0" Margin="0,0,0,12">
+        <Grid Grid.Row="0" Margin="0,0,0,8">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
-            <StackPanel>
+            <StackPanel Grid.Row="0"
+                        Grid.Column="0">
                 <TextBlock Text="Storage Scan"
                            FontSize="26"
                            FontWeight="SemiBold" />
@@ -53,38 +59,46 @@
                            Margin="0,3,0,0" />
             </StackPanel>
 
-            <StackPanel Grid.Column="1"
-                        VerticalAlignment="Center">
-                <StackPanel Orientation="Horizontal">
-                    <TextBox x:Name="ScopePathBox"
-                             Width="420"
-                             Height="34"
-                             VerticalContentAlignment="Center"
-                             Text="C:\Users\moxhe"
-                             ToolTip="Chooses a Cleanup Scope path only; editing does not start a scan, bypass the real-profile gate, or approve cleanup."
-                             AutomationProperties.HelpText="Chooses a Cleanup Scope path only; editing does not start a scan, bypass the real-profile gate, or approve cleanup."
-                             TextChanged="ScopePathBox_TextChanged" />
-                    <Button x:Name="BrowseScopeButton"
-                            Content="Browse..."
-                            MinWidth="100"
-                            ToolTip="Chooses a Cleanup Scope path only; browsing does not start a scan, bypass the real-profile gate, or approve cleanup."
-                            AutomationProperties.HelpText="Chooses a Cleanup Scope path only; browsing does not start a scan, bypass the real-profile gate, or approve cleanup."
-                            ToolTipService.ShowOnDisabled="True"
-                            Click="BrowseScopeButton_Click" />
-                    <Button x:Name="ScanButton"
-                            Content="Scan"
-                            ToolTipService.ShowOnDisabled="True"
-                            Click="ScanButton_Click" />
-                    <Button x:Name="CancelButton"
-                            Content="Cancel"
-                            IsEnabled="False"
-                            ToolTip="Requests cancellation of the in-progress read-only Storage Scan; it does not move, delete, quarantine, restore, or approve cleanup."
-                            AutomationProperties.HelpText="Requests cancellation of the in-progress read-only Storage Scan; it does not move, delete, quarantine, restore, or approve cleanup."
-                            ToolTipService.ShowOnDisabled="True"
-                            Click="CancelButton_Click" />
-                </StackPanel>
-                <DockPanel Width="680"
-                           Margin="0,6,0,0"
+            <StackPanel Grid.Row="0"
+                        Grid.Column="1"
+                        Orientation="Horizontal"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Top">
+                <TextBox x:Name="ScopePathBox"
+                         Width="420"
+                         Height="34"
+                         VerticalContentAlignment="Center"
+                         Text="C:\Users\moxhe"
+                         ToolTip="Chooses a Cleanup Scope path only; editing does not start a scan, bypass the real-profile gate, or approve cleanup."
+                         AutomationProperties.HelpText="Chooses a Cleanup Scope path only; editing does not start a scan, bypass the real-profile gate, or approve cleanup."
+                         TextChanged="ScopePathBox_TextChanged" />
+                <Button x:Name="BrowseScopeButton"
+                        Content="Browse..."
+                        MinWidth="100"
+                        ToolTip="Chooses a Cleanup Scope path only; browsing does not start a scan, bypass the real-profile gate, or approve cleanup."
+                        AutomationProperties.HelpText="Chooses a Cleanup Scope path only; browsing does not start a scan, bypass the real-profile gate, or approve cleanup."
+                        ToolTipService.ShowOnDisabled="True"
+                        Click="BrowseScopeButton_Click" />
+                <Button x:Name="ScanButton"
+                        Content="Scan"
+                        ToolTipService.ShowOnDisabled="True"
+                        Click="ScanButton_Click" />
+                <Button x:Name="CancelButton"
+                        Content="Cancel"
+                        IsEnabled="False"
+                        ToolTip="Requests cancellation of the in-progress read-only Storage Scan; it does not move, delete, quarantine, restore, or approve cleanup."
+                        AutomationProperties.HelpText="Requests cancellation of the in-progress read-only Storage Scan; it does not move, delete, quarantine, restore, or approve cleanup."
+                        ToolTipService.ShowOnDisabled="True"
+                        Click="CancelButton_Click" />
+            </StackPanel>
+
+            <WrapPanel x:Name="ScopeStatusPanel"
+                       Grid.Row="1"
+                       Grid.ColumnSpan="2"
+                       Margin="0,6,0,0"
+                       HorizontalAlignment="Right">
+                <DockPanel Width="640"
+                           Margin="0,0,14,0"
                            LastChildFill="True">
                     <Border x:Name="CleanupScopeSafetyNoteHelpCue"
                             DockPanel.Dock="Right"
@@ -115,8 +129,8 @@
                                AutomationProperties.HelpText="Cleanup Scope Safety Note appears after a Cleanup Scope is entered. It is read-only scope context; it does not start scanning, run preflight, create fixtures, persist approval, or approve cleanup." />
                 </DockPanel>
                 <DockPanel x:Name="ScanGateSummaryPanel"
-                           Width="680"
-                           Margin="0,6,0,0"
+                           Width="640"
+                           Margin="0,0,14,0"
                            LastChildFill="True">
                     <Border x:Name="ScanGateSummaryHelpCue"
                             DockPanel.Dock="Right"
@@ -147,47 +161,51 @@
                                ToolTip="Scan gate status appears after a Cleanup Scope is entered. This scan-gate status is read-only; it does not start scanning by itself, move files, or approve cleanup."
                                AutomationProperties.HelpText="Scan gate status appears after a Cleanup Scope is entered. This scan-gate status is read-only; it does not start scanning by itself, move files, or approve cleanup." />
                 </DockPanel>
-                <DockPanel x:Name="RealProfilePreflightPanel"
-                           Width="680"
-                           Margin="0,8,0,0"
-                           Visibility="Collapsed"
-                           LastChildFill="True">
-                    <Border x:Name="RealProfilePreflightHelpCue"
-                            DockPanel.Dock="Right"
-                            Width="18"
-                            Height="18"
-                            Margin="8,1,0,0"
-                            CornerRadius="9"
-                            Background="#F4F7FA"
-                            BorderBrush="#8A99A8"
-                            BorderThickness="1"
-                            VerticalAlignment="Top"
-                            Cursor="Help"
-                            ToolTipService.InitialShowDelay="250"
-                            ToolTip="Acknowledges that MVP preflight and fixture review were already run before this real-profile Storage Scan; this does not run preflight, create fixtures, start scanning, persist approval, or approve cleanup."
-                            AutomationProperties.Name="Real-profile preflight acknowledgement help cue"
-                            AutomationProperties.HelpText="Acknowledges that MVP preflight and fixture review were already run before this real-profile Storage Scan; this does not run preflight, create fixtures, start scanning, persist approval, or approve cleanup.">
-                        <TextBlock Text="?"
-                                   HorizontalAlignment="Center"
-                                   VerticalAlignment="Center"
-                                   FontSize="11"
-                                   FontWeight="Bold"
-                                   Foreground="#526171" />
-                    </Border>
-                    <CheckBox x:Name="RealProfilePreflightCheckBox"
-                              Content="I ran MVP preflight and fixture review before scanning this real profile."
-                              ToolTip="Acknowledges that MVP preflight and fixture review were already run before this real-profile Storage Scan; this does not run preflight, create fixtures, start scanning, persist approval, or approve cleanup."
-                              AutomationProperties.HelpText="Acknowledges that MVP preflight and fixture review were already run before this real-profile Storage Scan; this does not run preflight, create fixtures, start scanning, persist approval, or approve cleanup."
-                              ToolTipService.ShowOnDisabled="True"
-                              Checked="RealProfilePreflightCheckBox_Changed"
-                              Unchecked="RealProfilePreflightCheckBox_Changed" />
-                </DockPanel>
                 <TextBlock x:Name="ScanGateText"
+                           Width="520"
                            Foreground="#526171"
-                           Margin="0,4,0,0"
-                           Width="680"
+                           Margin="0,1,0,0"
                            TextWrapping="Wrap" />
-            </StackPanel>
+            </WrapPanel>
+
+            <DockPanel x:Name="RealProfilePreflightPanel"
+                       Grid.Row="2"
+                       Grid.ColumnSpan="2"
+                       Width="680"
+                       Margin="0,6,0,0"
+                       HorizontalAlignment="Right"
+                       Visibility="Collapsed"
+                       LastChildFill="True">
+                <Border x:Name="RealProfilePreflightHelpCue"
+                        DockPanel.Dock="Right"
+                        Width="18"
+                        Height="18"
+                        Margin="8,1,0,0"
+                        CornerRadius="9"
+                        Background="#F4F7FA"
+                        BorderBrush="#8A99A8"
+                        BorderThickness="1"
+                        VerticalAlignment="Top"
+                        Cursor="Help"
+                        ToolTipService.InitialShowDelay="250"
+                        ToolTip="Acknowledges that MVP preflight and fixture review were already run before this real-profile Storage Scan; this does not run preflight, create fixtures, start scanning, persist approval, or approve cleanup."
+                        AutomationProperties.Name="Real-profile preflight acknowledgement help cue"
+                        AutomationProperties.HelpText="Acknowledges that MVP preflight and fixture review were already run before this real-profile Storage Scan; this does not run preflight, create fixtures, start scanning, persist approval, or approve cleanup.">
+                    <TextBlock Text="?"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center"
+                               FontSize="11"
+                               FontWeight="Bold"
+                               Foreground="#526171" />
+                </Border>
+                <CheckBox x:Name="RealProfilePreflightCheckBox"
+                          Content="I ran MVP preflight and fixture review before scanning this real profile."
+                          ToolTip="Acknowledges that MVP preflight and fixture review were already run before this real-profile Storage Scan; this does not run preflight, create fixtures, start scanning, persist approval, or approve cleanup."
+                          AutomationProperties.HelpText="Acknowledges that MVP preflight and fixture review were already run before this real-profile Storage Scan; this does not run preflight, create fixtures, start scanning, persist approval, or approve cleanup."
+                          ToolTipService.ShowOnDisabled="True"
+                          Checked="RealProfilePreflightCheckBox_Changed"
+                          Unchecked="RealProfilePreflightCheckBox_Changed" />
+            </DockPanel>
         </Grid>
 
         <UniformGrid Grid.Row="1"
