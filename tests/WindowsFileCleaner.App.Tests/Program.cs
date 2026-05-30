@@ -32,6 +32,7 @@ internal static class Program
                 tests.MainWindowDiscoversQuarantineManifestsReadOnly();
                 tests.MainWindowKeepsQuarantineExecutionUnavailableForCustomScope();
                 tests.MainWindowKeepsSelectedRestoreUnavailableForCustomScope();
+                tests.MainWindowKeepsSelectedRestoreUnavailableForRealProfileManifest();
                 tests.MainWindowBlocksQuarantinePreviewForParentWithProtectedDescendant();
             }
             finally
@@ -2417,6 +2418,60 @@ internal sealed class MainWindowSmokeTests
         }
     }
 
+    public void MainWindowKeepsSelectedRestoreUnavailableForRealProfileManifest()
+    {
+        using var fixture = SmokeFixture.CreateCustomScope();
+        var realProfileScope = StorageScanOptions.DefaultForCurrentUser().CleanupScopePath;
+        var quarantineRoot = Path.Combine(fixture.RootPath, "real-profile-selected-restore-quarantine-root");
+        var setup = CreateSyntheticRealProfileRestoreManifest(
+            realProfileScope,
+            quarantineRoot,
+            "real-profile-selected-restore");
+        var window = new MainWindow(realProfileScope);
+        try
+        {
+            Assert(File.Exists(setup.QuarantinePath), "Real-profile selected restore setup should create only a synthetic quarantine source.");
+            Assert(!File.Exists(setup.OriginalPath), "Real-profile selected restore setup should not create the real-profile original path.");
+
+            window.SetQuarantineRootForPreview(quarantineRoot);
+            window.DiscoverQuarantineManifestsForCurrentRoot();
+            Assert(window.SelectDiscoveredRestoreManifestByPath(setup.ManifestPath), "Real-profile Restore Manifest should be selectable by path.");
+            window.PreviewSelectedRestoreManifestReadiness();
+
+            Assert(
+                window.SelectedRestoreManifestReviewTextValue.Contains("Selected Restore Manifest Review: read-only", StringComparison.OrdinalIgnoreCase)
+                && window.SelectedRestoreManifestReviewTextValue.Contains("Restore readiness row | Restorable", StringComparison.OrdinalIgnoreCase)
+                && window.SelectedRestoreManifestReviewTextValue.Contains(realProfileScope, StringComparison.OrdinalIgnoreCase),
+                "Real-profile selected readiness should be clean-looking read-only evidence. Text: " + window.SelectedRestoreManifestReviewTextValue);
+            Assert(File.Exists(setup.QuarantinePath), "Selected real-profile readiness preview should not move the synthetic quarantine source.");
+            Assert(!File.Exists(setup.OriginalPath), "Selected real-profile readiness preview should not restore into the real profile.");
+
+            window.PreviewSelectedRestoreGateForCurrentSelection();
+            window.SetSelectedRestoreConfirmationText("RESTORE");
+
+            Assert(
+                window.SelectedRestoreExecutionGateTextValue.Contains("Entered confirmation matches: yes", StringComparison.OrdinalIgnoreCase)
+                && window.SelectedRestoreExecutionGateTextValue.Contains("Can execute: no", StringComparison.OrdinalIgnoreCase)
+                && window.SelectedRestoreExecutionGateTextValue.Contains("Preview only for this selected Restore Manifest", StringComparison.OrdinalIgnoreCase)
+                && window.SelectedRestoreExecutionGateTextValue.Contains("real-profile and custom selected restore remain unavailable", StringComparison.OrdinalIgnoreCase)
+                && window.SelectedRestoreExecutionGateTextValue.Contains("Selected restore execution is not available", StringComparison.OrdinalIgnoreCase),
+                "Real-profile selected restore gate should match RESTORE but stay closed. Text: " + window.SelectedRestoreExecutionGateTextValue);
+            AssertSelectedRestoreExecutionGateHelpCue(
+                window,
+                "Real-profile selected restore gate cue should stay blocked after exact RESTORE.",
+                "Gate is closed",
+                "Selected restore execution is not available",
+                "Real-profile/custom selected restore remains unavailable");
+            Assert(!window.CanExecuteSelectedRestore, "Real-profile selected restore execution should remain unavailable even with clean readiness and exact RESTORE.");
+            Assert(File.Exists(setup.QuarantinePath), "Blocked real-profile selected restore should leave the synthetic quarantine source in place.");
+            Assert(!File.Exists(setup.OriginalPath), "Blocked real-profile selected restore should not restore into the real profile.");
+        }
+        finally
+        {
+            window.Close();
+        }
+    }
+
     public void MainWindowBlocksQuarantinePreviewForParentWithProtectedDescendant()
     {
         using var fixture = SmokeFixture.CreateProtectedDescendantPreviewCase();
@@ -3065,6 +3120,74 @@ internal sealed class MainWindowSmokeTests
 
         return QuarantineExecutor.Execute(manifest);
     }
+
+    private static SyntheticRestoreManifestSetup CreateSyntheticRealProfileRestoreManifest(
+        string cleanupScopePath,
+        string quarantineRootPath,
+        string idSuffix)
+    {
+        var actionId = $"quarantine-action-{idSuffix}";
+        var actionRoot = Path.GetFullPath(Path.Combine(quarantineRootPath, "actions", actionId));
+        var itemsRoot = Path.Combine(actionRoot, "items");
+        var manifestPath = Path.Combine(actionRoot, RestoreManifestFileStore.RestoreManifestFileName);
+        var relativePath = Path.Combine(
+            "AppData",
+            "Local",
+            "WindowsFileCleanerRegression",
+            Guid.NewGuid().ToString("N"),
+            "restore-target.bin");
+        var originalPath = Path.GetFullPath(Path.Combine(cleanupScopePath, relativePath));
+        var quarantinePath = Path.Combine(itemsRoot, relativePath);
+        var now = new DateTimeOffset(2026, 5, 31, 13, 14, 15, TimeSpan.Zero);
+
+        Directory.CreateDirectory(Path.GetDirectoryName(quarantinePath)!);
+        File.WriteAllText(quarantinePath, "Synthetic quarantined real-profile restore source.");
+        File.SetLastWriteTimeUtc(quarantinePath, now.UtcDateTime);
+
+        var entry = new RestoreManifestEntry(
+            originalPath,
+            relativePath,
+            Path.GetFullPath(quarantinePath),
+            IsDirectory: false,
+            SizeBytes: new FileInfo(quarantinePath).Length,
+            LastModifiedUtc: now,
+            ImportanceRating.LikelySafe,
+            DeletionRecommendation.QuarantineCandidate,
+            [BloatCategory.AppCache],
+            "Synthetic real-profile selected restore regression fixture.",
+            RestoreManifestEntryStatus.Moved,
+            MoveStartedAtUtc: now,
+            MoveCompletedAtUtc: now,
+            RestoreStartedAtUtc: null,
+            RestoreCompletedAtUtc: null,
+            ErrorMessage: null);
+
+        var manifest = new RestoreManifest(
+            RestoreManifest.CurrentSchemaVersion,
+            $"restore-manifest-{idSuffix}",
+            $"manifest-draft-{idSuffix}",
+            actionId,
+            now,
+            now,
+            Path.GetFullPath(cleanupScopePath),
+            Path.GetFullPath(quarantineRootPath),
+            actionRoot,
+            itemsRoot,
+            manifestPath,
+            RestoreManifestActionStatus.Completed,
+            [entry],
+            ["Synthetic regression manifest; do not use for real restore execution."]);
+
+        Directory.CreateDirectory(actionRoot);
+        File.WriteAllText(manifestPath, RestoreManifestJsonSerializer.Serialize(manifest));
+
+        return new SyntheticRestoreManifestSetup(manifestPath, originalPath, quarantinePath);
+    }
+
+    private sealed record SyntheticRestoreManifestSetup(
+        string ManifestPath,
+        string OriginalPath,
+        string QuarantinePath);
 }
 
 internal sealed class SmokeFixture : IDisposable

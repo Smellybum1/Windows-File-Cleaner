@@ -9,7 +9,7 @@ Use this when starting a fresh Codex thread for this repository.
 - Repo: `D:\Codex\Windows File Cleaner`
 - GitHub: `Smellybum1/Windows-File-Cleaner`
 - Branch: `main`
-- Latest completed packet: Real-Profile Selected Restore Execution Contract
+- Latest completed packet: Real-Profile Selected Restore Regression
 - Current app stack: C# / WPF / .NET 8
 - Desktop shortcut target: `D:\Codex\Windows File Cleaner\src\WindowsFileCleaner.App\bin\Debug\net8.0-windows\WindowsFileCleaner.App.exe`
 
@@ -21,7 +21,7 @@ The current MVP has a read-only Storage Scan that can inspect large real-profile
 
 Fixture-only cleanup execution exists for synthetic Cleanup Scopes. Real-profile cleanup execution remains intentionally unavailable until ADR 0017's readiness contract is implemented.
 
-The latest docs packet added ADR 0019 and a feature brief for the Real-Profile Selected Restore Execution contract. It requires exact `C:\Users\moxhe`, one selected Restore Manifest, fresh selected readiness/gate evidence, exact `RESTORE`, immediate selected-readiness revalidation, no original-path overwrite, `UndoQuarantineExecutor`, Restore Manifest-only durable records, and manual rediscover/rescan guidance before any future selected real-profile restore can run. Real-profile/custom execution remains unavailable.
+The latest code packet added WPF regression coverage proving selected real-profile Restore Manifests still cannot execute while ADR 0019 remains design-only. The test uses a synthetic Restore Manifest with exact `C:\Users\moxhe` Cleanup Scope metadata, previews selected readiness, types exact `RESTORE`, verifies `Can execute: no`, and does not call the restore method. Real-profile/custom execution remains unavailable.
 
 ## Safety boundary
 
@@ -93,6 +93,7 @@ The latest docs packet added ADR 0019 and a feature brief for the Real-Profile S
 - Real-Profile Restore Readiness added the non-moving core restore-readiness model/tests and optional readiness consumption for selected-manifest real-profile Undo evidence; core tests passed and no WPF execution behavior changed.
 - WPF Execution Readiness Output added read-only readiness contract output to Quarantine Preview and Quarantine Execution Gate, with grouped blockers and WPF smoke assertions; no execution behavior changed.
 - Real-Profile Selected Restore Execution Contract added ADR 0019 and a feature brief for the future selected-manifest-only real-profile restore path; no execution behavior changed.
+- Real-Profile Selected Restore Regression added WPF smoke coverage that exact `RESTORE` and clean selected readiness for a synthetic real-profile Restore Manifest still leaves selected restore execution unavailable; no execution behavior changed.
 - Quarantine Execution Scope Status added plain-language fixture-only versus preview-only scope wording to Quarantine Preview and Quarantine Execution Gate output.
 - Fixture Review Checklist Output added a compact terminal checklist to `Start-MvpFixtureReview.ps1`.
 - Fixture Review Checklist-Only Mode added `Start-MvpFixtureReview.ps1 -ChecklistOnly`, which prints the same checklist without preflight, fixture creation, or WPF launch.
@@ -196,10 +197,10 @@ The latest docs packet added ADR 0019 and a feature brief for the Real-Profile S
 
 Prefer a small packet. Good candidates:
 
-1. Add regression coverage that selected real-profile Restore Manifests still cannot execute while ADR 0019 remains design-only.
-2. Run a manual fixture visual polish pass with `.\tools\Start-MvpFixtureReview.cmd -ChecklistOnly` and then `.\tools\Start-MvpFixtureReview.cmd`; verify the updated prompts match the visible app, including the compact wrapping scan-header status strip, scan-gate summary `?` help cue, Review Mix / Matched Review Mix / Review Shortlist Safety Mix / Review Grid Mode Status / inline Quarantine Preview status / Quarantine Execution Gate / Selected Restore Execution Gate / collapsed panel header hoverable `?` help cues and prompt tooltip/help text, `Remove overlapping parents` for a redundant parent/child preview, the separated manifest-review checklist step for `Discover manifests`, selected-manifest, and `Preview all-manifest readiness` `?` help cues staying paired with their controls as rows wrap, the separated selected-restore gate step for waiting/closed/open/restored states without crowding the gate area, panel-name collapsed header summaries/state styling and state-naming tooltip/help text, styled inline Quarantine Preview readiness state-naming tooltip/help text, `Current quarantined (N)` / `Back to scan rows` help text, and final ADR 0017/0019 real-profile/custom blocker wording.
-3. If the user wants broader restore/history browsing, start a new Grill with Docs packet for a dedicated restore/history surface instead of expanding `Current quarantined` into all quarantined history.
-4. Continue Quarantine Preview/readiness wording review in the visible app, still without enabling real-profile execution.
+1. Run a manual fixture visual polish pass with `.\tools\Start-MvpFixtureReview.cmd -ChecklistOnly` and then `.\tools\Start-MvpFixtureReview.cmd`; verify the updated prompts match the visible app, including the compact wrapping scan-header status strip, scan-gate summary `?` help cue, Review Mix / Matched Review Mix / Review Shortlist Safety Mix / Review Grid Mode Status / inline Quarantine Preview status / Quarantine Execution Gate / Selected Restore Execution Gate / collapsed panel header hoverable `?` help cues and prompt tooltip/help text, `Remove overlapping parents` for a redundant parent/child preview, the separated manifest-review checklist step for `Discover manifests`, selected-manifest, and `Preview all-manifest readiness` `?` help cues staying paired with their controls as rows wrap, the separated selected-restore gate step for waiting/closed/open/restored states without crowding the gate area, panel-name collapsed header summaries/state styling and state-naming tooltip/help text, styled inline Quarantine Preview readiness state-naming tooltip/help text, `Current quarantined (N)` / `Back to scan rows` help text, and final ADR 0017/0019 real-profile/custom blocker wording.
+2. If the user wants broader restore/history browsing, start a new Grill with Docs packet for a dedicated restore/history surface instead of expanding `Current quarantined` into all quarantined history.
+3. Continue Quarantine Preview/readiness wording review in the visible app, still without enabling real-profile execution.
+4. Consider whether the WPF Execution Readiness output should become a dedicated compact readiness pane after manual fixture/real-profile review, or stay inside the existing preview/gate panes for now.
 5. Start real-profile Quarantine execution implementation only after the user explicitly wants to move beyond preview and ADR 0017, ADR 0018, and ADR 0019 prerequisites are covered by tests.
 
 ## Commands

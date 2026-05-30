@@ -217,7 +217,7 @@ ADRs added or skipped:
 
 Follow-up work:
 
-- Add real-profile selected restore regression coverage while keeping execution blocked.
+- Real-profile selected restore regression coverage was added in `docs/features/2026-05-31-real-profile-selected-restore-regression.md`; execution remains blocked.
 - Implement the selected real-profile restore path only after explicit approval.
 
 Open questions:
