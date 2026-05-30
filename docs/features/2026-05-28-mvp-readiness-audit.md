@@ -232,7 +232,7 @@ ADRs added or skipped:
 Follow-up work:
 
 - Use `README.md` and this audit to run a fresh WPF manual retest against `C:\Users\moxhe`.
-- After that retest, keep real-profile WPF Quarantine execution and WPF Undo Quarantine unavailable until ADR 0017's Real-Profile Quarantine Readiness Contract is designed and verified with immediate pre-execution revalidation, Quarantine Root safety checks, trusted Undo/recovery behavior, and explicit approval semantics.
+- After that retest, keep real-profile WPF Quarantine execution and WPF Undo Quarantine unavailable until ADR 0017's Real-Profile Quarantine Readiness Contract is designed and verified with immediate pre-execution revalidation, Quarantine Root safety checks, trusted Undo/recovery behavior, and explicit approval semantics; keep selected real-profile restore unavailable until ADR 0019's selected-manifest restore contract is implemented and explicitly approved.
 
 Open questions:
 

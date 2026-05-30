@@ -94,6 +94,7 @@ What changed:
 - Later packet `2026-05-30-review-shortlist-safety-mix-help-cue.md` updated the checklist to call out the Review Shortlist Safety Mix `?` help cue.
 - Later packet `2026-05-30-execution-policy-friendly-fixture-launcher.md` added `Start-MvpFixtureReview.cmd`, so the same checklist can be launched when direct `.ps1` execution is blocked by local policy.
 - Later packet `2026-05-30-fixture-checklist-hoverable-help-cues.md` aligned the checklist wording with the hoverable `?` cue affordance and prompt tooltip behavior.
+- Later packet `2026-05-31-fixture-checklist-selected-restore-boundary.md` aligned the final real-profile/custom blocker prompt with both ADR 0017 Quarantine blockers and ADR 0019 selected-restore blockers.
 
 Tests run:
 
