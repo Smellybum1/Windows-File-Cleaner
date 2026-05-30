@@ -8,11 +8,11 @@ Use it to preserve what was completed, what was verified, what was rejected, and
 
 Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. The app has a broad read-only review workflow, manual fixture Show children/Clipboard crash fix, scan cancel help text, scan-gate summary help text plus a visible hoverable `?` help cue in a compact wrapping scan-header status strip, real-profile acknowledgement help text plus a visible hoverable `?` help cue, Cleanup Scope Safety Note and Quarantine Root Safety Note help text plus visible hoverable `?` help cues, Review Mix, Matched Review Mix, Review Shortlist Safety Mix, Review Grid Mode Status, inline Quarantine Preview status, Quarantine Execution Gate, Selected Restore Execution Gate, exact-confirmation fields, Quarantine Manifest Discovery, Restore Manifest selection, Restore Readiness Preview, Safety Summary header, and Quarantine Shortlist header hoverable `?` help cues with tooltip/help text and affordance smoke coverage plus a full `.cmd` MVP preflight after scan-gate cue coverage, Safety Summary shortcut help text, Safety Summary collapsed-header state styling, review-lens filter help text, manifest discovery/selection help text, debounced Storage Review Search for large real-profile scans, Storage Review Search input automation help text, scan-gate automation help text, Cleanup Scope input/browse automation help text, Quarantine Root input/browse automation help text, selected-row action automation help text, visible-row shortlist automation help text, execution/readiness automation help text, review report/preview automation help text, review toolbar automation help text, review navigation/export tooltip clarity, Review Grid Mode Status tooltip/help text, scope-specific Cleanup Scope Scan Gate discoverability polish, Cleanup Scope and Quarantine Root browse tooltip clarity, selected-row action tooltip clarity, Matched Review Mix, Review Shortlist Safety Mix, visible-row Review Shortlist bulk labels/tooltips, review toolbar report/preview tooltip clarity, Selected Folder Subtree Summary, Storage Hotspot Trail, Selected Folder Child Focus, Selected Folder Descendant Focus, execution-policy-friendly fixture/preflight tooling with checklist output, checklist-only mode now covered by MVP preflight and GitHub Actions now running preflight through the same `.cmd` wrapper as local user instructions, hoverable help-cue checklist wording, approval-boundary prompt coverage, selected-restore scope-status checklist coverage, all-manifest restore boundary checklist coverage, manifest review and selected-restore gate checklist steps split for easier fixture review, redundant parent/child preview overlap cleanup through `Remove overlapping parents`, execution-control tooltip clarity, readiness scope tooltip clarity, Undo Quarantine domain consistency, Restore Manifest wording polish, Selected Manifest Readiness label polish, and All-Manifest Readiness label polish, Quarantine Preview and Quarantine Execution Gate scope-status/approval-boundary wording without technical implementation-flag wording plus a full `.cmd` MVP preflight after that wording packet, fixture checklist wording aligned to the visible `Quarantine included shortlist` button plus a full `.cmd` MVP preflight after that checklist label packet, WPF Quarantine Preview and Execution Gate placeholder text aligned to the visible `Preview shortlist quarantine` button plus a full `.cmd` MVP preflight after that placeholder label packet, WPF Quarantine Execution Gate missing-preview blocker aligned to the visible `Preview shortlist quarantine` button, Quarantine Execution Gate help cue plus a full `.cmd` MVP preflight after that help-cue packet, Restore Manifest Draft, Quarantine Confirmation Draft, confirmation label wording polish, Quarantine Action Draft, write-ahead Restore Manifest persistence, core Quarantine execution, core Undo Quarantine, fixture-only WPF Quarantine execution, WPF undo for the current fixture execution, Current quarantined grid switching with a moved-entry count label for current-session moved entries plus a full `.cmd` MVP preflight after that count-label packet, Quarantine Manifest Discovery with all-manifest restore wording and a visible discovery `?` help cue, Selected Restore Manifest Review with readiness-evidence wording and a visible selection `?` help cue, Selected Restore Confirmation Gate with scope-status/approval-boundary wording, visible help cue, and without technical implementation-flag wording, Fixture-only Selected Restore Execution, Restore Readiness Preview with all-manifest restore wording and a visible all-manifest readiness `?` help cue, a Real-Profile Quarantine Readiness Contract in ADR 0017 with WPF regression coverage for real/custom execution blockers, and a compact `AGENTS.md` that points to detailed workflow docs instead of duplicating them. Real-profile WPF Quarantine execution, real-profile WPF Undo Quarantine, permanent deletion, and persisted cleanup history remain unavailable. Fresh-thread handoff notes and a startup prompt live in `docs/codex/thread-handoff.md`.
 
-Latest small packet wired read-only Real-Profile Restore Readiness evidence into WPF Selected Restore Execution Gate output and forward Quarantine readiness consumption. The app now builds restore readiness from selected manifest review, selected restore confirmation draft, and selected restore gate evidence, while still reporting selected-manifest real-profile Undo as unavailable in this build. No selected real-profile restore, real-profile Quarantine execution, file movement, deletion, folder creation, manifest writing, or cleanup history changed.
+Latest small packet added a compact WPF Quarantine Readiness Summary between inline Quarantine Preview status and the confirmation controls. It summarizes waiting, fixture-ready/open, preview-only, stale-executed, and undo-completed states, mirrors `Summary state:` into tooltip/automation help text, and keeps detailed readiness evidence in the existing preview/gate panes. No selected real-profile restore, real-profile Quarantine execution, file movement, deletion, folder creation, manifest writing, or cleanup history changed.
 
 ## Next recommended work
 
-1. Consider whether the WPF Execution Readiness output should become a dedicated compact readiness pane after manual fixture/real-profile review, or stay inside the existing preview/gate panes for now.
+1. Manually review whether the compact Quarantine Readiness Summary makes the WPF Execution Readiness output clear enough, or whether a later dedicated readiness pane is still needed.
 2. Start the next manual fixture review from `docs/codex/thread-handoff.md`, optionally print the prompts with `.\tools\Start-MvpFixtureReview.cmd -ChecklistOnly`, then run `.\tools\Start-MvpFixtureReview.cmd` and inspect the visible fixture-only/readiness boundaries.
 3. Use `README.md` and `docs/features/2026-05-28-mvp-readiness-audit.md` to rerun the WPF app against `C:\Users\moxhe`; confirm `Scan` is disabled until the real-profile preflight acknowledgement is checked and the acknowledgement `?` help cue mirrors the tooltip/help boundary.
 4. Run `.\tools\Invoke-MvpPreflight.cmd` before any later real-profile scan if the worktree changes.
@@ -21,6 +21,54 @@ Latest small packet wired read-only Real-Profile Restore Readiness evidence into
 7. Revisit .NET 10 before packaging or long-term distribution.
 
 ## Completed packets
+
+### 2026-05-31: Quarantine Readiness Summary
+
+Status: completed
+
+Evidence:
+
+- Recent readiness packets made detailed readiness evidence available in Quarantine Preview and Quarantine Execution Gate output.
+- The next recommended work asked whether the execution readiness output should become a dedicated compact pane after manual review.
+- A compact summary line can improve visible readiness clarity without adding another panel, help cue, or execution path.
+
+Implementation:
+
+- Added `QuarantineReadinessSummaryText` between inline Quarantine Preview status and exact confirmation controls.
+- Summarized waiting, fixture-ready/open, preview-only, stale-executed, and undo-completed states.
+- Used lightweight neutral/success/warning styling and mirrored `Summary state:` into tooltip/automation help text.
+- Updated WPF smoke coverage for fixture preview/open/executed/undo, custom preview-only, and synthetic real-profile preview-only summary states.
+- Updated the fixture checklist so manual review includes compact summary states/tooltips.
+- No WPF execution behavior, scan behavior, real-profile/custom execution availability, restore availability, permanent deletion, folder creation, manifest writing, or cleanup history changed.
+
+Verification:
+
+- `dotnet run --project tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj`
+- `cmd.exe /c tools\Start-MvpFixtureReview.cmd -ChecklistOnly`
+- `git diff --check`
+
+Docs updated:
+
+- `docs/features/2026-05-31-quarantine-readiness-summary.md`
+- `docs/features/2026-05-31-wpf-execution-readiness-output.md`
+- `docs/domain/context.md`
+- `docs/domain/glossary.md`
+- `README.md`
+- `tools/Start-MvpFixtureReview.ps1`
+- `docs/codex/thread-handoff.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No ADR added. This is reversible WPF clarity/readiness wording under ADR 0018, with no new architecture, persistence, cleanup execution, restore rule, or security decision.
+
+Open questions:
+
+- Manual fixture review should decide whether this compact summary is enough or whether a later dedicated readiness pane is still useful.
+
+Rejected ideas buffer:
+
+- Do not add a new help cue or another large readiness panel before manual visual review proves the compact line is insufficient.
 
 ### 2026-05-31: WPF Real-Profile Restore Readiness Evidence
 

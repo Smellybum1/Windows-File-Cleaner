@@ -1882,6 +1882,14 @@ internal sealed class MainWindowSmokeTests
             Assert(window.QuarantinePreviewStatusStyleValue == "Success", "Multi-row ready inline preview status should use success styling.");
             AssertQuarantinePreviewStatusHelpText(window, "Inline Quarantine Preview status help text should mirror multi-row ready preview state.");
             Assert(
+                window.QuarantineReadinessSummaryTextValue.Contains("fixture scope", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineReadinessSummaryTextValue.Contains("0 readiness blocker", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineReadinessSummaryTextValue.Contains("type exact QUARANTINE", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineReadinessSummaryTextValue.Contains("Real-profile/custom execution remains unavailable", StringComparison.OrdinalIgnoreCase),
+                "Compact readiness summary should expose fixture readiness before exact confirmation.");
+            Assert(window.QuarantineReadinessSummaryStyleValue == "Success", "Fixture readiness summary should use success styling after clean preview.");
+            AssertQuarantineReadinessSummaryHelpText(window, "Compact readiness summary help text should mirror clean fixture preview state.");
+            Assert(
                 window.QuarantinePreviewTextValue.Contains("Source: Review Shortlist", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantinePreviewTextValue.Contains("Only included rows can be quarantined", StringComparison.OrdinalIgnoreCase),
                 "Fixture preview pane should explain that execution targets included shortlist rows only.");
@@ -1907,6 +1915,10 @@ internal sealed class MainWindowSmokeTests
 
             window.SetQuarantineConfirmationText("QUARANTINE");
             Assert(window.CanExecuteQuarantine, "Fixture execution should open after exact confirmation.");
+            Assert(
+                window.QuarantineReadinessSummaryTextValue.Contains("exact QUARANTINE is entered", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineReadinessSummaryTextValue.Contains("fixture-only action can run", StringComparison.OrdinalIgnoreCase),
+                "Compact readiness summary should state that exact confirmation opened fixture-only execution.");
             var manifestPath = window.CurrentRestoreManifestPath;
             var quarantinePaths = window.CurrentQuarantinePaths.ToArray();
             Assert(!string.IsNullOrWhiteSpace(manifestPath), "Fixture execution should expose a planned Restore Manifest path before execution.");
@@ -1974,6 +1986,12 @@ internal sealed class MainWindowSmokeTests
                 "Inline preview status should change to fixture execution evidence after execution.");
             Assert(window.QuarantinePreviewStatusStyleValue == "Success", "Successful fixture execution inline status should use success styling.");
             AssertQuarantinePreviewStatusHelpText(window, "Inline Quarantine Preview status help text should mirror fixture execution evidence.");
+            Assert(
+                window.QuarantineReadinessSummaryTextValue.Contains("current fixture Quarantine already ran", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineReadinessSummaryTextValue.Contains("Storage Scan rows may be stale", StringComparison.OrdinalIgnoreCase),
+                "Compact readiness summary should switch to stale-state wording after fixture execution.");
+            Assert(window.QuarantineReadinessSummaryStyleValue == "Warning", "Post-execution readiness summary should use warning styling.");
+            AssertQuarantineReadinessSummaryHelpText(window, "Compact readiness summary help text should mirror post-execution stale state.");
             Assert(
                 window.QuarantinePreviewTextValue.Contains("Fixture Quarantine execution result", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantinePreviewTextValue.Contains("Current scan and review rows are stale", StringComparison.OrdinalIgnoreCase),
@@ -2087,6 +2105,12 @@ internal sealed class MainWindowSmokeTests
                 "Inline preview status should change to fixture undo evidence after undo.");
             Assert(window.QuarantinePreviewStatusStyleValue == "Success", "Successful fixture undo inline status should use success styling.");
             AssertQuarantinePreviewStatusHelpText(window, "Inline Quarantine Preview status help text should mirror fixture undo evidence.");
+            Assert(
+                window.QuarantineReadinessSummaryTextValue.Contains("current fixture Undo Quarantine already ran", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineReadinessSummaryTextValue.Contains("rescan before more cleanup review", StringComparison.OrdinalIgnoreCase),
+                "Compact readiness summary should switch to undo-completed wording after fixture undo.");
+            Assert(window.QuarantineReadinessSummaryStyleValue == "Success", "Post-undo readiness summary should use success styling.");
+            AssertQuarantineReadinessSummaryHelpText(window, "Compact readiness summary help text should mirror fixture undo state.");
             Assert(
                 window.QuarantinePreviewTextValue.Contains("Fixture Undo Quarantine result", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantinePreviewTextValue.Contains("Current scan and review rows are stale", StringComparison.OrdinalIgnoreCase),
@@ -2363,6 +2387,14 @@ internal sealed class MainWindowSmokeTests
             Assert(
                 window.QuarantineExecutionGateTextValue.Contains("not available for this Cleanup Scope", StringComparison.OrdinalIgnoreCase),
                 "Custom-scope gate should explain the scope-specific execution blocker.");
+            Assert(
+                window.QuarantineReadinessSummaryTextValue.Contains("preview only", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineReadinessSummaryTextValue.Contains("custom", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineReadinessSummaryTextValue.Contains("Missing: Scope and policy", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineReadinessSummaryTextValue.Contains("Current build can execute: no", StringComparison.OrdinalIgnoreCase),
+                "Compact readiness summary should keep custom scopes visibly preview-only after exact QUARANTINE.");
+            Assert(window.QuarantineReadinessSummaryStyleValue == "Warning", "Custom preview-only readiness summary should use warning styling.");
+            AssertQuarantineReadinessSummaryHelpText(window, "Compact readiness summary help text should mirror custom preview-only state.");
 
             window.ExecuteQuarantineForCurrentPreview();
             Assert(
@@ -2450,6 +2482,15 @@ internal sealed class MainWindowSmokeTests
                 && window.QuarantineExecutionGateTextValue.Contains("Included source no longer exists", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantineExecutionGateTextValue.Contains("Readiness blocker | Real-Profile Restore Readiness", StringComparison.OrdinalIgnoreCase),
                 "Synthetic real-profile gate should keep root safety and revalidation evidence while restore readiness remains blocked.");
+            Assert(
+                window.QuarantineReadinessSummaryTextValue.Contains("real-profile candidate", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineReadinessSummaryTextValue.Contains("real profile", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineReadinessSummaryTextValue.Contains("Pre-Execution Revalidation", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineReadinessSummaryTextValue.Contains("Real-Profile Restore Readiness", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineReadinessSummaryTextValue.Contains("Current build can execute: no", StringComparison.OrdinalIgnoreCase),
+                "Compact readiness summary should name missing real-profile readiness dimensions without enabling execution.");
+            Assert(window.QuarantineReadinessSummaryStyleValue == "Warning", "Real-profile readiness summary should use warning styling while execution is blocked.");
+            AssertQuarantineReadinessSummaryHelpText(window, "Compact readiness summary help text should mirror real-profile preview-only state.");
         }
         finally
         {
@@ -3126,6 +3167,33 @@ internal sealed class MainWindowSmokeTests
             && window.QuarantinePreviewStatusHelpCueAutomationHelpTextValue.Contains("delete files", StringComparison.OrdinalIgnoreCase)
             && window.QuarantinePreviewStatusHelpCueAutomationHelpTextValue.Contains("approve cleanup", StringComparison.OrdinalIgnoreCase),
             message + " Help cue automation help text should mirror the current status text and safety boundary.");
+    }
+
+    private static void AssertQuarantineReadinessSummaryHelpText(MainWindow window, string message)
+    {
+        var expectedSummaryState = $"Summary state: {window.QuarantineReadinessSummaryStyleValue.ToLowerInvariant()}";
+        Assert(
+            window.QuarantineReadinessSummaryToolTipValue.Contains(window.QuarantineReadinessSummaryTextValue, StringComparison.OrdinalIgnoreCase)
+            && window.QuarantineReadinessSummaryToolTipValue.Contains(expectedSummaryState, StringComparison.OrdinalIgnoreCase)
+            && window.QuarantineReadinessSummaryToolTipValue.Contains("read-only review context", StringComparison.OrdinalIgnoreCase)
+            && window.QuarantineReadinessSummaryToolTipValue.Contains("does not create folders", StringComparison.OrdinalIgnoreCase)
+            && window.QuarantineReadinessSummaryToolTipValue.Contains("move files", StringComparison.OrdinalIgnoreCase)
+            && window.QuarantineReadinessSummaryToolTipValue.Contains("restore files", StringComparison.OrdinalIgnoreCase)
+            && window.QuarantineReadinessSummaryToolTipValue.Contains("delete files", StringComparison.OrdinalIgnoreCase)
+            && window.QuarantineReadinessSummaryToolTipValue.Contains("write manifests", StringComparison.OrdinalIgnoreCase)
+            && window.QuarantineReadinessSummaryToolTipValue.Contains("approve cleanup", StringComparison.OrdinalIgnoreCase),
+            message + " Tooltip should mirror the current summary and safety boundary.");
+        Assert(
+            window.QuarantineReadinessSummaryAutomationHelpTextValue.Contains(window.QuarantineReadinessSummaryTextValue, StringComparison.OrdinalIgnoreCase)
+            && window.QuarantineReadinessSummaryAutomationHelpTextValue.Contains(expectedSummaryState, StringComparison.OrdinalIgnoreCase)
+            && window.QuarantineReadinessSummaryAutomationHelpTextValue.Contains("read-only review context", StringComparison.OrdinalIgnoreCase)
+            && window.QuarantineReadinessSummaryAutomationHelpTextValue.Contains("does not create folders", StringComparison.OrdinalIgnoreCase)
+            && window.QuarantineReadinessSummaryAutomationHelpTextValue.Contains("move files", StringComparison.OrdinalIgnoreCase)
+            && window.QuarantineReadinessSummaryAutomationHelpTextValue.Contains("restore files", StringComparison.OrdinalIgnoreCase)
+            && window.QuarantineReadinessSummaryAutomationHelpTextValue.Contains("delete files", StringComparison.OrdinalIgnoreCase)
+            && window.QuarantineReadinessSummaryAutomationHelpTextValue.Contains("write manifests", StringComparison.OrdinalIgnoreCase)
+            && window.QuarantineReadinessSummaryAutomationHelpTextValue.Contains("approve cleanup", StringComparison.OrdinalIgnoreCase),
+            message + " Automation help text should mirror the current summary and safety boundary.");
     }
 
     private static void AssertShortlistSafetyMixHelpText(MainWindow window, string message)

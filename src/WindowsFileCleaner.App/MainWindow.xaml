@@ -817,6 +817,13 @@
                                        ToolTip="Quarantine Preview readiness appears after Review Shortlist rows are added. No files were modified. Status state: neutral. Inline preview status is read-only review context; it does not create folders, move files, restore files, delete files, or approve cleanup."
                                        AutomationProperties.HelpText="Quarantine Preview readiness appears after Review Shortlist rows are added. No files were modified. Status state: neutral. Inline preview status is read-only review context; it does not create folders, move files, restore files, delete files, or approve cleanup." />
                         </DockPanel>
+                        <TextBlock x:Name="QuarantineReadinessSummaryText"
+                                   Margin="0,6,0,0"
+                                   Text="Execution readiness summary: waiting for Preview shortlist quarantine. No files were modified."
+                                   Foreground="#526171"
+                                   TextWrapping="Wrap"
+                                   ToolTip="Execution readiness summary: waiting for Preview shortlist quarantine. No files were modified. Readiness summary is read-only review context; it does not create folders, move files, restore files, delete files, write manifests, or approve cleanup."
+                                   AutomationProperties.HelpText="Execution readiness summary: waiting for Preview shortlist quarantine. No files were modified. Readiness summary is read-only review context; it does not create folders, move files, restore files, delete files, write manifests, or approve cleanup." />
                         <WrapPanel Margin="0,6,0,0">
                             <TextBlock Text="Shortlist confirmation"
                                        VerticalAlignment="Center"

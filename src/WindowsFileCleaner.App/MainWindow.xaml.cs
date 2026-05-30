@@ -434,6 +434,14 @@ public partial class MainWindow : Window
 
     public string QuarantinePreviewStatusHelpCueAutomationHelpTextValue => AutomationProperties.GetHelpText(QuarantinePreviewStatusHelpCue);
 
+    public string QuarantineReadinessSummaryTextValue => QuarantineReadinessSummaryText.Text;
+
+    public string QuarantineReadinessSummaryStyleValue => QuarantineReadinessSummaryText.Tag?.ToString() ?? "";
+
+    public string QuarantineReadinessSummaryToolTipValue => QuarantineReadinessSummaryText.ToolTip?.ToString() ?? "";
+
+    public string QuarantineReadinessSummaryAutomationHelpTextValue => AutomationProperties.GetHelpText(QuarantineReadinessSummaryText);
+
     public string QuarantineExecutionGateTextValue => QuarantineExecutionGateText.Text;
 
     public string QuarantineExecutionGateToolTipValue => QuarantineExecutionGateText.ToolTip?.ToString() ?? "";
@@ -1926,13 +1934,14 @@ public partial class MainWindow : Window
         _currentQuarantineExecutionGate = QuarantineExecutionGateBuilder.Build(
             _currentQuarantineConfirmationDraft,
             QuarantineConfirmationBox.Text);
+        var executionReadiness = BuildQuarantineExecutionReadinessForDisplay();
         var hasExecutedCurrentPreview = _currentQuarantineExecutionResult is not null;
         QuarantineConfirmationBox.IsEnabled = _currentQuarantineConfirmationDraft is not null && !hasExecutedCurrentPreview && ScanButton.IsEnabled;
         ExecuteQuarantineButton.IsEnabled = _currentQuarantineExecutionGate.CanExecute && !hasExecutedCurrentPreview && ScanButton.IsEnabled;
         UndoQuarantineButton.IsEnabled = CanUndoCurrentQuarantineExecution() && ScanButton.IsEnabled;
         QuarantineExecutionGateText.Text = FormatQuarantineExecutionGate(
             _currentQuarantineExecutionGate,
-            BuildQuarantineExecutionReadinessForDisplay(),
+            executionReadiness,
             _currentQuarantineRootExecutionSafety,
             _currentPreExecutionRevalidation,
             _currentRealProfileRestoreReadiness,
@@ -1948,7 +1957,115 @@ public partial class MainWindow : Window
         AutomationProperties.SetHelpText(QuarantineExecutionGateText, gateHelpText);
         QuarantineExecutionGateHelpCue.ToolTip = gateHelpText;
         AutomationProperties.SetHelpText(QuarantineExecutionGateHelpCue, gateHelpText);
+        UpdateQuarantineReadinessSummary(_currentQuarantineExecutionGate, executionReadiness, hasExecutedCurrentPreview);
         UpdateQuarantineShortlistHeader();
+    }
+
+    private void UpdateQuarantineReadinessSummary(
+        QuarantineExecutionGate gate,
+        QuarantineExecutionReadiness? executionReadiness,
+        bool hasExecutedCurrentPreview)
+    {
+        if (QuarantineReadinessSummaryText is null)
+        {
+            return;
+        }
+
+        var (text, style) = FormatQuarantineReadinessSummary(
+            gate,
+            executionReadiness,
+            hasExecutedCurrentPreview,
+            _currentUndoQuarantineResult is not null);
+        QuarantineReadinessSummaryText.Text = text;
+        QuarantineReadinessSummaryText.Tag = style.ToString();
+        QuarantineReadinessSummaryText.Foreground = style switch
+        {
+            QuarantineReadinessSummaryStyle.Success => System.Windows.Media.Brushes.DarkGreen,
+            QuarantineReadinessSummaryStyle.Warning => System.Windows.Media.Brushes.DarkGoldenrod,
+            _ => System.Windows.Media.Brushes.SlateGray
+        };
+        QuarantineReadinessSummaryText.FontWeight = style == QuarantineReadinessSummaryStyle.Neutral
+            ? FontWeights.Normal
+            : FontWeights.SemiBold;
+        var helpText = $"{text} Summary state: {FormatQuarantineReadinessSummaryState(style)}. Readiness summary is read-only review context; it does not create folders, move files, restore files, delete files, write manifests, or approve cleanup.";
+        QuarantineReadinessSummaryText.ToolTip = helpText;
+        AutomationProperties.SetHelpText(QuarantineReadinessSummaryText, helpText);
+    }
+
+    private static (string Text, QuarantineReadinessSummaryStyle Style) FormatQuarantineReadinessSummary(
+        QuarantineExecutionGate gate,
+        QuarantineExecutionReadiness? executionReadiness,
+        bool hasExecutedCurrentPreview,
+        bool hasUndoResult)
+    {
+        if (hasUndoResult)
+        {
+            return ("Execution readiness summary: current fixture Undo Quarantine already ran; rescan before more cleanup review. Real-profile/custom execution remains unavailable.", QuarantineReadinessSummaryStyle.Success);
+        }
+
+        if (hasExecutedCurrentPreview)
+        {
+            return ("Execution readiness summary: current fixture Quarantine already ran and Storage Scan rows may be stale; use Undo fixture quarantine or rescan before more review. Real-profile/custom execution remains unavailable.", QuarantineReadinessSummaryStyle.Warning);
+        }
+
+        if (executionReadiness is null)
+        {
+            return ("Execution readiness summary: waiting for Preview shortlist quarantine. No files were modified.", QuarantineReadinessSummaryStyle.Neutral);
+        }
+
+        var disposition = FormatQuarantineExecutionReadinessDisposition(executionReadiness.Disposition);
+        var scopeKind = FormatQuarantineExecutionReadinessScopeKind(executionReadiness.ScopeKind);
+        var blockerCount = executionReadiness.Blockers.Count;
+        if (blockerCount == 0 && executionReadiness.ScopeKind == QuarantineExecutionReadinessScopeKind.Fixture)
+        {
+            var confirmationState = gate.CanExecute
+                ? "exact QUARANTINE is entered; fixture-only action can run"
+                : "type exact QUARANTINE to open the fixture-only action";
+            return ($"Execution readiness summary: {scopeKind} scope has 0 readiness blocker(s); {confirmationState}. Real-profile/custom execution remains unavailable.", QuarantineReadinessSummaryStyle.Success);
+        }
+
+        var missingDimensions = FormatReadinessDimensionSummary(executionReadiness.Blockers);
+        return ($"Execution readiness summary: {disposition} ({scopeKind}) is preview-only in this build; {blockerCount:N0} readiness blocker(s). Missing: {missingDimensions}. Current build can execute: {FormatYesNo(executionReadiness.CanExecuteInCurrentBuild)}.", QuarantineReadinessSummaryStyle.Warning);
+    }
+
+    private static string FormatReadinessDimensionSummary(IReadOnlyList<string> blockers)
+    {
+        if (blockers.Count == 0)
+        {
+            return "none";
+        }
+
+        var dimensions = blockers
+            .Select(GetQuarantineExecutionReadinessDimension)
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .Take(4)
+            .ToList();
+        var summary = string.Join(", ", dimensions);
+        var remainingDimensionCount = blockers
+            .Select(GetQuarantineExecutionReadinessDimension)
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .Skip(4)
+            .Count();
+        return remainingDimensionCount == 0
+            ? summary
+            : $"{summary}, and {remainingDimensionCount:N0} more";
+    }
+
+    private enum QuarantineReadinessSummaryStyle
+    {
+        Neutral,
+        Success,
+        Warning
+    }
+
+    private static string FormatQuarantineReadinessSummaryState(QuarantineReadinessSummaryStyle style)
+    {
+        return style switch
+        {
+            QuarantineReadinessSummaryStyle.Success => "success",
+            QuarantineReadinessSummaryStyle.Warning => "warning",
+            _ => "neutral"
+        };
     }
 
     public void ApplyStorageReviewFilter(StorageReviewFilter filter)

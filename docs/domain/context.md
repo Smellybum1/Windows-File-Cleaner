@@ -2591,10 +2591,57 @@ In the current build the gate can open only for recognized fixture Cleanup Scope
 - Keep inline preview readiness text aligned with preview/gate state: before preview it explains what to do next, after preview it summarizes included/blocked/redundant counts and blockers, and after fixture execution or undo it switches to fixture execution/undo evidence.
 - Keep inline preview readiness styling semantic and lightweight: neutral for waiting, success for ready/completed fixture evidence, warning for blockers or stale preview state, and error for preview creation failures; styling must not imply cleanup approval.
 - Keep inline preview readiness tooltip and automation help text synchronized with the dynamic status and explicit no-create/no-move/no-restore/no-delete/not-cleanup-approval boundaries.
+- In WPF, show a compact Quarantine Readiness Summary near the confirmation controls so fixture-ready, preview-only, stale-executed, and undo-completed readiness states are visible without reading the full gate details.
 - Keep confirmation and execution control tooltips and automation help text aligned with fixture-only execution and real-profile/custom blockers.
 - In WPF, show a visible non-clickable `?` help cue beside the shortlist confirmation field that mirrors the exact `QUARANTINE` tooltip/help text without making the field look like cleanup approval.
 - In WPF, mirror concise Quarantine Execution Gate tooltip/help text onto both the gate readout and visible non-clickable `?` help cue, including current gate state, exact `QUARANTINE`, fixture-only execution, real-profile/custom blockers, and not-cleanup-approval wording.
 - Do not create folders, move files, delete files, write manifests, or persist cleanup jobs from gate builder code.
+
+### Quarantine Readiness Summary
+
+Status: draft
+Last reviewed: 2026-05-31
+
+#### Definition
+
+Quarantine Readiness Summary is compact read-only WPF text in the Quarantine Shortlist area that summarizes the current Quarantine Execution Readiness and gate lifecycle state.
+
+It is a scannable summary of the detailed Quarantine Execution Gate output, not a Cleanup Action or approval surface.
+
+#### Examples
+
+- Before preview, say the summary is waiting for `Preview shortlist quarantine`.
+- After a clean fixture preview, say there are 0 readiness blockers and exact `QUARANTINE` is still needed.
+- After exact `QUARANTINE` on a fixture preview, say the fixture-only action can run.
+- For custom or real-profile previews, say the scope is preview-only in this build and name missing readiness dimensions.
+- After fixture execution or undo, say scan rows may be stale or the current fixture undo already ran.
+
+#### Non-examples
+
+- A replacement for Quarantine Execution Gate.
+- Cleanup approval.
+- Real-profile execution enablement.
+- A Cleanup Action.
+
+#### Lifecycle
+
+- Generated when WPF updates the Quarantine Execution Gate.
+- Updates after preview, confirmation text changes, fixture execution, and fixture undo.
+- Clears with stale preview/gate state.
+- Does not create folders, move files, restore files, delete files, write manifests, or persist cleanup jobs.
+
+#### Relationships
+
+- Summarizes Quarantine Execution Readiness and Quarantine Execution Gate.
+- Complements inline Quarantine Preview readiness/status and Quarantine Execution Gate details.
+- Reinforces fixture-only execution and real-profile/custom preview-only boundaries.
+
+#### Code implications
+
+- Use `QuarantineReadinessSummaryText` for the WPF readout.
+- Keep wording short enough to wrap cleanly in the Quarantine Shortlist area.
+- Mirror the current summary into tooltip and automation help text with `Summary state:` plus no-create/no-move/no-restore/no-delete/no-manifest-write/not-cleanup-approval boundaries.
+- Use lightweight styling only as status emphasis; it must not imply cleanup approval.
 
 ### Quarantine Execution Scope Status
 
@@ -2693,7 +2740,7 @@ Real-Profile Quarantine Execution Readiness is the future composite readiness re
 
 It is stricter than Quarantine Confirmation Draft and Quarantine Execution Gate. It combines scope eligibility, review readiness, Quarantine Root Execution Safety, Pre-Execution Revalidation, recovery readiness, and explicit real-profile approval semantics.
 
-The current core model can name fixture-executable, real-profile-candidate, and custom-preview-only states without enabling real-profile movement. It can also consume Quarantine Root Execution Safety, Pre-Execution Revalidation, and Real-Profile Restore Readiness when those evidence models are supplied. The current WPF app shows this readiness contract in the existing Quarantine Preview and Quarantine Execution Gate panes as read-only output.
+The current core model can name fixture-executable, real-profile-candidate, and custom-preview-only states without enabling real-profile movement. It can also consume Quarantine Root Execution Safety, Pre-Execution Revalidation, and Real-Profile Restore Readiness when those evidence models are supplied. The current WPF app shows this readiness contract in the existing Quarantine Preview and Quarantine Execution Gate panes as read-only output, with a compact Quarantine Readiness Summary for the current high-level state.
 
 #### Examples
 
@@ -2732,7 +2779,7 @@ The current core model can name fixture-executable, real-profile-candidate, and 
 - Use a named readiness result, not the current fixture-only `IsExecutionImplemented` flag or a standalone selected-restore availability boolean, for future real-profile execution availability.
 - Keep custom non-fixture Cleanup Scopes preview-only until a later design explicitly includes them.
 - Make blockers visible by readiness dimension so disabled execution controls explain why real-profile movement is unavailable.
-- In WPF, keep readiness output in preview/gate text until a later packet designs a richer real-profile readiness surface.
+- In WPF, keep detailed readiness output in preview/gate text and mirror the high-level state in Quarantine Readiness Summary until a later packet proves a richer real-profile readiness surface is needed.
 
 ### Quarantine Root Execution Safety
 
