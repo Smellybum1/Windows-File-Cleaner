@@ -20,6 +20,44 @@ Storage Scan MVP packet implemented and tested by the user against `C:\Users\mox
 
 ## Completed packets
 
+### 2026-05-30: Full Local MVP Preflight After Manifest Control Grouping
+
+Status: completed
+
+Evidence:
+
+- Manifest Review Control Grouping touched WPF layout, fixture checklist wording, README, feature notes, progress, and handoff.
+- A full `.cmd` MVP preflight was warranted before stopping this packet so the current pushed app state had broad local verification.
+
+Implementation:
+
+- Ran the full local MVP preflight through the execution-policy-friendly `.cmd` wrapper.
+- No app code, scan behavior, Quarantine behavior, selected restore behavior, real-profile/custom execution availability, permanent deletion, or cleanup history changed in this verification packet.
+
+Verification:
+
+- `cmd.exe /c tools\Invoke-MvpPreflight.cmd` passed.
+- Restore passed.
+- Build passed with 0 warnings and 0 errors.
+- Core tests passed: `All WindowsFileCleaner.Tests checks passed.`
+- WPF app tests passed: `All WindowsFileCleaner.App.Tests checks passed.`
+- Fixture dry run printed only `What if` fixture file operations.
+- Fixture checklist-only output printed the manifest cue/control wrapping check without creating fixtures, launching WPF, or scanning real user files.
+- Whitespace diff check passed.
+- The preflight reported: `MVP preflight passed. No real user files were scanned or modified.`
+
+Docs updated:
+
+- `.codex/progress.md`
+
+ADRs:
+
+- No ADR added. This is verification evidence only.
+
+Open questions:
+
+- During visible fixture review, confirm the grouped manifest controls fit comfortably at normal window sizes.
+
 ### 2026-05-30: Manifest Review Control Grouping
 
 Status: completed
