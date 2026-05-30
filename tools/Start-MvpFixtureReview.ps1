@@ -32,7 +32,7 @@ function Write-FixtureReviewChecklist {
     Write-Host "  7. For fixture only, type QUARANTINE, click Quarantine included shortlist, confirm Current quarantined shows the moved-entry count, use Current quarantined / Back to scan rows plus styled Review Grid Mode Status (neutral/informational/warning) and its hoverable ? help cue plus state-naming tooltip/help text, then Undo fixture quarantine and rescan before more review."
     Write-Host "  8. Use Discover manifests and Preview all-manifest readiness; check the Discover manifests ? help cue, selected manifest ? help cue, all-manifest readiness ? help cue, cue/control pairs stay together when rows wrap, no all-manifest restore action wording, and all-manifest readiness scope tooltips."
     Write-Host "  9. Use selected manifest readiness and the selected restore gate; check selected-only readiness wording, selected restore confirmation ? help cue, selected restore Approval boundary, Execution scope status, Selected Restore Execution Gate ? help cue in waiting/closed/open/restored states without crowding the gate area, and restore tooltips."
-    Write-Host "  10. Confirm real-profile/custom Quarantine and selected restore execution remain unavailable in wording before any later real-profile work."
+    Write-Host "  10. Confirm real-profile/custom scopes stay preview-only: Review Shortlist, clean Quarantine Preview, exact QUARANTINE, real-profile scan acknowledgement, and exact RESTORE do not unlock Quarantine or selected restore; ADR 0017 readiness blockers must stay explicit before any real-profile movement."
 }
 
 if ([System.IO.Path]::IsPathRooted($FixtureRoot)) {

@@ -232,11 +232,11 @@ ADRs added or skipped:
 Follow-up work:
 
 - Use `README.md` and this audit to run a fresh WPF manual retest against `C:\Users\moxhe`.
-- Only after that retest, decide whether to wire real-profile WPF Quarantine execution and WPF Undo Quarantine around the fixture-tested core components.
+- After that retest, keep real-profile WPF Quarantine execution and WPF Undo Quarantine unavailable until ADR 0017's Real-Profile Quarantine Readiness Contract is designed and verified with immediate pre-execution revalidation, Quarantine Root safety checks, trusted Undo/recovery behavior, and explicit approval semantics.
 
 Open questions:
 
-- Should the next packet focus on WPF manual retest feedback, WPF Undo Quarantine, or real-profile execution design after retest?
+- Should the next packet focus on WPF manual retest feedback, more preview/readiness clarity, or the ADR 0017 real-profile execution readiness design after retest?
 
 Risky assumptions:
 
