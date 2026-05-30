@@ -109,7 +109,7 @@ Medium. If this model proves too heavy, reverting would require simplifying the 
 - Add Pre-Execution Revalidation tests over synthetic fixtures that simulate missing, changed, destination-collision, stale-preview/action mismatch, and action-collision cases. Core model added 2026-05-31; WPF remains unwired.
 - Add Real-Profile Restore Readiness for selected-manifest Undo Quarantine evidence before forward movement. Core model added 2026-05-31; WPF remains unwired and selected real-profile restore remains unavailable.
 - Add WPF readiness output that names missing real-profile prerequisites while keeping the execution button disabled. Initial preview/gate output added 2026-05-31.
-- Design and test real-profile selected-manifest Undo Quarantine execution before any forward real-profile execution.
+- Design and test real-profile selected-manifest Undo Quarantine execution before any forward real-profile execution. ADR 0019 now records the design contract; implementation remains unavailable.
 - Keep the real-profile confirmation phrase as `QUARANTINE` while preserving readiness blockers that make the phrase insufficient by itself.
 
 ## Supersedes

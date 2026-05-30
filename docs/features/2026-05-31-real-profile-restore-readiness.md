@@ -77,7 +77,7 @@ What changed:
 Follow-up work:
 
 - WPF readiness output was added in the next display-only packet; it groups root safety, pre-execution revalidation, and real-profile restore readiness blockers while keeping execution disabled.
-- Design real-profile selected restore execution only after another explicit safety pass.
+- Real-profile selected restore execution design was recorded in ADR 0019; implementation remains unavailable until a later explicit safety packet.
 
 Open questions:
 

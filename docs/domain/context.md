@@ -2844,7 +2844,7 @@ Real-Profile Restore Readiness is the recovery prerequisite that must be designe
 
 It means the app can inspect real-profile Restore Manifests, explain restorable versus recovery-review states, and provide a trusted selected-manifest Undo Quarantine path without overwriting original paths.
 
-The current core model is read-only and not wired to WPF execution controls. It can prove selected-manifest real-profile restore readiness evidence for future forward-Quarantine gating, but selected real-profile restore execution remains unavailable in the visible app.
+The current core model is read-only and not wired to WPF execution controls. It can prove selected-manifest real-profile restore readiness evidence for future forward-Quarantine gating, but selected real-profile restore execution remains unavailable in the visible app. ADR 0019 records the future Real-Profile Selected Restore Execution contract that would turn this evidence into a narrow selected-manifest restore path.
 
 #### Examples
 
@@ -2873,6 +2873,7 @@ The current core model is read-only and not wired to WPF execution controls. It 
 - Supports Real-Profile Quarantine Execution Readiness.
 - Builds on Undo Quarantine and fixture-only Selected Restore Execution.
 - Keeps recovery and forward movement coupled for safety.
+- Feeds future Real-Profile Selected Restore Execution.
 
 #### Code implications
 
@@ -2880,6 +2881,59 @@ The current core model is read-only and not wired to WPF execution controls. It 
 - Design and test selected-manifest real-profile Undo Quarantine before enabling real-profile forward Quarantine.
 - Keep all-manifest real-profile restore out of scope unless a later design explicitly includes it.
 - Continue refusing to overwrite original paths during restore.
+
+### Real-Profile Selected Restore Execution
+
+Status: draft
+Last reviewed: 2026-05-31
+
+#### Definition
+
+Real-Profile Selected Restore Execution is the future WPF Undo Quarantine path that may restore exactly one selected discovered real-profile Restore Manifest after selected readiness, immediate revalidation, and exact `RESTORE` confirmation.
+
+It is the first planned real-profile restore execution shape, not all-manifest restore, cleanup history, permanent deletion, or forward Quarantine execution. ADR 0019 defines the contract; the current visible app still keeps this execution unavailable.
+
+#### Examples
+
+- Select one discovered Restore Manifest whose Cleanup Scope is exactly `C:\Users\moxhe`, preview selected readiness, preview the selected restore gate, type `RESTORE`, then restore only that selected manifest after immediate revalidation passes.
+- Block restore because an original path already exists.
+- Block restore because a quarantine path is missing or inaccessible.
+- After a restore attempt, tell the user to rediscover manifests and rescan manually before further review.
+
+#### Non-examples
+
+- Fixture-only Selected Restore Execution.
+- All-manifest real-profile restore.
+- WPF Current Fixture Undo Quarantine.
+- Real-profile WPF Quarantine execution.
+- Permanent deletion.
+- Persisted cleanup history.
+- Empty action-folder cleanup.
+
+#### Lifecycle
+
+- Requires a fresh Quarantine Manifest Discovery result.
+- Requires Selected Restore Manifest Review for one selected manifest.
+- Requires fresh Restore Readiness Preview evidence, Selected Restore Confirmation Draft, Selected Restore Execution Gate, and exact `RESTORE` confirmation.
+- Revalidates selected restore readiness immediately before calling the restore executor.
+- Calls `UndoQuarantineExecutor` for movement and Restore Manifest updates.
+- Refuses to overwrite original paths and blocks recovery-review, failed, restoring, not-moved, all-restored, and missing-quarantine-path states.
+- Leaves action-folder cleanup, all-manifest restore, and cleanup history deferred.
+
+#### Relationships
+
+- Implements ADR 0019 when it is later built.
+- Depends on Real-Profile Restore Readiness.
+- Depends on Selected Restore Manifest Review, Selected Restore Confirmation Draft, Selected Restore Execution Gate, Restore Readiness Preview, and Undo Quarantine Executor.
+- Is a recovery prerequisite before forward real-profile Quarantine execution can be considered.
+
+#### Code implications
+
+- Use a future `RealProfileSelectedRestoreExecution` naming pattern only when implementation begins.
+- Use `UndoQuarantineExecutor`; do not implement real-profile restore movement directly in WPF.
+- Keep selected real-profile restore disabled until immediate selected-readiness revalidation and WPF/core tests exist.
+- Keep the first implementation exact-scope and selected-manifest-only: exact `C:\Users\moxhe`, one selected Restore Manifest, exact `RESTORE`.
+- Ask the user to rediscover manifests and rescan manually after restore attempts.
 
 ### Fixture-only WPF Quarantine Execution
 
