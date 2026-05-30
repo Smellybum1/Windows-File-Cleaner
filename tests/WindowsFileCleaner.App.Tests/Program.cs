@@ -21,6 +21,7 @@ internal static class Program
             {
                 var tests = new MainWindowSmokeTests();
                 tests.MainWindowDefaultsToCurrentUserCleanupScope();
+                tests.MainWindowKeepsRealProfileQuarantineExecutionUnavailableWithoutScanning();
                 tests.MainWindowUsesLaunchCleanupScopeWithoutStartingScan();
                 tests.MainWindowUsesCustomCleanupScopeWithoutExecutionAvailability();
                 tests.MainWindowUsesWrappingReviewToolbarLayout();
@@ -830,6 +831,52 @@ internal sealed class MainWindowSmokeTests
                 && window.SearchHelpAutomationHelpTextValue.Contains("modify files", StringComparison.OrdinalIgnoreCase)
                 && window.SearchHelpAutomationHelpTextValue.Contains("approve cleanup", StringComparison.OrdinalIgnoreCase),
                 "Search automation help text should explain read-only search boundaries.");
+        }
+        finally
+        {
+            window.Close();
+        }
+    }
+
+    public void MainWindowKeepsRealProfileQuarantineExecutionUnavailableWithoutScanning()
+    {
+        var window = new MainWindow();
+        try
+        {
+            Assert(
+                window.CurrentCleanupScopePath == StorageScanOptions.DefaultForCurrentUser().CleanupScopePath,
+                "Real-profile execution boundary test should start from the default Cleanup Scope without scanning it.");
+            Assert(!window.CanStartStorageScan, "Real-profile scan should stay locked before preflight acknowledgement.");
+            Assert(!window.CanExecuteQuarantine, "Real-profile Quarantine execution should be unavailable before any scan or preview.");
+            Assert(!window.CanUndoQuarantine, "Real-profile Undo Quarantine should be unavailable before any fixture execution.");
+            Assert(
+                window.QuarantineExecutionGateTextValue.Contains("Use Preview shortlist quarantine before entering confirmation text", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineExecutionGateTextValue.Contains("real-profile and custom execution remain unavailable", StringComparison.OrdinalIgnoreCase),
+                "Real-profile startup gate should require preview and keep cleanup execution unavailable.");
+
+            window.SetQuarantineConfirmationText("QUARANTINE");
+            Assert(!window.CanExecuteQuarantine, "Typing QUARANTINE without a real-profile preview must not enable execution.");
+            Assert(
+                window.QuarantineExecutionGateTextValue.Contains("Use Preview shortlist quarantine before entering confirmation text", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineExecutionGateTextValue.Contains("Can execute: no", StringComparison.OrdinalIgnoreCase),
+                "Real-profile gate should stay closed without preview readiness even when QUARANTINE is typed.");
+
+            window.ConfirmRealProfilePreflightForRealProfileScan();
+            Assert(window.CanStartStorageScan, "Real-profile acknowledgement should only unlock the read-only scan.");
+            Assert(!window.CanExecuteQuarantine, "Real-profile acknowledgement must not unlock Quarantine execution.");
+            Assert(
+                window.ScanGateSummaryTextValue.Contains("read-only Storage Scan", StringComparison.OrdinalIgnoreCase)
+                && window.ScanGateSummaryTextValue.Contains("cleanup execution remains unavailable", StringComparison.OrdinalIgnoreCase),
+                "Acknowledged real-profile scan gate should keep execution unavailable before any scan.");
+            Assert(
+                window.ExecuteQuarantineButtonToolTipValue.Contains("real-profile/custom execution remains unavailable", StringComparison.OrdinalIgnoreCase),
+                "Real-profile Quarantine button tooltip should keep the execution blocker visible.");
+
+            window.ExecuteQuarantineForCurrentPreview();
+            Assert(
+                window.CurrentStatusText.Contains("gate is not open", StringComparison.OrdinalIgnoreCase)
+                && window.CurrentStatusText.Contains("No files were modified", StringComparison.OrdinalIgnoreCase),
+                "Calling execution without an open real-profile gate should report no file modifications.");
         }
         finally
         {
@@ -2260,8 +2307,18 @@ internal sealed class MainWindowSmokeTests
                 && window.QuarantineExecutionGateTextValue.Contains("real-profile and custom execution remain unavailable", StringComparison.OrdinalIgnoreCase),
                 "Custom-scope gate should keep preview-only scopes blocked even after exact confirmation text.");
             Assert(
+                window.QuarantineExecutionGateTextValue.Contains("Entered confirmation matches: yes", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineExecutionGateTextValue.Contains("Can execute: no", StringComparison.OrdinalIgnoreCase),
+                "Custom-scope gate should match QUARANTINE but stay closed.");
+            Assert(
                 window.QuarantineExecutionGateTextValue.Contains("not available for this Cleanup Scope", StringComparison.OrdinalIgnoreCase),
                 "Custom-scope gate should explain the scope-specific execution blocker.");
+
+            window.ExecuteQuarantineForCurrentPreview();
+            Assert(
+                window.CurrentStatusText.Contains("gate is not open", StringComparison.OrdinalIgnoreCase)
+                && window.CurrentStatusText.Contains("No files were modified", StringComparison.OrdinalIgnoreCase),
+                "Custom-scope execution attempt should report a closed gate after exact QUARANTINE.");
             Assert(File.Exists(installer.FullPath), "Custom-scope execution blocker should leave the source file untouched.");
             Assert(!Directory.Exists(customQuarantineRoot), "Custom-scope execution blocker should not create quarantine folders.");
         }

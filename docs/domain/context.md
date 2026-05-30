@@ -2599,7 +2599,7 @@ In the current build the gate can open only for recognized fixture Cleanup Scope
 ### Quarantine Execution Scope Status
 
 Status: draft
-Last reviewed: 2026-05-29
+Last reviewed: 2026-05-30
 
 #### Definition
 
@@ -2638,6 +2638,49 @@ It is shown in Quarantine Preview and Quarantine Execution Gate output so real-p
 - Keep wording explicit about `fixture-only`, `preview only`, `real-profile`, and `custom` scopes.
 - Keep disabled-control tooltips and automation help text consistent with the visible scope-status wording.
 - Do not use this status as permission to move files.
+
+### Real-Profile Quarantine Readiness Contract
+
+Status: draft
+Last reviewed: 2026-05-30
+
+#### Definition
+
+Real-Profile Quarantine Readiness Contract is the durable set of prerequisites that must be designed and verified before WPF Quarantine execution can move files from a real-profile Cleanup Scope such as `C:\Users\moxhe`.
+
+It keeps real-profile execution unavailable until the app has more than a clean Quarantine Preview, exact `QUARANTINE`, and the current fixture-only execution flag.
+
+#### Examples
+
+- Require immediate pre-execution revalidation of source paths, destination paths, preview rows, stale scan state, protected/high-risk blockers, redundant overlap, and Quarantine Root safety.
+- Require trusted Undo Quarantine and recovery-review behavior for real-profile Restore Manifests before exposing forward real-profile movement.
+- Keep custom non-fixture Cleanup Scopes preview-only unless a later design explicitly includes them.
+
+#### Non-examples
+
+- A Cleanup Action.
+- Approval to move real-profile files.
+- A replacement for Quarantine Preview or Quarantine Execution Gate.
+- Permanent deletion or persisted cleanup history.
+
+#### Lifecycle
+
+- Exists as a design and test boundary before real-profile WPF Quarantine execution.
+- Must be revisited in a future Grill with Docs pass before real-profile movement is enabled.
+- Does not persist state or modify files in the current build.
+
+#### Relationships
+
+- Builds on Quarantine Preview, Quarantine Confirmation Draft, Quarantine Execution Gate, Restore Manifest, Quarantine Executor, and Undo Quarantine Executor.
+- Refines the follow-up work from ADR 0009.
+- Is recorded in ADR 0017.
+- Preserves fixture-only WPF Quarantine Execution as the only visible Quarantine movement path in the current build.
+
+#### Code implications
+
+- Do not enable real-profile WPF Quarantine execution by reusing the current fixture-only `IsExecutionImplemented` flag.
+- Future real-profile execution should use a richer execution availability/readiness model that can name blockers and prerequisites.
+- Keep real-profile and custom non-fixture WPF execution blocked until immediate revalidation, Undo Quarantine readiness, recovery UX, and Quarantine Root safety checks are designed and tested.
 
 ### Fixture-only WPF Quarantine Execution
 
