@@ -118,6 +118,7 @@ internal sealed class MainWindowSmokeTests
             Assert(
                 window.SafetySummaryHeaderStatusStyleValue == "Neutral",
                 "Collapsed Safety Summary header should start with neutral styling before scan safety signals exist.");
+            Assert(!window.IsSafetySummaryExpanded, "Safety Summary should start collapsed while its header keeps the state visible.");
             AssertSafetySummaryHeaderHelpCue(window, "Startup Safety Summary header cue should expose the same help text as the header.");
             Assert(
                 window.QuarantineShortlistHeaderTextValue.StartsWith("Quarantine Shortlist:", StringComparison.OrdinalIgnoreCase),
@@ -137,6 +138,7 @@ internal sealed class MainWindowSmokeTests
             Assert(
                 window.QuarantineShortlistHeaderStatusStyleValue == "Neutral",
                 "Collapsed Quarantine shortlist header should start with neutral styling before shortlist, preview, or current quarantine state exists.");
+            Assert(!window.IsQuarantineShortlistExpanded, "Quarantine Shortlist should start collapsed while its header keeps the state visible.");
             AssertQuarantineShortlistHeaderHelpCue(window, "Startup Quarantine Shortlist header cue should expose the same help text as the header.");
             AssertReviewGridModeHelpText(window, "Review Grid Mode Status help text should expose the startup grid-mode boundary.");
             AssertSelectedRestoreExecutionGateHelpCue(
@@ -1927,15 +1929,14 @@ internal sealed class MainWindowSmokeTests
             Assert(
                 window.QuarantineExecutionGateViewportMaxHeight <= 120,
                 "Quarantine shortlist gate details should stay height-constrained so the main grid remains usable.");
-            Assert(window.IsQuarantineShortlistExpanded, "Quarantine shortlist area should start expanded for discoverability.");
-            window.SetQuarantineShortlistExpanded(false);
-            Assert(!window.IsQuarantineShortlistExpanded, "Quarantine shortlist area should be collapsible to recover grid height.");
+            Assert(!window.IsQuarantineShortlistExpanded, "Quarantine shortlist area should start collapsed so the review surface is less crowded.");
             window.SetQuarantineShortlistExpanded(true);
             Assert(window.IsQuarantineShortlistExpanded, "Quarantine shortlist area should expand again without losing gate state.");
-            Assert(window.IsSafetySummaryExpanded, "Safety Summary should start expanded for discoverability.");
-            window.SetSafetySummaryExpanded(false);
-            Assert(!window.IsSafetySummaryExpanded, "Safety Summary should be collapsible to recover grid height.");
+            window.SetQuarantineShortlistExpanded(false);
+            Assert(!window.IsQuarantineShortlistExpanded, "Quarantine shortlist area should collapse again to recover grid height.");
+            Assert(!window.IsSafetySummaryExpanded, "Safety Summary should start collapsed so scan rows have more room before review is needed.");
             window.SetSafetySummaryExpanded(true);
+            Assert(window.IsSafetySummaryExpanded, "Safety Summary should expand on demand without losing summary state.");
 
             window.SetQuarantineConfirmationText("QUARANTINE");
             Assert(window.CanExecuteQuarantine, "Fixture execution should open after exact confirmation.");
