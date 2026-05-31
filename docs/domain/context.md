@@ -1816,6 +1816,7 @@ It does not create folders, move files, write manifests, or approve future Quara
 - Type another absolute `D:` folder before creating a Quarantine Preview.
 - Browse to a `D:` folder before creating a Quarantine Preview.
 - Type a fully qualified non-`D:` folder and see a warning that `D:` remains preferred.
+- For a fully qualified non-`D:` folder, use the WPF acknowledgement checkbox to feed future execution-readiness evidence without creating folders or approving cleanup.
 - Type a relative folder such as `relative\quarantine` and see Quarantine Preview disabled until the path is corrected.
 
 #### Non-examples
@@ -1832,6 +1833,7 @@ It does not create folders, move files, write manifests, or approve future Quara
 - Changing it clears stale Quarantine Preview, Restore Manifest Draft, and Quarantine Confirmation Draft output.
 - Browsing for a root updates the preview setting only.
 - Invalid or relative roots disable Quarantine Preview without touching the filesystem.
+- Changing the root clears any non-`D:` readiness acknowledgement and stale Quarantine Preview state.
 
 #### Relationships
 
@@ -1845,11 +1847,14 @@ It does not create folders, move files, write manifests, or approve future Quara
 - Use `QuarantineRootBox` for the WPF input.
 - Use `BrowseQuarantineRootButton` for the WPF browse action.
 - Use `QuarantineRootSafetyNote` and `QuarantineRootSafetyNoteBuilder` for preview-root messaging and gating.
+- Use `NonPreferredQuarantineRootAcknowledgementBox` for the WPF non-`D:` root readiness acknowledgement.
 - Use the typed value when calling `QuarantinePreviewBuilder`.
 - Keep the default as `D:\WindowsFileCleanerQuarantine`.
 - The typed root field tooltip and automation help text should say it is a read-only preview destination and preview does not create the folder or move files.
 - The Quarantine Root Safety Note has a visible hoverable `?` help cue that mirrors the note tooltip/help text and keeps the preview-root, no-folder-create, no-move, no-manifest-write, and not-cleanup-approval boundary discoverable.
 - Browse tooltips and automation help text should say selection is for preview paths only and does not create folders, move files, or approve cleanup.
+- The non-`D:` acknowledgement tooltip and automation help text should say it is local readiness evidence only and does not create folders, move files, write manifests, restore files, delete files, or approve cleanup.
+- Changing the non-`D:` acknowledgement should clear stale preview/gate state and require a fresh preview.
 - Do not create or validate the folder by touching the filesystem during preview.
 
 ### Quarantine Root Safety Note
@@ -1865,10 +1870,13 @@ It is a path-shape check for preview only. It does not prove that a folder exist
 
 The WPF note has a visible hoverable `?` help cue. The cue mirrors the note tooltip and automation help text so the preview-root safety boundary is discoverable without making the note look like a cleanup approval control.
 
+The WPF Quarantine Root area also has a non-`D:` acknowledgement checkbox. It is enabled only for fully qualified non-`D:` roots and feeds Quarantine Root Execution Safety as readiness evidence only.
+
 #### Examples
 
 - Preferred Quarantine Root: the selected root is fully qualified on `D:`.
 - Non-D: Quarantine Root: the selected root is fully qualified, but `D:` remains preferred for future quarantine storage.
+- Non-D: Quarantine Root: the acknowledgement checkbox becomes available but remains separate from cleanup approval.
 - Choose Full Quarantine Root: the selected root is relative and Quarantine Preview is disabled.
 - Invalid Quarantine Root: the selected root cannot be parsed for preview.
 
@@ -1885,6 +1893,7 @@ The WPF note has a visible hoverable `?` help cue. The cue mirrors the note tool
 - Updates when the Quarantine Root Selection text changes.
 - Controls whether `Preview quarantine` is enabled while a Review Shortlist exists.
 - Is not persisted.
+- The non-`D:` acknowledgement is local WPF state and is cleared when the Quarantine Root changes.
 
 #### Relationships
 
@@ -1898,6 +1907,7 @@ The WPF note has a visible hoverable `?` help cue. The cue mirrors the note tool
 - Require fully qualified roots before building Quarantine Preview destination paths.
 - Keep the note informational and read-only.
 - Keep the visible `?` cue tooltip/help text synchronized with the note text.
+- Enable non-`D:` acknowledgement only for fully qualified non-`D:` roots.
 - Do not touch the filesystem from the note builder.
 
 ### Scan Report Export
@@ -2792,11 +2802,12 @@ Quarantine Root Execution Safety is the validation that decides whether the curr
 
 It is separate from Quarantine Root Safety Note, which is preview-only. Execution safety checks containment, drive policy, capacity, action-root collisions, and destination collisions before any real-profile movement can be considered.
 
-The current core model is read-only. WPF shows its evidence in Quarantine Preview and Quarantine Execution Gate output when a Quarantine Action Draft exists, but does not use it to enable real-profile execution.
+The current core model is read-only. WPF shows its evidence in Quarantine Preview and Quarantine Execution Gate output when a Quarantine Action Draft exists, and passes local non-`D:` root acknowledgement when present, but does not use it to enable real-profile execution.
 
 #### Examples
 
 - Allow a fully qualified `D:\WindowsFileCleanerQuarantine` root for execution after capacity and collision checks pass.
+- Allow a safe fully qualified non-`D:` root only after the WPF non-`D:` acknowledgement is checked.
 - Block a root inside the active Cleanup Scope.
 - Block a root that is a parent of the active Cleanup Scope.
 - Block a planned action root that already exists.
@@ -2814,6 +2825,7 @@ The current core model is read-only. WPF shows its evidence in Quarantine Previe
 
 - Evaluated before future execution readiness can open.
 - Re-evaluated during Pre-Execution Revalidation.
+- WPF preview/gate evidence is rebuilt after the non-`D:` acknowledgement changes and the user previews again.
 - Does not create folders or write manifests until execution has actually started.
 
 #### Relationships
@@ -2830,7 +2842,7 @@ The current core model is read-only. WPF shows its evidence in Quarantine Previe
 - Check that the root and Cleanup Scope are not inside each other.
 - Check capacity and collision evidence before movement.
 - In WPF, show root execution safety as read-only evidence; do not treat it as approval or a substitute for Pre-Execution Revalidation, Real-Profile Restore Readiness, exact confirmation, or future explicit execution approval.
-- For the first real-profile phase, prefer `D:` roots and require an extra acknowledgement for non-`D:` roots after all other safety checks pass.
+- For the first real-profile phase, prefer `D:` roots and require an extra acknowledgement for non-`D:` roots after all other safety checks pass. In the current WPF app, this acknowledgement is readiness evidence only and does not enable execution.
 
 ### Pre-Execution Revalidation
 

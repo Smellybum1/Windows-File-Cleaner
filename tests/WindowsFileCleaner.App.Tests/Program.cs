@@ -29,6 +29,7 @@ internal static class Program
                 tests.MainWindowRunsFixtureStorageScanThroughWpfShell();
                 tests.MainWindowShowsDisplayLimitForLargeFixtureScan();
                 tests.MainWindowRunsFixtureReviewInteractionsThroughWpfShell();
+                tests.MainWindowUsesNonPreferredQuarantineRootAcknowledgementForReadinessOnly();
                 tests.MainWindowExecutesQuarantineForFixtureScopeOnly();
                 tests.MainWindowDiscoversQuarantineManifestsReadOnly();
                 tests.MainWindowShowsRealProfileReadinessContractForSyntheticPreview();
@@ -2119,6 +2120,78 @@ internal sealed class MainWindowSmokeTests
                 window.QuarantineExecutionGateTextValue.Contains("Undo result:", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantineExecutionGateTextValue.Contains("Fixture Undo Quarantine has restored", StringComparison.OrdinalIgnoreCase),
                 "Execution gate should retain undo evidence after undo.");
+        }
+        finally
+        {
+            window.Close();
+        }
+    }
+
+    public void MainWindowUsesNonPreferredQuarantineRootAcknowledgementForReadinessOnly()
+    {
+        using var fixture = SmokeFixture.Create();
+        var window = new MainWindow(fixture.RootPath);
+        var nonPreferredRoot = Path.Combine(
+            Path.GetPathRoot(Environment.GetFolderPath(Environment.SpecialFolder.System)) ?? @"C:\",
+            "WindowsFileCleanerNonDReadiness",
+            Guid.NewGuid().ToString("N"));
+
+        try
+        {
+            RunDispatcherTask(() => window.RunStorageScanForCurrentScopeAsync());
+
+            var installer = window.DisplayedRows.Single(row =>
+                row.FullPath.EndsWith(@"Downloads\old-installer.msi", StringComparison.OrdinalIgnoreCase));
+            Assert(window.SelectDisplayedPath(installer.FullPath), "Fixture installer should be selectable for non-D readiness acknowledgement coverage.");
+            window.AddSelectedPathToReviewShortlist();
+
+            window.SetQuarantineRootForPreview(nonPreferredRoot);
+            Assert(window.CanAcknowledgeNonPreferredQuarantineRoot, "Fully qualified non-D Quarantine Roots should enable the readiness acknowledgement.");
+            Assert(!window.IsNonPreferredQuarantineRootAcknowledged, "Non-D readiness acknowledgement should start unchecked after root changes.");
+            Assert(
+                window.NonPreferredQuarantineRootAcknowledgementText.Contains("Acknowledge non-D", StringComparison.OrdinalIgnoreCase)
+                && window.NonPreferredQuarantineRootAcknowledgementToolTipValue.Contains("readiness acknowledgement", StringComparison.OrdinalIgnoreCase)
+                && window.NonPreferredQuarantineRootAcknowledgementToolTipValue.Contains("does not create folders", StringComparison.OrdinalIgnoreCase)
+                && window.NonPreferredQuarantineRootAcknowledgementToolTipValue.Contains("approve cleanup", StringComparison.OrdinalIgnoreCase),
+                "Non-D acknowledgement control should make the readiness-only boundary visible.");
+            Assert(
+                string.Equals(
+                    window.NonPreferredQuarantineRootAcknowledgementAutomationHelpTextValue,
+                    window.NonPreferredQuarantineRootAcknowledgementToolTipValue,
+                    StringComparison.Ordinal),
+                "Non-D acknowledgement automation help text should mirror its tooltip.");
+
+            window.PreviewQuarantineForReviewShortlist();
+            Assert(
+                window.QuarantinePreviewTextValue.Contains("Quarantine Root Execution Safety: checked", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantinePreviewTextValue.Contains("Preferred D: root: no", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantinePreviewTextValue.Contains("Non-D acknowledgement: no", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantinePreviewTextValue.Contains("Root safety blocker | Non-D", StringComparison.OrdinalIgnoreCase),
+                "Unacknowledged non-D root should remain visible as a read-only root execution safety blocker.");
+            Assert(!window.CanExecuteQuarantine, "Fixture execution should remain closed before exact confirmation while non-D root safety evidence is reviewed.");
+            Assert(!Directory.Exists(nonPreferredRoot), "Non-D root readiness preview should not create the Quarantine Root.");
+
+            window.SetNonPreferredQuarantineRootAcknowledgement(true);
+            Assert(!window.CanEnterQuarantineConfirmation, "Changing non-D acknowledgement should clear stale preview/gate state.");
+            Assert(
+                window.QuarantinePreviewStatusTextValue.Contains("acknowledgement changed", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantinePreviewStatusTextValue.Contains("No files were modified", StringComparison.OrdinalIgnoreCase),
+                "Changing non-D acknowledgement should tell the user to recreate preview without implying cleanup approval.");
+            Assert(window.IsNonPreferredQuarantineRootAcknowledged, "User acknowledgement should stay checked after clearing stale preview state.");
+
+            window.PreviewQuarantineForReviewShortlist();
+            Assert(
+                window.QuarantinePreviewTextValue.Contains("Quarantine Root Execution Safety: checked", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantinePreviewTextValue.Contains("Preferred D: root: no", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantinePreviewTextValue.Contains("Non-D acknowledgement: yes", StringComparison.OrdinalIgnoreCase)
+                && !window.QuarantinePreviewTextValue.Contains("Root safety blocker | Non-D", StringComparison.OrdinalIgnoreCase),
+                "Acknowledged non-D root should clear only the non-D root safety acknowledgement blocker.");
+            Assert(window.CanEnterQuarantineConfirmation, "Acknowledged non-D root should allow fixture confirmation after clean preview.");
+            Assert(!Directory.Exists(nonPreferredRoot), "Acknowledged non-D readiness preview should still not create the Quarantine Root.");
+
+            window.SetQuarantineRootForPreview(Path.GetFullPath(Path.Combine(fixture.RootPath, "..", "preferred-d-root")));
+            Assert(!window.CanAcknowledgeNonPreferredQuarantineRoot, "Preferred D: Quarantine Roots should not need the non-D acknowledgement control.");
+            Assert(!window.IsNonPreferredQuarantineRootAcknowledged, "Changing back to preferred D: should clear the non-D acknowledgement.");
         }
         finally
         {

@@ -50,6 +50,7 @@ public partial class MainWindow : Window
     private bool _isUpdatingSizeThresholdFilterOptions;
     private bool _isUpdatingSearchBox;
     private bool _isUpdatingQuarantineConfirmationBox;
+    private bool _isUpdatingNonPreferredQuarantineRootAcknowledgementBox;
     private bool _isUpdatingRestoreManifestSelectionBox;
     private bool _isUpdatingSelectedRestoreConfirmationBox;
     private bool _isWindowInitialized;
@@ -491,6 +492,16 @@ public partial class MainWindow : Window
     public string QuarantineRootSafetyNoteHelpCueAutomationNameValue => AutomationProperties.GetName(QuarantineRootSafetyNoteHelpCue);
 
     public string QuarantineRootSafetyNoteHelpCueAutomationHelpTextValue => AutomationProperties.GetHelpText(QuarantineRootSafetyNoteHelpCue);
+
+    public bool CanAcknowledgeNonPreferredQuarantineRoot => NonPreferredQuarantineRootAcknowledgementBox.IsEnabled;
+
+    public bool IsNonPreferredQuarantineRootAcknowledged => NonPreferredQuarantineRootAcknowledgementBox.IsChecked == true;
+
+    public string NonPreferredQuarantineRootAcknowledgementText => NonPreferredQuarantineRootAcknowledgementBox.Content?.ToString() ?? "";
+
+    public string NonPreferredQuarantineRootAcknowledgementToolTipValue => NonPreferredQuarantineRootAcknowledgementBox.ToolTip?.ToString() ?? "";
+
+    public string NonPreferredQuarantineRootAcknowledgementAutomationHelpTextValue => AutomationProperties.GetHelpText(NonPreferredQuarantineRootAcknowledgementBox);
 
     public string? CurrentQuarantinePreviewRootPath => _currentQuarantinePreview?.QuarantineRootPath;
 
@@ -1238,7 +1249,9 @@ public partial class MainWindow : Window
                 BuildDraftId("quarantine-action-draft"));
         _currentQuarantineRootExecutionSafety = _currentQuarantineActionDraft is null
             ? null
-            : QuarantineRootExecutionSafetyBuilder.Build(_currentQuarantineActionDraft);
+            : QuarantineRootExecutionSafetyBuilder.Build(
+                _currentQuarantineActionDraft,
+                nonPreferredQuarantineRootAcknowledged: IsNonPreferredQuarantineRootAcknowledged);
         _currentPreExecutionRevalidation = _currentQuarantineActionDraft is null || _currentQuarantineRootExecutionSafety is null
             ? null
             : PreExecutionRevalidationBuilder.Build(
@@ -1388,6 +1401,8 @@ public partial class MainWindow : Window
 
         UpdateQuarantineRootSafetyNote();
         ClearQuarantineManifestDiscovery();
+        SetNonPreferredQuarantineRootAcknowledgementSilently(false);
+        UpdateNonPreferredQuarantineRootAcknowledgementControl();
         if (_currentQuarantinePreview is null)
         {
             UpdateShortlistControls();
@@ -1398,6 +1413,26 @@ public partial class MainWindow : Window
         UpdateShortlistControls();
         UpdateQuarantinePreviewStatus("Quarantine root changed. Recreate Quarantine Preview to review destinations. No files were modified.");
         StatusText.Text = "Quarantine root changed. Recreate Quarantine Preview to review destinations. No files were modified.";
+    }
+
+    private void NonPreferredQuarantineRootAcknowledgementBox_Changed(object sender, RoutedEventArgs e)
+    {
+        if (!_isWindowInitialized || _isUpdatingNonPreferredQuarantineRootAcknowledgementBox)
+        {
+            return;
+        }
+
+        UpdateNonPreferredQuarantineRootAcknowledgementControl();
+        if (_currentQuarantinePreview is null)
+        {
+            UpdateShortlistControls();
+            return;
+        }
+
+        ClearQuarantinePreview();
+        UpdateShortlistControls();
+        UpdateQuarantinePreviewStatus("Non-D Quarantine Root acknowledgement changed. Recreate Quarantine Preview to refresh readiness evidence. No files were modified.");
+        StatusText.Text = "Non-D Quarantine Root acknowledgement changed. Recreate Quarantine Preview to refresh readiness evidence. No files were modified.";
     }
 
     private void ClearSearchButton_Click(object sender, RoutedEventArgs e)
@@ -1727,6 +1762,7 @@ public partial class MainWindow : Window
         BrowseScopeButton.IsEnabled = !isScanning;
         QuarantineRootBox.IsEnabled = !isScanning;
         BrowseQuarantineRootButton.IsEnabled = !isScanning;
+        UpdateNonPreferredQuarantineRootAcknowledgementControl();
         DiscoverQuarantineManifestsButton.IsEnabled = !isScanning;
         UpdateCleanupScopeSafetyNote();
         ExportCsvButton.IsEnabled = !isScanning && _currentReview is not null;
@@ -1922,6 +1958,31 @@ public partial class MainWindow : Window
         AutomationProperties.SetHelpText(QuarantineRootSafetyNoteText, helpText);
         QuarantineRootSafetyNoteHelpCue.ToolTip = helpText;
         AutomationProperties.SetHelpText(QuarantineRootSafetyNoteHelpCue, helpText);
+        UpdateNonPreferredQuarantineRootAcknowledgementControl(note);
+    }
+
+    private void UpdateNonPreferredQuarantineRootAcknowledgementControl(QuarantineRootSafetyNote? note = null)
+    {
+        if (NonPreferredQuarantineRootAcknowledgementBox is null)
+        {
+            return;
+        }
+
+        note ??= QuarantineRootSafetyNoteBuilder.Build(QuarantineRootBox.Text);
+        var canAcknowledge = !_isScanning && note.CanPreview && !note.IsPreferredDrive;
+        NonPreferredQuarantineRootAcknowledgementBox.IsEnabled = canAcknowledge;
+        if (!canAcknowledge && NonPreferredQuarantineRootAcknowledgementBox.IsChecked == true)
+        {
+            SetNonPreferredQuarantineRootAcknowledgementSilently(false);
+        }
+
+        var helpText = canAcknowledge
+            ? "Checking this records local readiness acknowledgement for a fully qualified non-D: Quarantine Root. It does not create folders, move files, write manifests, restore files, delete files, or approve cleanup."
+            : note.CanPreview
+                ? "Non-D: acknowledgement is not needed for the preferred D: Quarantine Root. This control does not create folders, move files, write manifests, restore files, delete files, or approve cleanup."
+                : "Enter a fully qualified non-D: Quarantine Root before this readiness acknowledgement can be used. This control does not create folders, move files, write manifests, restore files, delete files, or approve cleanup.";
+        NonPreferredQuarantineRootAcknowledgementBox.ToolTip = helpText;
+        AutomationProperties.SetHelpText(NonPreferredQuarantineRootAcknowledgementBox, helpText);
     }
 
     private void UpdateQuarantineExecutionGate()
@@ -2155,6 +2216,11 @@ public partial class MainWindow : Window
     public void SetQuarantineRootForPreview(string quarantineRootPath)
     {
         QuarantineRootBox.Text = quarantineRootPath;
+    }
+
+    public void SetNonPreferredQuarantineRootAcknowledgement(bool isAcknowledged)
+    {
+        NonPreferredQuarantineRootAcknowledgementBox.IsChecked = isAcknowledged;
     }
 
     public void SetQuarantineConfirmationText(string confirmationText)
@@ -3448,6 +3514,19 @@ public partial class MainWindow : Window
         finally
         {
             _isUpdatingQuarantineConfirmationBox = false;
+        }
+    }
+
+    private void SetNonPreferredQuarantineRootAcknowledgementSilently(bool isAcknowledged)
+    {
+        _isUpdatingNonPreferredQuarantineRootAcknowledgementBox = true;
+        try
+        {
+            NonPreferredQuarantineRootAcknowledgementBox.IsChecked = isAcknowledged;
+        }
+        finally
+        {
+            _isUpdatingNonPreferredQuarantineRootAcknowledgementBox = false;
         }
     }
 

@@ -17,7 +17,7 @@ This packet should make one real-profile readiness dimension more concrete witho
 - Do not run Pre-Execution Revalidation from WPF in this packet; a later display-only packet wires it.
 - Do not run Real-Profile Restore Readiness from WPF.
 - Do not create folders, write manifests, move files, restore files, delete files, or add cleanup history.
-- Do not add non-`D:` Quarantine Root acknowledgement UI yet.
+- Initial packet did not add non-`D:` Quarantine Root acknowledgement UI; later packet `2026-05-31-wpf-non-d-root-acknowledgement.md` adds it as readiness evidence only.
 
 ## Desired behavior
 
@@ -55,6 +55,7 @@ Validation gate:
 - Passed root safety into `QuarantineExecutionReadinessBuilder`.
 - Added compact root-safety evidence lines to Quarantine Preview and Quarantine Execution Gate output.
 - Updated WPF smoke assertions for fixture and synthetic real-profile readiness output.
+- Later WPF non-`D:` root acknowledgement passes local acknowledgement into root-safety evidence without enabling execution.
 
 ## Verification
 
@@ -72,7 +73,7 @@ No ADR added. ADR 0018 already records Quarantine Root Execution Safety as a req
 ## Follow-up work
 
 - WPF display-only Pre-Execution Revalidation evidence was added in `2026-05-31-wpf-pre-execution-revalidation-evidence.md`, keeping real-profile execution disabled.
-- Add non-`D:` acknowledgement UI only after a small Grill with Docs pass, because that affects real-profile approval semantics.
+- WPF non-`D:` acknowledgement UI was added as read-only readiness evidence in `2026-05-31-wpf-non-d-root-acknowledgement.md`; it does not approve cleanup or enable execution.
 
 ## Risky assumptions
 
