@@ -50,7 +50,7 @@ Completed on: 2026-05-31
 What changed:
 
 - Changed the compact preview-only summary suffix to `movement unavailable`.
-- Updated WPF smoke assertions for custom and synthetic real-profile preview-only summaries.
+- Updated WPF smoke assertions for custom, synthetic real-profile, and synthetic real-profile-child preview-only summaries.
 
 ADRs:
 

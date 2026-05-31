@@ -2646,6 +2646,14 @@ internal sealed class MainWindowSmokeTests
                 window.QuarantineExecutionGateTextValue.Contains("Readiness blocker | Scope and policy", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantineExecutionGateTextValue.Contains("first real-profile Quarantine phase is limited to C:\\Users\\moxhe", StringComparison.OrdinalIgnoreCase),
                 "Synthetic real-profile child gate should keep the exact-scope blocker visible.");
+            Assert(
+                window.QuarantineReadinessSummaryTextValue.Contains("preview only", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineReadinessSummaryTextValue.Contains("real-profile child", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineReadinessSummaryTextValue.Contains("movement unavailable", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineReadinessSummaryTextValue.Contains("Missing: Scope and policy", StringComparison.OrdinalIgnoreCase),
+                "Compact readiness summary should keep real-profile child scopes visibly preview-only with movement unavailable wording.");
+            Assert(window.QuarantineReadinessSummaryStyleValue == "Warning", "Real-profile child readiness summary should use warning styling while execution is blocked.");
+            AssertQuarantineReadinessSummaryHelpText(window, "Compact readiness summary help text should mirror real-profile child preview-only state.");
         }
         finally
         {

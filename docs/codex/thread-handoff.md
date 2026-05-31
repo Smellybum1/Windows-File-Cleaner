@@ -9,7 +9,7 @@ Use this when starting a fresh Codex thread for this repository.
 - Repo: `D:\Codex\Windows File Cleaner`
 - GitHub: `Smellybum1/Windows-File-Cleaner`
 - Branch: `main`
-- Latest completed packet: Quarantine Readiness Summary Preview-Only Wording
+- Latest completed packet: Real-Profile Child Readiness Summary Wording Coverage
 - Current app stack: C# / WPF / .NET 8
 - Desktop shortcut target: `D:\Codex\Windows File Cleaner\src\WindowsFileCleaner.App\bin\Debug\net8.0-windows\WindowsFileCleaner.App.exe`
 
@@ -21,7 +21,7 @@ The current MVP has a read-only Storage Scan that can inspect large real-profile
 
 Fixture-only cleanup execution exists for synthetic Cleanup Scopes. Real-profile cleanup execution remains intentionally unavailable until ADR 0017's readiness contract is implemented.
 
-The latest packet polishes the compact Quarantine Readiness Summary for preview-only scopes so it says movement is unavailable instead of the more technical `Current build can execute: no` phrase. Detailed preview/gate readiness evidence is unchanged, and real-profile/custom movement remains unavailable.
+The latest packet extends WPF smoke coverage for the compact Quarantine Readiness Summary so synthetic real-profile-child preview-only scopes also prove `movement unavailable` wording, warning styling, and mirrored tooltip/help text while execution stays blocked.
 
 ## Safety boundary
 
@@ -216,6 +216,7 @@ The latest packet polishes the compact Quarantine Readiness Summary for preview-
 - WPF Execution Bridge Source Guard added core source-level regression coverage that WPF movement executor calls stay isolated to `ExecuteQuarantineForCurrentPreview`, `ExecuteSelectedRestoreForCurrentSelection`, and `UndoQuarantineForCurrentExecution`, and remain behind the current gate/fixture checks; core tests and whitespace diff passed.
 - Full Local MVP Preflight After Source Guards passed `cmd.exe /c tools\Invoke-MvpPreflight.cmd`; restore, build, core tests, WPF app tests, fixture `-WhatIf`, fixture checklist-only output with selected restore revalidation and ADR 0017/0019 blocker wording, and whitespace diff check all passed without scanning or modifying real user files.
 - Quarantine Readiness Summary Preview-Only Wording changed the compact WPF summary for real-profile/custom preview-only scopes from `Current build can execute: no` to `movement unavailable`, while keeping detailed preview/gate readiness evidence unchanged; WPF app tests and whitespace diff passed.
+- Real-Profile Child Readiness Summary Wording Coverage extended the synthetic `C:\Users\moxhe\AppData\Local` WPF smoke test to assert compact preview-only summary wording, warning styling, and mirrored tooltip/help text for real-profile-child scopes; WPF app tests and whitespace diff passed.
 
 ## Best next work
 
@@ -252,9 +253,9 @@ We are continuing Windows File Cleaner in D:\Codex\Windows File Cleaner.
 
 Read AGENTS.md, .codex/progress.md, README.md, docs/codex/thread-handoff.md, docs/domain/context.md, docs/domain/glossary.md, and relevant docs/features/ and docs/decisions/ before implementing.
 
-Current state: main is pushed through the latest Quarantine Readiness Summary Preview-Only Wording packet. The app is a C#/.NET 8 WPF local Windows cleanup reviewer for C:\Users\moxhe. Storage Scan is read-only. Fixture-only Quarantine execution and fixture-only selected restore exist, but real-profile Quarantine execution, real-profile selected restore, real-profile Undo Quarantine, permanent deletion, and persisted cleanup history remain intentionally unavailable.
+Current state: main is pushed through the latest Real-Profile Child Readiness Summary Wording Coverage packet. The app is a C#/.NET 8 WPF local Windows cleanup reviewer for C:\Users\moxhe. Storage Scan is read-only. Fixture-only Quarantine execution and fixture-only selected restore exist, but real-profile Quarantine execution, real-profile selected restore, real-profile Undo Quarantine, permanent deletion, and persisted cleanup history remain intentionally unavailable.
 
-Recent completed packets added ADR 0017/0018/0019 readiness contracts; synthetic exact real-profile and real-profile-child WPF readiness-output coverage without scanning `C:\Users\moxhe`; read-only Quarantine Root Execution Safety, Pre-Execution Revalidation, Real-Profile Restore Readiness, and Selected Restore Pre-Execution Revalidation evidence in WPF output while keeping real-profile execution blocked; compact Quarantine Readiness Summary output with preview-only movement-unavailable wording; non-`D:` Quarantine Root acknowledgement and help cue with user verification that the row feels clear; WPF selected restore revalidation evidence for exact real-profile selected Restore Manifests including stale missing-quarantine-path blockers; fixture launcher/README wording that says exact `RESTORE` plus clean selected restore revalidation evidence still does not unlock real-profile/custom selected restore; a core source guard keeping read-only readiness/revalidation builders from calling movement executors or manifest writers; a WPF execution bridge source guard keeping movement executor calls isolated to the current gated fixture paths; and a full `.cmd` MVP preflight after those source guards. WPF smoke coverage tracks 19 circular help cues.
+Recent completed packets added ADR 0017/0018/0019 readiness contracts; synthetic exact real-profile and real-profile-child WPF readiness-output coverage without scanning `C:\Users\moxhe`; read-only Quarantine Root Execution Safety, Pre-Execution Revalidation, Real-Profile Restore Readiness, and Selected Restore Pre-Execution Revalidation evidence in WPF output while keeping real-profile execution blocked; compact Quarantine Readiness Summary output with preview-only movement-unavailable wording covered for custom, exact real-profile, and real-profile-child scopes; non-`D:` Quarantine Root acknowledgement and help cue with user verification that the row feels clear; WPF selected restore revalidation evidence for exact real-profile selected Restore Manifests including stale missing-quarantine-path blockers; fixture launcher/README wording that says exact `RESTORE` plus clean selected restore revalidation evidence still does not unlock real-profile/custom selected restore; a core source guard keeping read-only readiness/revalidation builders from calling movement executors or manifest writers; a WPF execution bridge source guard keeping movement executor calls isolated to the current gated fixture paths; and a full `.cmd` MVP preflight after those source guards. WPF smoke coverage tracks 19 circular help cues.
 
 User verification: real-profile scan works; search typing was sluggish, then debounced search fixed it; the status-bar message is enough. Keep this as a local-first, safety-gated app. Do not move or delete real-profile files unless I explicitly ask after a Grill with Docs pass.
 
