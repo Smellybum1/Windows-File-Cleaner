@@ -8,7 +8,7 @@ Use it to preserve what was completed, what was verified, what was rejected, and
 
 Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. The app has a broad read-only review workflow, manual fixture Show children/Clipboard crash fix, scan cancel help text, scan-gate summary help text plus a visible hoverable `?` help cue in a compact wrapping scan-header status strip, real-profile acknowledgement help text plus a visible hoverable `?` help cue, Cleanup Scope Safety Note and Quarantine Root Safety Note help text plus visible hoverable `?` help cues, Review Mix, Matched Review Mix, Review Shortlist Safety Mix, Review Grid Mode Status, inline Quarantine Preview status, Quarantine Execution Gate, Selected Restore Execution Gate, exact-confirmation fields, Quarantine Manifest Discovery, Restore Manifest selection, Restore Readiness Preview, Safety Summary header, and Quarantine Shortlist header hoverable `?` help cues with tooltip/help text and affordance smoke coverage plus a full `.cmd` MVP preflight after scan-gate cue coverage, Safety Summary shortcut help text, Safety Summary collapsed-header state styling, review-lens filter help text, manifest discovery/selection help text, debounced Storage Review Search for large real-profile scans, Storage Review Search input automation help text, scan-gate automation help text, Cleanup Scope input/browse automation help text, Quarantine Root input/browse automation help text, selected-row action automation help text, visible-row shortlist automation help text, execution/readiness automation help text, review report/preview automation help text, review toolbar automation help text, review navigation/export tooltip clarity, Review Grid Mode Status tooltip/help text, scope-specific Cleanup Scope Scan Gate discoverability polish, Cleanup Scope and Quarantine Root browse tooltip clarity, selected-row action tooltip clarity, Matched Review Mix, Review Shortlist Safety Mix, visible-row Review Shortlist bulk labels/tooltips, review toolbar report/preview tooltip clarity, Selected Folder Subtree Summary, Storage Hotspot Trail, Selected Folder Child Focus, Selected Folder Descendant Focus, execution-policy-friendly fixture/preflight tooling with checklist output, checklist-only mode now covered by MVP preflight and GitHub Actions now running preflight through the same `.cmd` wrapper as local user instructions, hoverable help-cue checklist wording, approval-boundary prompt coverage, selected-restore scope-status checklist coverage, all-manifest restore boundary checklist coverage, manifest review and selected-restore gate checklist steps split for easier fixture review, redundant parent/child preview overlap cleanup through `Remove overlapping parents`, execution-control tooltip clarity, readiness scope tooltip clarity, Undo Quarantine domain consistency, Restore Manifest wording polish, Selected Manifest Readiness label polish, and All-Manifest Readiness label polish, Quarantine Preview and Quarantine Execution Gate scope-status/approval-boundary wording without technical implementation-flag wording plus a full `.cmd` MVP preflight after that wording packet, fixture checklist wording aligned to the visible `Quarantine included shortlist` button plus a full `.cmd` MVP preflight after that checklist label packet, WPF Quarantine Preview and Execution Gate placeholder text aligned to the visible `Preview shortlist quarantine` button plus a full `.cmd` MVP preflight after that placeholder label packet, WPF Quarantine Execution Gate missing-preview blocker aligned to the visible `Preview shortlist quarantine` button, Quarantine Execution Gate help cue plus a full `.cmd` MVP preflight after that help-cue packet, Restore Manifest Draft, Quarantine Confirmation Draft, confirmation label wording polish, Quarantine Action Draft, write-ahead Restore Manifest persistence, core Quarantine execution, core Undo Quarantine, fixture-only WPF Quarantine execution, WPF undo for the current fixture execution, Current quarantined grid switching with a moved-entry count label for current-session moved entries plus a full `.cmd` MVP preflight after that count-label packet, Quarantine Manifest Discovery with all-manifest restore wording and a visible discovery `?` help cue, Selected Restore Manifest Review with readiness-evidence wording and a visible selection `?` help cue, Selected Restore Confirmation Gate with scope-status/approval-boundary wording, visible help cue, and without technical implementation-flag wording, Fixture-only Selected Restore Execution, Restore Readiness Preview with all-manifest restore wording and a visible all-manifest readiness `?` help cue, a Real-Profile Quarantine Readiness Contract in ADR 0017 with WPF regression coverage for real/custom execution blockers, and a compact `AGENTS.md` that points to detailed workflow docs instead of duplicating them. Real-profile WPF Quarantine execution, real-profile WPF Undo Quarantine, permanent deletion, and persisted cleanup history remain unavailable. Fresh-thread handoff notes and a startup prompt live in `docs/codex/thread-handoff.md`.
 
-Latest small packet aligned the printed fixture checklist with the compact Quarantine Readiness Summary key-blocker wording. Checklist step 6 now asks reviewers to inspect preview-only `movement unavailable` wording and `Key blockers` labels; checklist-only output and whitespace diff passed without preflight, fixture creation, WPF launch, scan, or file modification.
+Latest small packet consolidated the compact Quarantine Readiness Summary key-blocker label rules in WPF code. One shared rule table now drives both priority selection and fallback labels while preserving visible `Key blockers:` wording and real-profile/custom movement blockers; WPF app tests passed without scanning or modifying real user files.
 
 ## Next recommended work
 
@@ -21,6 +21,44 @@ Latest small packet aligned the printed fixture checklist with the compact Quara
 7. Revisit .NET 10 before packaging or long-term distribution.
 
 ## Completed packets
+
+### 2026-05-31: Quarantine Readiness Key-Blocker Label Rules
+
+Status: completed
+
+Evidence:
+
+- The compact Quarantine Readiness Summary key-blocker mapping existed once as a priority pattern array and again as a separate fallback `if` chain.
+- The duplicated mapping made future ADR 0018 readiness wording easier to drift while the current WPF tests already cover visible key-blocker labels.
+
+Implementation:
+
+- Added a shared `ReadinessKeyBlockerLabelRules` table in `MainWindow.xaml.cs`.
+- Updated priority selection and fallback label formatting to use the shared rules.
+- Kept visible WPF output, first-phase key-blocker priority, fixture-only execution, and real-profile/custom preview-only blockers unchanged.
+- No real user files were scanned or modified.
+
+Verification:
+
+- `dotnet run --project tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj`
+
+Docs updated:
+
+- `docs/features/2026-05-31-quarantine-readiness-key-blocker-label-rules.md`
+- `docs/codex/thread-handoff.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No ADR added. This is behavior-preserving maintainability cleanup under accepted ADR 0018.
+
+Open questions:
+
+- None.
+
+Rejected ideas buffer:
+
+- Do not change visible readiness wording or real-profile movement availability in this maintainability packet.
 
 ### 2026-05-31: Fixture Checklist Readiness Key Blockers
 

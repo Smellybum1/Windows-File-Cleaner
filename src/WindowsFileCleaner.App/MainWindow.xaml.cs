@@ -2161,23 +2161,8 @@ public partial class MainWindow : Window
         int maxCount = 4)
     {
         var labels = new List<string>(capacity: Math.Min(maxCount, 4));
-        var priorityPatterns = new (string Pattern, string Label)[]
-        {
-            ("capped at 10 included row", "10-row cap"),
-            ("capped at 1 GB", "1 GB cap"),
-            ("No-category rows are blocked", "no-category rows"),
-            ("strict descendant checks", "strict descendant checks"),
-            ("first real-profile Quarantine phase is limited", "exact profile scope"),
-            ("Non-D:", "non-D root acknowledgement"),
-            ("Quarantine Root Execution Safety", "quarantine root safety"),
-            ("Pre-Execution Revalidation", "pre-execution revalidation"),
-            ("Real-Profile Restore Readiness", "restore readiness"),
-            ("Selected-manifest real-profile Undo", "restore readiness"),
-            ("Real-profile WPF Quarantine execution", "current build unavailable"),
-            ("Custom non-fixture", "custom scope preview-only")
-        };
 
-        foreach (var (pattern, label) in priorityPatterns)
+        foreach (var (pattern, label) in ReadinessKeyBlockerLabelRules)
         {
             if (blockers.Any(blocker => blocker.Contains(pattern, StringComparison.OrdinalIgnoreCase))
                 && !labels.Contains(label, StringComparer.OrdinalIgnoreCase))
@@ -2208,62 +2193,30 @@ public partial class MainWindow : Window
         return labels;
     }
 
+    private static readonly (string Pattern, string Label)[] ReadinessKeyBlockerLabelRules =
+    {
+        ("capped at 10 included row", "10-row cap"),
+        ("capped at 1 GB", "1 GB cap"),
+        ("No-category rows are blocked", "no-category rows"),
+        ("strict descendant checks", "strict descendant checks"),
+        ("first real-profile Quarantine phase is limited", "exact profile scope"),
+        ("Non-D:", "non-D root acknowledgement"),
+        ("Quarantine Root Execution Safety", "quarantine root safety"),
+        ("Pre-Execution Revalidation", "pre-execution revalidation"),
+        ("Real-Profile Restore Readiness", "restore readiness"),
+        ("Selected-manifest real-profile Undo", "restore readiness"),
+        ("Real-profile WPF Quarantine execution", "current build unavailable"),
+        ("Custom non-fixture", "custom scope preview-only")
+    };
+
     private static string GetReadinessKeyBlockerLabel(string blocker)
     {
-        if (blocker.Contains("Real-profile WPF Quarantine execution", StringComparison.OrdinalIgnoreCase))
+        foreach (var (pattern, label) in ReadinessKeyBlockerLabelRules)
         {
-            return "current build unavailable";
-        }
-
-        if (blocker.Contains("capped at 10 included row", StringComparison.OrdinalIgnoreCase))
-        {
-            return "10-row cap";
-        }
-
-        if (blocker.Contains("capped at 1 GB", StringComparison.OrdinalIgnoreCase))
-        {
-            return "1 GB cap";
-        }
-
-        if (blocker.Contains("No-category rows are blocked", StringComparison.OrdinalIgnoreCase))
-        {
-            return "no-category rows";
-        }
-
-        if (blocker.Contains("strict descendant checks", StringComparison.OrdinalIgnoreCase))
-        {
-            return "strict descendant checks";
-        }
-
-        if (blocker.Contains("Pre-Execution Revalidation", StringComparison.OrdinalIgnoreCase))
-        {
-            return "pre-execution revalidation";
-        }
-
-        if (blocker.Contains("Real-Profile Restore Readiness", StringComparison.OrdinalIgnoreCase)
-            || blocker.Contains("Selected-manifest real-profile Undo", StringComparison.OrdinalIgnoreCase))
-        {
-            return "restore readiness";
-        }
-
-        if (blocker.Contains("Quarantine Root Execution Safety", StringComparison.OrdinalIgnoreCase))
-        {
-            return "quarantine root safety";
-        }
-
-        if (blocker.Contains("first real-profile Quarantine phase is limited", StringComparison.OrdinalIgnoreCase))
-        {
-            return "exact profile scope";
-        }
-
-        if (blocker.Contains("Non-D:", StringComparison.OrdinalIgnoreCase))
-        {
-            return "non-D root acknowledgement";
-        }
-
-        if (blocker.Contains("Custom non-fixture", StringComparison.OrdinalIgnoreCase))
-        {
-            return "custom scope preview-only";
+            if (blocker.Contains(pattern, StringComparison.OrdinalIgnoreCase))
+            {
+                return label;
+            }
         }
 
         return GetQuarantineExecutionReadinessDimension(blocker);
