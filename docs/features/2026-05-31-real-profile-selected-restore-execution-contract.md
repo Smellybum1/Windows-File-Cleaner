@@ -143,7 +143,7 @@ ADR-worthy decisions:
 3. Update progress and handoff docs so future work starts from the new contract. Completed in this packet.
 4. Add regression coverage showing selected real-profile restore remains unavailable until implementation. Completed in the Real-Profile Selected Restore Regression packet; later WPF restore-readiness evidence now also shows the selected-manifest real-profile Undo blocker in the selected restore gate.
 5. Add the core read-only Selected Restore Pre-Execution Revalidation model. Completed in the Selected Restore Pre-Execution Revalidation packet.
-6. Future packet: wire selected restore pre-execution revalidation into WPF evidence/output without enabling execution, if useful before the execution packet.
+6. Wire selected restore pre-execution revalidation into WPF evidence/output without enabling execution. Completed in the WPF Selected Restore Revalidation Evidence packet.
 7. Future packet: implement selected real-profile restore behind the ADR 0019 contract after explicit approval.
 
 ## Files expected to change

@@ -3010,7 +3010,7 @@ Selected Restore Pre-Execution Revalidation is the immediate read-only rediscove
 
 It protects the gap between the selected Restore Manifest review and a later `UndoQuarantineExecutor` call. It rediscovers the selected manifest, rebuilds selected readiness from current files, verifies exact `C:\Users\moxhe` Cleanup Scope and exact `RESTORE` gate evidence, and reports stale blockers without restoring anything.
 
-The current core model is read-only evidence only. WPF selected real-profile restore remains unavailable.
+The current model is read-only evidence only. WPF shows it in the Selected Restore Execution Gate for exact real-profile selected Restore Manifests, but selected real-profile restore remains unavailable.
 
 #### Examples
 
@@ -3045,7 +3045,7 @@ The current core model is read-only evidence only. WPF selected real-profile res
 - Use `SelectedRestorePreExecutionRevalidation` and `SelectedRestorePreExecutionRevalidationBuilder`.
 - Rediscover the selected manifest rather than trusting stale selected review evidence.
 - Keep blockers path-specific enough for WPF readiness output.
-- Do not treat clean revalidation as approval while real-profile selected restore remains unavailable.
+- In WPF, show revalidation as read-only selected-gate evidence for exact real-profile selected Restore Manifests; do not treat clean revalidation as approval while real-profile selected restore remains unavailable.
 
 ### Fixture-only WPF Quarantine Execution
 

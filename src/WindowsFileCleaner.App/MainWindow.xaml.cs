@@ -35,6 +35,7 @@ public partial class MainWindow : Window
     private SelectedRestoreConfirmationDraft? _currentSelectedRestoreConfirmationDraft;
     private SelectedRestoreExecutionGate? _currentSelectedRestoreExecutionGate;
     private RealProfileRestoreReadiness? _currentRealProfileRestoreReadiness;
+    private SelectedRestorePreExecutionRevalidation? _currentSelectedRestorePreExecutionRevalidation;
     private UndoQuarantineResult? _currentSelectedRestoreResult;
     private string? _currentCleanupScopePath;
     private StorageReviewFilter _currentFilter = StorageReviewFilter.All;
@@ -2307,11 +2308,13 @@ public partial class MainWindow : Window
             _currentSelectedRestoreConfirmationDraft,
             SelectedRestoreConfirmationBox.Text);
         _currentRealProfileRestoreReadiness = BuildRealProfileRestoreReadinessForDisplay();
+        _currentSelectedRestorePreExecutionRevalidation = BuildSelectedRestorePreExecutionRevalidationForDisplay();
         SetSelectedRestoreExecutionGateText(
             FormatSelectedRestoreExecutionGate(
                 _currentSelectedRestoreConfirmationDraft,
                 _currentSelectedRestoreExecutionGate,
                 _currentRealProfileRestoreReadiness,
+                _currentSelectedRestorePreExecutionRevalidation,
                 _currentSelectedRestoreResult),
             _currentSelectedRestoreExecutionGate,
             _currentSelectedRestoreResult);
@@ -3451,6 +3454,7 @@ public partial class MainWindow : Window
         _currentSelectedRestoreConfirmationDraft = null;
         _currentSelectedRestoreExecutionGate = null;
         _currentRealProfileRestoreReadiness = null;
+        _currentSelectedRestorePreExecutionRevalidation = null;
         _currentSelectedRestoreResult = null;
         SetSelectedRestoreConfirmationTextSilently("");
         if (SelectedRestoreExecutionGateText is not null)
@@ -3588,11 +3592,13 @@ public partial class MainWindow : Window
             _currentSelectedRestoreConfirmationDraft,
             SelectedRestoreConfirmationBox.Text);
         _currentRealProfileRestoreReadiness = BuildRealProfileRestoreReadinessForDisplay();
+        _currentSelectedRestorePreExecutionRevalidation = BuildSelectedRestorePreExecutionRevalidationForDisplay();
         SetSelectedRestoreExecutionGateText(
             FormatSelectedRestoreExecutionGate(
                 _currentSelectedRestoreConfirmationDraft,
                 _currentSelectedRestoreExecutionGate,
                 _currentRealProfileRestoreReadiness,
+                _currentSelectedRestorePreExecutionRevalidation,
                 _currentSelectedRestoreResult),
             _currentSelectedRestoreExecutionGate,
             _currentSelectedRestoreResult);
@@ -3671,6 +3677,7 @@ public partial class MainWindow : Window
                 _currentSelectedRestoreConfirmationDraft,
                 _currentSelectedRestoreExecutionGate,
                 _currentRealProfileRestoreReadiness,
+                _currentSelectedRestorePreExecutionRevalidation,
                 _currentSelectedRestoreResult),
             _currentSelectedRestoreExecutionGate,
             _currentSelectedRestoreResult);
@@ -3995,6 +4002,39 @@ public partial class MainWindow : Window
         }
     }
 
+    private static void AddSelectedRestorePreExecutionRevalidationLines(
+        List<string> lines,
+        SelectedRestorePreExecutionRevalidation? revalidation)
+    {
+        if (revalidation is null)
+        {
+            return;
+        }
+
+        var selectedPath = string.IsNullOrWhiteSpace(revalidation.SelectedManifestPath)
+            ? "(none)"
+            : revalidation.SelectedManifestPath;
+        lines.Add(
+            $"Selected Restore Pre-Execution Revalidation: checked | Can proceed: {FormatYesNo(revalidation.CanProceed)} | " +
+            $"Selected manifest real-profile scope: {FormatYesNo(revalidation.IsSelectedManifestRealProfileScope)} | " +
+            $"Selected real-profile Undo implemented: {FormatYesNo(revalidation.IsSelectedManifestRealProfileUndoImplemented)} | " +
+            $"Exact RESTORE matched: {FormatYesNo(revalidation.IsConfirmationTextMatched)}");
+        lines.Add(
+            $"Selected restore revalidation entries: restorable {revalidation.RestorableEntryCount:N0}, blocked {revalidation.BlockedEntryCount:N0}, recovery review {revalidation.RecoveryReviewEntryCount:N0}, already restored {revalidation.AlreadyRestoredEntryCount:N0}, not moved {revalidation.NotMovedEntryCount:N0}, size {revalidation.RestorableSizeDisplay}.");
+        lines.Add($"Selected restore revalidation manifest: {selectedPath}");
+        lines.Add("Selected restore revalidation boundary: read-only evidence only; it does not restore files, write manifests, move files, or approve restore, and must run again immediately before any future real-profile selected restore movement.");
+
+        foreach (var blocker in revalidation.Blockers.Take(6))
+        {
+            lines.Add($"Selected restore revalidation blocker | {blocker}");
+        }
+
+        if (revalidation.Blockers.Count > 6)
+        {
+            lines.Add($"... {revalidation.Blockers.Count - 6:N0} more selected restore revalidation blocker(s) not shown in this pane.");
+        }
+    }
+
     private static string FormatQuarantineExecutionReadinessBlocker(string blocker)
     {
         var dimension = GetQuarantineExecutionReadinessDimension(blocker);
@@ -4265,6 +4305,7 @@ public partial class MainWindow : Window
         SelectedRestoreConfirmationDraft confirmationDraft,
         SelectedRestoreExecutionGate gate,
         RealProfileRestoreReadiness? realProfileRestoreReadiness,
+        SelectedRestorePreExecutionRevalidation? selectedRestorePreExecutionRevalidation,
         UndoQuarantineResult? selectedRestoreResult = null)
     {
         var selectedPath = string.IsNullOrWhiteSpace(confirmationDraft.SelectedManifestPath)
@@ -4302,6 +4343,7 @@ public partial class MainWindow : Window
         }
 
         AddRealProfileRestoreReadinessLines(lines, realProfileRestoreReadiness);
+        AddSelectedRestorePreExecutionRevalidationLines(lines, selectedRestorePreExecutionRevalidation);
 
         if (selectedRestoreResult is not null)
         {
@@ -4345,6 +4387,36 @@ public partial class MainWindow : Window
             _currentSelectedRestoreExecutionGate,
             DateTimeOffset.UtcNow,
             isSelectedManifestRealProfileUndoImplemented: false);
+    }
+
+    private SelectedRestorePreExecutionRevalidation? BuildSelectedRestorePreExecutionRevalidationForDisplay()
+    {
+        if (_currentSelectedRestoreManifestReview?.SelectedManifest is null
+            || _currentSelectedRestoreConfirmationDraft is null
+            || _currentSelectedRestoreExecutionGate is null
+            || !IsDefaultRealProfileCleanupScope(_currentSelectedRestoreManifestReview.SelectedManifest.CleanupScopePath))
+        {
+            return null;
+        }
+
+        return SelectedRestorePreExecutionRevalidationBuilder.Build(
+            _currentSelectedRestoreManifestReview,
+            _currentSelectedRestoreConfirmationDraft,
+            _currentSelectedRestoreExecutionGate,
+            DateTimeOffset.UtcNow,
+            isSelectedManifestRealProfileUndoImplemented: false);
+    }
+
+    private static bool IsDefaultRealProfileCleanupScope(string cleanupScopePath)
+    {
+        if (string.IsNullOrWhiteSpace(cleanupScopePath))
+        {
+            return false;
+        }
+
+        return SamePath(
+            cleanupScopePath,
+            StorageScanOptions.DefaultForCurrentUser().CleanupScopePath);
     }
 
     private static string FormatSelectedRestoreExecutionGateHelpText(

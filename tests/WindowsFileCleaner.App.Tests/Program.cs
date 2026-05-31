@@ -37,6 +37,7 @@ internal static class Program
                 tests.MainWindowKeepsQuarantineExecutionUnavailableForCustomScope();
                 tests.MainWindowKeepsSelectedRestoreUnavailableForCustomScope();
                 tests.MainWindowKeepsSelectedRestoreUnavailableForRealProfileManifest();
+                tests.MainWindowShowsSelectedRestoreRevalidationBlockersForStaleRealProfileManifest();
                 tests.MainWindowBlocksQuarantinePreviewForParentWithProtectedDescendant();
             }
             finally
@@ -2762,6 +2763,13 @@ internal sealed class MainWindowSmokeTests
                 && window.SelectedRestoreExecutionGateTextValue.Contains("Selected real-profile Undo implemented: no", StringComparison.OrdinalIgnoreCase)
                 && window.SelectedRestoreExecutionGateTextValue.Contains("Selected-manifest real-profile Undo Quarantine remains unavailable", StringComparison.OrdinalIgnoreCase),
                 "Real-profile selected restore gate should show read-only restore readiness evidence without enabling restore. Text: " + window.SelectedRestoreExecutionGateTextValue);
+            Assert(
+                window.SelectedRestoreExecutionGateTextValue.Contains("Selected Restore Pre-Execution Revalidation: checked", StringComparison.OrdinalIgnoreCase)
+                && window.SelectedRestoreExecutionGateTextValue.Contains("Can proceed: no", StringComparison.OrdinalIgnoreCase)
+                && window.SelectedRestoreExecutionGateTextValue.Contains("Exact RESTORE matched: yes", StringComparison.OrdinalIgnoreCase)
+                && window.SelectedRestoreExecutionGateTextValue.Contains("Selected restore revalidation boundary: read-only evidence only", StringComparison.OrdinalIgnoreCase)
+                && window.SelectedRestoreExecutionGateTextValue.Contains("Selected-manifest real-profile Undo Quarantine remains unavailable", StringComparison.OrdinalIgnoreCase),
+                "Real-profile selected restore gate should show read-only selected restore pre-execution revalidation evidence without enabling restore. Text: " + window.SelectedRestoreExecutionGateTextValue);
             AssertSelectedRestoreExecutionGateHelpCue(
                 window,
                 "Real-profile selected restore gate cue should stay blocked after exact RESTORE.",
@@ -2771,6 +2779,49 @@ internal sealed class MainWindowSmokeTests
             Assert(!window.CanExecuteSelectedRestore, "Real-profile selected restore execution should remain unavailable even with clean readiness and exact RESTORE.");
             Assert(File.Exists(setup.QuarantinePath), "Blocked real-profile selected restore should leave the synthetic quarantine source in place.");
             Assert(!File.Exists(setup.OriginalPath), "Blocked real-profile selected restore should not restore into the real profile.");
+        }
+        finally
+        {
+            window.Close();
+        }
+    }
+
+    public void MainWindowShowsSelectedRestoreRevalidationBlockersForStaleRealProfileManifest()
+    {
+        using var fixture = SmokeFixture.CreateCustomScope();
+        var realProfileScope = StorageScanOptions.DefaultForCurrentUser().CleanupScopePath;
+        var quarantineRoot = Path.Combine(fixture.RootPath, "stale-real-profile-selected-restore-quarantine-root");
+        var setup = CreateSyntheticRealProfileRestoreManifest(
+            realProfileScope,
+            quarantineRoot,
+            "stale-real-profile-selected-restore");
+        var window = new MainWindow(realProfileScope);
+        try
+        {
+            Assert(File.Exists(setup.QuarantinePath), "Stale real-profile selected restore setup should create only a synthetic quarantine source.");
+            Assert(!File.Exists(setup.OriginalPath), "Stale real-profile selected restore setup should not create the real-profile original path.");
+
+            window.SetQuarantineRootForPreview(quarantineRoot);
+            window.DiscoverQuarantineManifestsForCurrentRoot();
+            Assert(window.SelectDiscoveredRestoreManifestByPath(setup.ManifestPath), "Stale real-profile Restore Manifest should be selectable by path.");
+            window.PreviewSelectedRestoreManifestReadiness();
+            Assert(
+                window.SelectedRestoreManifestReviewTextValue.Contains("Restore readiness row | Restorable", StringComparison.OrdinalIgnoreCase),
+                "Initial selected readiness should look restorable before the synthetic quarantine source is removed.");
+
+            File.Delete(setup.QuarantinePath);
+            window.PreviewSelectedRestoreGateForCurrentSelection();
+            window.SetSelectedRestoreConfirmationText("RESTORE");
+
+            Assert(
+                window.SelectedRestoreExecutionGateTextValue.Contains("Selected Restore Pre-Execution Revalidation: checked", StringComparison.OrdinalIgnoreCase)
+                && window.SelectedRestoreExecutionGateTextValue.Contains("Can proceed: no", StringComparison.OrdinalIgnoreCase)
+                && window.SelectedRestoreExecutionGateTextValue.Contains("Selected restore revalidation entries: restorable 0, blocked 1", StringComparison.OrdinalIgnoreCase)
+                && window.SelectedRestoreExecutionGateTextValue.Contains("Quarantine path no longer exists", StringComparison.OrdinalIgnoreCase),
+                "Selected restore pre-execution revalidation should rediscover stale missing quarantine paths. Text: " + window.SelectedRestoreExecutionGateTextValue);
+            Assert(!window.CanExecuteSelectedRestore, "Stale real-profile selected restore should remain unavailable.");
+            Assert(!File.Exists(setup.QuarantinePath), "Revalidation should not recreate the missing synthetic quarantine source.");
+            Assert(!File.Exists(setup.OriginalPath), "Revalidation should not restore into the real profile.");
         }
         finally
         {

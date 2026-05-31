@@ -36,7 +36,7 @@ Core code now has `SelectedRestorePreExecutionRevalidation`, a read-only check t
 - Revalidation is selected-manifest-only and real-profile-only for the future first phase.
 - Revalidation rediscovers the selected manifest instead of trusting the earlier selected review snapshot.
 - Clean revalidation can only report `CanProceed` when the caller explicitly records that selected-manifest real-profile Undo is implemented.
-- This model is core evidence only; WPF remains blocked until a later explicit implementation packet wires execution.
+- WPF now shows this evidence in the selected restore gate for exact real-profile selected Restore Manifests. WPF remains blocked until a later explicit implementation packet wires execution.
 
 ## Files changed
 
@@ -68,7 +68,7 @@ What changed:
 
 Follow-up work:
 
-- A later explicit WPF packet can show this evidence in the selected restore gate.
+- WPF display evidence was added in `docs/features/2026-05-31-wpf-selected-restore-revalidation-evidence.md`.
 - A later explicit execution packet can rerun this model immediately before calling `UndoQuarantineExecutor`.
 
 Open questions:
