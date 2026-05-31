@@ -2792,6 +2792,49 @@ The current core model can name fixture-executable, real-profile-candidate, and 
 - Make blockers visible by readiness dimension so disabled execution controls explain why real-profile movement is unavailable.
 - In WPF, keep detailed readiness output in preview/gate text and mirror the high-level state in Quarantine Readiness Summary until a later packet proves a richer real-profile readiness surface is needed.
 
+### Real-Profile Quarantine Approval Evidence
+
+Status: draft
+Last reviewed: 2026-05-31
+
+#### Definition
+
+Real-Profile Quarantine Approval Evidence is the read-only result that combines Real-Profile Quarantine Execution Readiness, the typed `QUARANTINE` phrase, and explicit current-build movement availability evidence before any future real-profile movement can be considered approved.
+
+It exists to make the ADR 0018 rule testable: exact `QUARANTINE` is necessary but not sufficient.
+
+#### Examples
+
+- Record that exact `QUARANTINE` was typed while real-profile movement still remains unavailable in the current build.
+- Carry readiness blockers forward so approval evidence cannot hide missing Quarantine Root safety, Pre-Execution Revalidation, or restore readiness.
+- Prove that custom and real-profile-child scopes cannot count as exact real-profile movement approval evidence.
+
+#### Non-examples
+
+- A Cleanup Action.
+- WPF real-profile Quarantine execution.
+- A persisted approval record.
+- A replacement for Quarantine Execution Gate or Real-Profile Quarantine Execution Readiness.
+
+#### Lifecycle
+
+- Built after Real-Profile Quarantine Execution Readiness when future real-profile approval semantics are being checked.
+- Rebuilt whenever readiness, typed confirmation text, Cleanup Scope, Quarantine Root, or movement availability evidence changes.
+- Does not create, move, restore, delete, write manifests, or persist cleanup history.
+
+#### Relationships
+
+- Depends on Real-Profile Quarantine Execution Readiness.
+- Refines the explicit confirmation and approval dimension accepted by ADR 0018.
+- Precedes any later user-approved packet that can wire real-profile movement.
+
+#### Code implications
+
+- Use `RealProfileQuarantineApprovalEvidence` and `RealProfileQuarantineApprovalEvidenceBuilder`.
+- Keep the builder read-only and covered by the readiness-builder source guard.
+- Default current-build movement availability to unavailable.
+- Keep `CanApproveForRealProfileMovement` false unless exact real-profile scope, clean readiness, exact `QUARANTINE`, and explicit movement availability evidence are all present.
+
 ### Quarantine Root Execution Safety
 
 Status: draft

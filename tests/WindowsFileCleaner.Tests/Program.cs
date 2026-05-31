@@ -29,6 +29,8 @@ tests.QuarantineExecutionGateRequiresExactConfirmationAndImplementedExecution();
 tests.QuarantineExecutionReadinessNamesFixtureRealProfileAndCustomStates();
 tests.QuarantineExecutionReadinessAppliesRealProfileFirstPhaseDecisions();
 tests.QuarantineExecutionReadinessKeepsRealProfileChildrenPreviewOnly();
+tests.RealProfileQuarantineApprovalEvidenceKeepsConfirmationInsufficient();
+tests.RealProfileQuarantineApprovalEvidenceRequiresExactScopeAndMovementAvailability();
 tests.QuarantineActionDraftBuildsActionScopedLayoutWithoutWritingFiles();
 tests.QuarantineRootExecutionSafetyAllowsSafeNonPreferredRootWithAcknowledgement();
 tests.QuarantineRootExecutionSafetyBlocksUnsafeContainmentAndRelativeRoots();
@@ -1351,6 +1353,100 @@ internal sealed class StorageScanTests
         Assert(childReadiness.Disposition == QuarantineExecutionReadinessDisposition.CustomPreviewOnly, "Child scopes should remain preview-only in the first real-profile phase.");
         Assert(!childReadiness.CanExecuteInCurrentBuild, "Real-profile child scopes must not execute in the current build.");
         Assert(childReadiness.Blockers.Any(blocker => blocker.Contains(@"C:\Users\moxhe", StringComparison.OrdinalIgnoreCase)), "Child-scope blocker should name the exact first real-profile scope.");
+    }
+
+    public void RealProfileQuarantineApprovalEvidenceKeepsConfirmationInsufficient()
+    {
+        var preview = BuildPreviewForManualRows(
+            @"C:\Users\moxhe",
+            @"D:\WindowsFileCleanerQuarantine",
+            ManualReviewEntry(@"C:\Users\moxhe\Downloads\old-installer.msi"));
+        var confirmation = BuildConfirmationForPreview(preview, "real-approval");
+        var readiness = QuarantineExecutionReadinessBuilder.Build(preview, confirmation);
+        var checkedAtUtc = new DateTimeOffset(2026, 5, 31, 8, 0, 0, TimeSpan.Zero);
+
+        var evidence = RealProfileQuarantineApprovalEvidenceBuilder.Build(
+            readiness,
+            "QUARANTINE",
+            checkedAtUtc);
+
+        Assert(evidence.CheckedAtUtc == checkedAtUtc, "Approval evidence should record when it was checked.");
+        Assert(evidence.IsExactRealProfileScope, "Approval evidence should identify the exact real-profile Cleanup Scope.");
+        Assert(evidence.IsConfirmationTextMatched, "Exact QUARANTINE should be recorded as matched.");
+        Assert(evidence.ReadinessHasBlockers, "Current real-profile readiness still has blockers.");
+        Assert(!evidence.IsRealProfileQuarantineMovementAvailable, "Real-profile movement should default to unavailable.");
+        Assert(!evidence.CanApproveForRealProfileMovement, "Exact QUARANTINE should not be sufficient to approve real-profile movement.");
+        Assert(evidence.Blockers.Any(blocker => blocker.Contains("Readiness:", StringComparison.OrdinalIgnoreCase)), "Approval evidence should carry readiness blockers.");
+        Assert(evidence.Blockers.Any(blocker => blocker.Contains("movement remains unavailable", StringComparison.OrdinalIgnoreCase)), "Approval evidence should keep current-build movement unavailable.");
+        Assert(evidence.ReviewNotes.Any(note => note.Contains("necessary but not sufficient", StringComparison.OrdinalIgnoreCase)), "Approval evidence should explain that confirmation text is necessary but not sufficient.");
+
+        var cleanReadiness = readiness with
+        {
+            Blockers = []
+        };
+        var cleanButUnavailable = RealProfileQuarantineApprovalEvidenceBuilder.Build(
+            cleanReadiness,
+            "QUARANTINE",
+            checkedAtUtc);
+
+        Assert(!cleanButUnavailable.ReadinessHasBlockers, "Synthetic clean readiness should be represented without blockers.");
+        Assert(!cleanButUnavailable.CanApproveForRealProfileMovement, "Clean readiness and exact confirmation should still not approve movement while current-build movement is unavailable.");
+        Assert(cleanButUnavailable.Blockers.Count == 1, "Only the current-build movement blocker should remain for clean synthetic readiness.");
+        Assert(cleanButUnavailable.Blockers[0].Contains("movement remains unavailable", StringComparison.OrdinalIgnoreCase), "The remaining blocker should name movement availability.");
+    }
+
+    public void RealProfileQuarantineApprovalEvidenceRequiresExactScopeAndMovementAvailability()
+    {
+        var realPreview = BuildPreviewForManualRows(
+            @"C:\Users\moxhe",
+            @"D:\WindowsFileCleanerQuarantine",
+            ManualReviewEntry(@"C:\Users\moxhe\AppData\Local\pip\Cache\http-v2\response.body"));
+        var realConfirmation = BuildConfirmationForPreview(realPreview, "real-approval-scope");
+        var realReadiness = QuarantineExecutionReadinessBuilder.Build(realPreview, realConfirmation) with
+        {
+            Blockers = []
+        };
+        var checkedAtUtc = new DateTimeOffset(2026, 5, 31, 8, 30, 0, TimeSpan.Zero);
+
+        var wrongText = RealProfileQuarantineApprovalEvidenceBuilder.Build(
+            realReadiness,
+            "quarantine",
+            checkedAtUtc,
+            isRealProfileQuarantineMovementAvailable: true);
+
+        Assert(!wrongText.IsConfirmationTextMatched, "Approval evidence should require exact case-sensitive QUARANTINE text.");
+        Assert(!wrongText.CanApproveForRealProfileMovement, "Wrong confirmation text should block even when movement availability is supplied.");
+        Assert(wrongText.Blockers.Any(blocker => blocker.Contains("Type QUARANTINE", StringComparison.Ordinal)), "Wrong text should produce the exact confirmation blocker.");
+
+        var customPreview = BuildPreviewForManualRows(
+            @"D:\Scratch\ReviewOnly",
+            @"D:\WindowsFileCleanerQuarantine",
+            ManualReviewEntry(@"D:\Scratch\ReviewOnly\Downloads\old-installer.msi"));
+        var customConfirmation = BuildConfirmationForPreview(customPreview, "custom-approval-scope");
+        var customReadiness = QuarantineExecutionReadinessBuilder.Build(customPreview, customConfirmation) with
+        {
+            Blockers = []
+        };
+
+        var customEvidence = RealProfileQuarantineApprovalEvidenceBuilder.Build(
+            customReadiness,
+            "QUARANTINE",
+            checkedAtUtc,
+            isRealProfileQuarantineMovementAvailable: true);
+
+        Assert(!customEvidence.IsExactRealProfileScope, "Custom scope should not count as exact real-profile scope.");
+        Assert(!customEvidence.CanApproveForRealProfileMovement, "Custom scopes should not be approvable as real-profile movement evidence.");
+        Assert(customEvidence.Blockers.Any(blocker => blocker.Contains(@"C:\Users\moxhe", StringComparison.OrdinalIgnoreCase)), "Scope blocker should name the exact real-profile Cleanup Scope.");
+
+        var approvedEvidence = RealProfileQuarantineApprovalEvidenceBuilder.Build(
+            realReadiness,
+            " QUARANTINE ",
+            checkedAtUtc,
+            isRealProfileQuarantineMovementAvailable: true);
+
+        Assert(approvedEvidence.IsConfirmationTextMatched, "Approval evidence should trim entered confirmation text like the current execution gate.");
+        Assert(approvedEvidence.CanApproveForRealProfileMovement, "Only exact scope, clean readiness, exact confirmation, and explicit movement availability should approve movement evidence.");
+        Assert(approvedEvidence.Blockers.Count == 0, "Approved synthetic evidence should have no blockers.");
     }
 
     public void QuarantineActionDraftBuildsActionScopedLayoutWithoutWritingFiles()
@@ -3462,6 +3558,7 @@ internal sealed class StorageScanTests
             @"src\WindowsFileCleaner.Core\QuarantineRootExecutionSafetyBuilder.cs",
             @"src\WindowsFileCleaner.Core\PreExecutionRevalidationBuilder.cs",
             @"src\WindowsFileCleaner.Core\RealProfileRestoreReadinessBuilder.cs",
+            @"src\WindowsFileCleaner.Core\RealProfileQuarantineApprovalEvidenceBuilder.cs",
             @"src\WindowsFileCleaner.Core\SelectedRestorePreExecutionRevalidationBuilder.cs",
             @"src\WindowsFileCleaner.Core\RestoreReadinessPreviewBuilder.cs",
             @"src\WindowsFileCleaner.Core\SelectedRestoreManifestReviewBuilder.cs"
