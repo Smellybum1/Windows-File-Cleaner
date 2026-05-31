@@ -109,48 +109,84 @@
                                Margin="0,3,0,0" />
                 </StackPanel>
 
-                <WrapPanel x:Name="ScanMetricStrip"
-                           Grid.Column="1"
-                           Margin="24,0,0,0"
-                           HorizontalAlignment="Right"
-                           VerticalAlignment="Center">
-                    <Border Style="{StaticResource HeaderMetricBorderStyle}">
-                        <StackPanel>
-                            <TextBlock Text="Total size"
-                                       Style="{StaticResource HeaderMetricLabelTextStyle}" />
-                            <TextBlock x:Name="TotalSizeText"
-                                       Text="-"
-                                       Style="{StaticResource HeaderMetricValueTextStyle}" />
-                        </StackPanel>
-                    </Border>
-                    <Border Style="{StaticResource HeaderMetricBorderStyle}">
-                        <StackPanel>
-                            <TextBlock Text="Folders"
-                                       Style="{StaticResource HeaderMetricLabelTextStyle}" />
-                            <TextBlock x:Name="FolderCountText"
-                                       Text="-"
-                                       Style="{StaticResource HeaderMetricValueTextStyle}" />
-                        </StackPanel>
-                    </Border>
-                    <Border Style="{StaticResource HeaderMetricBorderStyle}">
-                        <StackPanel>
-                            <TextBlock Text="Files"
-                                       Style="{StaticResource HeaderMetricLabelTextStyle}" />
-                            <TextBlock x:Name="FileCountText"
-                                       Text="-"
-                                       Style="{StaticResource HeaderMetricValueTextStyle}" />
-                        </StackPanel>
-                    </Border>
-                    <Border Style="{StaticResource HeaderMetricBorderStyle}">
-                        <StackPanel>
-                            <TextBlock Text="Access issues"
-                                       Style="{StaticResource HeaderMetricLabelTextStyle}" />
-                            <TextBlock x:Name="AccessIssueCountText"
-                                       Text="-"
-                                       Style="{StaticResource HeaderMetricValueTextStyle}" />
-                        </StackPanel>
-                    </Border>
-                </WrapPanel>
+                <StackPanel Grid.Column="1"
+                            Margin="24,0,0,0"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Center">
+                    <WrapPanel x:Name="ScanMetricStrip"
+                               HorizontalAlignment="Right">
+                        <Border Style="{StaticResource HeaderMetricBorderStyle}">
+                            <StackPanel>
+                                <TextBlock Text="Total size"
+                                           Style="{StaticResource HeaderMetricLabelTextStyle}" />
+                                <TextBlock x:Name="TotalSizeText"
+                                           Text="-"
+                                           Style="{StaticResource HeaderMetricValueTextStyle}" />
+                            </StackPanel>
+                        </Border>
+                        <Border Style="{StaticResource HeaderMetricBorderStyle}">
+                            <StackPanel>
+                                <TextBlock Text="Folders"
+                                           Style="{StaticResource HeaderMetricLabelTextStyle}" />
+                                <TextBlock x:Name="FolderCountText"
+                                           Text="-"
+                                           Style="{StaticResource HeaderMetricValueTextStyle}" />
+                            </StackPanel>
+                        </Border>
+                        <Border Style="{StaticResource HeaderMetricBorderStyle}">
+                            <StackPanel>
+                                <TextBlock Text="Files"
+                                           Style="{StaticResource HeaderMetricLabelTextStyle}" />
+                                <TextBlock x:Name="FileCountText"
+                                           Text="-"
+                                           Style="{StaticResource HeaderMetricValueTextStyle}" />
+                            </StackPanel>
+                        </Border>
+                        <Border Style="{StaticResource HeaderMetricBorderStyle}">
+                            <StackPanel>
+                                <TextBlock Text="Access issues"
+                                           Style="{StaticResource HeaderMetricLabelTextStyle}" />
+                                <TextBlock x:Name="AccessIssueCountText"
+                                           Text="-"
+                                           Style="{StaticResource HeaderMetricValueTextStyle}" />
+                            </StackPanel>
+                        </Border>
+                    </WrapPanel>
+
+                    <WrapPanel x:Name="ShortlistMetricStrip"
+                               Margin="0,5,0,0"
+                               HorizontalAlignment="Right"
+                               ToolTip="Review Shortlist totals are read-only review context. Folder row sizes can overlap with child rows, so this is not storage savings or cleanup approval. No files are modified."
+                               AutomationProperties.HelpText="Review Shortlist totals are read-only review context. Folder row sizes can overlap with child rows, so this is not storage savings or cleanup approval. No files are modified.">
+                        <Border Style="{StaticResource HeaderMetricBorderStyle}">
+                            <StackPanel>
+                                <TextBlock Text="Shortlist size"
+                                           Style="{StaticResource HeaderMetricLabelTextStyle}" />
+                                <TextBlock x:Name="ShortlistSizeText"
+                                           Text="0 B"
+                                           Style="{StaticResource HeaderMetricValueTextStyle}" />
+                            </StackPanel>
+                        </Border>
+                        <Border Style="{StaticResource HeaderMetricBorderStyle}">
+                            <StackPanel>
+                                <TextBlock Text="Shortlist folders"
+                                           Style="{StaticResource HeaderMetricLabelTextStyle}" />
+                                <TextBlock x:Name="ShortlistFolderCountText"
+                                           Text="0"
+                                           Style="{StaticResource HeaderMetricValueTextStyle}" />
+                            </StackPanel>
+                        </Border>
+                        <Border Style="{StaticResource HeaderMetricBorderStyle}">
+                            <StackPanel>
+                                <TextBlock Text="Shortlist files"
+                                           Style="{StaticResource HeaderMetricLabelTextStyle}" />
+                                <TextBlock x:Name="ShortlistFileCountText"
+                                           Text="0"
+                                           Style="{StaticResource HeaderMetricValueTextStyle}" />
+                            </StackPanel>
+                        </Border>
+                    </WrapPanel>
+                </StackPanel>
             </Grid>
 
             <StackPanel Grid.Row="0"

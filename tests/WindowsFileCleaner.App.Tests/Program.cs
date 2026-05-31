@@ -102,6 +102,20 @@ internal sealed class MainWindowSmokeTests
             Assert(
                 window.ScanMetricsUseWrappingLayout,
                 "Scan metrics should use a compact wrapping header layout so the tab row stays focused on review pages.");
+            Assert(
+                window.ShortlistMetricsUseWrappingLayout,
+                "Shortlist metrics should use a compact wrapping header layout so shortlist size stays visible outside the Review tab.");
+            Assert(
+                window.ShortlistSizeTextValue == "0 B"
+                && window.ShortlistFolderCountTextValue == "0"
+                && window.ShortlistFileCountTextValue == "0",
+                "Shortlist header metrics should start empty before rows are shortlisted.");
+            Assert(
+                window.ShortlistMetricStripToolTipValue.Contains("read-only review context", StringComparison.OrdinalIgnoreCase)
+                && window.ShortlistMetricStripToolTipValue.Contains("not storage savings", StringComparison.OrdinalIgnoreCase)
+                && window.ShortlistMetricStripToolTipValue.Contains("cleanup approval", StringComparison.OrdinalIgnoreCase)
+                && window.ShortlistMetricStripAutomationHelpTextValue.Contains("No files are modified", StringComparison.OrdinalIgnoreCase),
+                "Shortlist header metrics should expose read-only, not-savings, not-approval boundaries.");
             Assert(window.CurrentStatusText == "Ready", "MainWindow should not start scanning when constructed.");
             Assert(
                 window.WorkbenchTabHeaderSummary == "Safety Summary|Review|Quarantine|Main Grid",
@@ -1492,6 +1506,16 @@ internal sealed class MainWindowSmokeTests
             window.AddShownRowsToReviewShortlist();
             Assert(window.ReviewShortlistCount == 1, "Bulk shortlisting visible rows should update Review Shortlist count.");
             Assert(
+                window.ShortlistSizeTextValue == installer.Size
+                && window.ShortlistFolderCountTextValue == "0"
+                && window.ShortlistFileCountTextValue == "1",
+                "Shortlist header metrics should summarize shortlisted file rows and total row size.");
+            Assert(
+                window.ShortlistMetricStripToolTipValue.Contains("1 file row", StringComparison.OrdinalIgnoreCase)
+                && window.ShortlistMetricStripToolTipValue.Contains(installer.Size, StringComparison.OrdinalIgnoreCase)
+                && window.ShortlistMetricStripToolTipValue.Contains("not storage savings", StringComparison.OrdinalIgnoreCase),
+                "Shortlist header metric tooltip should mirror populated shortlist totals without implying savings.");
+            Assert(
                 window.CurrentStatusText.Contains("not cleanup approval", StringComparison.OrdinalIgnoreCase),
                 "Bulk shortlisting status should preserve the non-approval boundary.");
             Assert(!window.CanAddShownRowsToReviewShortlist, "Bulk shortlist should disable once every shown row is already shortlisted.");
@@ -1561,6 +1585,11 @@ internal sealed class MainWindowSmokeTests
 
             window.RemoveShownRowsFromReviewShortlist();
             Assert(window.ReviewShortlistCount == 0, "Removing visible rows should update Review Shortlist count.");
+            Assert(
+                window.ShortlistSizeTextValue == "0 B"
+                && window.ShortlistFolderCountTextValue == "0"
+                && window.ShortlistFileCountTextValue == "0",
+                "Shortlist header metrics should return to empty after visible rows are removed.");
             Assert(
                 window.ShortlistSafetyMixTextValue.Contains("Review Shortlist is empty", StringComparison.OrdinalIgnoreCase),
                 "Removing visible rows should refresh Shortlist Safety Mix to empty.");

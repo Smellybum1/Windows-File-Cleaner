@@ -105,6 +105,12 @@ public partial class MainWindow : Window
 
     public bool ScanMetricsUseWrappingLayout => ScanMetricStrip is WrapPanel;
 
+    public bool ShortlistMetricsUseWrappingLayout => ShortlistMetricStrip is WrapPanel;
+
+    public string ShortlistMetricStripToolTipValue => ShortlistMetricStrip.ToolTip?.ToString() ?? "";
+
+    public string ShortlistMetricStripAutomationHelpTextValue => AutomationProperties.GetHelpText(ShortlistMetricStrip);
+
     public string CurrentStatusText => StatusText.Text;
 
     public string WorkbenchTabHeaderSummary => string.Join(
@@ -322,6 +328,12 @@ public partial class MainWindow : Window
     public string FileCountTextValue => FileCountText.Text;
 
     public string AccessIssueCountTextValue => AccessIssueCountText.Text;
+
+    public string ShortlistSizeTextValue => ShortlistSizeText.Text;
+
+    public string ShortlistFolderCountTextValue => ShortlistFolderCountText.Text;
+
+    public string ShortlistFileCountTextValue => ShortlistFileCountText.Text;
 
     public string ReviewMixTextValue => ReviewMixText.Text;
 
@@ -3102,6 +3114,8 @@ public partial class MainWindow : Window
 
     private void UpdateShortlistSafetyMix()
     {
+        UpdateHeaderShortlistMetrics();
+
         if (_currentReview is null)
         {
             SetShortlistSafetyMixText("Review Shortlist is empty. Shortlist safety mix appears after rows are shortlisted.");
@@ -3155,6 +3169,29 @@ public partial class MainWindow : Window
     private static string FormatShortlistSafetyMixHelpText(string text)
     {
         return $"{text} Review Shortlist Safety Mix is read-only review context; it does not rescan, modify files, prove Quarantine readiness, prove storage savings, or approve cleanup.";
+    }
+
+    private void UpdateHeaderShortlistMetrics()
+    {
+        var shortlistedRows = _currentReview is null
+            ? Array.Empty<StorageReviewEntry>()
+            : _shortlist.ApplyTo(_currentReview.Entries);
+        var folderCount = shortlistedRows.Count(row => row.Entry.IsDirectory);
+        var fileCount = shortlistedRows.Count - folderCount;
+        var totalBytes = shortlistedRows.Sum(row => row.Entry.SizeBytes);
+        var sizeDisplay = ByteSizeFormatter.Format(totalBytes);
+
+        ShortlistSizeText.Text = sizeDisplay;
+        ShortlistFolderCountText.Text = folderCount.ToString("N0");
+        ShortlistFileCountText.Text = fileCount.ToString("N0");
+
+        var helpText =
+            $"Review Shortlist totals: {shortlistedRows.Count:N0} row(s), {fileCount:N0} file row(s), " +
+            $"{folderCount:N0} folder row(s), {sizeDisplay} total row size. " +
+            "Review Shortlist totals are read-only review context; folder row sizes can overlap with child rows, " +
+            "so this is not storage savings or cleanup approval. No files are modified.";
+        ShortlistMetricStrip.ToolTip = helpText;
+        AutomationProperties.SetHelpText(ShortlistMetricStrip, helpText);
     }
 
     private void UpdateQuarantineShortlistHeader()

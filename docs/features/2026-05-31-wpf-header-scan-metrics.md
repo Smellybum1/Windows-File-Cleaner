@@ -50,7 +50,7 @@ ADRs:
 
 Follow-up work:
 
-- Run a visible fixture pass and decide whether the header totals need tighter spacing on narrower windows.
+- Run a visible fixture pass and decide whether the header totals need tighter spacing on narrower windows after the follow-up Review Shortlist metric strip was added.
 
 Open questions:
 
