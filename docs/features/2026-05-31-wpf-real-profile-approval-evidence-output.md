@@ -38,6 +38,7 @@ What changed:
 - Added WPF gate output for read-only approval evidence on custom, exact synthetic real-profile, and synthetic real-profile-child scopes.
 - Added WPF smoke coverage that exact `QUARANTINE` is shown as matched while `Can approve real-profile movement` remains `no`.
 - Added WPF smoke coverage that fixture gate output does not show this real-profile-only evidence.
+- Later checklist-alignment packet updated fixture review prompts and README manual checks to ask reviewers to look for this visible approval evidence.
 
 ADRs:
 
