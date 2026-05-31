@@ -3394,6 +3394,7 @@ It is not approval to restore and does not restore files.
 - Keep the WPF selection control tooltip and automation help text explicit that selection focuses one discovered Restore Manifest for read-only review and does not move, restore, delete, write manifests, or clean up folders.
 - Keep the WPF selection `?` help cue visible beside the selected-manifest control and mirror the same selection tooltip/help text.
 - Keep the WPF selected manifest readiness tooltip and automation help text explicit that the action is selected-only and not restore approval.
+- Keep `RestoreManifestReviewSummaryText` as a compact read-only orientation line for discovery, selected-manifest readiness, all-manifest readiness, selected restore gate, and selected restore result state; it must not replace detailed panes or imply restore approval.
 - Do not call `UndoQuarantineExecutor.Undo`.
 
 ### Selected Restore Confirmation Draft

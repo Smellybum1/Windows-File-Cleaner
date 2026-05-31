@@ -226,6 +226,24 @@ internal sealed class MainWindowSmokeTests
                 "Startup");
             Assert(!window.CanPreviewSelectedRestoreManifestReadiness, "MainWindow should not enable selected Restore Manifest review before discovery.");
             Assert(
+                window.RestoreManifestReviewSummaryTextValue.Contains("Manifest review summary", StringComparison.OrdinalIgnoreCase)
+                && window.RestoreManifestReviewSummaryTextValue.Contains("waiting for Discover manifests", StringComparison.OrdinalIgnoreCase)
+                && window.RestoreManifestReviewSummaryTextValue.Contains("no files are restored", StringComparison.OrdinalIgnoreCase),
+                "Startup manifest review summary should point to discovery without implying restore execution.");
+            Assert(window.RestoreManifestReviewSummaryStyleValue == "Neutral", "Startup manifest review summary should use neutral styling.");
+            Assert(
+                window.RestoreManifestReviewSummaryToolTipValue.Contains("Summary state: neutral", StringComparison.OrdinalIgnoreCase)
+                && window.RestoreManifestReviewSummaryToolTipValue.Contains("read-only review context", StringComparison.OrdinalIgnoreCase)
+                && window.RestoreManifestReviewSummaryToolTipValue.Contains("does not create folders", StringComparison.OrdinalIgnoreCase)
+                && window.RestoreManifestReviewSummaryToolTipValue.Contains("approve restore", StringComparison.OrdinalIgnoreCase),
+                "Startup manifest review summary tooltip should expose the read-only restore boundary.");
+            Assert(
+                string.Equals(
+                    window.RestoreManifestReviewSummaryAutomationHelpTextValue,
+                    window.RestoreManifestReviewSummaryToolTipValue,
+                    StringComparison.Ordinal),
+                "Manifest review summary automation help text should mirror its tooltip.");
+            Assert(
                 window.PreviewSelectedRestoreManifestReadinessButtonText == "Preview selected manifest readiness",
                 "Selected Restore Manifest readiness preview button should name the selected manifest.");
             Assert(
@@ -2281,6 +2299,14 @@ internal sealed class MainWindowSmokeTests
             Assert(discoveryWindow.CanSelectDiscoveredRestoreManifest, "Discovery should enable Restore Manifest selection when a manifest exists.");
             Assert(discoveryWindow.CanPreviewSelectedRestoreManifestReadiness, "Discovery should enable selected Restore Manifest readiness preview when a manifest is selected.");
             Assert(
+                discoveryWindow.RestoreManifestReviewSummaryTextValue.Contains("1 discovered", StringComparison.OrdinalIgnoreCase)
+                && discoveryWindow.RestoreManifestReviewSummaryTextValue.Contains("one selected", StringComparison.OrdinalIgnoreCase)
+                && discoveryWindow.RestoreManifestReviewSummaryTextValue.Contains("selected readiness not previewed", StringComparison.OrdinalIgnoreCase)
+                && discoveryWindow.RestoreManifestReviewSummaryTextValue.Contains("all-manifest readiness not previewed", StringComparison.OrdinalIgnoreCase)
+                && discoveryWindow.RestoreManifestReviewSummaryTextValue.Contains("no files were restored", StringComparison.OrdinalIgnoreCase),
+                "Manifest review summary should compactly show discovery state before readiness preview.");
+            Assert(discoveryWindow.RestoreManifestReviewSummaryStyleValue == "Information", "Discovered manifest summary should use information styling before blockers or execution.");
+            Assert(
                 discoveryWindow.PreviewSelectedRestoreManifestReadinessButtonText == "Preview selected manifest readiness",
                 "Enabled selected readiness button should name the selected manifest.");
             Assert(
@@ -2306,6 +2332,12 @@ internal sealed class MainWindowSmokeTests
                 && selectedReviewText.Contains("readiness evidence only", StringComparison.OrdinalIgnoreCase)
                 && selectedReviewText.Contains("selected restore gate", StringComparison.OrdinalIgnoreCase),
                 "Selected Restore Manifest Review pane should show only selected manifest readiness evidence. Text: " + selectedReviewText);
+            Assert(
+                discoveryWindow.RestoreManifestReviewSummaryTextValue.Contains("selected readiness 1 restorable/0 blocked", StringComparison.OrdinalIgnoreCase)
+                && discoveryWindow.RestoreManifestReviewSummaryTextValue.Contains("selected restore gate not previewed", StringComparison.OrdinalIgnoreCase)
+                && discoveryWindow.RestoreManifestReviewSummaryToolTipValue.Contains("Summary state: information", StringComparison.OrdinalIgnoreCase)
+                && discoveryWindow.RestoreManifestReviewSummaryToolTipValue.Contains("does not create folders", StringComparison.OrdinalIgnoreCase),
+                "Manifest review summary should show selected readiness state and preserve read-only help text.");
             Assert(discoveryWindow.CanPreviewSelectedRestoreGate, "Selected manifest readiness should enable selected restore gate preview.");
             Assert(!discoveryWindow.CanEnterSelectedRestoreConfirmation, "Selected restore confirmation should stay disabled until gate preview exists.");
             Assert(File.Exists(quarantinePath), "Selected Restore Manifest Review should not move quarantined files.");
@@ -2334,6 +2366,10 @@ internal sealed class MainWindowSmokeTests
                 && selectedGateText.Contains("Can execute: no", StringComparison.OrdinalIgnoreCase)
                 && selectedGateText.Contains("No files were modified", StringComparison.OrdinalIgnoreCase),
                 "Selected restore gate pane should show fixture confirmation evidence before exact RESTORE. Text: " + selectedGateText);
+            Assert(
+                discoveryWindow.RestoreManifestReviewSummaryTextValue.Contains("selected restore gate closed", StringComparison.OrdinalIgnoreCase)
+                && discoveryWindow.RestoreManifestReviewSummaryStyleValue == "Information",
+                "Manifest review summary should show the closed selected restore gate before exact RESTORE.");
             AssertSelectedRestoreExecutionGateHelpCue(
                 discoveryWindow,
                 "Fixture selected restore gate cue should expose exact RESTORE blocker before match.",
@@ -2353,6 +2389,11 @@ internal sealed class MainWindowSmokeTests
                 && !matchedSelectedGateText.Contains("Execution implemented", StringComparison.OrdinalIgnoreCase)
                 && matchedSelectedGateText.Contains("Can execute: yes", StringComparison.OrdinalIgnoreCase),
                 "Exact RESTORE should open selected fixture restore execution. Text: " + matchedSelectedGateText);
+            Assert(
+                discoveryWindow.RestoreManifestReviewSummaryTextValue.Contains("selected restore gate open", StringComparison.OrdinalIgnoreCase)
+                && discoveryWindow.RestoreManifestReviewSummaryStyleValue == "Success"
+                && discoveryWindow.RestoreManifestReviewSummaryToolTipValue.Contains("Summary state: success", StringComparison.OrdinalIgnoreCase),
+                "Manifest review summary should show the open fixture selected restore gate without implying broader restore approval.");
             AssertSelectedRestoreExecutionGateHelpCue(
                 discoveryWindow,
                 "Open fixture selected restore gate cue should expose fixture-only restore state.",
@@ -2386,6 +2427,10 @@ internal sealed class MainWindowSmokeTests
                 && readinessText.Contains("selected manifest readiness", StringComparison.OrdinalIgnoreCase)
                 && readinessText.Contains("selected restore gate", StringComparison.OrdinalIgnoreCase),
                 "Restore readiness pane should not imply an all-manifest restore action is available.");
+            Assert(
+                discoveryWindow.RestoreManifestReviewSummaryTextValue.Contains("all-manifest readiness 1 restorable/0 blocked", StringComparison.OrdinalIgnoreCase)
+                && discoveryWindow.RestoreManifestReviewSummaryTextValue.Contains("selected restore gate open", StringComparison.OrdinalIgnoreCase),
+                "Manifest review summary should include all-manifest readiness counts after preview.");
             Assert(File.Exists(quarantinePath), "Restore readiness preview should not move quarantined files.");
             Assert(!File.Exists(originalPath), "Restore readiness preview should not restore original paths.");
 
@@ -2400,6 +2445,11 @@ internal sealed class MainWindowSmokeTests
                 discoveryWindow.CurrentStatusText.Contains("Fixture Selected Restore completed", StringComparison.OrdinalIgnoreCase)
                 && discoveryWindow.CurrentStatusText.Contains("Rediscover", StringComparison.OrdinalIgnoreCase),
                 "Selected fixture restore status should report completion and stale discovery state.");
+            Assert(
+                discoveryWindow.RestoreManifestReviewSummaryTextValue.Contains("fixture selected restore already ran", StringComparison.OrdinalIgnoreCase)
+                && discoveryWindow.RestoreManifestReviewSummaryTextValue.Contains("rediscover manifests and rescan", StringComparison.OrdinalIgnoreCase)
+                && discoveryWindow.RestoreManifestReviewSummaryStyleValue == "Success",
+                "Manifest review summary should switch to selected-restore result and stale-state guidance.");
             Assert(
                 discoveryWindow.SelectedRestoreExecutionGateTextValue.Contains("Selected restore result: Restored 1", StringComparison.OrdinalIgnoreCase)
                 && discoveryWindow.SelectedRestoreExecutionGateTextValue.Contains("Current scan, discovery, and readiness rows are stale", StringComparison.OrdinalIgnoreCase)

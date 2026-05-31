@@ -469,6 +469,14 @@ public partial class MainWindow : Window
 
     public string SelectedRestoreManifestReviewTextValue => SelectedRestoreManifestReviewText.Text;
 
+    public string RestoreManifestReviewSummaryTextValue => RestoreManifestReviewSummaryText.Text;
+
+    public string RestoreManifestReviewSummaryStyleValue => RestoreManifestReviewSummaryText.Tag?.ToString() ?? "";
+
+    public string RestoreManifestReviewSummaryToolTipValue => RestoreManifestReviewSummaryText.ToolTip?.ToString() ?? "";
+
+    public string RestoreManifestReviewSummaryAutomationHelpTextValue => AutomationProperties.GetHelpText(RestoreManifestReviewSummaryText);
+
     public string SelectedRestoreExecutionGateTextValue => SelectedRestoreExecutionGateText.Text;
 
     public string SelectedRestoreExecutionGateToolTipValue => SelectedRestoreExecutionGateText.ToolTip?.ToString() ?? "";
@@ -3307,6 +3315,133 @@ public partial class MainWindow : Window
         ExecuteSelectedRestoreButton.IsEnabled = !_isScanning
             && _currentSelectedRestoreExecutionGate?.CanExecute == true
             && _currentSelectedRestoreResult is null;
+        UpdateRestoreManifestReviewSummary();
+    }
+
+    private void UpdateRestoreManifestReviewSummary()
+    {
+        if (RestoreManifestReviewSummaryText is null)
+        {
+            return;
+        }
+
+        var (text, style) = FormatRestoreManifestReviewSummary();
+        RestoreManifestReviewSummaryText.Text = text;
+        RestoreManifestReviewSummaryText.Tag = style.ToString();
+        RestoreManifestReviewSummaryText.Foreground = style switch
+        {
+            RestoreManifestReviewSummaryStyle.Success => System.Windows.Media.Brushes.DarkGreen,
+            RestoreManifestReviewSummaryStyle.Information => System.Windows.Media.Brushes.DarkCyan,
+            RestoreManifestReviewSummaryStyle.Warning => System.Windows.Media.Brushes.DarkGoldenrod,
+            _ => System.Windows.Media.Brushes.DarkSlateGray
+        };
+        RestoreManifestReviewSummaryText.FontWeight = style == RestoreManifestReviewSummaryStyle.Neutral
+            ? FontWeights.Normal
+            : FontWeights.SemiBold;
+
+        var helpText = $"{text} Summary state: {FormatRestoreManifestReviewSummaryState(style)}. This summary is read-only review context; it does not create folders, move files, restore files, delete files, write manifests, clean up folders, or approve restore.";
+        RestoreManifestReviewSummaryText.ToolTip = helpText;
+        AutomationProperties.SetHelpText(RestoreManifestReviewSummaryText, helpText);
+    }
+
+    private (string Text, RestoreManifestReviewSummaryStyle Style) FormatRestoreManifestReviewSummary()
+    {
+        if (_currentQuarantineManifestDiscovery is null)
+        {
+            return ("Manifest review summary: waiting for Discover manifests. Discovery and readiness are read-only; no files are restored.", RestoreManifestReviewSummaryStyle.Neutral);
+        }
+
+        var discoveryState = $"{_currentQuarantineManifestDiscovery.ManifestCount:N0} discovered, {_currentQuarantineManifestDiscovery.Issues.Count:N0} discovery issue(s)";
+        var selectedState = FormatSelectedManifestSummaryState();
+        var allManifestState = _currentRestoreReadinessPreview is null
+            ? "all-manifest readiness not previewed"
+            : $"all-manifest readiness {_currentRestoreReadinessPreview.RestorableEntryCount:N0} restorable/{_currentRestoreReadinessPreview.BlockedEntryCount:N0} blocked";
+
+        if (_currentSelectedRestoreResult is not null)
+        {
+            var resultState = _currentSelectedRestoreResult.Succeeded
+                ? $"fixture selected restore already ran: {_currentSelectedRestoreResult.RestoredCount:N0} restored"
+                : $"fixture selected restore needs recovery review: {_currentSelectedRestoreResult.RestoredCount:N0} restored/{_currentSelectedRestoreResult.FailedCount:N0} failed";
+            return ($"Manifest review summary: {discoveryState}; {resultState}; rediscover manifests and rescan before more restore review. No files were modified by this summary.", _currentSelectedRestoreResult.Succeeded ? RestoreManifestReviewSummaryStyle.Success : RestoreManifestReviewSummaryStyle.Warning);
+        }
+
+        var style = ResolveRestoreManifestReviewSummaryStyle();
+        return ($"Manifest review summary: {discoveryState}; {selectedState}; {allManifestState}. Read-only; no files were restored.", style);
+    }
+
+    private string FormatSelectedManifestSummaryState()
+    {
+        if (_currentQuarantineManifestDiscovery?.ManifestCount > 0 && SelectedRestoreManifestPath is null)
+        {
+            return "no selected manifest";
+        }
+
+        if (_currentQuarantineManifestDiscovery?.ManifestCount > 0 && _currentSelectedRestoreManifestReview is null)
+        {
+            return "one selected, selected readiness not previewed";
+        }
+
+        if (_currentSelectedRestoreManifestReview?.HasReadinessPreview != true)
+        {
+            return _currentSelectedRestoreManifestReview is null
+                ? "selected readiness not available"
+                : $"selected readiness blocked by {_currentSelectedRestoreManifestReview.SelectionIssues.Count:N0} issue(s)";
+        }
+
+        var readinessState = $"selected readiness {_currentSelectedRestoreManifestReview.RestorableEntryCount:N0} restorable/{_currentSelectedRestoreManifestReview.BlockedEntryCount:N0} blocked";
+        if (_currentSelectedRestoreExecutionGate is null)
+        {
+            return readinessState + ", selected restore gate not previewed";
+        }
+
+        return _currentSelectedRestoreExecutionGate.CanExecute
+            ? readinessState + ", selected restore gate open"
+            : readinessState + ", selected restore gate closed";
+    }
+
+    private RestoreManifestReviewSummaryStyle ResolveRestoreManifestReviewSummaryStyle()
+    {
+        if (_currentQuarantineManifestDiscovery is null)
+        {
+            return RestoreManifestReviewSummaryStyle.Neutral;
+        }
+
+        if (_currentQuarantineManifestDiscovery.Issues.Count > 0
+            || _currentQuarantineManifestDiscovery.ManifestCount == 0
+            || _currentSelectedRestoreManifestReview?.SelectionIssues.Count > 0
+            || _currentSelectedRestoreManifestReview?.BlockedEntryCount > 0
+            || _currentRestoreReadinessPreview?.BlockedEntryCount > 0)
+        {
+            return RestoreManifestReviewSummaryStyle.Warning;
+        }
+
+        if (_currentSelectedRestoreExecutionGate?.CanExecute == true)
+        {
+            return RestoreManifestReviewSummaryStyle.Success;
+        }
+
+        return _currentQuarantineManifestDiscovery.ManifestCount > 0
+            ? RestoreManifestReviewSummaryStyle.Information
+            : RestoreManifestReviewSummaryStyle.Neutral;
+    }
+
+    private enum RestoreManifestReviewSummaryStyle
+    {
+        Neutral,
+        Information,
+        Success,
+        Warning
+    }
+
+    private static string FormatRestoreManifestReviewSummaryState(RestoreManifestReviewSummaryStyle style)
+    {
+        return style switch
+        {
+            RestoreManifestReviewSummaryStyle.Information => "information",
+            RestoreManifestReviewSummaryStyle.Success => "success",
+            RestoreManifestReviewSummaryStyle.Warning => "warning",
+            _ => "neutral"
+        };
     }
 
     private void SetSearchTextSilently(string text)

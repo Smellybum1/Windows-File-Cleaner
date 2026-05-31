@@ -1305,6 +1305,13 @@
                                         ToolTipService.ShowOnDisabled="True"
                                         Click="PreviewSelectedRestoreManifestReadinessButton_Click" />
                             </WrapPanel>
+                            <TextBlock x:Name="RestoreManifestReviewSummaryText"
+                                       Text="Manifest review summary: waiting for Discover manifests. Discovery and readiness are read-only; no files are restored."
+                                       Foreground="#526171"
+                                       Margin="0,6,0,0"
+                                       TextWrapping="Wrap"
+                                       ToolTip="Manifest review summary: waiting for Discover manifests. Discovery and readiness are read-only; no files are restored. Summary state: neutral. This summary is read-only review context; it does not create folders, move files, restore files, delete files, write manifests, clean up folders, or approve restore."
+                                       AutomationProperties.HelpText="Manifest review summary: waiting for Discover manifests. Discovery and readiness are read-only; no files are restored. Summary state: neutral. This summary is read-only review context; it does not create folders, move files, restore files, delete files, write manifests, clean up folders, or approve restore." />
                             <TextBlock x:Name="QuarantineManifestDiscoveryText"
                                        Text="Read-only manifest discovery appears after using Discover manifests."
                                        FontFamily="Consolas"
