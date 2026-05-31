@@ -53,6 +53,7 @@ What changed:
 - Added semantic neutral/success/warning styling for waiting, fixture-ready/open, preview-only, stale-executed, and undo-completed summary states.
 - Added WPF smoke assertions for fixture preview/open/executed/undo summary states, custom preview-only summary, real-profile preview-only missing dimensions, and tooltip/automation help text.
 - Updated manual fixture checklist wording so visible review includes the new summary line.
+- Later packet `2026-05-31-quarantine-readiness-summary-preview-only-wording.md` changed preview-only compact summary wording from the technical `Current build can execute: no` phrase to `movement unavailable`, while leaving detailed gate evidence unchanged.
 
 Open questions:
 

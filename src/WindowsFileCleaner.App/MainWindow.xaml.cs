@@ -2096,7 +2096,7 @@ public partial class MainWindow : Window
         }
 
         var missingDimensions = FormatReadinessDimensionSummary(executionReadiness.Blockers);
-        return ($"Execution readiness summary: {disposition} ({scopeKind}) is preview-only in this build; {blockerCount:N0} readiness blocker(s). Missing: {missingDimensions}. Current build can execute: {FormatYesNo(executionReadiness.CanExecuteInCurrentBuild)}.", QuarantineReadinessSummaryStyle.Warning);
+        return ($"Execution readiness summary: {disposition} ({scopeKind}) is preview-only in this build; movement unavailable. {blockerCount:N0} readiness blocker(s). Missing: {missingDimensions}.", QuarantineReadinessSummaryStyle.Warning);
     }
 
     private static string FormatReadinessDimensionSummary(IReadOnlyList<string> blockers)

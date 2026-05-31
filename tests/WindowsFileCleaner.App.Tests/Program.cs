@@ -2480,7 +2480,7 @@ internal sealed class MainWindowSmokeTests
                 window.QuarantineReadinessSummaryTextValue.Contains("preview only", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantineReadinessSummaryTextValue.Contains("custom", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantineReadinessSummaryTextValue.Contains("Missing: Scope and policy", StringComparison.OrdinalIgnoreCase)
-                && window.QuarantineReadinessSummaryTextValue.Contains("Current build can execute: no", StringComparison.OrdinalIgnoreCase),
+                && window.QuarantineReadinessSummaryTextValue.Contains("movement unavailable", StringComparison.OrdinalIgnoreCase),
                 "Compact readiness summary should keep custom scopes visibly preview-only after exact QUARANTINE.");
             Assert(window.QuarantineReadinessSummaryStyleValue == "Warning", "Custom preview-only readiness summary should use warning styling.");
             AssertQuarantineReadinessSummaryHelpText(window, "Compact readiness summary help text should mirror custom preview-only state.");
@@ -2576,7 +2576,7 @@ internal sealed class MainWindowSmokeTests
                 && window.QuarantineReadinessSummaryTextValue.Contains("real profile", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantineReadinessSummaryTextValue.Contains("Pre-Execution Revalidation", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantineReadinessSummaryTextValue.Contains("Real-Profile Restore Readiness", StringComparison.OrdinalIgnoreCase)
-                && window.QuarantineReadinessSummaryTextValue.Contains("Current build can execute: no", StringComparison.OrdinalIgnoreCase),
+                && window.QuarantineReadinessSummaryTextValue.Contains("movement unavailable", StringComparison.OrdinalIgnoreCase),
                 "Compact readiness summary should name missing real-profile readiness dimensions without enabling execution.");
             Assert(window.QuarantineReadinessSummaryStyleValue == "Warning", "Real-profile readiness summary should use warning styling while execution is blocked.");
             AssertQuarantineReadinessSummaryHelpText(window, "Compact readiness summary help text should mirror real-profile preview-only state.");
