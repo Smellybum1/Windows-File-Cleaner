@@ -26,7 +26,7 @@ Give the large WPF review sections their own horizontal tab pages so Safety Summ
 - Moved the Storage Scan / Current-Session Quarantined Review grids and selected-path detail panel to a `Main Grid` tab, selected by default.
 - Kept the existing Expander controls available inside Safety Summary and Quarantine tabs, but expanded by default because the tab pages now provide the recovered space.
 - Later packet `2026-06-01-main-grid-auto-focus.md` made Safety Summary shortcuts and current-session quarantined grid switches select `Main Grid` after they change which rows it shows.
-- Later packet `2026-06-01-main-grid-active-review-lens-summary.md` mirrored the active review lens above Main Grid rows so shortcut/filter/search context stays visible after tab switches.
+- Later packet `2026-06-01-main-grid-active-review-lens-summary.md` mirrored the active review lens above Storage Scan rows so shortcut/filter/search context stays visible after tab switches, while hiding it for current-session quarantined rows.
 
 ## Test plan
 
@@ -39,7 +39,7 @@ Automated checks:
 Manual checks:
 
 - Run `.\tools\Start-MvpFixtureReview.cmd` and confirm the horizontal tabs feel calmer than the previous stacked layout.
-- Confirm the Main Grid tab is selected by default, the active review lens summary stays readable above the rows, and the Safety Summary / Quarantine pages are expanded and readable.
+- Confirm the Main Grid tab is selected by default, the active review lens summary stays readable above Storage Scan rows, hides for current-session quarantined rows, and the Safety Summary / Quarantine pages are expanded and readable.
 
 ## Completion notes
 
@@ -55,7 +55,8 @@ ADRs:
 
 Follow-up work:
 
-- Run a visible fixture pass and decide whether the Safety Summary / Review / Quarantine / Main Grid tab order should stay as-is after hands-on use.
+- User visual review on 2026-06-01 approved the calmer tab/header direction at the normal wide fixture window size.
+- Run a fuller fixture pass and decide whether the Safety Summary / Review / Quarantine / Main Grid tab order should stay as-is after hands-on use through Quarantine and selected-restore paths.
 
 Open questions:
 

@@ -52,11 +52,12 @@ ADRs:
 
 Follow-up work:
 
-- Run a visible fixture pass and decide whether the scan and shortlist metric strips need tighter spacing on narrower windows.
+- User visual review on 2026-06-01 approved the Review Shortlist totals sitting before the scan totals at the normal wide fixture window size.
+- Run a narrower-window fixture pass later if the header metric strips need tighter spacing under constrained width.
 
 Open questions:
 
-- Should selecting safety/review shortcuts or Quarantine actions automatically switch to the Main Grid tab afterward?
+- Should the header metric strips need tighter spacing on narrower windows?
 
 Risky assumptions:
 

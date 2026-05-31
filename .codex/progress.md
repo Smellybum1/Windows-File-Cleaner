@@ -8,11 +8,11 @@ Use it to preserve what was completed, what was verified, what was rejected, and
 
 Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. The app has a broad read-only review workflow, manual fixture Show children/Clipboard crash fix, scan cancel help text, scan-gate summary help text plus a visible hoverable `?` help cue in a compact wrapping scan-header status strip, real-profile acknowledgement help text plus a visible hoverable `?` help cue, Cleanup Scope Safety Note and Quarantine Root Safety Note help text plus visible hoverable `?` help cues, Review Mix, Matched Review Mix, Review Shortlist Safety Mix, Review Grid Mode Status, inline Quarantine Preview status, Quarantine Execution Gate, Selected Restore Execution Gate, exact-confirmation fields, Quarantine Manifest Discovery, Restore Manifest selection, Restore Readiness Preview, Safety Summary header, and Quarantine Shortlist header hoverable `?` help cues with tooltip/help text and affordance smoke coverage plus a full `.cmd` MVP preflight after scan-gate cue coverage, Safety Summary shortcut help text, Safety Summary collapsed-header state styling, review-lens filter help text, manifest discovery/selection help text, debounced Storage Review Search for large real-profile scans, Storage Review Search input automation help text, scan-gate automation help text, Cleanup Scope input/browse automation help text, Quarantine Root input/browse automation help text, selected-row action automation help text, visible-row shortlist automation help text, execution/readiness automation help text, review report/preview automation help text, review toolbar automation help text, review navigation/export tooltip clarity, Review Grid Mode Status tooltip/help text, scope-specific Cleanup Scope Scan Gate discoverability polish, Cleanup Scope and Quarantine Root browse tooltip clarity, selected-row action tooltip clarity, Matched Review Mix, Review Shortlist Safety Mix, visible-row Review Shortlist bulk labels/tooltips, review toolbar report/preview tooltip clarity, Selected Folder Subtree Summary, Storage Hotspot Trail, Selected Folder Child Focus, Selected Folder Descendant Focus, execution-policy-friendly fixture/preflight tooling with checklist output, checklist-only mode now covered by MVP preflight and GitHub Actions now running preflight through the same `.cmd` wrapper as local user instructions, hoverable help-cue checklist wording, approval-boundary prompt coverage, selected-restore scope-status checklist coverage, all-manifest restore boundary checklist coverage, manifest review and selected-restore gate checklist steps split for easier fixture review, redundant parent/child preview overlap cleanup through `Remove overlapping parents`, execution-control tooltip clarity, readiness scope tooltip clarity, Undo Quarantine domain consistency, Restore Manifest wording polish, Selected Manifest Readiness label polish, and All-Manifest Readiness label polish, Quarantine Preview and Quarantine Execution Gate scope-status/approval-boundary wording without technical implementation-flag wording plus a full `.cmd` MVP preflight after that wording packet, fixture checklist wording aligned to the visible `Quarantine included shortlist` button plus a full `.cmd` MVP preflight after that checklist label packet, WPF Quarantine Preview and Execution Gate placeholder text aligned to the visible `Preview shortlist quarantine` button plus a full `.cmd` MVP preflight after that placeholder label packet, WPF Quarantine Execution Gate missing-preview blocker aligned to the visible `Preview shortlist quarantine` button, Quarantine Execution Gate help cue plus a full `.cmd` MVP preflight after that help-cue packet, Restore Manifest Draft, Quarantine Confirmation Draft, confirmation label wording polish, Quarantine Action Draft, write-ahead Restore Manifest persistence, core Quarantine execution, core Undo Quarantine, fixture-only WPF Quarantine execution, WPF undo for the current fixture execution, Current quarantined grid switching with a moved-entry count label for current-session moved entries plus a full `.cmd` MVP preflight after that count-label packet, Quarantine Manifest Discovery with all-manifest restore wording and a visible discovery `?` help cue, Selected Restore Manifest Review with readiness-evidence wording and a visible selection `?` help cue, Selected Restore Confirmation Gate with scope-status/approval-boundary wording, visible help cue, and without technical implementation-flag wording, Fixture-only Selected Restore Execution, Restore Readiness Preview with all-manifest restore wording and a visible all-manifest readiness `?` help cue, a Real-Profile Quarantine Readiness Contract in ADR 0017 with WPF regression coverage for real/custom execution blockers, and a compact `AGENTS.md` that points to detailed workflow docs instead of duplicating them. Real-profile WPF Quarantine execution, real-profile WPF Undo Quarantine, permanent deletion, and persisted cleanup history remain unavailable. Fresh-thread handoff notes and a startup prompt live in `docs/codex/thread-handoff.md`.
 
-Latest WPF UI packet added a compact Main Grid Active Review Lens Summary above Storage Scan rows, mirroring the existing Filter Summary so default scan, Safety Summary shortcut, and stacked filter/search context remain visible after tab switches; it hides for current-session quarantined rows. It preserved the compact header metrics, horizontal Safety Summary / Review / Quarantine / Main Grid pages, Main Grid auto-focus, safety wording, help cues, tooltip/help text, and all movement blockers. Current handoff evidence remains explicit: full `.cmd` MVP preflight passed after the latest Main Grid active-lens packet. No real user files were scanned or modified.
+Latest WPF UI packet added a compact Main Grid Active Review Lens Summary above Storage Scan rows, mirroring the existing Filter Summary so default scan, Safety Summary shortcut, and stacked filter/search context remain visible after tab switches; it hides for current-session quarantined rows. User visual review on 2026-06-01 approved the compact wide-header layout with Review Shortlist totals before scan totals. It preserved the compact header metrics, horizontal Safety Summary / Review / Quarantine / Main Grid pages, Main Grid auto-focus, safety wording, help cues, tooltip/help text, and all movement blockers. Current handoff evidence remains explicit: full `.cmd` MVP preflight passed after the latest Main Grid active-lens packet. No real user files were scanned or modified.
 
 ## Next recommended work
 
-1. Run a visible fixture pass with `.\tools\Start-MvpFixtureReview.cmd` and decide whether the compact header Review Shortlist totals sitting before scan totals, plus the tabbed workbench, Main Grid auto-focus, and Main Grid Active Review Lens Summary feel calmer; also decide whether the tab order should change.
+1. Run a visible fixture pass with `.\tools\Start-MvpFixtureReview.cmd` focused on the full fixture flow: Quarantine Preview/readiness, fixture Quarantine execution, current-session quarantined review, undo, manifest discovery, selected restore gate, selected restore, and ADR 0017/0018/0019 blocker wording. The wide header layout is already visually approved; only revisit header spacing if a narrower-window pass shows crowding.
 2. Manually review whether the compact Quarantine Readiness Summary makes the WPF Execution Readiness output clear enough, or whether a later dedicated readiness pane is still needed.
 3. Use `README.md` and `docs/features/2026-05-28-mvp-readiness-audit.md` to rerun the WPF app against `C:\Users\moxhe`; confirm `Scan` is disabled until the real-profile preflight acknowledgement is checked and the acknowledgement `?` help cue mirrors the tooltip/help boundary.
 4. Run `.\tools\Invoke-MvpPreflight.cmd` again before any later real-profile scan if the worktree changes.
@@ -21,6 +21,46 @@ Latest WPF UI packet added a compact Main Grid Active Review Lens Summary above 
 7. Revisit .NET 10 before packaging or long-term distribution.
 
 ## Completed packets
+
+### 2026-06-01: Header Layout Visual Approval Notes
+
+Status: completed
+
+Evidence:
+
+- User visually reviewed the latest wide WPF header and said it looks good.
+- The screenshot showed Review Shortlist size/folder/file totals positioned before scan totals, with the Cleanup Scope path and Scan controls still readable.
+- Some manual-review wording still said the Main Grid active-lens summary appeared `above the rows`, which is imprecise because Main Grid can also show current-session quarantined rows.
+
+Implementation:
+
+- Recorded the user-approved wide-header direction in the handoff, progress, and relevant feature briefs.
+- Tightened README and feature wording so Main Grid Active Review Lens Summary is scoped to `above Storage Scan rows` and hides for current-session quarantined rows.
+- Kept remaining manual fixture review focused on Quarantine/readiness and selected-restore flow instead of re-reviewing the already approved wide header layout.
+- Kept Storage Scan, Review Shortlist membership behavior, Quarantine Preview, fixture execution, selected restore, real-profile/custom movement blockers, permanent deletion, and cleanup history unchanged.
+
+Verification:
+
+- `cmd.exe /c tools\Start-MvpFixtureReview.cmd -ChecklistOnly` passed and printed the existing fixture checklist without preflight, fixture creation, WPF launch, scan, move, restore, delete, or cleanup history.
+- `git diff --check` passed with line-ending normalization warnings only.
+
+Docs updated:
+
+- `README.md`
+- `docs/features/2026-05-31-wpf-header-shortlist-metrics.md`
+- `docs/features/2026-05-31-wpf-tabbed-workbench.md`
+- `docs/features/2026-06-01-main-grid-auto-focus.md`
+- `docs/codex/thread-handoff.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No ADR added. This is docs/handoff alignment from user visual feedback with no architecture, persistence, cleanup execution, restore behavior, data-model, or security decision.
+
+Open questions:
+
+- A narrower-window fixture pass may still be useful if header metric wrapping feels tight.
+- The next visible fixture pass should focus on Quarantine/readiness and selected-restore flow rather than the already approved wide header layout.
 
 ### 2026-06-01: Full Local MVP Preflight After Active Lens
 

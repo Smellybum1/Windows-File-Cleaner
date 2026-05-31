@@ -25,7 +25,7 @@ Make the tabbed workbench feel less surprising when a control changes which rows
 - `Current quarantined` now selects `Main Grid` after switching the main grid to current-session moved entries.
 - `Back to scan rows` now selects `Main Grid` after switching the main grid back to Storage Scan rows.
 - Kept Review-tab search/filter controls from auto-switching while the user is still setting up a review lens.
-- Follow-up packet `2026-06-01-main-grid-active-review-lens-summary.md` made Main Grid mirror the active review lens above the rows after those auto-focus actions.
+- Follow-up packet `2026-06-01-main-grid-active-review-lens-summary.md` made Main Grid mirror the active review lens above Storage Scan rows after those auto-focus actions, and hide it for current-session quarantined rows.
 
 ## Test plan
 
