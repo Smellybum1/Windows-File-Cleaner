@@ -114,7 +114,7 @@ Medium. A later ADR could choose all-manifest restore or a richer cleanup histor
 
 - Add core and WPF tests proving real-profile selected restore remains unavailable until the implementation packet.
 - Implement Real-Profile Selected Restore Execution as a narrow selected-manifest path after explicit user approval.
-- Wire immediate selected-restore revalidation into the WPF execution path before calling `UndoQuarantineExecutor`.
+- Wire `SelectedRestorePreExecutionRevalidation` into the WPF execution path before calling `UndoQuarantineExecutor`; the core read-only model exists as of 2026-05-31, but WPF real-profile restore remains unavailable.
 - Decide later whether all-manifest real-profile restore or cleanup history is needed.
 
 ## Supersedes

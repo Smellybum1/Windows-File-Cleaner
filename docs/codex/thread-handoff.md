@@ -9,7 +9,7 @@ Use this when starting a fresh Codex thread for this repository.
 - Repo: `D:\Codex\Windows File Cleaner`
 - GitHub: `Smellybum1/Windows-File-Cleaner`
 - Branch: `main`
-- Latest completed packet: User Verification for Non-D Root Acknowledgement Row
+- Latest completed packet: Selected Restore Pre-Execution Revalidation
 - Current app stack: C# / WPF / .NET 8
 - Desktop shortcut target: `D:\Codex\Windows File Cleaner\src\WindowsFileCleaner.App\bin\Debug\net8.0-windows\WindowsFileCleaner.App.exe`
 
@@ -21,7 +21,7 @@ The current MVP has a read-only Storage Scan that can inspect large real-profile
 
 Fixture-only cleanup execution exists for synthetic Cleanup Scopes. Real-profile cleanup execution remains intentionally unavailable until ADR 0017's readiness contract is implemented.
 
-The latest code packet added a visible hoverable `?` help cue beside the WPF Non-D Quarantine Root Acknowledgement, mirrors the checkbox tooltip/help text onto that cue, and expands WPF smoke affordance coverage to nineteen circular help cues. Fully qualified non-`D:` roots still enable a local acknowledgement checkbox, acknowledgement changes still clear stale preview/gate state, and WPF still passes the acknowledgement into Quarantine Root Execution Safety output as read-only evidence only. Full local `.cmd` MVP preflight passed after that packet. User then verified the new non-D acknowledgement row feels clear and not crowded. Real-profile restore and real-profile Quarantine execution remain blocked.
+The latest code packet added a core-only Selected Restore Pre-Execution Revalidation model and tests. It rediscovers the selected Restore Manifest from the selected Quarantine Root, rebuilds selected readiness, checks exact real-profile scope, exact selected restore gate evidence, explicit selected real-profile Undo implementation evidence, stale review/draft mismatches, and entry-level restore blockers. It does not call `UndoQuarantineExecutor`, does not write manifests, and does not enable WPF real-profile restore. Real-profile restore and real-profile Quarantine execution remain blocked.
 
 ## Safety boundary
 
@@ -31,6 +31,7 @@ The latest code packet added a visible hoverable `?` help cue beside the WPF Non
 - Do not treat `QuarantineRootExecutionSafety` as execution approval; it is one input to readiness and does not move files or write manifests.
 - Do not treat `PreExecutionRevalidation` as execution approval; it is one input to readiness and does not move files or write manifests.
 - Do not treat `RealProfileRestoreReadiness` as restore or quarantine approval; it is one input to readiness and does not move files or write manifests.
+- Do not treat `SelectedRestorePreExecutionRevalidation` as restore approval; it is a final read-only rediscovery/revalidation model and must run again immediately before any future selected real-profile restore movement.
 - Do not treat ADR 0019 as real-profile restore enablement; it is a design contract only until a later implementation packet adds tests and explicitly wires selected real-profile restore.
 - Do not implement permanent deletion as the next step.
 - Keep Storage Scan read-only.
@@ -107,6 +108,7 @@ The latest code packet added a visible hoverable `?` help cue beside the WPF Non
 - Non-D Root Acknowledgement Help Cue adds a visible hoverable `?` cue beside the WPF acknowledgement, mirrors checkbox tooltip/help text, updates fixture checklist wording, and expands WPF smoke affordance coverage to nineteen cues without changing execution availability.
 - Full Local MVP Preflight After Non-D Root Cue passed `cmd.exe /c tools\Invoke-MvpPreflight.cmd`; restore, build, core tests, WPF app tests, fixture `-WhatIf`, fixture checklist-only output with the non-D root readiness acknowledgement `?` help cue wording, and whitespace diff check all passed without scanning or modifying real user files.
 - User Verification for Non-D Root Acknowledgement Row recorded that the new row feels clear and not crowded.
+- Selected Restore Pre-Execution Revalidation added the core-only read-only rediscovery/revalidation model and tests for clean synthetic real-profile selected-manifest evidence, stale missing quarantine paths, and unavailable/non-real-profile blockers; core tests passed and no WPF execution behavior changed.
 - Quarantine Execution Scope Status added plain-language fixture-only versus preview-only scope wording to Quarantine Preview and Quarantine Execution Gate output.
 - Fixture Review Checklist Output added a compact terminal checklist to `Start-MvpFixtureReview.ps1`.
 - Fixture Review Checklist-Only Mode added `Start-MvpFixtureReview.ps1 -ChecklistOnly`, which prints the same checklist without preflight, fixture creation, or WPF launch.

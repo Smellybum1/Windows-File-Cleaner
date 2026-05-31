@@ -2994,9 +2994,58 @@ It is the first planned real-profile restore execution shape, not all-manifest r
 
 - Use a future `RealProfileSelectedRestoreExecution` naming pattern only when implementation begins.
 - Use `UndoQuarantineExecutor`; do not implement real-profile restore movement directly in WPF.
-- Keep selected real-profile restore disabled until immediate selected-readiness revalidation and WPF/core tests exist.
+- Use `SelectedRestorePreExecutionRevalidation` and `SelectedRestorePreExecutionRevalidationBuilder` for the immediate selected-readiness recheck.
+- Keep selected real-profile restore disabled until this revalidation is wired into WPF execution with additional WPF/core tests and explicit approval.
 - Keep the first implementation exact-scope and selected-manifest-only: exact `C:\Users\moxhe`, one selected Restore Manifest, exact `RESTORE`.
 - Ask the user to rediscover manifests and rescan manually after restore attempts.
+
+### Selected Restore Pre-Execution Revalidation
+
+Status: draft
+Last reviewed: 2026-05-31
+
+#### Definition
+
+Selected Restore Pre-Execution Revalidation is the immediate read-only rediscovery and selected-manifest readiness check that must run before any future real-profile selected restore movement.
+
+It protects the gap between the selected Restore Manifest review and a later `UndoQuarantineExecutor` call. It rediscovers the selected manifest, rebuilds selected readiness from current files, verifies exact `C:\Users\moxhe` Cleanup Scope and exact `RESTORE` gate evidence, and reports stale blockers without restoring anything.
+
+The current core model is read-only evidence only. WPF selected real-profile restore remains unavailable.
+
+#### Examples
+
+- Pass when a selected exact real-profile Restore Manifest still has a moved quarantine path, no original-path collision, exact `RESTORE`, and explicit implementation evidence.
+- Block when the quarantine path disappeared after the earlier selected review.
+- Block fixture or custom Cleanup Scopes because the first phase is exact `C:\Users\moxhe`.
+- Block unavailable implementation even if the data evidence is otherwise clean.
+
+#### Non-examples
+
+- A call to `UndoQuarantineExecutor`.
+- All-manifest restore.
+- Restore approval.
+- Forward Quarantine execution.
+- Cleanup history.
+
+#### Lifecycle
+
+- Runs after selected manifest review, selected restore confirmation draft, and selected restore execution gate evidence.
+- Runs immediately before any future selected real-profile restore movement.
+- If any blocker appears, execution stays closed and the user must rediscover manifests and rescan manually as needed.
+- Does not create folders, move files, write manifests, delete files, or restore files.
+
+#### Relationships
+
+- Implements the immediate revalidation part of ADR 0019.
+- Builds on Quarantine Manifest Discovery, Selected Restore Manifest Review, Restore Readiness Preview, Selected Restore Confirmation Draft, and Selected Restore Execution Gate.
+- Feeds future Real-Profile Selected Restore Execution.
+
+#### Code implications
+
+- Use `SelectedRestorePreExecutionRevalidation` and `SelectedRestorePreExecutionRevalidationBuilder`.
+- Rediscover the selected manifest rather than trusting stale selected review evidence.
+- Keep blockers path-specific enough for WPF readiness output.
+- Do not treat clean revalidation as approval while real-profile selected restore remains unavailable.
 
 ### Fixture-only WPF Quarantine Execution
 

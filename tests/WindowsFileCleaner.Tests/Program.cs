@@ -55,6 +55,9 @@ tests.SelectedRestoreManifestReviewBuildsReadinessForSelectedManifestOnly();
 tests.SelectedRestoreConfirmationDraftSummarizesReadinessWithoutExecution();
 tests.SelectedRestoreConfirmationDraftReportsReadinessBlockers();
 tests.SelectedRestoreExecutionGateRequiresExactRestoreConfirmationAndImplementedExecution();
+tests.SelectedRestorePreExecutionRevalidationPassesFreshRealProfileManifestWithoutMovingFiles();
+tests.SelectedRestorePreExecutionRevalidationBlocksStaleSelectedRestoreEvidence();
+tests.SelectedRestorePreExecutionRevalidationBlocksUnavailableAndNonRealProfileScope();
 tests.QuarantineExecutorMovesFixtureFilesWithWriteAheadManifest();
 tests.QuarantineExecutorRecordsPartialFailureWithoutOverwritingDestination();
 tests.QuarantineExecutorFailsMissingSourceWithoutCreatingDestination();
@@ -2402,6 +2405,106 @@ internal sealed class StorageScanTests
         Assert(!File.Exists(entry.OriginalPath), "Selected restore gate should not restore the original file.");
     }
 
+    public void SelectedRestorePreExecutionRevalidationPassesFreshRealProfileManifestWithoutMovingFiles()
+    {
+        using var fixture = TestFixture.Create();
+        var manifest = BuildDiscoveredRestoreManifest(
+            fixture,
+            StorageScanOptions.DefaultForCurrentUser().CleanupScopePath,
+            "selected-restore-revalidation-clean");
+        var entry = manifest.Entries.Single();
+        var review = BuildSelectedRestoreManifestReview(manifest.QuarantineRootPath, manifest.ManifestPath);
+        var draft = SelectedRestoreConfirmationDraftBuilder.Build(
+            review,
+            new DateTimeOffset(2026, 5, 31, 7, 8, 9, TimeSpan.Zero),
+            "selected-restore-revalidation-clean",
+            isExecutionImplemented: true);
+        var gate = SelectedRestoreExecutionGateBuilder.Build(draft, "RESTORE");
+
+        var revalidation = SelectedRestorePreExecutionRevalidationBuilder.Build(
+            review,
+            draft,
+            gate,
+            new DateTimeOffset(2026, 5, 31, 7, 9, 10, TimeSpan.Zero),
+            isSelectedManifestRealProfileUndoImplemented: true);
+
+        Assert(review.RestorableEntryCount == 1, "Fixture setup should create restorable selected review evidence.");
+        Assert(revalidation.CanProceed, "Fresh real-profile selected restore evidence should pass pre-execution revalidation when implementation is explicitly available.");
+        Assert(revalidation.IsSelectedManifestRealProfileScope, "Revalidation should record exact real-profile Cleanup Scope evidence.");
+        Assert(revalidation.IsConfirmationTextMatched, "Revalidation should preserve exact RESTORE confirmation evidence.");
+        Assert(revalidation.RestorableEntryCount == 1, "Revalidation should report the fresh restorable entry.");
+        Assert(revalidation.RestorableBytes == entry.SizeBytes, "Revalidation should report fresh restorable bytes.");
+        Assert(File.Exists(entry.QuarantinePath), "Selected restore pre-execution revalidation should leave quarantined files in place.");
+        Assert(!File.Exists(entry.OriginalPath), "Selected restore pre-execution revalidation should not restore original files.");
+    }
+
+    public void SelectedRestorePreExecutionRevalidationBlocksStaleSelectedRestoreEvidence()
+    {
+        using var fixture = TestFixture.Create();
+        var manifest = BuildDiscoveredRestoreManifest(
+            fixture,
+            StorageScanOptions.DefaultForCurrentUser().CleanupScopePath,
+            "selected-restore-revalidation-stale");
+        var entry = manifest.Entries.Single();
+        var review = BuildSelectedRestoreManifestReview(manifest.QuarantineRootPath, manifest.ManifestPath);
+        var draft = SelectedRestoreConfirmationDraftBuilder.Build(
+            review,
+            new DateTimeOffset(2026, 5, 31, 7, 8, 9, TimeSpan.Zero),
+            "selected-restore-revalidation-stale",
+            isExecutionImplemented: true);
+        var gate = SelectedRestoreExecutionGateBuilder.Build(draft, "RESTORE");
+        File.Delete(entry.QuarantinePath);
+
+        var revalidation = SelectedRestorePreExecutionRevalidationBuilder.Build(
+            review,
+            draft,
+            gate,
+            new DateTimeOffset(2026, 5, 31, 7, 9, 10, TimeSpan.Zero),
+            isSelectedManifestRealProfileUndoImplemented: true);
+
+        Assert(!revalidation.CanProceed, "Stale selected restore evidence should block pre-execution revalidation.");
+        Assert(revalidation.BlockedEntryCount == 1, "Missing quarantine path should become a fresh blocked readiness row.");
+        Assert(
+            revalidation.Blockers.Any(blocker => blocker.Contains("Quarantine path no longer exists", StringComparison.OrdinalIgnoreCase)),
+            "Revalidation should report the missing quarantine path.");
+        Assert(!File.Exists(entry.QuarantinePath), "Revalidation should not recreate missing quarantine files.");
+        Assert(!File.Exists(entry.OriginalPath), "Revalidation should not restore original files.");
+    }
+
+    public void SelectedRestorePreExecutionRevalidationBlocksUnavailableAndNonRealProfileScope()
+    {
+        using var fixture = TestFixture.Create();
+        var manifest = BuildDiscoveredRestoreManifest(
+            fixture,
+            fixture.RootPath,
+            "selected-restore-revalidation-non-real");
+        var entry = manifest.Entries.Single();
+        var review = BuildSelectedRestoreManifestReview(manifest.QuarantineRootPath, manifest.ManifestPath);
+        var draft = SelectedRestoreConfirmationDraftBuilder.Build(
+            review,
+            new DateTimeOffset(2026, 5, 31, 7, 8, 9, TimeSpan.Zero),
+            "selected-restore-revalidation-non-real",
+            isExecutionImplemented: true);
+        var gate = SelectedRestoreExecutionGateBuilder.Build(draft, "RESTORE");
+
+        var revalidation = SelectedRestorePreExecutionRevalidationBuilder.Build(
+            review,
+            draft,
+            gate,
+            new DateTimeOffset(2026, 5, 31, 7, 9, 10, TimeSpan.Zero));
+
+        Assert(!revalidation.CanProceed, "Selected restore pre-execution revalidation should block without explicit real-profile implementation evidence.");
+        Assert(!revalidation.IsSelectedManifestRealProfileScope, "Fixture/custom Cleanup Scope should not count as exact real-profile scope.");
+        Assert(
+            revalidation.Blockers.Any(blocker => blocker.Contains("exact real-profile scope", StringComparison.OrdinalIgnoreCase)),
+            "Revalidation should report the exact real-profile scope requirement.");
+        Assert(
+            revalidation.Blockers.Any(blocker => blocker.Contains("remains unavailable", StringComparison.OrdinalIgnoreCase)),
+            "Revalidation should report that real-profile selected restore implementation is unavailable.");
+        Assert(File.Exists(entry.QuarantinePath), "Blocked revalidation should leave quarantined files in place.");
+        Assert(!File.Exists(entry.OriginalPath), "Blocked revalidation should not restore original files.");
+    }
+
     public void QuarantineExecutorMovesFixtureFilesWithWriteAheadManifest()
     {
         using var fixture = TestFixture.Create();
@@ -3459,6 +3562,65 @@ internal sealed class StorageScanTests
     {
         var discovery = QuarantineManifestDiscoveryBuilder.Discover(quarantineRootPath);
         return SelectedRestoreManifestReviewBuilder.Build(discovery, manifestPath);
+    }
+
+    private static RestoreManifest BuildDiscoveredRestoreManifest(
+        TestFixture fixture,
+        string cleanupScopePath,
+        string actionId)
+    {
+        var quarantineRootPath = Path.Combine(fixture.RootPath, "quarantine-root");
+        var actionRootPath = Path.Combine(quarantineRootPath, "actions", actionId);
+        var itemsRootPath = Path.Combine(actionRootPath, "items");
+        var manifestPath = Path.Combine(actionRootPath, RestoreManifestFileStore.RestoreManifestFileName);
+        var relativePath = Path.Combine(
+            "AppData",
+            "Local",
+            "WindowsFileCleanerTests",
+            Guid.NewGuid().ToString("N"),
+            "old-installer.msi");
+        var originalPath = Path.Combine(cleanupScopePath, relativePath);
+        var quarantinePath = Path.Combine(itemsRootPath, relativePath);
+        Directory.CreateDirectory(Path.GetDirectoryName(quarantinePath)!);
+        File.WriteAllText(quarantinePath, "quarantined fixture content");
+
+        var manifest = new RestoreManifest(
+            RestoreManifest.CurrentSchemaVersion,
+            $"restore-manifest-{actionId}",
+            $"manifest-draft-{actionId}",
+            actionId,
+            new DateTimeOffset(2026, 5, 31, 7, 0, 0, TimeSpan.Zero),
+            new DateTimeOffset(2026, 5, 31, 7, 1, 0, TimeSpan.Zero),
+            cleanupScopePath,
+            quarantineRootPath,
+            actionRootPath,
+            itemsRootPath,
+            manifestPath,
+            RestoreManifestActionStatus.Completed,
+            [
+                new RestoreManifestEntry(
+                    originalPath,
+                    relativePath,
+                    quarantinePath,
+                    IsDirectory: false,
+                    SizeBytes: 27,
+                    LastModifiedUtc: new DateTimeOffset(2026, 1, 30, 11, 23, 0, TimeSpan.Zero),
+                    ImportanceRating.LikelySafe,
+                    DeletionRecommendation.QuarantineCandidate,
+                    [BloatCategory.InstallerCache],
+                    "Synthetic selected restore pre-execution revalidation fixture.",
+                    RestoreManifestEntryStatus.Moved,
+                    MoveStartedAtUtc: new DateTimeOffset(2026, 5, 31, 7, 0, 10, TimeSpan.Zero),
+                    MoveCompletedAtUtc: new DateTimeOffset(2026, 5, 31, 7, 0, 11, TimeSpan.Zero),
+                    RestoreStartedAtUtc: null,
+                    RestoreCompletedAtUtc: null,
+                    ErrorMessage: null)
+            ],
+            ["Synthetic restore manifest for selected restore pre-execution revalidation tests."]);
+
+        Directory.CreateDirectory(actionRootPath);
+        File.WriteAllText(manifestPath, RestoreManifestJsonSerializer.Serialize(manifest));
+        return manifest;
     }
 
     private static RealProfileRestoreReadiness BuildCleanRealProfileRestoreReadiness(
