@@ -1083,6 +1083,52 @@ Its visible WPF `?` help cue mirrors the current summary into tooltip and automa
 - WPF should show a compact `?` help cue near the Matched Review Mix readout.
 - WPF tooltip and automation help text on both the readout and cue should mirror the current Matched Review Mix and say it is read-only active-review-lens context that does not rescan, modify files, prove storage savings, or approve cleanup.
 
+### Main Grid Active Review Lens Summary
+
+Status: draft
+Last reviewed: 2026-06-01
+
+#### Definition
+
+Main Grid Active Review Lens Summary is compact WPF text above the Main Grid that mirrors the current Filter Summary for Storage Scan rows.
+
+It helps the user see which read-only filters/search/focus are active after a Safety Summary shortcut or Review-tab control changes the visible rows. It is review orientation only, not a rescan, file modification, storage-savings proof, Quarantine readiness, or cleanup approval.
+
+#### Examples
+
+- After a scan with no filters, show `Active review lens: All: ...`.
+- After a Safety Summary shortcut for Protected Location rows auto-focuses Main Grid, show that the active review lens includes Protected location.
+- After stacking a Quarantine candidates filter and `old-installer` search, show both in the Main Grid lens line.
+
+#### Non-examples
+
+- A Cleanup Action.
+- A Review Shortlist approval.
+- Quarantine Preview or Quarantine readiness.
+- Review Grid Mode Status for Storage Scan rows versus Current-Session Quarantined Review rows.
+
+#### Lifecycle
+
+- Appears before scan with a no-scan placeholder.
+- Updates whenever the active review lens changes.
+- Resets when a new Storage Scan completes.
+- Hides while the main grid is showing Current-Session Quarantined Review rows, because those rows are not driven by Storage Scan filters/search/focus.
+- Does not modify files.
+
+#### Relationships
+
+- Mirrors Filter Summary.
+- Complements Review Grid Mode Status, which names the grid row source.
+- Complements Matched Review Mix, which summarizes counts for the matched rows.
+- Supports Safety Summary shortcut auto-focus by keeping the applied lens visible in Main Grid.
+
+#### Code implications
+
+- Use `MainGridReviewLensText` for the WPF readout.
+- Keep it compact and wrapped above Storage Scan rows, near Review Grid Mode Status.
+- Tooltip and automation help text should mirror the visible lens summary and keep no-rescan, no-file-modified, and not-cleanup-approval boundaries available.
+- Do not use this summary as cleanup approval, Quarantine readiness, or Storage Savings evidence.
+
 ### Storage Review Size Note
 
 Status: draft

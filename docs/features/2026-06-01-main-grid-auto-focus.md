@@ -25,6 +25,7 @@ Make the tabbed workbench feel less surprising when a control changes which rows
 - `Current quarantined` now selects `Main Grid` after switching the main grid to current-session moved entries.
 - `Back to scan rows` now selects `Main Grid` after switching the main grid back to Storage Scan rows.
 - Kept Review-tab search/filter controls from auto-switching while the user is still setting up a review lens.
+- Follow-up packet `2026-06-01-main-grid-active-review-lens-summary.md` made Main Grid mirror the active review lens above the rows after those auto-focus actions.
 
 ## Test plan
 
@@ -37,6 +38,7 @@ Automated checks:
 Manual checks:
 
 - Run `.\tools\Start-MvpFixtureReview.cmd` and confirm Safety Summary shortcuts make the filtered rows visible on Main Grid.
+- Confirm Main Grid also shows the active review lens summary after the shortcut applies.
 - After fixture Quarantine execution, confirm `Current quarantined` and `Back to scan rows` switch Main Grid into view with the expected Review Grid Mode Status.
 
 ## Completion notes

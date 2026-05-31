@@ -127,6 +127,17 @@ internal sealed class MainWindowSmokeTests
                 window.SelectedWorkbenchTabHeader == "Main Grid",
                 "Main Grid tab should be selected by default so scan rows keep their dedicated page.");
             Assert(
+                window.MainGridReviewLensTextValue == "Active review lens: No scan loaded.",
+                "Main Grid should start with a compact active review lens placeholder.");
+            Assert(
+                window.MainGridReviewLensToolTipValue.Contains("does not rescan", StringComparison.OrdinalIgnoreCase)
+                && window.MainGridReviewLensToolTipValue.Contains("modify files", StringComparison.OrdinalIgnoreCase)
+                && window.MainGridReviewLensToolTipValue.Contains("approve cleanup", StringComparison.OrdinalIgnoreCase),
+                "Main Grid active review lens tooltip should expose read-only review boundaries.");
+            Assert(
+                window.MainGridReviewLensAutomationHelpTextValue == window.MainGridReviewLensToolTipValue,
+                "Main Grid active review lens automation help text should mirror its tooltip.");
+            Assert(
                 window.SafetySummaryHeaderTextValue.StartsWith("Safety Summary:", StringComparison.OrdinalIgnoreCase),
                 "Safety Summary collapsed header should start with the visible panel name.");
             Assert(
@@ -1102,6 +1113,18 @@ internal sealed class MainWindowSmokeTests
             Assert(window.SafetySummaryTextValue.Contains(@"Unknown\notes.txt", StringComparison.OrdinalIgnoreCase), "Safety Summary no-category examples should include relative uncategorized paths.");
             Assert(window.FilterSummaryTextValue.Contains("All:", StringComparison.OrdinalIgnoreCase), "Filter summary should start on the All filter.");
             Assert(
+                window.MainGridReviewLensTextValue.Contains("Active review lens: All:", StringComparison.OrdinalIgnoreCase)
+                && window.MainGridReviewLensTextValue.Contains("rows 1-", StringComparison.OrdinalIgnoreCase)
+                && window.MainGridReviewLensTextValue.Contains("largest matched row", StringComparison.OrdinalIgnoreCase),
+                "Main Grid active review lens should mirror the default filter summary after scan.");
+            Assert(
+                window.MainGridReviewLensToolTipValue.Contains(window.MainGridReviewLensTextValue, StringComparison.OrdinalIgnoreCase)
+                && window.MainGridReviewLensToolTipValue.Contains("filters/search/focus", StringComparison.OrdinalIgnoreCase)
+                && window.MainGridReviewLensToolTipValue.Contains("does not rescan", StringComparison.OrdinalIgnoreCase)
+                && window.MainGridReviewLensToolTipValue.Contains("modify files", StringComparison.OrdinalIgnoreCase)
+                && window.MainGridReviewLensToolTipValue.Contains("approve cleanup", StringComparison.OrdinalIgnoreCase),
+                "Main Grid active review lens tooltip should mirror the dynamic lens summary and safety boundary.");
+            Assert(
                 window.MatchedReviewMixTextValue.Contains("Matched review mix:", StringComparison.OrdinalIgnoreCase)
                 && window.MatchedReviewMixTextValue.Contains("Likely safe", StringComparison.OrdinalIgnoreCase)
                 && window.MatchedReviewMixTextValue.Contains("Caution", StringComparison.OrdinalIgnoreCase)
@@ -1466,17 +1489,27 @@ internal sealed class MainWindowSmokeTests
             Assert(window.CurrentStatusText.Contains("Review shortcut applied", StringComparison.OrdinalIgnoreCase), "Safety shortcut should report a read-only review action.");
             Assert(window.FilterSummaryTextValue.Contains("Protected location", StringComparison.OrdinalIgnoreCase), "Protected shortcut should update the filter summary.");
             Assert(
+                window.MainGridReviewLensTextValue.Contains("Protected location", StringComparison.OrdinalIgnoreCase),
+                "Main Grid active review lens should mirror a Safety Summary shortcut after auto-focus.");
+            Assert(
                 window.DisplayedRows.Count > 0 && window.DisplayedRows.All(row => row.Categories.Contains("Protected location", StringComparison.OrdinalIgnoreCase)),
                 "Protected shortcut should show protected rows.");
 
             window.ApplySafetyReviewShortcut(StorageScanSafetyShortcut.Uncategorized);
             Assert(window.FilterSummaryTextValue.Contains("No category", StringComparison.OrdinalIgnoreCase), "No-category shortcut should update the filter summary.");
             Assert(
+                window.MainGridReviewLensTextValue.Contains("No category", StringComparison.OrdinalIgnoreCase),
+                "Main Grid active review lens should mirror the no-category shortcut.");
+            Assert(
                 window.DisplayedRows.Count > 0 && window.DisplayedRows.All(row => row.Categories == "None"),
                 "No-category shortcut should show only uncategorized rows.");
 
             window.ApplySafetyReviewShortcut(StorageScanSafetyShortcut.QuarantineCandidates);
             window.ApplyStorageReviewSearch("old-installer");
+            Assert(
+                window.MainGridReviewLensTextValue.Contains("Quarantine candidates", StringComparison.OrdinalIgnoreCase)
+                && window.MainGridReviewLensTextValue.Contains("Search \"old-installer\"", StringComparison.OrdinalIgnoreCase),
+                "Main Grid active review lens should mirror stacked shortcut and search state.");
             Assert(window.DisplayedRows.Count == 1, "Old installer search should narrow the quarantine candidate review window to one row.");
             var installer = window.DisplayedRows.Single(row =>
                 row.FullPath.EndsWith(@"Downloads\old-installer.msi", StringComparison.OrdinalIgnoreCase));
@@ -2087,6 +2120,7 @@ internal sealed class MainWindowSmokeTests
             Assert(window.IsShowingQuarantinedRows, "Current quarantined button should switch the main grid to quarantined rows.");
             Assert(window.AreQuarantinedRowsVisible, "Quarantined rows grid should be visible in quarantined view.");
             Assert(!window.AreScanRowsVisible, "Storage Scan rows grid should be hidden in quarantined view.");
+            Assert(!window.IsMainGridReviewLensVisible, "Main Grid active review lens should hide while current-session quarantined rows are showing.");
             Assert(
                 window.ReviewGridModeTextValue.Contains("Main grid: Current-session quarantined items", StringComparison.OrdinalIgnoreCase)
                 && window.ReviewGridModeTextValue.Contains("Read-only view", StringComparison.OrdinalIgnoreCase)
@@ -2131,6 +2165,7 @@ internal sealed class MainWindowSmokeTests
             Assert(!window.IsShowingQuarantinedRows, "Back to scan rows should leave quarantined view.");
             Assert(window.AreScanRowsVisible, "Storage Scan rows grid should be visible after returning.");
             Assert(!window.AreQuarantinedRowsVisible, "Quarantined rows grid should hide after returning.");
+            Assert(window.IsMainGridReviewLensVisible, "Main Grid active review lens should return with Storage Scan rows.");
             Assert(
                 window.ReviewGridModeTextValue.Contains("Main grid: Storage Scan rows", StringComparison.OrdinalIgnoreCase)
                 && window.ReviewGridModeTextValue.Contains("2 current-session quarantined", StringComparison.OrdinalIgnoreCase),

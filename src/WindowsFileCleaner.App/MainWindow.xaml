@@ -1082,38 +1082,47 @@
                     <ColumnDefinition Width="16" />
                     <ColumnDefinition Width="1*" />
                 </Grid.ColumnDefinitions>
-                <DockPanel Grid.ColumnSpan="3"
-                           Margin="0,0,0,8"
-                           LastChildFill="True">
-                    <Border x:Name="ReviewGridModeHelpCue"
-                            DockPanel.Dock="Right"
-                            Width="18"
-                            Height="18"
-                            Margin="8,1,0,0"
-                            CornerRadius="9"
-                            Background="#F4F7FA"
-                            BorderBrush="#8A99A8"
-                            BorderThickness="1"
-                            VerticalAlignment="Top"
-                            Cursor="Help"
-                            ToolTipService.InitialShowDelay="250"
-                            ToolTip="Main grid: Storage Scan rows appear after a scan. No files were modified. Status state: neutral. Grid mode status is read-only review context; it does not rescan, modify files, restore files, or approve cleanup."
-                            AutomationProperties.Name="Review Grid Mode Status help cue"
-                            AutomationProperties.HelpText="Main grid: Storage Scan rows appear after a scan. No files were modified. Status state: neutral. Grid mode status is read-only review context; it does not rescan, modify files, restore files, or approve cleanup.">
-                        <TextBlock Text="?"
-                                   HorizontalAlignment="Center"
-                                   VerticalAlignment="Center"
-                                   FontSize="11"
-                                   FontWeight="Bold"
-                                   Foreground="#526171" />
-                    </Border>
-                    <TextBlock x:Name="ReviewGridModeText"
-                               Text="Main grid: Storage Scan rows appear after a scan. No files were modified."
+                <StackPanel Grid.ColumnSpan="3"
+                            Margin="0,0,0,8">
+                    <DockPanel LastChildFill="True">
+                        <Border x:Name="ReviewGridModeHelpCue"
+                                DockPanel.Dock="Right"
+                                Width="18"
+                                Height="18"
+                                Margin="8,1,0,0"
+                                CornerRadius="9"
+                                Background="#F4F7FA"
+                                BorderBrush="#8A99A8"
+                                BorderThickness="1"
+                                VerticalAlignment="Top"
+                                Cursor="Help"
+                                ToolTipService.InitialShowDelay="250"
+                                ToolTip="Main grid: Storage Scan rows appear after a scan. No files were modified. Status state: neutral. Grid mode status is read-only review context; it does not rescan, modify files, restore files, or approve cleanup."
+                                AutomationProperties.Name="Review Grid Mode Status help cue"
+                                AutomationProperties.HelpText="Main grid: Storage Scan rows appear after a scan. No files were modified. Status state: neutral. Grid mode status is read-only review context; it does not rescan, modify files, restore files, or approve cleanup.">
+                            <TextBlock Text="?"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"
+                                       FontSize="11"
+                                       FontWeight="Bold"
+                                       Foreground="#526171" />
+                        </Border>
+                        <TextBlock x:Name="ReviewGridModeText"
+                                   Text="Main grid: Storage Scan rows appear after a scan. No files were modified."
+                                   Foreground="#526171"
+                                   TextWrapping="Wrap"
+                                   ToolTip="Main grid: Storage Scan rows appear after a scan. No files were modified. Status state: neutral. Grid mode status is read-only review context; it does not rescan, modify files, restore files, or approve cleanup."
+                                   AutomationProperties.HelpText="Main grid: Storage Scan rows appear after a scan. No files were modified. Status state: neutral. Grid mode status is read-only review context; it does not rescan, modify files, restore files, or approve cleanup." />
+                    </DockPanel>
+                    <TextBlock x:Name="MainGridReviewLensText"
+                               Margin="0,4,26,0"
                                Foreground="#526171"
+                               FontSize="12"
+                               Text="Active review lens: No scan loaded."
                                TextWrapping="Wrap"
-                               ToolTip="Main grid: Storage Scan rows appear after a scan. No files were modified. Status state: neutral. Grid mode status is read-only review context; it does not rescan, modify files, restore files, or approve cleanup."
-                               AutomationProperties.HelpText="Main grid: Storage Scan rows appear after a scan. No files were modified. Status state: neutral. Grid mode status is read-only review context; it does not rescan, modify files, restore files, or approve cleanup." />
-                </DockPanel>
+                               ToolTip="Active review lens: No scan loaded. This Main Grid summary mirrors completed Storage Scan filters/search for review only; it does not rescan, modify files, or approve cleanup."
+                               AutomationProperties.HelpText="Active review lens: No scan loaded. This Main Grid summary mirrors completed Storage Scan filters/search for review only; it does not rescan, modify files, or approve cleanup." />
+                </StackPanel>
 
             <DataGrid x:Name="ResultsGrid"
                       Grid.Row="1"

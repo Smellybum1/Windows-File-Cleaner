@@ -406,6 +406,14 @@ public partial class MainWindow : Window
 
     public string FilterSummaryTextValue => FilterSummaryText.Text;
 
+    public string MainGridReviewLensTextValue => MainGridReviewLensText.Text;
+
+    public string MainGridReviewLensToolTipValue => MainGridReviewLensText.ToolTip?.ToString() ?? "";
+
+    public string MainGridReviewLensAutomationHelpTextValue => AutomationProperties.GetHelpText(MainGridReviewLensText);
+
+    public bool IsMainGridReviewLensVisible => MainGridReviewLensText.Visibility == Visibility.Visible;
+
     public string MatchedReviewMixTextValue => MatchedReviewMixText.Text;
 
     public string MatchedReviewMixToolTipValue => MatchedReviewMixText.ToolTip?.ToString() ?? "";
@@ -2672,6 +2680,7 @@ public partial class MainWindow : Window
     {
         ResultsGrid.Visibility = _isShowingQuarantinedRows ? Visibility.Collapsed : Visibility.Visible;
         QuarantinedGrid.Visibility = _isShowingQuarantinedRows ? Visibility.Visible : Visibility.Collapsed;
+        MainGridReviewLensText.Visibility = _isShowingQuarantinedRows ? Visibility.Collapsed : Visibility.Visible;
         UpdateReviewGridModeText();
     }
 
@@ -3076,7 +3085,7 @@ public partial class MainWindow : Window
     {
         if (_currentReview is null)
         {
-            FilterSummaryText.Text = "No scan loaded";
+            SetReviewLensSummaryText("No scan loaded");
             SetMatchedReviewMixText("Matched review mix appears after a scan.");
             UpdateShortlistSafetyMix();
             UpdateReviewWindowControls(0);
@@ -3093,12 +3102,28 @@ public partial class MainWindow : Window
         var limitLabel = matchedEntries.Count > MaxDisplayedRows
             ? $" Display window {MaxDisplayedRows:N0}; use Previous/Next rows or narrow filters/search to inspect more matches."
             : "";
-        FilterSummaryText.Text =
+        SetReviewLensSummaryText(
             $"{FormatFilter(_currentFilter)}{categoryLabel}{typeLabel}{sizeLabel}{searchLabel}: {FormatReviewWindowRange(matchedEntries.Count)}, " +
             $"largest matched row {ByteSizeFormatter.Format(largestMatchedBytes)}, " +
-            $"shortlist {_shortlist.Count:N0}.{limitLabel}";
+            $"shortlist {_shortlist.Count:N0}.{limitLabel}");
         UpdateMatchedReviewMix(matchedEntries);
         UpdateReviewWindowControls(matchedEntries.Count);
+    }
+
+    private void SetReviewLensSummaryText(string summaryText)
+    {
+        FilterSummaryText.Text = summaryText;
+        SetMainGridReviewLensText(summaryText);
+    }
+
+    private void SetMainGridReviewLensText(string summaryText)
+    {
+        var suffix = summaryText.EndsWith(".", StringComparison.Ordinal) ? "" : ".";
+        var text = $"Active review lens: {summaryText}{suffix}";
+        MainGridReviewLensText.Text = text;
+        var helpText = $"{text} This Main Grid summary mirrors completed Storage Scan filters/search/focus for review only; it does not rescan, modify files, or approve cleanup.";
+        MainGridReviewLensText.ToolTip = helpText;
+        AutomationProperties.SetHelpText(MainGridReviewLensText, helpText);
     }
 
     private void UpdateMatchedReviewMix(IReadOnlyList<StorageReviewEntry> matchedEntries)
