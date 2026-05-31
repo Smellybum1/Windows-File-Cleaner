@@ -25,6 +25,7 @@ Give the large WPF review sections their own horizontal tab pages so Safety Summ
 - Moved Quarantine Root Selection, Quarantine Preview, compact Quarantine Readiness Summary, confirmation, fixture execution, current-fixture undo, and Quarantine Execution Gate to a `Quarantine` tab.
 - Moved the Storage Scan / Current-Session Quarantined Review grids and selected-path detail panel to a `Main Grid` tab, selected by default.
 - Kept the existing Expander controls available inside Safety Summary and Quarantine tabs, but expanded by default because the tab pages now provide the recovered space.
+- Later packet `2026-06-01-main-grid-auto-focus.md` made Safety Summary shortcuts and current-session quarantined grid switches select `Main Grid` after they change which rows it shows.
 
 ## Test plan
 
@@ -57,7 +58,7 @@ Follow-up work:
 
 Open questions:
 
-- Should selecting a Safety Summary shortcut or Quarantine action automatically switch to the Main Grid tab afterward?
+- Should Review-tab filters remain on the Review tab after changing the row lens, or should only shortcut/grid-switch actions auto-focus Main Grid?
 
 Risky assumptions:
 

@@ -124,6 +124,18 @@ public partial class MainWindow : Window
 
     public string SelectedWorkbenchTabHeader => (WorkbenchTabs.SelectedItem as TabItem)?.Header?.ToString() ?? "";
 
+    public void SelectWorkbenchTab(string header)
+    {
+        var tab = WorkbenchTabs.Items
+            .OfType<TabItem>()
+            .FirstOrDefault(item => string.Equals(item.Header?.ToString(), header, StringComparison.OrdinalIgnoreCase));
+
+        if (tab is not null)
+        {
+            WorkbenchTabs.SelectedItem = tab;
+        }
+    }
+
     public bool CanStartStorageScan => ScanButton.IsEnabled;
 
     public bool CanCancelStorageScan => CancelButton.IsEnabled;
@@ -2500,6 +2512,7 @@ public partial class MainWindow : Window
         var rows = BuildCurrentQuarantinedRows();
         QuarantinedGrid.ItemsSource = rows;
         _isShowingQuarantinedRows = true;
+        SelectMainGridTab();
         UpdateMainGridVisibility();
         UpdateQuarantinedViewControls();
         StatusText.Text = rows.Count == 0
@@ -2519,6 +2532,7 @@ public partial class MainWindow : Window
     public void ShowScanRows()
     {
         _isShowingQuarantinedRows = false;
+        SelectMainGridTab();
         UpdateMainGridVisibility();
         UpdateQuarantinedViewControls();
         if (ResultsGrid.SelectedItem is StorageEntryRow row)
@@ -2554,7 +2568,13 @@ public partial class MainWindow : Window
         _currentDisplayStartIndex = 0;
         SelectCategoryFilterOption(_currentCategoryFilter);
         RefreshResults();
+        SelectMainGridTab();
         StatusText.Text = $"Review shortcut applied: {shortcutFilter.Label}. No files were modified.";
+    }
+
+    private void SelectMainGridTab()
+    {
+        WorkbenchTabs.SelectedItem = MainGridTab;
     }
 
     public void ShowNextReviewWindow()

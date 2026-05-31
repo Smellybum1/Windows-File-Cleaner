@@ -1174,6 +1174,7 @@ It summarizes safety-relevant scan signals such as high-risk rows, Protected Loc
 - Keep Uncategorized Result examples bounded, size-labeled, cleanup-scope-relative, and derived from scan rows.
 - Keep summary notes derived from scan results only.
 - Safety Summary review shortcut tooltips and automation help text should keep shortcut scope, read-only behavior, no-rescan/no-file-modified boundaries, no-permission-change behavior for Access issues, no-link-following behavior for reparse points, and not-cleanup-approval wording available.
+- In the tabbed WPF workbench, Safety Summary review shortcuts should select the Main Grid tab after applying their read-only review lens so the filtered rows are visible.
 - In WPF, keep Safety Summary collapsible so the main review grid can recover vertical space during focused review.
 - In WPF, keep the collapsed Safety Summary header useful with a `Safety Summary:` panel-name prefix and compact risk counts, and mirror that header summary and current header state into tooltip and automation help text on both the header text and visible non-clickable `?` help cue with read-only/not-cleanup-approval wording.
 - In WPF, lightweight Safety Summary header styling may distinguish waiting/neutral from warning states when scan safety signals need review, but must not imply cleanup approval, safety clearance, or a changed scan gate.
@@ -3249,6 +3250,7 @@ It is reached with the `Current quarantined` button, which shows a moved-entry c
 - Keep Review Grid Mode Status styling semantic and lightweight: neutral for ordinary scan rows, informational for current-session quarantined rows, and warning for stale or empty moved-entry states; styling must not imply cleanup approval.
 - Keep Review Grid Mode Status tooltip and automation help text synchronized on both the status text and the visible non-clickable `?` help cue, name the current status state, and make explicit that the status is read-only review context; it must not rescan, modify files, restore files, or approve cleanup.
 - Keep `Current quarantined` and `Back to scan rows` tooltips and automation help text dynamic enough to explain disabled states, current-session-only scope, read-only behavior, older-manifest discovery boundaries, and that returning to scan rows does not rescan or undo.
+- In the tabbed WPF workbench, `Current quarantined` and `Back to scan rows` should select the Main Grid tab after switching the visible row set.
 - Keep this view read-only and current-session-only until a separate discovered-manifest design exists.
 - Do not expand this view into all quarantined history or a broad discovered-manifest grid without a separate Grill with Docs packet.
 

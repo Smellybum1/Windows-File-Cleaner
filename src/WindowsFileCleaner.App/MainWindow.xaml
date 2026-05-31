@@ -343,7 +343,8 @@
         <TabControl x:Name="WorkbenchTabs"
                     Grid.Row="1"
                     SelectedIndex="3">
-        <TabItem Header="Safety Summary">
+        <TabItem x:Name="SafetySummaryTab"
+                 Header="Safety Summary">
             <ScrollViewer VerticalScrollBarVisibility="Auto"
                           HorizontalScrollBarVisibility="Disabled">
         <Border Style="{StaticResource PanelBorderStyle}"
@@ -476,7 +477,8 @@
             </ScrollViewer>
         </TabItem>
 
-        <TabItem Header="Review">
+        <TabItem x:Name="ReviewTab"
+                 Header="Review">
             <ScrollViewer VerticalScrollBarVisibility="Auto"
                           HorizontalScrollBarVisibility="Disabled">
             <StackPanel Margin="0,10,0,0">
@@ -746,7 +748,8 @@
             </ScrollViewer>
         </TabItem>
 
-        <TabItem Header="Quarantine">
+        <TabItem x:Name="QuarantineTab"
+                 Header="Quarantine">
             <ScrollViewer VerticalScrollBarVisibility="Auto"
                           HorizontalScrollBarVisibility="Disabled">
                 <Border x:Name="QuarantineShortlistArea"
@@ -1067,7 +1070,8 @@
             </ScrollViewer>
         </TabItem>
 
-        <TabItem Header="Main Grid">
+        <TabItem x:Name="MainGridTab"
+                 Header="Main Grid">
             <Grid Margin="0,10,0,0">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />

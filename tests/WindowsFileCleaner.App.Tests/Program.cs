@@ -1455,7 +1455,14 @@ internal sealed class MainWindowSmokeTests
                 window.DisplayedRows.All(row => row.Categories.Contains("Installer cache", StringComparison.OrdinalIgnoreCase)),
                 "Installer cache category filter should only show installer cache rows.");
 
+            window.SelectWorkbenchTab("Safety Summary");
+            Assert(
+                window.SelectedWorkbenchTabHeader == "Safety Summary",
+                "Smoke test should be able to select the Safety Summary tab before using a shortcut.");
             window.ApplySafetyReviewShortcut(StorageScanSafetyShortcut.ProtectedLocations);
+            Assert(
+                window.SelectedWorkbenchTabHeader == "Main Grid",
+                "Safety Summary shortcuts should auto-focus Main Grid so the filtered rows are visible.");
             Assert(window.CurrentStatusText.Contains("Review shortcut applied", StringComparison.OrdinalIgnoreCase), "Safety shortcut should report a read-only review action.");
             Assert(window.FilterSummaryTextValue.Contains("Protected location", StringComparison.OrdinalIgnoreCase), "Protected shortcut should update the filter summary.");
             Assert(
@@ -2069,7 +2076,14 @@ internal sealed class MainWindowSmokeTests
                 && window.QuarantineExecutionGateTextValue.Contains("Current scan results are stale", StringComparison.OrdinalIgnoreCase),
                 "Execution gate should retain execution evidence after the gate closes.");
 
+            window.SelectWorkbenchTab("Quarantine");
+            Assert(
+                window.SelectedWorkbenchTabHeader == "Quarantine",
+                "Smoke test should be able to select the Quarantine tab before switching grid modes.");
             window.ShowQuarantinedRows();
+            Assert(
+                window.SelectedWorkbenchTabHeader == "Main Grid",
+                "Current quarantined should auto-focus Main Grid so current-session quarantined rows are visible.");
             Assert(window.IsShowingQuarantinedRows, "Current quarantined button should switch the main grid to quarantined rows.");
             Assert(window.AreQuarantinedRowsVisible, "Quarantined rows grid should be visible in quarantined view.");
             Assert(!window.AreScanRowsVisible, "Storage Scan rows grid should be hidden in quarantined view.");
@@ -2106,7 +2120,14 @@ internal sealed class MainWindowSmokeTests
                 && window.BackToScanRowsButtonAutomationHelpTextValue.Contains("without rescanning", StringComparison.OrdinalIgnoreCase),
                 "Back to scan rows automation help text should explain return behavior.");
 
+            window.SelectWorkbenchTab("Quarantine");
+            Assert(
+                window.SelectedWorkbenchTabHeader == "Quarantine",
+                "Smoke test should be able to return to the Quarantine tab before using Back to scan rows.");
             window.ShowScanRows();
+            Assert(
+                window.SelectedWorkbenchTabHeader == "Main Grid",
+                "Back to scan rows should auto-focus Main Grid so Storage Scan rows are visible.");
             Assert(!window.IsShowingQuarantinedRows, "Back to scan rows should leave quarantined view.");
             Assert(window.AreScanRowsVisible, "Storage Scan rows grid should be visible after returning.");
             Assert(!window.AreQuarantinedRowsVisible, "Quarantined rows grid should hide after returning.");
