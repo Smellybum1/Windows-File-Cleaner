@@ -58,7 +58,7 @@ Fresh-thread handoff notes live in `docs/codex/thread-handoff.md`.
 - Quarantine Manifest Discovery is read-only and does not move, restore, delete, create, or clean up files or folders.
 - Selected Restore Manifest Review, Selected Restore Confirmation Draft, and Restore Readiness Preview are read-only and do not call Undo Quarantine execution.
 - Fixture-only Selected Restore Execution calls Undo Quarantine Executor for selected discovered fixture manifests only.
-- Fixture tests include a source-level guard against accidental cleanup-execution filesystem calls.
+- Fixture tests include source-level guards against accidental cleanup-execution filesystem calls and read-only readiness builders calling movement executors or manifest writers.
 - Real-profile scans require an explicit acknowledgement that MVP preflight and fixture review were run; the acknowledgement tooltip and automation help text keep clear that checking it does not run preflight, create fixtures, start scanning by itself, persist approval, or approve cleanup.
 - Scan-gate ready wording is scope-specific: fixture scopes point later cleanup actions back to preview and exact confirmation, while real-profile/custom scopes keep cleanup execution unavailable. The Scan button mirrors this wording in tooltips and automation help text.
 - The Cancel scan control uses disabled-state tooltip and automation help text to keep clear that cancellation only requests stopping the in-progress read-only Storage Scan and does not move, delete, quarantine, restore, or approve cleanup.

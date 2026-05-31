@@ -80,6 +80,7 @@ tests.SelectedFileContentPreviewReadsBoundedTextOnly();
 tests.CsvExporterWritesEscapedReviewRows();
 tests.ByteSizeFormatterUsesReadableUnits();
 tests.ProductionCodeDoesNotContainCleanupExecutionCalls();
+tests.ReadOnlyReadinessBuildersDoNotCallExecutionComponents();
 tests.MvpPreflightScriptChecksNativeCommandExitCodes();
 
 Console.WriteLine("All WindowsFileCleaner.Tests checks passed.");
@@ -3449,6 +3450,45 @@ internal sealed class StorageScanTests
         Assert(executorWriteMatches.Length == 3, "Only QuarantineExecutor should create destination parents and move files or folders.");
         Assert(undoExecutorWriteMatches.Length == 3, "Only UndoQuarantineExecutor should create original parents and move files or folders back.");
         Assert(writeTextMatches.Length == reportWriteMatches.Length + manifestWriteMatches.Length, "Every File.WriteAllText production use should be explicitly allowlisted.");
+    }
+
+    public void ReadOnlyReadinessBuildersDoNotCallExecutionComponents()
+    {
+        var repositoryRoot = FindRepositoryRoot();
+        var readOnlyBuilderFiles = new[]
+        {
+            @"src\WindowsFileCleaner.Core\QuarantineExecutionReadinessBuilder.cs",
+            @"src\WindowsFileCleaner.Core\QuarantineRootExecutionSafetyBuilder.cs",
+            @"src\WindowsFileCleaner.Core\PreExecutionRevalidationBuilder.cs",
+            @"src\WindowsFileCleaner.Core\RealProfileRestoreReadinessBuilder.cs",
+            @"src\WindowsFileCleaner.Core\SelectedRestorePreExecutionRevalidationBuilder.cs",
+            @"src\WindowsFileCleaner.Core\RestoreReadinessPreviewBuilder.cs",
+            @"src\WindowsFileCleaner.Core\SelectedRestoreManifestReviewBuilder.cs"
+        };
+        var blockedTokens = new[]
+        {
+            "QuarantineExecutor.Execute(",
+            "UndoQuarantineExecutor.Undo(",
+            "RestoreManifestFileStore.Write(",
+            "Directory.CreateDirectory(",
+            "Directory.Delete(",
+            "Directory.Move(",
+            "File.Delete(",
+            "File.Move(",
+            "File.WriteAllText("
+        };
+
+        var blockedMatches = readOnlyBuilderFiles
+            .Select(relativePath => Path.Combine(repositoryRoot, relativePath))
+            .SelectMany(file => File.ReadLines(file)
+                .Select((line, index) => new SourceLine(file, index + 1, line))
+                .Where(sourceLine => blockedTokens.Any(token => sourceLine.Text.Contains(token, StringComparison.Ordinal))))
+            .ToArray();
+
+        Assert(
+            blockedMatches.Length == 0,
+            "Read-only readiness builders should not call execution components, write manifests, or perform filesystem movement: "
+            + FormatSourceLines(blockedMatches));
     }
 
     public void MvpPreflightScriptChecksNativeCommandExitCodes()
