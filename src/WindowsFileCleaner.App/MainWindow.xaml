@@ -24,6 +24,16 @@
             <Setter Property="FontWeight" Value="SemiBold" />
             <Setter Property="Margin" Value="0,0,0,8" />
         </Style>
+        <Style TargetType="TabControl">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="#DCE3EA" />
+            <Setter Property="BorderThickness" Value="0" />
+        </Style>
+        <Style TargetType="TabItem">
+            <Setter Property="Padding" Value="16,8" />
+            <Setter Property="Margin" Value="0,0,4,0" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+        </Style>
         <Style TargetType="Button">
             <Setter Property="MinWidth" Value="92" />
             <Setter Property="Padding" Value="12,8" />
@@ -44,8 +54,6 @@
 
     <Grid Margin="18">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
@@ -225,9 +233,14 @@
         </Grid>
         </Border>
 
-        <UniformGrid Grid.Row="1"
-                     Columns="4"
-                     Margin="0,0,0,12">
+        <TabControl x:Name="WorkbenchTabs"
+                    Grid.Row="1"
+                    SelectedIndex="4">
+        <TabItem Header="Scan">
+            <ScrollViewer VerticalScrollBarVisibility="Auto"
+                          HorizontalScrollBarVisibility="Disabled">
+            <UniformGrid Columns="4"
+                         Margin="0,10,0,0">
             <Border Style="{StaticResource PanelBorderStyle}" Margin="0,0,8,0">
                 <StackPanel>
                     <TextBlock Text="Total size" Foreground="#526171" />
@@ -252,13 +265,17 @@
                     <TextBlock x:Name="AccessIssueCountText" Text="-" FontSize="20" FontWeight="SemiBold" Margin="0,5,0,0" />
                 </StackPanel>
             </Border>
-        </UniformGrid>
+            </UniformGrid>
+            </ScrollViewer>
+        </TabItem>
 
-        <Border Grid.Row="2"
-                Style="{StaticResource PanelBorderStyle}"
-                Margin="0,0,0,12">
+        <TabItem Header="Safety Summary">
+            <ScrollViewer VerticalScrollBarVisibility="Auto"
+                          HorizontalScrollBarVisibility="Disabled">
+        <Border Style="{StaticResource PanelBorderStyle}"
+                Margin="0,10,0,0">
             <Expander x:Name="SafetySummaryExpander"
-                      IsExpanded="False">
+                      IsExpanded="True">
                 <Expander.Header>
                     <DockPanel LastChildFill="True">
                         <Border x:Name="SafetySummaryHeaderHelpCue"
@@ -382,22 +399,15 @@
                 </StackPanel>
             </Expander>
         </Border>
+            </ScrollViewer>
+        </TabItem>
 
-        <Grid Grid.Row="3">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="*" />
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="2*" />
-                <ColumnDefinition Width="16" />
-                <ColumnDefinition Width="1*" />
-            </Grid.ColumnDefinitions>
-
-            <StackPanel Grid.ColumnSpan="3" Margin="0,0,0,10">
+        <TabItem Header="Review">
+            <ScrollViewer VerticalScrollBarVisibility="Auto"
+                          HorizontalScrollBarVisibility="Disabled">
+            <StackPanel Margin="0,10,0,0">
                 <Border Style="{StaticResource PanelBorderStyle}"
-                        Padding="12"
-                        Margin="0,0,0,10">
+                        Padding="12">
                 <StackPanel>
                 <TextBlock Text="Review filters and shortlist"
                            Style="{StaticResource SectionHeadingTextStyle}" />
@@ -658,6 +668,13 @@
                 </DockPanel>
                 </StackPanel>
                 </Border>
+            </StackPanel>
+            </ScrollViewer>
+        </TabItem>
+
+        <TabItem Header="Quarantine">
+            <ScrollViewer VerticalScrollBarVisibility="Auto"
+                          HorizontalScrollBarVisibility="Disabled">
                 <Border x:Name="QuarantineShortlistArea"
                         Background="White"
                         BorderBrush="#DCE3EA"
@@ -666,7 +683,7 @@
                         Padding="12"
                         Margin="0,10,0,0">
                     <Expander x:Name="QuarantineShortlistExpander"
-                              IsExpanded="False">
+                              IsExpanded="True">
                     <Expander.Header>
                         <DockPanel LastChildFill="True">
                             <Border x:Name="QuarantineShortlistHeaderHelpCue"
@@ -973,7 +990,22 @@
                     </StackPanel>
                     </Expander>
                 </Border>
-                <DockPanel Margin="0,8,0,0"
+            </ScrollViewer>
+        </TabItem>
+
+        <TabItem Header="Main Grid">
+            <Grid Margin="0,10,0,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2*" />
+                    <ColumnDefinition Width="16" />
+                    <ColumnDefinition Width="1*" />
+                </Grid.ColumnDefinitions>
+                <DockPanel Grid.ColumnSpan="3"
+                           Margin="0,0,0,8"
                            LastChildFill="True">
                     <Border x:Name="ReviewGridModeHelpCue"
                             DockPanel.Dock="Right"
@@ -1004,7 +1036,6 @@
                                ToolTip="Main grid: Storage Scan rows appear after a scan. No files were modified. Status state: neutral. Grid mode status is read-only review context; it does not rescan, modify files, restore files, or approve cleanup."
                                AutomationProperties.HelpText="Main grid: Storage Scan rows appear after a scan. No files were modified. Status state: neutral. Grid mode status is read-only review context; it does not rescan, modify files, restore files, or approve cleanup." />
                 </DockPanel>
-            </StackPanel>
 
             <DataGrid x:Name="ResultsGrid"
                       Grid.Row="1"
@@ -1439,10 +1470,12 @@
                     </ScrollViewer>
                 </Grid>
             </Border>
-        </Grid>
+            </Grid>
+        </TabItem>
+        </TabControl>
 
         <TextBlock x:Name="StatusText"
-                   Grid.Row="4"
+                   Grid.Row="2"
                    Text="Ready"
                    Foreground="#526171"
                    Margin="0,12,0,0" />

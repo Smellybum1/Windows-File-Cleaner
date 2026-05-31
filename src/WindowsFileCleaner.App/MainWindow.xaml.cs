@@ -105,6 +105,12 @@ public partial class MainWindow : Window
 
     public string CurrentStatusText => StatusText.Text;
 
+    public string WorkbenchTabHeaderSummary => string.Join(
+        "|",
+        WorkbenchTabs.Items.OfType<TabItem>().Select(tab => tab.Header?.ToString() ?? ""));
+
+    public string SelectedWorkbenchTabHeader => (WorkbenchTabs.SelectedItem as TabItem)?.Header?.ToString() ?? "";
+
     public bool CanStartStorageScan => ScanButton.IsEnabled;
 
     public bool CanCancelStorageScan => CancelButton.IsEnabled;
