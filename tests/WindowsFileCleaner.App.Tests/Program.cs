@@ -2542,8 +2542,10 @@ internal sealed class MainWindowSmokeTests
                 window.QuarantineReadinessSummaryTextValue.Contains("preview only", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantineReadinessSummaryTextValue.Contains("custom", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantineReadinessSummaryTextValue.Contains("Missing: Scope and policy", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineReadinessSummaryTextValue.Contains("Key blockers:", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineReadinessSummaryTextValue.Contains("custom scope preview-only", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantineReadinessSummaryTextValue.Contains("movement unavailable", StringComparison.OrdinalIgnoreCase),
-                "Compact readiness summary should keep custom scopes visibly preview-only after exact QUARANTINE.");
+                "Compact readiness summary should keep custom scopes visibly preview-only with custom key-blocker wording after exact QUARANTINE.");
             Assert(window.QuarantineReadinessSummaryStyleValue == "Warning", "Custom preview-only readiness summary should use warning styling.");
             AssertQuarantineReadinessSummaryHelpText(window, "Compact readiness summary help text should mirror custom preview-only state.");
 
@@ -2648,8 +2650,12 @@ internal sealed class MainWindowSmokeTests
                 && window.QuarantineReadinessSummaryTextValue.Contains("real profile", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantineReadinessSummaryTextValue.Contains("Pre-Execution Revalidation", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantineReadinessSummaryTextValue.Contains("Real-Profile Restore Readiness", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineReadinessSummaryTextValue.Contains("Key blockers:", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineReadinessSummaryTextValue.Contains("pre-execution revalidation", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineReadinessSummaryTextValue.Contains("restore readiness", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineReadinessSummaryTextValue.Contains("current build unavailable", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantineReadinessSummaryTextValue.Contains("movement unavailable", StringComparison.OrdinalIgnoreCase),
-                "Compact readiness summary should name missing real-profile readiness dimensions without enabling execution.");
+                "Compact readiness summary should name missing real-profile readiness dimensions and key blockers without enabling execution.");
             Assert(window.QuarantineReadinessSummaryStyleValue == "Warning", "Real-profile readiness summary should use warning styling while execution is blocked.");
             AssertQuarantineReadinessSummaryHelpText(window, "Compact readiness summary help text should mirror real-profile preview-only state.");
         }
@@ -2799,8 +2805,10 @@ internal sealed class MainWindowSmokeTests
                 window.QuarantineReadinessSummaryTextValue.Contains("preview only", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantineReadinessSummaryTextValue.Contains("real-profile child", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantineReadinessSummaryTextValue.Contains("movement unavailable", StringComparison.OrdinalIgnoreCase)
-                && window.QuarantineReadinessSummaryTextValue.Contains("Missing: Scope and policy", StringComparison.OrdinalIgnoreCase),
-                "Compact readiness summary should keep real-profile child scopes visibly preview-only with movement unavailable wording.");
+                && window.QuarantineReadinessSummaryTextValue.Contains("Missing: Scope and policy", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineReadinessSummaryTextValue.Contains("Key blockers:", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineReadinessSummaryTextValue.Contains("exact profile scope", StringComparison.OrdinalIgnoreCase),
+                "Compact readiness summary should keep real-profile child scopes visibly preview-only with exact-scope key-blocker wording.");
             Assert(window.QuarantineReadinessSummaryStyleValue == "Warning", "Real-profile child readiness summary should use warning styling while execution is blocked.");
             AssertQuarantineReadinessSummaryHelpText(window, "Compact readiness summary help text should mirror real-profile child preview-only state.");
         }
