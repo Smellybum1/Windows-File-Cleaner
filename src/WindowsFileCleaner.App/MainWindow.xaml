@@ -734,15 +734,38 @@
                                                ToolTip="Quarantine Root Safety Note appears after a Quarantine Root is entered. It is read-only preview-root context; it does not create folders, move files, write manifests, or approve cleanup."
                                                AutomationProperties.HelpText="Quarantine Root Safety Note appears after a Quarantine Root is entered. It is read-only preview-root context; it does not create folders, move files, write manifests, or approve cleanup." />
                                 </DockPanel>
-                                <CheckBox x:Name="NonPreferredQuarantineRootAcknowledgementBox"
-                                          Margin="0,4,0,0"
-                                          Content="Acknowledge non-D: Quarantine root for readiness only"
-                                          IsEnabled="False"
-                                          ToolTip="Available only for fully qualified non-D: Quarantine Roots. Checking this records local readiness acknowledgement only; it does not create folders, move files, write manifests, or approve cleanup."
-                                          AutomationProperties.HelpText="Available only for fully qualified non-D: Quarantine Roots. Checking this records local readiness acknowledgement only; it does not create folders, move files, write manifests, or approve cleanup."
-                                          ToolTipService.ShowOnDisabled="True"
-                                          Checked="NonPreferredQuarantineRootAcknowledgementBox_Changed"
-                                          Unchecked="NonPreferredQuarantineRootAcknowledgementBox_Changed" />
+                                <StackPanel Orientation="Horizontal"
+                                            Margin="0,4,0,0">
+                                    <CheckBox x:Name="NonPreferredQuarantineRootAcknowledgementBox"
+                                              Content="Acknowledge non-D: Quarantine root for readiness only"
+                                              IsEnabled="False"
+                                              ToolTip="Available only for fully qualified non-D: Quarantine Roots. Checking this records local readiness acknowledgement only; it does not create folders, move files, write manifests, or approve cleanup."
+                                              AutomationProperties.HelpText="Available only for fully qualified non-D: Quarantine Roots. Checking this records local readiness acknowledgement only; it does not create folders, move files, write manifests, or approve cleanup."
+                                              ToolTipService.ShowOnDisabled="True"
+                                              Checked="NonPreferredQuarantineRootAcknowledgementBox_Changed"
+                                              Unchecked="NonPreferredQuarantineRootAcknowledgementBox_Changed" />
+                                    <Border x:Name="NonPreferredQuarantineRootAcknowledgementHelpCue"
+                                            Width="18"
+                                            Height="18"
+                                            Margin="8,1,0,0"
+                                            CornerRadius="9"
+                                            Background="#F4F7FA"
+                                            BorderBrush="#8A99A8"
+                                            BorderThickness="1"
+                                            VerticalAlignment="Top"
+                                            Cursor="Help"
+                                            ToolTipService.InitialShowDelay="250"
+                                            ToolTip="Available only for fully qualified non-D: Quarantine Roots. Checking this records local readiness acknowledgement only; it does not create folders, move files, write manifests, or approve cleanup."
+                                            AutomationProperties.Name="Non-D Quarantine Root acknowledgement help cue"
+                                            AutomationProperties.HelpText="Available only for fully qualified non-D: Quarantine Roots. Checking this records local readiness acknowledgement only; it does not create folders, move files, write manifests, or approve cleanup.">
+                                        <TextBlock Text="?"
+                                                   HorizontalAlignment="Center"
+                                                   VerticalAlignment="Center"
+                                                   FontSize="11"
+                                                   FontWeight="Bold"
+                                                   Foreground="#526171" />
+                                    </Border>
+                                </StackPanel>
                             </StackPanel>
                             <Button x:Name="PreviewQuarantineButton"
                                     Content="Preview shortlist quarantine"

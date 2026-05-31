@@ -289,6 +289,7 @@ public partial class MainWindow : Window
         GetHelpCueAffordance("Scan gate summary", ScanGateSummaryHelpCue),
         GetHelpCueAffordance("Cleanup Scope Safety Note", CleanupScopeSafetyNoteHelpCue),
         GetHelpCueAffordance("Quarantine Root Safety Note", QuarantineRootSafetyNoteHelpCue),
+        GetHelpCueAffordance("Non-D Quarantine Root acknowledgement", NonPreferredQuarantineRootAcknowledgementHelpCue),
         GetHelpCueAffordance("Shortlist confirmation", QuarantineConfirmationHelpCue),
         GetHelpCueAffordance("Quarantine Manifest Discovery", QuarantineManifestDiscoveryHelpCue),
         GetHelpCueAffordance("Restore Manifest selection", RestoreManifestSelectionHelpCue),
@@ -502,6 +503,12 @@ public partial class MainWindow : Window
     public string NonPreferredQuarantineRootAcknowledgementToolTipValue => NonPreferredQuarantineRootAcknowledgementBox.ToolTip?.ToString() ?? "";
 
     public string NonPreferredQuarantineRootAcknowledgementAutomationHelpTextValue => AutomationProperties.GetHelpText(NonPreferredQuarantineRootAcknowledgementBox);
+
+    public string NonPreferredQuarantineRootAcknowledgementHelpCueToolTipValue => NonPreferredQuarantineRootAcknowledgementHelpCue.ToolTip?.ToString() ?? "";
+
+    public string NonPreferredQuarantineRootAcknowledgementHelpCueAutomationNameValue => AutomationProperties.GetName(NonPreferredQuarantineRootAcknowledgementHelpCue);
+
+    public string NonPreferredQuarantineRootAcknowledgementHelpCueAutomationHelpTextValue => AutomationProperties.GetHelpText(NonPreferredQuarantineRootAcknowledgementHelpCue);
 
     public string? CurrentQuarantinePreviewRootPath => _currentQuarantinePreview?.QuarantineRootPath;
 
@@ -1983,6 +1990,8 @@ public partial class MainWindow : Window
                 : "Enter a fully qualified non-D: Quarantine Root before this readiness acknowledgement can be used. This control does not create folders, move files, write manifests, restore files, delete files, or approve cleanup.";
         NonPreferredQuarantineRootAcknowledgementBox.ToolTip = helpText;
         AutomationProperties.SetHelpText(NonPreferredQuarantineRootAcknowledgementBox, helpText);
+        NonPreferredQuarantineRootAcknowledgementHelpCue.ToolTip = helpText;
+        AutomationProperties.SetHelpText(NonPreferredQuarantineRootAcknowledgementHelpCue, helpText);
     }
 
     private void UpdateQuarantineExecutionGate()

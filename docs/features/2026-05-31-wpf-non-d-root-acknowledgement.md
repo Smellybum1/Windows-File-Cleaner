@@ -56,6 +56,7 @@ What changed:
 - Added dynamic enablement/help text for fully qualified non-`D:` roots.
 - Passed the acknowledgement into `QuarantineRootExecutionSafetyBuilder` for WPF readiness evidence.
 - Added WPF smoke coverage for unacknowledged and acknowledged non-`D:` root safety evidence, stale preview clearing, no-folder-creation behavior, and reset when returning to a preferred `D:` root.
+- Later packet `2026-05-31-non-d-root-acknowledgement-help-cue.md` added a visible hoverable `?` cue beside the acknowledgement and mirrored the checkbox tooltip/help text onto that cue.
 
 Open questions:
 

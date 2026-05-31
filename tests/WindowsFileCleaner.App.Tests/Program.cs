@@ -2160,6 +2160,21 @@ internal sealed class MainWindowSmokeTests
                     window.NonPreferredQuarantineRootAcknowledgementToolTipValue,
                     StringComparison.Ordinal),
                 "Non-D acknowledgement automation help text should mirror its tooltip.");
+            Assert(
+                window.NonPreferredQuarantineRootAcknowledgementHelpCueAutomationNameValue.Contains("Non-D Quarantine Root acknowledgement help cue", StringComparison.OrdinalIgnoreCase),
+                "Non-D acknowledgement help cue should have a specific automation name.");
+            Assert(
+                string.Equals(
+                    window.NonPreferredQuarantineRootAcknowledgementHelpCueToolTipValue,
+                    window.NonPreferredQuarantineRootAcknowledgementToolTipValue,
+                    StringComparison.Ordinal),
+                "Non-D acknowledgement help cue tooltip should mirror the checkbox tooltip.");
+            Assert(
+                string.Equals(
+                    window.NonPreferredQuarantineRootAcknowledgementHelpCueAutomationHelpTextValue,
+                    window.NonPreferredQuarantineRootAcknowledgementAutomationHelpTextValue,
+                    StringComparison.Ordinal),
+                "Non-D acknowledgement help cue automation help text should mirror the checkbox help text.");
 
             window.PreviewQuarantineForReviewShortlist();
             Assert(
@@ -2890,7 +2905,7 @@ internal sealed class MainWindowSmokeTests
     private static void AssertHoverableHelpCueAffordances(MainWindow window, string message)
     {
         var affordances = window.HoverableHelpCueAffordances;
-        Assert(affordances.Count == 18, message + " Expected all eighteen circular help cues to be tracked.");
+        Assert(affordances.Count == 19, message + " Expected all nineteen circular help cues to be tracked.");
 
         foreach (var affordance in affordances)
         {

@@ -1816,7 +1816,7 @@ It does not create folders, move files, write manifests, or approve future Quara
 - Type another absolute `D:` folder before creating a Quarantine Preview.
 - Browse to a `D:` folder before creating a Quarantine Preview.
 - Type a fully qualified non-`D:` folder and see a warning that `D:` remains preferred.
-- For a fully qualified non-`D:` folder, use the WPF acknowledgement checkbox to feed future execution-readiness evidence without creating folders or approving cleanup.
+- For a fully qualified non-`D:` folder, use the WPF acknowledgement checkbox and its visible `?` help cue to feed future execution-readiness evidence without creating folders or approving cleanup.
 - Type a relative folder such as `relative\quarantine` and see Quarantine Preview disabled until the path is corrected.
 
 #### Non-examples
@@ -1848,12 +1848,13 @@ It does not create folders, move files, write manifests, or approve future Quara
 - Use `BrowseQuarantineRootButton` for the WPF browse action.
 - Use `QuarantineRootSafetyNote` and `QuarantineRootSafetyNoteBuilder` for preview-root messaging and gating.
 - Use `NonPreferredQuarantineRootAcknowledgementBox` for the WPF non-`D:` root readiness acknowledgement.
+- Use `NonPreferredQuarantineRootAcknowledgementHelpCue` for the visible WPF `?` help cue beside the acknowledgement.
 - Use the typed value when calling `QuarantinePreviewBuilder`.
 - Keep the default as `D:\WindowsFileCleanerQuarantine`.
 - The typed root field tooltip and automation help text should say it is a read-only preview destination and preview does not create the folder or move files.
 - The Quarantine Root Safety Note has a visible hoverable `?` help cue that mirrors the note tooltip/help text and keeps the preview-root, no-folder-create, no-move, no-manifest-write, and not-cleanup-approval boundary discoverable.
 - Browse tooltips and automation help text should say selection is for preview paths only and does not create folders, move files, or approve cleanup.
-- The non-`D:` acknowledgement tooltip and automation help text should say it is local readiness evidence only and does not create folders, move files, write manifests, restore files, delete files, or approve cleanup.
+- The non-`D:` acknowledgement tooltip, automation help text, and visible `?` help cue should say it is local readiness evidence only and does not create folders, move files, write manifests, restore files, delete files, or approve cleanup.
 - Changing the non-`D:` acknowledgement should clear stale preview/gate state and require a fresh preview.
 - Do not create or validate the folder by touching the filesystem during preview.
 
@@ -1870,13 +1871,13 @@ It is a path-shape check for preview only. It does not prove that a folder exist
 
 The WPF note has a visible hoverable `?` help cue. The cue mirrors the note tooltip and automation help text so the preview-root safety boundary is discoverable without making the note look like a cleanup approval control.
 
-The WPF Quarantine Root area also has a non-`D:` acknowledgement checkbox. It is enabled only for fully qualified non-`D:` roots and feeds Quarantine Root Execution Safety as readiness evidence only.
+The WPF Quarantine Root area also has a non-`D:` acknowledgement checkbox and visible hoverable `?` help cue. The checkbox is enabled only for fully qualified non-`D:` roots and feeds Quarantine Root Execution Safety as readiness evidence only.
 
 #### Examples
 
 - Preferred Quarantine Root: the selected root is fully qualified on `D:`.
 - Non-D: Quarantine Root: the selected root is fully qualified, but `D:` remains preferred for future quarantine storage.
-- Non-D: Quarantine Root: the acknowledgement checkbox becomes available but remains separate from cleanup approval.
+- Non-D: Quarantine Root: the acknowledgement checkbox becomes available, its `?` help cue mirrors the same boundary, and both remain separate from cleanup approval.
 - Choose Full Quarantine Root: the selected root is relative and Quarantine Preview is disabled.
 - Invalid Quarantine Root: the selected root cannot be parsed for preview.
 
