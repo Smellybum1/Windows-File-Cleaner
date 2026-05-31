@@ -24,6 +24,25 @@
             <Setter Property="FontWeight" Value="SemiBold" />
             <Setter Property="Margin" Value="0,0,0,8" />
         </Style>
+        <Style x:Key="HeaderMetricBorderStyle" TargetType="Border">
+            <Setter Property="Background" Value="#F8FAFC" />
+            <Setter Property="BorderBrush" Value="#DCE3EA" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="6" />
+            <Setter Property="Padding" Value="10,6" />
+            <Setter Property="Margin" Value="0,0,8,0" />
+            <Setter Property="MinWidth" Value="92" />
+        </Style>
+        <Style x:Key="HeaderMetricLabelTextStyle" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="#526171" />
+            <Setter Property="FontSize" Value="11" />
+        </Style>
+        <Style x:Key="HeaderMetricValueTextStyle" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="#16202A" />
+            <Setter Property="FontSize" Value="16" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Margin" Value="0,2,0,0" />
+        </Style>
         <Style TargetType="TabControl">
             <Setter Property="Background" Value="Transparent" />
             <Setter Property="BorderBrush" Value="#DCE3EA" />
@@ -73,15 +92,66 @@
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
-            <StackPanel Grid.Row="0"
-                        Grid.Column="0">
-                <TextBlock Text="Storage Scan"
-                           FontSize="26"
-                           FontWeight="SemiBold" />
-                <TextBlock Text="Read-only review of cleanup candidates"
-                           Foreground="#526171"
-                           Margin="0,3,0,0" />
-            </StackPanel>
+            <Grid Grid.Row="0"
+                  Grid.Column="0"
+                  Margin="0,0,16,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0">
+                    <TextBlock Text="Storage Scan"
+                               FontSize="26"
+                               FontWeight="SemiBold" />
+                    <TextBlock Text="Read-only review of cleanup candidates"
+                               Foreground="#526171"
+                               Margin="0,3,0,0" />
+                </StackPanel>
+
+                <WrapPanel x:Name="ScanMetricStrip"
+                           Grid.Column="1"
+                           Margin="24,0,0,0"
+                           HorizontalAlignment="Right"
+                           VerticalAlignment="Center">
+                    <Border Style="{StaticResource HeaderMetricBorderStyle}">
+                        <StackPanel>
+                            <TextBlock Text="Total size"
+                                       Style="{StaticResource HeaderMetricLabelTextStyle}" />
+                            <TextBlock x:Name="TotalSizeText"
+                                       Text="-"
+                                       Style="{StaticResource HeaderMetricValueTextStyle}" />
+                        </StackPanel>
+                    </Border>
+                    <Border Style="{StaticResource HeaderMetricBorderStyle}">
+                        <StackPanel>
+                            <TextBlock Text="Folders"
+                                       Style="{StaticResource HeaderMetricLabelTextStyle}" />
+                            <TextBlock x:Name="FolderCountText"
+                                       Text="-"
+                                       Style="{StaticResource HeaderMetricValueTextStyle}" />
+                        </StackPanel>
+                    </Border>
+                    <Border Style="{StaticResource HeaderMetricBorderStyle}">
+                        <StackPanel>
+                            <TextBlock Text="Files"
+                                       Style="{StaticResource HeaderMetricLabelTextStyle}" />
+                            <TextBlock x:Name="FileCountText"
+                                       Text="-"
+                                       Style="{StaticResource HeaderMetricValueTextStyle}" />
+                        </StackPanel>
+                    </Border>
+                    <Border Style="{StaticResource HeaderMetricBorderStyle}">
+                        <StackPanel>
+                            <TextBlock Text="Access issues"
+                                       Style="{StaticResource HeaderMetricLabelTextStyle}" />
+                            <TextBlock x:Name="AccessIssueCountText"
+                                       Text="-"
+                                       Style="{StaticResource HeaderMetricValueTextStyle}" />
+                        </StackPanel>
+                    </Border>
+                </WrapPanel>
+            </Grid>
 
             <StackPanel Grid.Row="0"
                         Grid.Column="1"
@@ -235,40 +305,7 @@
 
         <TabControl x:Name="WorkbenchTabs"
                     Grid.Row="1"
-                    SelectedIndex="4">
-        <TabItem Header="Scan">
-            <ScrollViewer VerticalScrollBarVisibility="Auto"
-                          HorizontalScrollBarVisibility="Disabled">
-            <UniformGrid Columns="4"
-                         Margin="0,10,0,0">
-            <Border Style="{StaticResource PanelBorderStyle}" Margin="0,0,8,0">
-                <StackPanel>
-                    <TextBlock Text="Total size" Foreground="#526171" />
-                    <TextBlock x:Name="TotalSizeText" Text="-" FontSize="20" FontWeight="SemiBold" Margin="0,5,0,0" />
-                </StackPanel>
-            </Border>
-            <Border Style="{StaticResource PanelBorderStyle}" Margin="0,0,8,0">
-                <StackPanel>
-                    <TextBlock Text="Folders" Foreground="#526171" />
-                    <TextBlock x:Name="FolderCountText" Text="-" FontSize="20" FontWeight="SemiBold" Margin="0,5,0,0" />
-                </StackPanel>
-            </Border>
-            <Border Style="{StaticResource PanelBorderStyle}" Margin="0,0,8,0">
-                <StackPanel>
-                    <TextBlock Text="Files" Foreground="#526171" />
-                    <TextBlock x:Name="FileCountText" Text="-" FontSize="20" FontWeight="SemiBold" Margin="0,5,0,0" />
-                </StackPanel>
-            </Border>
-            <Border Style="{StaticResource PanelBorderStyle}">
-                <StackPanel>
-                    <TextBlock Text="Access issues" Foreground="#526171" />
-                    <TextBlock x:Name="AccessIssueCountText" Text="-" FontSize="20" FontWeight="SemiBold" Margin="0,5,0,0" />
-                </StackPanel>
-            </Border>
-            </UniformGrid>
-            </ScrollViewer>
-        </TabItem>
-
+                    SelectedIndex="3">
         <TabItem Header="Safety Summary">
             <ScrollViewer VerticalScrollBarVisibility="Auto"
                           HorizontalScrollBarVisibility="Disabled">

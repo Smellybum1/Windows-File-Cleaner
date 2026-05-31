@@ -103,6 +103,8 @@ public partial class MainWindow : Window
 
     public bool ScopeStatusUsesWrappingLayout => ScopeStatusPanel is WrapPanel;
 
+    public bool ScanMetricsUseWrappingLayout => ScanMetricStrip is WrapPanel;
+
     public string CurrentStatusText => StatusText.Text;
 
     public string WorkbenchTabHeaderSummary => string.Join(

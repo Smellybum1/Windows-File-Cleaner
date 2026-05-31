@@ -99,10 +99,13 @@ internal sealed class MainWindowSmokeTests
             Assert(
                 window.ScopeStatusUsesWrappingLayout,
                 "Cleanup Scope status lines should use a wrapping header layout so the top-right scan area stays compact.");
+            Assert(
+                window.ScanMetricsUseWrappingLayout,
+                "Scan metrics should use a compact wrapping header layout so the tab row stays focused on review pages.");
             Assert(window.CurrentStatusText == "Ready", "MainWindow should not start scanning when constructed.");
             Assert(
-                window.WorkbenchTabHeaderSummary == "Scan|Safety Summary|Review|Quarantine|Main Grid",
-                "Workbench tabs should expose Scan, Safety Summary, Review, Quarantine, and Main Grid sections.");
+                window.WorkbenchTabHeaderSummary == "Safety Summary|Review|Quarantine|Main Grid",
+                "Workbench tabs should expose Safety Summary, Review, Quarantine, and Main Grid sections.");
             Assert(
                 window.SelectedWorkbenchTabHeader == "Main Grid",
                 "Main Grid tab should be selected by default so scan rows keep their dedicated page.");
@@ -1069,9 +1072,9 @@ internal sealed class MainWindowSmokeTests
             Assert(!window.CanResetReviewView, "Reset view should be disabled while the review view is unfiltered.");
             Assert(window.CurrentEntryTypeFilterLabel.Contains("All types", StringComparison.OrdinalIgnoreCase), "Type filter should start on All types.");
             Assert(window.CurrentSizeThresholdFilterLabel.Contains("All sizes", StringComparison.OrdinalIgnoreCase), "Size threshold filter should start on All sizes.");
-            Assert(window.TotalSizeTextValue != "-", "Total size card should be populated after scan.");
-            Assert(window.FolderCountTextValue != "-", "Folder count card should be populated after scan.");
-            Assert(window.FileCountTextValue != "-", "File count card should be populated after scan.");
+            Assert(window.TotalSizeTextValue != "-", "Total size header metric should be populated after scan.");
+            Assert(window.FolderCountTextValue != "-", "Folder count header metric should be populated after scan.");
+            Assert(window.FileCountTextValue != "-", "File count header metric should be populated after scan.");
             Assert(window.AccessIssueCountTextValue == "0", "Synthetic fixture should scan without access issues.");
             Assert(window.ReviewMixTextValue.Contains("Quarantine candidates", StringComparison.OrdinalIgnoreCase), "Review Mix should summarize quarantine candidates.");
             AssertReviewMixHelpText(window, "Review Mix help text should mirror the completed scan review boundary.");

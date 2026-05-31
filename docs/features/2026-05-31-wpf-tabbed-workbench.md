@@ -6,7 +6,7 @@ Owner: project-owner
 
 ## Goal
 
-Give the large WPF review sections their own horizontal tab pages so Scan, Safety Summary, Review, Quarantine, and Main Grid each have enough room.
+Give the large WPF review sections their own horizontal tab pages so Safety Summary, Review, Quarantine, and Main Grid each have enough room.
 
 ## Non-goals
 
@@ -19,7 +19,7 @@ Give the large WPF review sections their own horizontal tab pages so Scan, Safet
 ## Implementation
 
 - Added a `WorkbenchTabs` WPF tab control below the global Cleanup Scope and scan-gate header.
-- Moved scan summary cards to a `Scan` tab.
+- Initially moved scan summary cards to a `Scan` tab; a follow-up header-metrics packet moved those totals back into the header and removed the sparse Scan tab.
 - Moved Safety Summary to its own tab and kept its header text, state styling, tooltip/help text, and hoverable `?` help cue.
 - Moved review filters, search, display-window controls, visible-row shortlist controls, and Review Shortlist Safety Mix to a `Review` tab.
 - Moved Quarantine Root Selection, Quarantine Preview, compact Quarantine Readiness Summary, confirmation, fixture execution, current-fixture undo, and Quarantine Execution Gate to a `Quarantine` tab.
@@ -45,7 +45,7 @@ Completed on: 2026-05-31
 
 What changed:
 
-- The visible app now has tab pages for Scan, Safety Summary, Review, Quarantine, and Main Grid, with large safety/readiness sections moved out of the main grid's vertical path.
+- The visible app now has tab pages for Safety Summary, Review, Quarantine, and Main Grid, with large safety/readiness sections moved out of the main grid's vertical path.
 
 ADRs:
 
@@ -53,7 +53,7 @@ ADRs:
 
 Follow-up work:
 
-- Run a visible fixture pass and decide whether the tab order should stay as Scan / Safety Summary / Review / Quarantine / Main Grid or be reordered after hands-on use.
+- Run a visible fixture pass and decide whether the Safety Summary / Review / Quarantine / Main Grid tab order should stay as-is after hands-on use.
 
 Open questions:
 
