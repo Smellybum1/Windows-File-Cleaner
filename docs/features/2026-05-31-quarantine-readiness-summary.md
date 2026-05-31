@@ -54,6 +54,7 @@ What changed:
 - Added WPF smoke assertions for fixture preview/open/executed/undo summary states, custom preview-only summary, real-profile preview-only missing dimensions, and tooltip/automation help text.
 - Updated manual fixture checklist wording so visible review includes the new summary line.
 - Later packet `2026-05-31-quarantine-readiness-summary-preview-only-wording.md` changed preview-only compact summary wording from the technical `Current build can execute: no` phrase to `movement unavailable`, while leaving detailed gate evidence unchanged.
+- Later packet `2026-05-31-quarantine-readiness-summary-key-blockers.md` added concise `Key blockers:` labels to preview-only summaries so high-signal ADR 0018 blockers can be seen without reading the full gate text.
 
 Open questions:
 

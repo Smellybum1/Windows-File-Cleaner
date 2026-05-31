@@ -2624,7 +2624,7 @@ It is a scannable summary of the detailed Quarantine Execution Gate output, not 
 - Before preview, say the summary is waiting for `Preview shortlist quarantine`.
 - After a clean fixture preview, say there are 0 readiness blockers and exact `QUARANTINE` is still needed.
 - After exact `QUARANTINE` on a fixture preview, say the fixture-only action can run.
-- For custom or real-profile previews, say the scope is preview-only in this build and name missing readiness dimensions.
+- For custom or real-profile previews, say the scope is preview-only in this build, name missing readiness dimensions, and include concise key blockers such as first-phase caps or strict descendant checks when relevant.
 - After fixture execution or undo, say scan rows may be stale or the current fixture undo already ran.
 
 #### Non-examples
@@ -2651,6 +2651,7 @@ It is a scannable summary of the detailed Quarantine Execution Gate output, not 
 
 - Use `QuarantineReadinessSummaryText` for the WPF readout.
 - Keep wording short enough to wrap cleanly in the Quarantine Shortlist area.
+- Prefer concise key-blocker labels over full blocker sentences in the compact summary; detailed blocker text remains in Quarantine Preview and Quarantine Execution Gate output.
 - Mirror the current summary into tooltip and automation help text with `Summary state:` plus no-create/no-move/no-restore/no-delete/no-manifest-write/not-cleanup-approval boundaries.
 - Use lightweight styling only as status emphasis; it must not imply cleanup approval.
 

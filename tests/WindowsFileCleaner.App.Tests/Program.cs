@@ -2714,8 +2714,13 @@ internal sealed class MainWindowSmokeTests
             Assert(
                 window.QuarantineReadinessSummaryTextValue.Contains("real-profile candidate", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantineReadinessSummaryTextValue.Contains("Review readiness", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineReadinessSummaryTextValue.Contains("Key blockers:", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineReadinessSummaryTextValue.Contains("10-row cap", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineReadinessSummaryTextValue.Contains("1 GB cap", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineReadinessSummaryTextValue.Contains("no-category rows", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineReadinessSummaryTextValue.Contains("strict descendant checks", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantineReadinessSummaryTextValue.Contains("movement unavailable", StringComparison.OrdinalIgnoreCase),
-                "Compact readiness summary should name review-readiness blockers for first-phase real-profile rows.");
+                "Compact readiness summary should name key review-readiness blockers for first-phase real-profile rows.");
             Assert(window.QuarantineReadinessSummaryStyleValue == "Warning", "First-phase blocker readiness summary should use warning styling.");
             AssertQuarantineReadinessSummaryHelpText(window, "Compact readiness summary help text should mirror first-phase blocker state.");
         }

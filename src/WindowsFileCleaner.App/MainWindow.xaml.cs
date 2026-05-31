@@ -2106,7 +2106,8 @@ public partial class MainWindow : Window
         }
 
         var missingDimensions = FormatReadinessDimensionSummary(executionReadiness.Blockers);
-        return ($"Execution readiness summary: {disposition} ({scopeKind}) is preview-only in this build; movement unavailable. {blockerCount:N0} readiness blocker(s). Missing: {missingDimensions}.", QuarantineReadinessSummaryStyle.Warning);
+        var keyBlockers = FormatReadinessKeyBlockerSummary(executionReadiness.Blockers);
+        return ($"Execution readiness summary: {disposition} ({scopeKind}) is preview-only in this build; movement unavailable. {blockerCount:N0} readiness blocker(s). Missing: {missingDimensions}. Key blockers: {keyBlockers}.", QuarantineReadinessSummaryStyle.Warning);
     }
 
     private static string FormatReadinessDimensionSummary(IReadOnlyList<string> blockers)
@@ -2130,6 +2131,142 @@ public partial class MainWindow : Window
         return remainingDimensionCount == 0
             ? summary
             : $"{summary}, and {remainingDimensionCount:N0} more";
+    }
+
+    private static string FormatReadinessKeyBlockerSummary(IReadOnlyList<string> blockers)
+    {
+        if (blockers.Count == 0)
+        {
+            return "none";
+        }
+
+        var labels = SelectReadinessKeyBlockerLabels(blockers);
+
+        if (labels.Count == 0)
+        {
+            labels.Add(GetQuarantineExecutionReadinessDimension(blockers[0]));
+        }
+
+        var summary = string.Join(", ", labels);
+        var remainingLabelCount = SelectReadinessKeyBlockerLabels(blockers, int.MaxValue)
+            .Skip(4)
+            .Count();
+        return remainingLabelCount == 0
+            ? summary
+            : $"{summary}, and {remainingLabelCount:N0} more";
+    }
+
+    private static List<string> SelectReadinessKeyBlockerLabels(
+        IReadOnlyList<string> blockers,
+        int maxCount = 4)
+    {
+        var labels = new List<string>(capacity: Math.Min(maxCount, 4));
+        var priorityPatterns = new (string Pattern, string Label)[]
+        {
+            ("capped at 10 included row", "10-row cap"),
+            ("capped at 1 GB", "1 GB cap"),
+            ("No-category rows are blocked", "no-category rows"),
+            ("strict descendant checks", "strict descendant checks"),
+            ("first real-profile Quarantine phase is limited", "exact profile scope"),
+            ("Non-D:", "non-D root acknowledgement"),
+            ("Quarantine Root Execution Safety", "quarantine root safety"),
+            ("Pre-Execution Revalidation", "pre-execution revalidation"),
+            ("Real-Profile Restore Readiness", "restore readiness"),
+            ("Selected-manifest real-profile Undo", "restore readiness"),
+            ("Real-profile WPF Quarantine execution", "current build unavailable"),
+            ("Custom non-fixture", "custom scope preview-only")
+        };
+
+        foreach (var (pattern, label) in priorityPatterns)
+        {
+            if (blockers.Any(blocker => blocker.Contains(pattern, StringComparison.OrdinalIgnoreCase))
+                && !labels.Contains(label, StringComparer.OrdinalIgnoreCase))
+            {
+                labels.Add(label);
+            }
+
+            if (labels.Count >= maxCount)
+            {
+                return labels;
+            }
+        }
+
+        foreach (var blocker in blockers)
+        {
+            var label = GetReadinessKeyBlockerLabel(blocker);
+            if (!labels.Contains(label, StringComparer.OrdinalIgnoreCase))
+            {
+                labels.Add(label);
+            }
+
+            if (labels.Count >= maxCount)
+            {
+                break;
+            }
+        }
+
+        return labels;
+    }
+
+    private static string GetReadinessKeyBlockerLabel(string blocker)
+    {
+        if (blocker.Contains("Real-profile WPF Quarantine execution", StringComparison.OrdinalIgnoreCase))
+        {
+            return "current build unavailable";
+        }
+
+        if (blocker.Contains("capped at 10 included row", StringComparison.OrdinalIgnoreCase))
+        {
+            return "10-row cap";
+        }
+
+        if (blocker.Contains("capped at 1 GB", StringComparison.OrdinalIgnoreCase))
+        {
+            return "1 GB cap";
+        }
+
+        if (blocker.Contains("No-category rows are blocked", StringComparison.OrdinalIgnoreCase))
+        {
+            return "no-category rows";
+        }
+
+        if (blocker.Contains("strict descendant checks", StringComparison.OrdinalIgnoreCase))
+        {
+            return "strict descendant checks";
+        }
+
+        if (blocker.Contains("Pre-Execution Revalidation", StringComparison.OrdinalIgnoreCase))
+        {
+            return "pre-execution revalidation";
+        }
+
+        if (blocker.Contains("Real-Profile Restore Readiness", StringComparison.OrdinalIgnoreCase)
+            || blocker.Contains("Selected-manifest real-profile Undo", StringComparison.OrdinalIgnoreCase))
+        {
+            return "restore readiness";
+        }
+
+        if (blocker.Contains("Quarantine Root Execution Safety", StringComparison.OrdinalIgnoreCase))
+        {
+            return "quarantine root safety";
+        }
+
+        if (blocker.Contains("first real-profile Quarantine phase is limited", StringComparison.OrdinalIgnoreCase))
+        {
+            return "exact profile scope";
+        }
+
+        if (blocker.Contains("Non-D:", StringComparison.OrdinalIgnoreCase))
+        {
+            return "non-D root acknowledgement";
+        }
+
+        if (blocker.Contains("Custom non-fixture", StringComparison.OrdinalIgnoreCase))
+        {
+            return "custom scope preview-only";
+        }
+
+        return GetQuarantineExecutionReadinessDimension(blocker);
     }
 
     private enum QuarantineReadinessSummaryStyle

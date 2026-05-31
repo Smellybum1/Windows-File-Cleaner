@@ -29,6 +29,7 @@ Keep ADR 0018 first-phase real-profile Quarantine blockers visible in WPF previe
 - The test loads synthetic real-profile-shaped scan metadata for exact `C:\Users\moxhe`, shortlists rows that trigger the first-phase batch, no-category, and strict-descendant blockers, and proves preview/gate output keeps those blockers visible.
 - The synthetic paths are never created under the real profile; the test does not scan, move, restore, delete, write manifests, or create the Quarantine Root.
 - Later checklist alignment added the ADR 0018 first-phase limits to the manual fixture review prompt without changing WPF behavior.
+- Later summary-key-blocker alignment added the same first-phase examples to the compact Quarantine Readiness Summary without enabling movement.
 
 ## Verification
 
