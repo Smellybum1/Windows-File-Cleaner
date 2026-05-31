@@ -32,6 +32,8 @@ The detailed preview/gate panes still show the full Execution Readiness contract
 
 - `src/WindowsFileCleaner.App/MainWindow.xaml.cs`
 - `tests/WindowsFileCleaner.App.Tests/Program.cs`
+- `tools/Start-MvpFixtureReview.ps1`
+- `README.md`
 - `docs/features/2026-05-31-quarantine-readiness-summary-preview-only-wording.md`
 - `.codex/progress.md`
 - `docs/codex/thread-handoff.md`
@@ -41,6 +43,7 @@ The detailed preview/gate panes still show the full Execution Readiness contract
 Automated tests:
 
 - `dotnet run --project tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj`
+- `cmd.exe /c tools\Start-MvpFixtureReview.cmd -ChecklistOnly`
 - `git diff --check`
 
 ## Completion notes
@@ -51,6 +54,7 @@ What changed:
 
 - Changed the compact preview-only summary suffix to `movement unavailable`.
 - Updated WPF smoke assertions for custom, synthetic real-profile, and synthetic real-profile-child preview-only summaries.
+- Later checklist-alignment packet updated the fixture checklist and README manual review wording to ask reviewers to check preview-only `movement unavailable` summary text.
 
 ADRs:
 
