@@ -81,6 +81,7 @@ tests.CsvExporterWritesEscapedReviewRows();
 tests.ByteSizeFormatterUsesReadableUnits();
 tests.ProductionCodeDoesNotContainCleanupExecutionCalls();
 tests.ReadOnlyReadinessBuildersDoNotCallExecutionComponents();
+tests.WpfExecutionBridgeKeepsExecutorCallsInGatedMethods();
 tests.MvpPreflightScriptChecksNativeCommandExitCodes();
 
 Console.WriteLine("All WindowsFileCleaner.Tests checks passed.");
@@ -3491,6 +3492,68 @@ internal sealed class StorageScanTests
             + FormatSourceLines(blockedMatches));
     }
 
+    public void WpfExecutionBridgeKeepsExecutorCallsInGatedMethods()
+    {
+        var repositoryRoot = FindRepositoryRoot();
+        var mainWindowPath = Path.Combine(repositoryRoot, "src", "WindowsFileCleaner.App", "MainWindow.xaml.cs");
+        var sourceLines = File.ReadAllLines(mainWindowPath);
+        var executorCalls = sourceLines
+            .Select((line, index) => new SourceLine(mainWindowPath, index + 1, line))
+            .Where(sourceLine =>
+                sourceLine.Text.Contains("QuarantineExecutor.Execute(", StringComparison.Ordinal)
+                || sourceLine.Text.Contains("UndoQuarantineExecutor.Undo(", StringComparison.Ordinal))
+            .ToArray();
+
+        Assert(executorCalls.Length == 3, "WPF should only call movement executors from the three known execution bridge methods.");
+        Assert(
+            executorCalls.All(call =>
+            {
+                var methodName = FindEnclosingMethodName(sourceLines, call.LineNumber - 1);
+                return methodName is "ExecuteQuarantineForCurrentPreview"
+                    or "ExecuteSelectedRestoreForCurrentSelection"
+                    or "UndoQuarantineForCurrentExecution";
+            }),
+            "WPF movement executor calls should stay inside known gated methods: " + FormatSourceLines(executorCalls));
+
+        var quarantineExecutionMethod = ExtractMethodText(sourceLines, "public void ExecuteQuarantineForCurrentPreview()");
+        Assert(
+            quarantineExecutionMethod.Contains("_currentQuarantineExecutionGate?.CanExecute != true", StringComparison.Ordinal)
+            && quarantineExecutionMethod.Contains("_currentRestoreManifest is null", StringComparison.Ordinal)
+            && quarantineExecutionMethod.IndexOf("QuarantineExecutor.Execute(", StringComparison.Ordinal)
+                > quarantineExecutionMethod.IndexOf("_currentQuarantineExecutionGate?.CanExecute != true", StringComparison.Ordinal),
+            "WPF Quarantine execution should remain behind the execution gate and manifest guard.");
+
+        var selectedRestoreMethod = ExtractMethodText(sourceLines, "public void ExecuteSelectedRestoreForCurrentSelection()");
+        Assert(
+            selectedRestoreMethod.Contains("_currentSelectedRestoreExecutionGate?.CanExecute != true", StringComparison.Ordinal)
+            && selectedRestoreMethod.Contains("_currentSelectedRestoreConfirmationDraft is null", StringComparison.Ordinal)
+            && selectedRestoreMethod.Contains("FindSelectedRestoreManifest()", StringComparison.Ordinal)
+            && selectedRestoreMethod.IndexOf("UndoQuarantineExecutor.Undo(", StringComparison.Ordinal)
+                > selectedRestoreMethod.IndexOf("FindSelectedRestoreManifest()", StringComparison.Ordinal),
+            "WPF selected restore execution should remain behind the selected restore gate and current discovery lookup.");
+
+        var undoMethod = ExtractMethodText(sourceLines, "public void UndoQuarantineForCurrentExecution()");
+        Assert(
+            undoMethod.Contains("!CanUndoCurrentQuarantineExecution()", StringComparison.Ordinal)
+            && undoMethod.IndexOf("UndoQuarantineExecutor.Undo(", StringComparison.Ordinal)
+                > undoMethod.IndexOf("!CanUndoCurrentQuarantineExecution()", StringComparison.Ordinal),
+            "WPF current-fixture undo should remain behind the current fixture undo guard.");
+
+        var fixtureAvailabilityMethod = ExtractMethodText(sourceLines, "private bool IsFixtureQuarantineExecutionAvailable()");
+        var undoAvailabilityMethod = ExtractMethodText(sourceLines, "private bool CanUndoCurrentQuarantineExecution()");
+        var selectedRestoreAvailabilityMethod = ExtractMethodText(sourceLines, "private bool IsSelectedRestoreExecutionAvailable()");
+
+        Assert(
+            fixtureAvailabilityMethod.Contains(".IsFixtureScope", StringComparison.Ordinal),
+            "WPF Quarantine execution availability should remain fixture-scope based.");
+        Assert(
+            undoAvailabilityMethod.Contains("IsFixtureQuarantineExecutionAvailable()", StringComparison.Ordinal),
+            "WPF current-fixture undo availability should depend on fixture Quarantine execution availability.");
+        Assert(
+            selectedRestoreAvailabilityMethod.Contains(".IsFixtureScope", StringComparison.Ordinal),
+            "WPF selected restore execution availability should remain fixture-scope based.");
+    }
+
     public void MvpPreflightScriptChecksNativeCommandExitCodes()
     {
         var repositoryRoot = FindRepositoryRoot();
@@ -3977,6 +4040,71 @@ internal sealed class StorageScanTests
         return sourceLines.Count == 0
             ? "none"
             : string.Join("; ", sourceLines.Select(line => $"{line.FilePath}:{line.LineNumber}: {line.Text.Trim()}"));
+    }
+
+    private static string FindEnclosingMethodName(IReadOnlyList<string> sourceLines, int lineIndex)
+    {
+        for (var index = lineIndex; index >= 0; index--)
+        {
+            var trimmed = sourceLines[index].Trim();
+            if (trimmed.StartsWith("public void ", StringComparison.Ordinal)
+                || trimmed.StartsWith("private void ", StringComparison.Ordinal)
+                || trimmed.StartsWith("private bool ", StringComparison.Ordinal))
+            {
+                var secondSpace = trimmed.IndexOf(' ', trimmed.IndexOf(' ') + 1);
+                var nameStart = secondSpace + 1;
+                var nameEnd = trimmed.IndexOf('(', nameStart);
+                return nameEnd > nameStart
+                    ? trimmed[nameStart..nameEnd]
+                    : "";
+            }
+        }
+
+        return "";
+    }
+
+    private static string ExtractMethodText(IReadOnlyList<string> sourceLines, string signature)
+    {
+        var startIndex = -1;
+        for (var index = 0; index < sourceLines.Count; index++)
+        {
+            if (sourceLines[index].Contains(signature, StringComparison.Ordinal))
+            {
+                startIndex = index;
+                break;
+            }
+        }
+
+        Assert(startIndex >= 0, $"Expected to find method signature: {signature}");
+
+        var collected = new List<string>();
+        var braceDepth = 0;
+        var sawOpenBrace = false;
+        for (var index = startIndex; index < sourceLines.Count; index++)
+        {
+            var line = sourceLines[index];
+            collected.Add(line);
+
+            foreach (var character in line)
+            {
+                if (character == '{')
+                {
+                    braceDepth++;
+                    sawOpenBrace = true;
+                }
+                else if (character == '}')
+                {
+                    braceDepth--;
+                }
+            }
+
+            if (sawOpenBrace && braceDepth == 0)
+            {
+                break;
+            }
+        }
+
+        return string.Join(Environment.NewLine, collected);
     }
 
     private sealed record SourceLine(string FilePath, int LineNumber, string Text);
