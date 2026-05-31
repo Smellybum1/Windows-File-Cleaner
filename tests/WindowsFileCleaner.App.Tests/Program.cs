@@ -33,6 +33,7 @@ internal static class Program
                 tests.MainWindowExecutesQuarantineForFixtureScopeOnly();
                 tests.MainWindowDiscoversQuarantineManifestsReadOnly();
                 tests.MainWindowShowsRealProfileReadinessContractForSyntheticPreview();
+                tests.MainWindowShowsRealProfileFirstPhaseBlockersForSyntheticPreview();
                 tests.MainWindowShowsRealProfileChildReadinessContractForSyntheticPreview();
                 tests.MainWindowKeepsQuarantineExecutionUnavailableForCustomScope();
                 tests.MainWindowKeepsSelectedRestoreUnavailableForCustomScope();
@@ -2658,6 +2659,72 @@ internal sealed class MainWindowSmokeTests
         }
     }
 
+    public void MainWindowShowsRealProfileFirstPhaseBlockersForSyntheticPreview()
+    {
+        var cleanupScopePath = StorageScanOptions.DefaultForCurrentUser().CleanupScopePath;
+        using var fixture = SmokeFixture.CreateCustomScope();
+        var quarantineRoot = Path.Combine(fixture.RootPath, "synthetic-real-profile-first-phase-quarantine-root");
+        var syntheticScan = BuildSyntheticRealProfileFirstPhaseBlockerScanResult(cleanupScopePath);
+
+        var window = new MainWindow();
+        try
+        {
+            window.ConfirmRealProfilePreflightForRealProfileScan();
+            ApplySyntheticStorageScanResult(window, syntheticScan.Result);
+
+            foreach (var selectedPath in syntheticScan.ShortlistedPaths)
+            {
+                Assert(
+                    window.DisplayedRows.Any(row => row.FullPath.Equals(selectedPath, StringComparison.OrdinalIgnoreCase)),
+                    $"Synthetic first-phase blocker row should be visible without scanning the real profile: {selectedPath}");
+                Assert(window.SelectDisplayedPath(selectedPath), $"Synthetic first-phase blocker row should be selectable: {selectedPath}");
+                window.AddSelectedPathToReviewShortlist();
+            }
+
+            window.SetQuarantineRootForPreview(quarantineRoot);
+            window.PreviewQuarantineForReviewShortlist();
+            window.SetQuarantineConfirmationText("QUARANTINE");
+
+            Assert(!window.CanExecuteQuarantine, "Synthetic first-phase real-profile blockers must not open WPF Quarantine execution.");
+            Assert(!Directory.Exists(quarantineRoot), "Synthetic first-phase real-profile preview must not create the Quarantine Root.");
+            Assert(
+                window.QuarantinePreviewTextValue.Contains("Execution readiness contract", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantinePreviewTextValue.Contains("real-profile candidate", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantinePreviewTextValue.Contains("First real-profile Quarantine is capped at 10 included row", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantinePreviewTextValue.Contains("First real-profile Quarantine is capped at 1 GB", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantinePreviewTextValue.Contains("No-category rows are blocked", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantinePreviewTextValue.Contains("strict descendant checks", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantinePreviewTextValue.Contains("blocked descendant", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantinePreviewTextValue.Contains("Current build can execute from this readiness model: no", StringComparison.OrdinalIgnoreCase),
+                "Synthetic first-phase real-profile preview should surface batch, no-category, and strict-descendant blockers.");
+            Assert(
+                window.QuarantineExecutionGateTextValue.Contains("Entered confirmation matches: yes", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineExecutionGateTextValue.Contains("Can execute: no", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineExecutionGateTextValue.Contains("First real-profile Quarantine is capped at 10 included row", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineExecutionGateTextValue.Contains("First real-profile Quarantine is capped at 1 GB", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineExecutionGateTextValue.Contains("No-category rows are blocked", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineExecutionGateTextValue.Contains("strict descendant checks", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineExecutionGateTextValue.Contains("blocked descendant", StringComparison.OrdinalIgnoreCase),
+                "Synthetic first-phase real-profile gate should keep ADR 0018 blockers visible after exact QUARANTINE.");
+            Assert(
+                window.QuarantineExecutionGateTextValue.Contains("Real-Profile Quarantine Approval Evidence: checked", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineExecutionGateTextValue.Contains("Exact QUARANTINE entered: yes", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineExecutionGateTextValue.Contains("Can approve real-profile movement: no", StringComparison.OrdinalIgnoreCase),
+                "Synthetic first-phase real-profile gate should keep approval evidence display-only.");
+            Assert(
+                window.QuarantineReadinessSummaryTextValue.Contains("real-profile candidate", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineReadinessSummaryTextValue.Contains("Review readiness", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineReadinessSummaryTextValue.Contains("movement unavailable", StringComparison.OrdinalIgnoreCase),
+                "Compact readiness summary should name review-readiness blockers for first-phase real-profile rows.");
+            Assert(window.QuarantineReadinessSummaryStyleValue == "Warning", "First-phase blocker readiness summary should use warning styling.");
+            AssertQuarantineReadinessSummaryHelpText(window, "Compact readiness summary help text should mirror first-phase blocker state.");
+        }
+        finally
+        {
+            window.Close();
+        }
+    }
+
     public void MainWindowShowsRealProfileChildReadinessContractForSyntheticPreview()
     {
         var realProfileScopePath = StorageScanOptions.DefaultForCurrentUser().CleanupScopePath;
@@ -3639,6 +3706,130 @@ internal sealed class MainWindowSmokeTests
             CompletedAtUtc: now,
             root);
     }
+
+    private static SyntheticRealProfileFirstPhaseBlockerScanResult BuildSyntheticRealProfileFirstPhaseBlockerScanResult(
+        string cleanupScopePath)
+    {
+        var now = new DateTimeOffset(2026, 5, 31, 15, 16, 17, TimeSpan.Zero);
+        var cleanupScope = Path.GetFullPath(cleanupScopePath);
+        var selectedPaths = new List<string>();
+        var children = new List<StorageEntry>();
+
+        for (var index = 0; index < 11; index++)
+        {
+            var fullPath = Path.Combine(cleanupScope, "Downloads", $"bulk-{index}.msi");
+            selectedPaths.Add(fullPath);
+            children.Add(CreateSyntheticEntry(
+                fullPath,
+                isDirectory: false,
+                sizeBytes: 64,
+                [BloatCategory.OldDownload, BloatCategory.InstallerCache],
+                "Synthetic real-profile row cap regression row. No filesystem scan was run.",
+                []));
+        }
+
+        var oversizedPath = Path.Combine(
+            cleanupScope,
+            "AppData",
+            "Local",
+            "WindowsFileCleanerRegression",
+            "oversized.bin");
+        selectedPaths.Add(oversizedPath);
+        children.Add(CreateSyntheticEntry(
+            oversizedPath,
+            isDirectory: false,
+            sizeBytes: QuarantineExecutionReadiness.DefaultRealProfileIncludedByteLimit + 1,
+            [BloatCategory.AppCache],
+            "Synthetic real-profile byte cap regression row. No filesystem scan was run.",
+            []));
+
+        var noCategoryPath = Path.Combine(
+            cleanupScope,
+            "WindowsFileCleanerRegression",
+            "uncategorized.bin");
+        selectedPaths.Add(noCategoryPath);
+        children.Add(CreateSyntheticEntry(
+            noCategoryPath,
+            isDirectory: false,
+            sizeBytes: 32,
+            [],
+            "Synthetic real-profile no-category regression row. No filesystem scan was run.",
+            []));
+
+        var blockedDescendantPath = Path.Combine(
+            cleanupScope,
+            "AppData",
+            "Local",
+            "PackageCache",
+            "nested-no-category.bin");
+        var blockedDescendant = CreateSyntheticEntry(
+            blockedDescendantPath,
+            isDirectory: false,
+            sizeBytes: 96,
+            [],
+            "Synthetic strict-descendant blocker row. No filesystem scan was run.",
+            []);
+        var folderPath = Path.Combine(cleanupScope, "AppData", "Local", "PackageCache");
+        selectedPaths.Add(folderPath);
+        children.Add(CreateSyntheticEntry(
+            folderPath,
+            isDirectory: true,
+            sizeBytes: blockedDescendant.SizeBytes,
+            [BloatCategory.AppCache],
+            "Synthetic real-profile folder eligibility regression row. No filesystem scan was run.",
+            [blockedDescendant]));
+
+        var root = new StorageEntry(
+            cleanupScope,
+            Path.GetFileName(cleanupScope),
+            IsDirectory: true,
+            SizeBytes: children.Sum(child => child.SizeBytes),
+            LastModifiedUtc: now,
+            IsAccessible: true,
+            IsReparsePoint: false,
+            ErrorMessage: null,
+            [BloatCategory.CleanupScopeRoot, BloatCategory.ProtectedLocation],
+            ImportanceRating.HighRisk,
+            DeletionRecommendation.Keep,
+            "Synthetic real-profile scan root for first-phase blocker regression. No filesystem scan was run.",
+            children);
+
+        return new SyntheticRealProfileFirstPhaseBlockerScanResult(
+            new StorageScanResult(
+                cleanupScope,
+                StartedAtUtc: now,
+                CompletedAtUtc: now,
+                root),
+            selectedPaths);
+
+        StorageEntry CreateSyntheticEntry(
+            string fullPath,
+            bool isDirectory,
+            long sizeBytes,
+            IReadOnlyList<BloatCategory> categories,
+            string evidence,
+            IReadOnlyList<StorageEntry> entryChildren)
+        {
+            return new StorageEntry(
+                Path.GetFullPath(fullPath),
+                Path.GetFileName(fullPath),
+                isDirectory,
+                sizeBytes,
+                LastModifiedUtc: now,
+                IsAccessible: true,
+                IsReparsePoint: false,
+                ErrorMessage: null,
+                categories,
+                ImportanceRating.LikelySafe,
+                DeletionRecommendation.QuarantineCandidate,
+                evidence,
+                entryChildren);
+        }
+    }
+
+    private sealed record SyntheticRealProfileFirstPhaseBlockerScanResult(
+        StorageScanResult Result,
+        IReadOnlyList<string> ShortlistedPaths);
 
     private static SyntheticRestoreManifestSetup CreateSyntheticRealProfileRestoreManifest(
         string cleanupScopePath,

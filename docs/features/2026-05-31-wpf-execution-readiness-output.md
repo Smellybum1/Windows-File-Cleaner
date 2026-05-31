@@ -62,6 +62,7 @@ What changed:
 - Later packet `2026-05-31-wpf-real-profile-restore-readiness-evidence.md` wired read-only Real-Profile Restore Readiness evidence into WPF selected restore gate output and forward readiness consumption while keeping real-profile restore and Quarantine execution disabled.
 - Later packet `2026-05-31-quarantine-readiness-summary.md` added a compact WPF readiness summary line and tooltip/help text so fixture-ready, preview-only, stale-executed, and undo-completed states are easier to see without enabling real-profile execution.
 - Later packet `2026-05-31-wpf-real-profile-approval-evidence-output.md` surfaced read-only Real-Profile Quarantine Approval Evidence in the Quarantine Execution Gate for real-profile/custom preview-only scopes while keeping fixture output uncluttered and real-profile movement disabled.
+- Later packet `2026-05-31-wpf-real-profile-first-phase-blocker-output.md` kept representative ADR 0018 first-phase blockers visible when long readiness blocker lists would otherwise hide row-cap, byte-cap, no-category, and strict-descendant evidence behind repeated stale-source blockers.
 
 Open questions:
 

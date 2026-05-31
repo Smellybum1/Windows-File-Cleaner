@@ -4060,7 +4060,7 @@ public partial class MainWindow : Window
         }
 
         lines.Add($"Readiness blockers: {executionReadiness.Blockers.Count:N0}");
-        foreach (var blocker in executionReadiness.Blockers.Take(8))
+        foreach (var blocker in SelectQuarantineExecutionReadinessBlockersForDisplay(executionReadiness.Blockers, 8))
         {
             lines.Add($"Readiness blocker | {FormatQuarantineExecutionReadinessBlocker(blocker)}");
         }
@@ -4069,6 +4069,60 @@ public partial class MainWindow : Window
         {
             lines.Add($"... {executionReadiness.Blockers.Count - 8:N0} more readiness blocker(s) not shown in this pane.");
         }
+    }
+
+    private static IReadOnlyList<string> SelectQuarantineExecutionReadinessBlockersForDisplay(
+        IReadOnlyList<string> blockers,
+        int maxCount)
+    {
+        if (blockers.Count <= maxCount)
+        {
+            return blockers;
+        }
+
+        var selected = new List<string>(capacity: maxCount);
+        var priorityPatterns = new[]
+        {
+            "Real-profile WPF Quarantine execution remains unavailable",
+            "capped at 10 included row",
+            "capped at 1 GB",
+            "No-category rows are blocked",
+            "Narrow folders are allowed only when strict descendant checks pass",
+            "Pre-Execution Revalidation",
+            "Real-Profile Restore Readiness",
+            "Quarantine Root Execution Safety"
+        };
+
+        foreach (var pattern in priorityPatterns)
+        {
+            var blocker = blockers.FirstOrDefault(candidate =>
+                candidate.Contains(pattern, StringComparison.OrdinalIgnoreCase)
+                && !selected.Contains(candidate, StringComparer.OrdinalIgnoreCase));
+            if (blocker is not null)
+            {
+                selected.Add(blocker);
+            }
+
+            if (selected.Count >= maxCount)
+            {
+                return selected;
+            }
+        }
+
+        foreach (var blocker in blockers)
+        {
+            if (!selected.Contains(blocker, StringComparer.OrdinalIgnoreCase))
+            {
+                selected.Add(blocker);
+            }
+
+            if (selected.Count >= maxCount)
+            {
+                break;
+            }
+        }
+
+        return selected;
     }
 
     private static void AddRealProfileQuarantineApprovalEvidenceLines(
