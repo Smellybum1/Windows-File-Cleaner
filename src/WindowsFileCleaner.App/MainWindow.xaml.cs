@@ -107,6 +107,11 @@ public partial class MainWindow : Window
 
     public bool ShortlistMetricsUseWrappingLayout => ShortlistMetricStrip is WrapPanel;
 
+    public bool HeaderMetricsPlaceShortlistBeforeScan =>
+        HeaderMetricStrip.Children.IndexOf(ShortlistMetricStrip) >= 0
+        && HeaderMetricStrip.Children.IndexOf(ScanMetricStrip) >= 0
+        && HeaderMetricStrip.Children.IndexOf(ShortlistMetricStrip) < HeaderMetricStrip.Children.IndexOf(ScanMetricStrip);
+
     public string ShortlistMetricStripToolTipValue => ShortlistMetricStrip.ToolTip?.ToString() ?? "";
 
     public string ShortlistMetricStripAutomationHelpTextValue => AutomationProperties.GetHelpText(ShortlistMetricStrip);

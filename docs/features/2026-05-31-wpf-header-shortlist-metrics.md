@@ -20,6 +20,7 @@ Keep Review Shortlist size and row-type totals visible in the top header so the 
 ## Implementation
 
 - Added a second compact wrapping metric strip in the WPF header for Review Shortlist size, shortlisted folder rows, and shortlisted file rows.
+- Positioned the Review Shortlist strip before the scan-total strip by default so wide windows show shortlist totals immediately to the left of `Total size`.
 - Populated the strip from the existing in-memory `StorageReviewShortlist` applied to the current `StorageScanReview`.
 - Added tooltip and automation help text to keep clear that shortlist row size is read-only review context, not storage savings or cleanup approval.
 - Preserved the existing Review Shortlist, Quarantine Preview, and Quarantine Shortlist header update paths.
@@ -34,7 +35,7 @@ Automated checks:
 
 Manual checks:
 
-- Run `.\tools\Start-MvpFixtureReview.cmd` and confirm the header Review Shortlist totals stay readable at the normal window size.
+- Run `.\tools\Start-MvpFixtureReview.cmd` and confirm the header Review Shortlist totals stay readable at the normal window size and sit to the left of the scan totals when space allows.
 - Add and remove fixture shortlist rows and confirm size, folders, and files update without implying approval or savings.
 
 ## Completion notes
@@ -43,7 +44,7 @@ Completed on: 2026-05-31
 
 What changed:
 
-- The visible app now shows Review Shortlist size, shortlisted folder rows, and shortlisted file rows in the global header.
+- The visible app now shows Review Shortlist size, shortlisted folder rows, and shortlisted file rows in the global header, positioned before the scan-total boxes by default.
 
 ADRs:
 

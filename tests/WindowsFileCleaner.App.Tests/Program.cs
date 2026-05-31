@@ -106,6 +106,9 @@ internal sealed class MainWindowSmokeTests
                 window.ShortlistMetricsUseWrappingLayout,
                 "Shortlist metrics should use a compact wrapping header layout so shortlist size stays visible outside the Review tab.");
             Assert(
+                window.HeaderMetricsPlaceShortlistBeforeScan,
+                "Header metric strips should place Review Shortlist totals before scan totals on wide layouts.");
+            Assert(
                 window.ShortlistSizeTextValue == "0 B"
                 && window.ShortlistFolderCountTextValue == "0"
                 && window.ShortlistFileCountTextValue == "0",
