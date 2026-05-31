@@ -27,6 +27,7 @@ Make the compact Quarantine Readiness Summary name the most useful blocker examp
 - Added compact readiness key-blocker labels to `FormatQuarantineReadinessSummary`.
 - Prioritized first-phase real-profile blockers before broader readiness blockers in the compact summary.
 - Extended the synthetic exact real-profile first-phase WPF smoke test to assert the summary includes row-cap, byte-cap, no-category, and strict-descendant labels while execution remains unavailable.
+- Later checklist alignment added the same `Key blockers` wording to the printed fixture review prompts without changing WPF behavior.
 
 ## Verification
 
