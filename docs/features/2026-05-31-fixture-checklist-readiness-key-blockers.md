@@ -17,8 +17,8 @@ Keep the printed fixture review checklist aligned with the compact Quarantine Re
 
 ## Implementation
 
-- Updated `Start-MvpFixtureReview.ps1` checklist step 6 so reviewers check preview-only `movement unavailable` wording and `Key blockers` labels in the compact Quarantine Readiness Summary.
-- Updated README manual review wording with the same expectation.
+- Updated `Start-MvpFixtureReview.ps1` checklist step 6 so reviewers check preview-only `movement unavailable` wording and specific `Key blockers` labels in the compact Quarantine Readiness Summary.
+- Updated README manual review wording with the same expectation, including `custom scope preview-only`, `exact profile scope`, `pre-execution revalidation`, `restore readiness`, `current build unavailable`, `10-row cap`, `1 GB cap`, `no-category rows`, and `strict descendant checks`.
 - Left `AGENTS.md` unchanged.
 
 ## Test plan
@@ -35,6 +35,7 @@ Completed on: 2026-05-31
 What changed:
 
 - Manual fixture review prompts now call out compact summary key-blocker labels alongside the existing preview-only and tooltip/help-text boundaries.
+- Later checklist refinement named the specific preview-only key labels covered by WPF smoke tests so the manual review prompt matches the current compact-summary vocabulary.
 
 ADRs:
 
@@ -50,4 +51,4 @@ Open questions:
 
 Risky assumptions:
 
-- Calling out `Key blockers` in the checklist helps manual review without overloading the fixture prompt.
+- Calling out specific `Key blockers` labels in the checklist helps manual review without overloading the fixture prompt.
