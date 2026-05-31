@@ -1903,6 +1903,9 @@ internal sealed class MainWindowSmokeTests
                 window.QuarantineExecutionGateTextValue.Contains("Execution target: all included Review Shortlist rows", StringComparison.OrdinalIgnoreCase),
                 "Fixture execution gate should name the included-shortlist execution target.");
             Assert(
+                !window.QuarantineExecutionGateTextValue.Contains("Real-Profile Quarantine Approval Evidence", StringComparison.OrdinalIgnoreCase),
+                "Fixture execution gate should not show real-profile approval evidence noise.");
+            Assert(
                 window.QuarantineExecutionGateViewportMaxHeight <= 120,
                 "Quarantine shortlist gate details should stay height-constrained so the main grid remains usable.");
             Assert(window.IsQuarantineShortlistExpanded, "Quarantine shortlist area should start expanded for discoverability.");
@@ -2474,6 +2477,14 @@ internal sealed class MainWindowSmokeTests
                 && window.QuarantineExecutionGateTextValue.Contains("Readiness blocker | Scope and policy", StringComparison.OrdinalIgnoreCase),
                 "Custom-scope gate should keep the readiness contract visible after exact QUARANTINE.");
             Assert(
+                window.QuarantineExecutionGateTextValue.Contains("Real-Profile Quarantine Approval Evidence: checked", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineExecutionGateTextValue.Contains("Exact QUARANTINE entered: yes", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineExecutionGateTextValue.Contains("Exact real-profile scope: no", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineExecutionGateTextValue.Contains("Movement available in current build: no", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineExecutionGateTextValue.Contains("Can approve real-profile movement: no", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineExecutionGateTextValue.Contains("necessary but not sufficient", StringComparison.OrdinalIgnoreCase),
+                "Custom-scope gate should show read-only approval evidence that exact QUARANTINE still cannot approve real-profile movement.");
+            Assert(
                 window.QuarantineExecutionGateTextValue.Contains("not available for this Cleanup Scope", StringComparison.OrdinalIgnoreCase),
                 "Custom-scope gate should explain the scope-specific execution blocker.");
             Assert(
@@ -2572,6 +2583,16 @@ internal sealed class MainWindowSmokeTests
                 && window.QuarantineExecutionGateTextValue.Contains("Readiness blocker | Real-Profile Restore Readiness", StringComparison.OrdinalIgnoreCase),
                 "Synthetic real-profile gate should keep root safety and revalidation evidence while restore readiness remains blocked.");
             Assert(
+                window.QuarantineExecutionGateTextValue.Contains("Real-Profile Quarantine Approval Evidence: checked", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineExecutionGateTextValue.Contains("Exact QUARANTINE entered: yes", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineExecutionGateTextValue.Contains("Exact real-profile scope: yes", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineExecutionGateTextValue.Contains("Readiness blockers: yes", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineExecutionGateTextValue.Contains("Movement available in current build: no", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineExecutionGateTextValue.Contains("Can approve real-profile movement: no", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineExecutionGateTextValue.Contains("Approval evidence blocker | Readiness:", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineExecutionGateTextValue.Contains("Real-profile Quarantine movement remains unavailable", StringComparison.OrdinalIgnoreCase),
+                "Synthetic real-profile gate should show read-only approval evidence that exact QUARANTINE is still insufficient.");
+            Assert(
                 window.QuarantineReadinessSummaryTextValue.Contains("real-profile candidate", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantineReadinessSummaryTextValue.Contains("real profile", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantineReadinessSummaryTextValue.Contains("Pre-Execution Revalidation", StringComparison.OrdinalIgnoreCase)
@@ -2646,6 +2667,12 @@ internal sealed class MainWindowSmokeTests
                 window.QuarantineExecutionGateTextValue.Contains("Readiness blocker | Scope and policy", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantineExecutionGateTextValue.Contains("first real-profile Quarantine phase is limited to C:\\Users\\moxhe", StringComparison.OrdinalIgnoreCase),
                 "Synthetic real-profile child gate should keep the exact-scope blocker visible.");
+            Assert(
+                window.QuarantineExecutionGateTextValue.Contains("Real-Profile Quarantine Approval Evidence: checked", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineExecutionGateTextValue.Contains("Exact QUARANTINE entered: yes", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineExecutionGateTextValue.Contains("Exact real-profile scope: no", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineExecutionGateTextValue.Contains("Can approve real-profile movement: no", StringComparison.OrdinalIgnoreCase),
+                "Synthetic real-profile child gate should show approval evidence blocked by the exact real-profile scope requirement.");
             Assert(
                 window.QuarantineReadinessSummaryTextValue.Contains("preview only", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantineReadinessSummaryTextValue.Contains("real-profile child", StringComparison.OrdinalIgnoreCase)

@@ -61,6 +61,7 @@ What changed:
 - Later packet `2026-05-31-wpf-pre-execution-revalidation-evidence.md` wired read-only Pre-Execution Revalidation evidence into WPF preview/gate output while keeping real-profile execution disabled.
 - Later packet `2026-05-31-wpf-real-profile-restore-readiness-evidence.md` wired read-only Real-Profile Restore Readiness evidence into WPF selected restore gate output and forward readiness consumption while keeping real-profile restore and Quarantine execution disabled.
 - Later packet `2026-05-31-quarantine-readiness-summary.md` added a compact WPF readiness summary line and tooltip/help text so fixture-ready, preview-only, stale-executed, and undo-completed states are easier to see without enabling real-profile execution.
+- Later packet `2026-05-31-wpf-real-profile-approval-evidence-output.md` surfaced read-only Real-Profile Quarantine Approval Evidence in the Quarantine Execution Gate for real-profile/custom preview-only scopes while keeping fixture output uncluttered and real-profile movement disabled.
 
 Open questions:
 

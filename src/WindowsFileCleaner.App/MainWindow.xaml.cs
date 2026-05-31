@@ -2006,6 +2006,7 @@ public partial class MainWindow : Window
             _currentQuarantineConfirmationDraft,
             QuarantineConfirmationBox.Text);
         var executionReadiness = BuildQuarantineExecutionReadinessForDisplay();
+        var approvalEvidence = BuildRealProfileQuarantineApprovalEvidenceForDisplay(executionReadiness);
         var hasExecutedCurrentPreview = _currentQuarantineExecutionResult is not null;
         QuarantineConfirmationBox.IsEnabled = _currentQuarantineConfirmationDraft is not null && !hasExecutedCurrentPreview && ScanButton.IsEnabled;
         ExecuteQuarantineButton.IsEnabled = _currentQuarantineExecutionGate.CanExecute && !hasExecutedCurrentPreview && ScanButton.IsEnabled;
@@ -2013,6 +2014,7 @@ public partial class MainWindow : Window
         QuarantineExecutionGateText.Text = FormatQuarantineExecutionGate(
             _currentQuarantineExecutionGate,
             executionReadiness,
+            approvalEvidence,
             _currentQuarantineRootExecutionSafety,
             _currentPreExecutionRevalidation,
             _currentRealProfileRestoreReadiness,
@@ -3773,6 +3775,7 @@ public partial class MainWindow : Window
     private static string FormatQuarantineExecutionGate(
         QuarantineExecutionGate gate,
         QuarantineExecutionReadiness? executionReadiness,
+        RealProfileQuarantineApprovalEvidence? approvalEvidence,
         QuarantineRootExecutionSafety? rootExecutionSafety,
         PreExecutionRevalidation? preExecutionRevalidation,
         RealProfileRestoreReadiness? restoreReadiness,
@@ -3860,6 +3863,7 @@ public partial class MainWindow : Window
         }
 
         AddQuarantineExecutionReadinessLines(lines, executionReadiness);
+        AddRealProfileQuarantineApprovalEvidenceLines(lines, approvalEvidence);
         AddQuarantineRootExecutionSafetyLines(lines, rootExecutionSafety);
         AddPreExecutionRevalidationLines(lines, preExecutionRevalidation);
         AddRealProfileRestoreReadinessLines(lines, restoreReadiness);
@@ -3880,6 +3884,20 @@ public partial class MainWindow : Window
             quarantineRootExecutionSafety: _currentQuarantineRootExecutionSafety,
             preExecutionRevalidation: _currentPreExecutionRevalidation,
             realProfileRestoreReadiness: _currentRealProfileRestoreReadiness);
+    }
+
+    private RealProfileQuarantineApprovalEvidence? BuildRealProfileQuarantineApprovalEvidenceForDisplay(
+        QuarantineExecutionReadiness? executionReadiness)
+    {
+        if (executionReadiness is null || executionReadiness.ScopeKind == QuarantineExecutionReadinessScopeKind.Fixture)
+        {
+            return null;
+        }
+
+        return RealProfileQuarantineApprovalEvidenceBuilder.Build(
+            executionReadiness,
+            QuarantineConfirmationBox.Text,
+            DateTimeOffset.UtcNow);
     }
 
     private static void AddQuarantineExecutionReadinessLines(
@@ -3915,6 +3933,34 @@ public partial class MainWindow : Window
         if (executionReadiness.Blockers.Count > 8)
         {
             lines.Add($"... {executionReadiness.Blockers.Count - 8:N0} more readiness blocker(s) not shown in this pane.");
+        }
+    }
+
+    private static void AddRealProfileQuarantineApprovalEvidenceLines(
+        List<string> lines,
+        RealProfileQuarantineApprovalEvidence? approvalEvidence)
+    {
+        if (approvalEvidence is null)
+        {
+            return;
+        }
+
+        lines.Add(
+            $"Real-Profile Quarantine Approval Evidence: checked | Exact {approvalEvidence.RequiredConfirmationText} entered: {FormatYesNo(approvalEvidence.IsConfirmationTextMatched)} | " +
+            $"Exact real-profile scope: {FormatYesNo(approvalEvidence.IsExactRealProfileScope)} | " +
+            $"Readiness blockers: {FormatYesNo(approvalEvidence.ReadinessHasBlockers)} | " +
+            $"Movement available in current build: {FormatYesNo(approvalEvidence.IsRealProfileQuarantineMovementAvailable)} | " +
+            $"Can approve real-profile movement: {FormatYesNo(approvalEvidence.CanApproveForRealProfileMovement)}");
+        lines.Add($"Approval evidence boundary: exact {approvalEvidence.RequiredConfirmationText} is necessary but not sufficient; this read-only evidence does not create folders, move files, restore files, delete files, write manifests, persist approval, or approve cleanup.");
+
+        foreach (var blocker in approvalEvidence.Blockers.Take(6))
+        {
+            lines.Add($"Approval evidence blocker | {blocker}");
+        }
+
+        if (approvalEvidence.Blockers.Count > 6)
+        {
+            lines.Add($"... {approvalEvidence.Blockers.Count - 6:N0} more approval evidence blocker(s) not shown in this pane.");
         }
     }
 

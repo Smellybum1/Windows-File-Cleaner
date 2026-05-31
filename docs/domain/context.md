@@ -2803,6 +2803,8 @@ Real-Profile Quarantine Approval Evidence is the read-only result that combines 
 
 It exists to make the ADR 0018 rule testable: exact `QUARANTINE` is necessary but not sufficient.
 
+The current WPF app shows this evidence in the Quarantine Execution Gate for real-profile, real-profile-child, and custom preview-only scopes after a Quarantine Preview exists. Fixture scopes do not show this extra real-profile evidence so the fixture execution path stays focused.
+
 #### Examples
 
 - Record that exact `QUARANTINE` was typed while real-profile movement still remains unavailable in the current build.
@@ -2820,6 +2822,7 @@ It exists to make the ADR 0018 rule testable: exact `QUARANTINE` is necessary bu
 
 - Built after Real-Profile Quarantine Execution Readiness when future real-profile approval semantics are being checked.
 - Rebuilt whenever readiness, typed confirmation text, Cleanup Scope, Quarantine Root, or movement availability evidence changes.
+- In WPF, rebuilt when the Quarantine Execution Gate refreshes as the user types the confirmation text.
 - Does not create, move, restore, delete, write manifests, or persist cleanup history.
 
 #### Relationships
@@ -2834,6 +2837,7 @@ It exists to make the ADR 0018 rule testable: exact `QUARANTINE` is necessary bu
 - Keep the builder read-only and covered by the readiness-builder source guard.
 - Default current-build movement availability to unavailable.
 - Keep `CanApproveForRealProfileMovement` false unless exact real-profile scope, clean readiness, exact `QUARANTINE`, and explicit movement availability evidence are all present.
+- In WPF, display this as read-only gate evidence only for non-fixture scopes and keep `Quarantine included shortlist` disabled.
 
 ### Quarantine Root Execution Safety
 

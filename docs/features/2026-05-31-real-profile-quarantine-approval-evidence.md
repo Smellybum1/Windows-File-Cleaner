@@ -63,7 +63,7 @@ ADRs:
 
 Follow-up work:
 
-- Decide later whether WPF should surface this approval evidence directly or keep relying on the existing Quarantine Execution Gate output until movement is closer.
+- WPF now surfaces this evidence in the Quarantine Execution Gate for non-fixture preview-only scopes without enabling movement.
 - Keep real-profile movement blocked until a later explicit user-approved packet wires execution after readiness, approval evidence, and recovery behavior are complete.
 
 Open questions:
