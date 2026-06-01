@@ -52,8 +52,8 @@ Broad/all-manifest real-profile Undo Quarantine, custom/non-exact real-profile Q
 
 ## Follow-Up Work
 
-- If recovery proof is desired, use `Discover manifests`, select this created Restore Manifest, preview selected manifest readiness, preview the selected restore gate, type exact `RESTORE`, and let the user click `Restore selected manifest` only for this specific manifest after reviewing the gate output.
-- Do not proceed to larger real-profile Quarantine batches until selected restore recovery for the created manifest is trusted or the user explicitly chooses to keep the manifest quarantined.
+- Recovery proof for this created Restore Manifest later succeeded by user report after the cross-volume selected restore retry fix: highlighted result `selected restore succeeded. Restored 1, failed 0`.
+- Do not proceed to larger real-profile Quarantine batches without fresh preflight, a new tiny selected batch, and explicit user review; broad/all-manifest restore remains unavailable.
 - Keep packaging and any deletion/history decisions separate from this first live-trust evidence.
 
 ## Verification
@@ -69,4 +69,4 @@ No ADR added. ADR 0017 and ADR 0018 already govern this exact first real-profile
 
 - The reported WPF output is accepted as manual evidence.
 - A single successful tiny batch proves the narrow path works, not that larger or different real-profile cleanup targets are safe.
-- Recovery should still be proven through selected restore before treating reversible cleanup as fully trusted.
+- Recovery was later proven through selected restore for this first-live manifest by user report, but larger real-profile cleanup still needs fresh readiness review and tiny-batch discipline.

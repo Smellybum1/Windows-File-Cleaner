@@ -2,7 +2,7 @@
 
 Windows File Cleaner is a local Windows-only WPF desktop app for reviewing storage under `C:\Users\moxhe`.
 
-The current MVP centers on a read-only Storage Scan. It can also execute and undo Quarantine from the visible WPF app against synthetic fixture Cleanup Scopes, execute the first exact real-profile Quarantine phase for `C:\Users\moxhe` only after ADR 0017/0018 readiness and exact `QUARANTINE` pass, discover action-scoped Restore Manifests under the selected Quarantine Root, select one discovered Restore Manifest for review, preview selected restore confirmation, restore selected discovered fixture manifests, and restore exactly one selected real-profile Restore Manifest after ADR 0019 gates pass.
+The current MVP centers on a read-only Storage Scan. It can also execute and undo Quarantine from the visible WPF app against synthetic fixture Cleanup Scopes, execute the first exact real-profile Quarantine phase for `C:\Users\moxhe` only after ADR 0017/0018 readiness and exact `QUARANTINE` pass, discover action-scoped Restore Manifests under the selected Quarantine Root, select one discovered Restore Manifest for review, preview selected restore confirmation, restore selected discovered fixture manifests, and restore exactly one selected real-profile Restore Manifest after ADR 0019 gates pass. The first live exact real-profile Quarantine batch and selected restore recovery proof both succeeded by user report.
 
 Current readiness evidence is tracked in `docs/features/2026-05-28-mvp-readiness-audit.md`.
 
@@ -21,7 +21,7 @@ Fresh-thread handoff notes live in `docs/codex/thread-handoff.md`.
 - The visible WPF app can select one discovered Restore Manifest and preview selected manifest readiness without restoring it.
 - The visible WPF app can restore a selected discovered fixture Restore Manifest after selected manifest readiness and exact `RESTORE` confirmation.
 - The visible WPF app can restore exactly one selected real-profile Restore Manifest whose Cleanup Scope is exactly `C:\Users\moxhe` after selected manifest readiness, exact `RESTORE`, and immediate selected-restore revalidation; Codex and automated tests do not run this movement.
-- Cross-volume selected restore for directories uses the same guarded copy-then-delete directory fallback as cross-volume Quarantine. If a previous selected restore failed before this fix but the quarantine path still exists and the original path is still absent, the same selected manifest can be retried after rediscovery and exact `RESTORE`.
+- Cross-volume selected restore for directories uses the same guarded copy-then-delete directory fallback as cross-volume Quarantine. The first live selected restore retry for the first real-profile Quarantine manifest succeeded by user report with `Restored 1, failed 0`.
 - The visible WPF app keeps selected restore execution unavailable for custom non-fixture Restore Manifests and non-exact real-profile Restore Manifests.
 - Discovery, selected-manifest review, and restore-readiness panes do not expose all-manifest restore actions; selected restore goes through selected manifest readiness and the selected restore gate.
 - The Restore Manifest review summary compactly names discovery, selected-manifest readiness, all-manifest readiness, selected restore gate, and selected restore result state with read-only/no-restore tooltip and automation help text.

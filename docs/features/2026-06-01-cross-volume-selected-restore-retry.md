@@ -28,6 +28,10 @@ The user attempted selected restore for the first live exact real-profile Quaran
 
 The same output showed selected readiness and pre-execution revalidation were otherwise clean before movement.
 
+After the cross-volume selected restore retry and gate-highlight fix was pushed, the user retried the same selected manifest and reported success from the highlighted strip:
+
+- `Key status: selected restore succeeded. Restored 1, failed 0. Rediscover manifests and rescan.`
+
 ## Implementation
 
 - `UndoQuarantineExecutor` now restores directories through the guarded directory move fallback instead of direct `Directory.Move`.
@@ -46,7 +50,7 @@ The same output showed selected readiness and pre-execution revalidation were ot
 
 ## Follow-up Work
 
-- Close the current WPF app, run full `.cmd` MVP preflight, relaunch, rediscover the manifest, and retry selected restore only if the highlighted key status and detailed gate show the selected manifest is retryable/restorable.
+- Rediscover manifests and rescan before any further real-profile cleanup review.
 - Keep recovery selected-manifest-only. Do not add broad Undo Quarantine or deletion in this packet.
 
 ## ADRs
