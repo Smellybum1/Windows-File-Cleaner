@@ -42,6 +42,8 @@ That is safe but a little scattered for repeated daily use.
 
 The command should stop on failed required evidence, preserve optional Restore Manifest filters, and repeat the no-shortcut/no-installer/no-WPF/no-scan/no-movement/no-history boundary.
 
+A later fixture-status packet added opt-in Fixture Acceptance Notes evidence flags: `-IncludeFixtureAcceptanceNotes`, `-FixtureAcceptanceNotesPath`, and `-RequireFixtureAcceptanceComplete`. The default daily command stays unchanged.
+
 ## Domain language changes
 
 No new durable product term.
@@ -231,6 +233,7 @@ Follow-up work:
 
 - Continue using the daily command before manual accepted-package launches when compact local readiness evidence is useful.
 - Consider a real shortcut or installer only as a later explicit user-approved packaging packet.
+- Use `-IncludeFixtureAcceptanceNotes` when formal fixture notes status should be visible in the daily output, and `-RequireFixtureAcceptanceComplete` only when incomplete fixture notes should fail the check.
 
 Open questions:
 

@@ -57,6 +57,8 @@ Later packet note: `Fixture Acceptance Notes Recorder` added `Record-FixtureAcce
 
 Later packet note: `Restore Manifest Displayed Strictness` added displayed-only terminal checks to the real-profile recovery confidence path, so exact `C:\Users\moxhe` displayed evidence can prove "display exists and has no undo work" without changing full-root fixture-history strictness. This remains read-only terminal evidence and not cleanup approval.
 
+Later packet note: `Daily Readiness Fixture Acceptance Status` made `Invoke-DailyLocalReadiness.cmd` and `Invoke-RealProfileQuarantineReadiness.cmd` optionally include or require Fixture Acceptance Notes evidence. This is read-only local ignored-note evidence only and does not record notes, launch WPF, scan, move, restore, delete, approve cleanup, or create cleanup history.
+
 ## Domain Language Changes
 
 No new durable domain terms.
@@ -250,6 +252,7 @@ What changed:
 - Later packet `Daily Readiness Single Package Verification` made the daily readiness wrapper run the accepted package verifier once, then skip duplicate verification only for the second print-only fixture launch command in the same run.
 - Later packet `Real-Profile Quarantine Readiness Review` added `tools\Invoke-RealProfileQuarantineReadiness.cmd`, which runs full MVP preflight by default, then daily local readiness plus focused Restore Manifest recovery-review and undo-work summaries before any future tiny exact real-profile batch review, without launching WPF, scanning the real profile, moving, restoring, deleting, approving cleanup, or creating cleanup history.
 - Later packet `Real-Profile Readiness Default Scope Focus` made `tools\Invoke-RealProfileQuarantineReadiness.cmd` focus Restore Manifest display output to exact `C:\Users\moxhe` by default, while `-AllCleanupScopes` preserves the fixture-inclusive display path.
+- Later packet `Daily Readiness Fixture Acceptance Status` added optional Fixture Acceptance Notes summary and strict completion forwarding to daily readiness and real-profile readiness without changing default daily output.
 
 Files changed:
 

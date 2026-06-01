@@ -43,7 +43,7 @@ That keeps the pieces safe, but makes the next tiny live-batch checklist easier 
 
 The command may skip MVP preflight only with `-SkipMvpPreflight`, and skipped output must say it is not fresh movement evidence. Restore Manifest root, entry display, and strict evidence flags should forward to the summary steps.
 
-A later scope-focus packet made the default Restore Manifest display focus exact `C:\Users\moxhe`; use `-AllCleanupScopes` when fixture manifests should also be displayed. A later displayed-strictness packet added `-RequireAnyDisplayedRestoreManifest`, `-RequireNoDisplayedRecoveryReview`, and `-RequireNoDisplayedUndoWork` forwarding; `-RequireAnyDisplayedRestoreManifest` applies to the default exact-profile daily display, while the no-displayed flags can fail the focused recovery-review or undo-work evidence without changing full-root strictness.
+A later scope-focus packet made the default Restore Manifest display focus exact `C:\Users\moxhe`; use `-AllCleanupScopes` when fixture manifests should also be displayed. A later displayed-strictness packet added `-RequireAnyDisplayedRestoreManifest`, `-RequireNoDisplayedRecoveryReview`, and `-RequireNoDisplayedUndoWork` forwarding; `-RequireAnyDisplayedRestoreManifest` applies to the default exact-profile daily display, while the no-displayed flags can fail the focused recovery-review or undo-work evidence without changing full-root strictness. A later fixture-status packet added forwarding for `-IncludeFixtureAcceptanceNotes`, `-FixtureAcceptanceNotesPath`, and `-RequireFixtureAcceptanceComplete` when formal fixture notes evidence should appear in the daily readiness step.
 
 ## Domain language changes
 
@@ -237,6 +237,7 @@ Follow-up work:
 - Keep shortcut/installer automation as a later explicit user-approved packaging packet.
 - Later packet `Real-Profile Readiness Default Scope Focus` made default readiness output focus exact `C:\Users\moxhe` Restore Manifest display rows and added `-AllCleanupScopes` for the old fixture-inclusive view.
 - Later packet `Restore Manifest Displayed Strictness` forwarded displayed strictness flags so exact-profile displayed evidence can be enforced separately from full-root fixture history.
+- Later packet `Daily Readiness Fixture Acceptance Status` forwarded optional Fixture Acceptance Notes flags so stricter readiness reviews can include local fixture notes status without launching WPF, scanning, movement, restore, deletion, approval, or cleanup history.
 
 Open questions:
 

@@ -2,9 +2,15 @@
 param(
     [string]$AcceptanceNotesPath,
 
+    [string]$FixtureAcceptanceNotesPath,
+
     [string]$QuarantineRoot,
 
     [string]$CleanupScope,
+
+    [switch]$IncludeFixtureAcceptanceNotes,
+
+    [switch]$RequireFixtureAcceptanceComplete,
 
     [switch]$ShowRestoreEntries,
 
@@ -32,6 +38,7 @@ $repoRoot = Split-Path -Parent $PSScriptRoot
 $repoFullPath = [System.IO.Path]::GetFullPath($repoRoot).TrimEnd([System.IO.Path]::DirectorySeparatorChar)
 $acceptedLauncher = Join-Path $PSScriptRoot "Start-AcceptedLocalRelease.cmd"
 $releaseNotesSummary = Join-Path $PSScriptRoot "Summarize-LocalReleaseAcceptanceNotes.cmd"
+$fixtureNotesSummary = Join-Path $PSScriptRoot "Summarize-FixtureAcceptanceNotes.cmd"
 $restoreManifestSummary = Join-Path $PSScriptRoot "Summarize-RestoreManifests.cmd"
 
 function Invoke-DailyReadinessStep {
@@ -60,12 +67,22 @@ Write-Host "Daily local readiness check"
 Write-Host "Repository: $repoFullPath"
 Write-Host "Boundary: read-only and print-only; this does not create shortcuts, install anything, launch WPF, click Scan, scan, move, restore, delete, approve cleanup, or create cleanup history."
 Write-Host "Package verification: the accepted package verifier runs once before printing the normal launch command; the fixture print-only command then skips duplicate package verification in this same readiness flow."
+Write-Host "Fixture acceptance notes: optional local ignored-note summary only; strict completion is checked only when requested."
 Write-Host "Stop before real-profile movement unless the specific batch or selected Restore Manifest has fresh readiness evidence, exact confirmation, and explicit user approval."
 
 $notesArguments = @("-RequireComplete")
 if (-not [string]::IsNullOrWhiteSpace($AcceptanceNotesPath)) {
     $notesArguments += @("-Path", $AcceptanceNotesPath)
 }
+
+$fixtureNotesArguments = @()
+if (-not [string]::IsNullOrWhiteSpace($FixtureAcceptanceNotesPath)) {
+    $fixtureNotesArguments += @("-Path", $FixtureAcceptanceNotesPath)
+}
+if ($RequireFixtureAcceptanceComplete.IsPresent) {
+    $fixtureNotesArguments += "-RequireComplete"
+}
+$shouldSummarizeFixtureAcceptance = $IncludeFixtureAcceptanceNotes.IsPresent -or $RequireFixtureAcceptanceComplete.IsPresent -or (-not [string]::IsNullOrWhiteSpace($FixtureAcceptanceNotesPath))
 
 $acceptedNormalArguments = @("-PrintOnly")
 $acceptedFixtureArguments = @("-Fixture", "-PrintOnly", "-SkipVerify")
@@ -111,6 +128,9 @@ if ($RequireAnyRestoreManifest.IsPresent) {
 }
 
 Invoke-DailyReadinessStep -Title "Accepted package evidence" -CommandPath $releaseNotesSummary -Arguments $notesArguments
+if ($shouldSummarizeFixtureAcceptance) {
+    Invoke-DailyReadinessStep -Title "Fixture acceptance notes evidence" -CommandPath $fixtureNotesSummary -Arguments $fixtureNotesArguments
+}
 Invoke-DailyReadinessStep -Title "Accepted normal launch command" -CommandPath $acceptedLauncher -Arguments $acceptedNormalArguments
 Invoke-DailyReadinessStep -Title "Accepted fixture launch command (same verified package)" -CommandPath $acceptedLauncher -Arguments $acceptedFixtureArguments
 Invoke-DailyReadinessStep -Title "Restore Manifest summary" -CommandPath $restoreManifestSummary -Arguments $restoreArguments

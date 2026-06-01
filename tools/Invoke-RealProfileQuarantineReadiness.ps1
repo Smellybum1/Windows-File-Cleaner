@@ -2,6 +2,8 @@
 param(
     [string]$AcceptanceNotesPath,
 
+    [string]$FixtureAcceptanceNotesPath,
+
     [string]$QuarantineRoot,
 
     [string]$CleanupScope,
@@ -9,6 +11,10 @@ param(
     [switch]$AllCleanupScopes,
 
     [switch]$SkipMvpPreflight,
+
+    [switch]$IncludeFixtureAcceptanceNotes,
+
+    [switch]$RequireFixtureAcceptanceComplete,
 
     [switch]$ShowRestoreEntries,
 
@@ -133,6 +139,7 @@ Write-Host "Repository: $repoFullPath"
 Write-Host "Boundary: terminal evidence only; this does not launch WPF, click Scan, scan C:\Users\moxhe, move, restore, delete, approve cleanup, or create cleanup history."
 Write-Host "Purpose: gather preflight, accepted-package, and Restore Manifest evidence before a future user-clicked exact C:\Users\moxhe Quarantine batch."
 Write-Host "Stop boundary: Codex must not click real-profile movement. The user must explicitly approve a specific tiny batch after reviewing WPF readiness, exact QUARANTINE, approval evidence, and immediate revalidation."
+Write-Host "Fixture acceptance notes: optional daily-readiness evidence only; require completion only when formal fixture notes should be a strict gate."
 if ($null -ne $effectiveCleanupScope) {
     Write-Host "Restore Manifest display focus: $effectiveCleanupScope"
 }
@@ -151,6 +158,15 @@ else {
 $dailyArguments = @()
 if (-not [string]::IsNullOrWhiteSpace($AcceptanceNotesPath)) {
     $dailyArguments += @("-AcceptanceNotesPath", $AcceptanceNotesPath)
+}
+if (-not [string]::IsNullOrWhiteSpace($FixtureAcceptanceNotesPath)) {
+    $dailyArguments += @("-FixtureAcceptanceNotesPath", $FixtureAcceptanceNotesPath)
+}
+if ($IncludeFixtureAcceptanceNotes.IsPresent) {
+    $dailyArguments += "-IncludeFixtureAcceptanceNotes"
+}
+if ($RequireFixtureAcceptanceComplete.IsPresent) {
+    $dailyArguments += "-RequireFixtureAcceptanceComplete"
 }
 if (-not [string]::IsNullOrWhiteSpace($QuarantineRoot)) {
     $dailyArguments += @("-QuarantineRoot", $QuarantineRoot)

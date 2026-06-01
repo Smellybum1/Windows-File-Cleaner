@@ -20,13 +20,21 @@ For a read-only daily readiness check that verifies accepted package evidence, v
 
 This command is intentionally not a shortcut or installer. It does not create shortcuts, install anything, launch WPF, click `Scan`, scan, move, restore, delete, approve cleanup, or create cleanup history. It runs the accepted package verifier once before printing the normal launch command, then skips duplicate package verification for the fixture print-only command in the same readiness run.
 
+To include formal fixture acceptance-notes status in the same read-only daily output, opt in explicitly:
+
+```powershell
+.\tools\Invoke-DailyLocalReadiness.cmd -IncludeFixtureAcceptanceNotes
+```
+
+Use `-RequireFixtureAcceptanceComplete` only when incomplete fixture notes should fail the daily check. It is expected to fail while the latest ignored fixture notes remain unfilled.
+
 Before considering another tiny exact real-profile Quarantine batch, run the terminal-only readiness review:
 
 ```powershell
 .\tools\Invoke-RealProfileQuarantineReadiness.cmd
 ```
 
-That command runs full MVP preflight by default, then the daily local readiness check plus focused Restore Manifest recovery-review and undo-work summaries. Its Restore Manifest display focus defaults to the exact real-profile Cleanup Scope `C:\Users\moxhe`; use `-AllCleanupScopes` only when you intentionally want the older all-scope display. It is evidence only: it does not launch WPF, click `Scan`, scan `C:\Users\moxhe`, move, restore, delete, approve cleanup, or create cleanup history, and it does not replace WPF readiness, exact `QUARANTINE`, Real-Profile Quarantine Approval Evidence, immediate Pre-Execution Revalidation, or explicit approval for a specific tiny batch.
+That command runs full MVP preflight by default, then the daily local readiness check plus focused Restore Manifest recovery-review and undo-work summaries. Its Restore Manifest display focus defaults to the exact real-profile Cleanup Scope `C:\Users\moxhe`; use `-AllCleanupScopes` only when you intentionally want the older all-scope display. It can also forward `-IncludeFixtureAcceptanceNotes` or `-RequireFixtureAcceptanceComplete` into the daily check when formal fixture notes should be visible or strict. It is evidence only: it does not launch WPF, click `Scan`, scan `C:\Users\moxhe`, move, restore, delete, approve cleanup, or create cleanup history, and it does not replace WPF readiness, exact `QUARANTINE`, Real-Profile Quarantine Approval Evidence, immediate Pre-Execution Revalidation, or explicit approval for a specific tiny batch.
 
 When the exact-profile Restore Manifest display itself should be enforced, add displayed strictness flags such as `-RequireAnyDisplayedRestoreManifest -RequireNoDisplayedUndoWork`. Those flags check only the current displayed manifest focus; they are still terminal evidence only and do not approve cleanup.
 
