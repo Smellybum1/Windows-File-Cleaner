@@ -57,6 +57,7 @@ No ADR added. ADR 0002 already selects WPF/.NET 8; this packet adds local publis
 ## Follow-up Work
 
 - Use the portable package for local v1 daily use.
+- Use `tools\Test-LocalRelease.cmd` for read-only local package verification.
 - Decide later whether a desktop shortcut or installer is worth adding.
 - Keep permanent deletion, persisted cleanup history, and broad/all-manifest restore separate Grill with Docs decisions.
 

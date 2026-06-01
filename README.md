@@ -134,6 +134,14 @@ The publisher runs MVP preflight by default, publishes the WPF app as `Release` 
 
 The release artifacts stay under ignored `.local\releases`. The script prints the exact executable path plus normal and fixture launch commands. This is a portable package, not an installer: it does not create shortcuts, does not enable permanent deletion, does not add persisted cleanup history, and does not add broad/all-manifest restore. Portable v1 remains reversible-only: read-only Storage Scan, review, gated Quarantine, and selected restore.
 
+To verify the latest local package without launching WPF or scanning anything:
+
+```powershell
+.\tools\Test-LocalRelease.cmd
+```
+
+The verifier checks the ignored release folder, executable, zip, metadata, safety-boundary lines, and zip entries. By default it warns if the package commit is behind current `HEAD`; use `.\tools\Test-LocalRelease.cmd -RequireCurrentCommit` when you need the package to exactly match the current commit.
+
 ## WPF Fixture Smoke
 
 Use the fixture review launcher for the manual fixture UI pass:

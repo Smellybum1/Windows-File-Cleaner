@@ -3817,6 +3817,7 @@ Implementation implications:
 
 - Publish output belongs under ignored `.local\releases`.
 - The release script may create local folders, zip files, and release metadata, but these are not cleanup history.
+- The local release verifier may read ignored release folders, zip files, and release metadata to check package structure and safety-boundary evidence, but it must not launch WPF, scan, move, restore, delete, or create cleanup history.
 - Portable v1 does not create shortcuts, install services, add permanent deletion, add persisted cleanup history, add broad/all-manifest restore, or widen custom/non-exact real-profile movement.
 - Portable v1 keeps the existing app gates: Storage Scan remains read-only until the user clicks Scan, Quarantine and selected restore remain behind their existing readiness and exact-confirmation gates, and real-profile movement remains user-clicked only.
 
