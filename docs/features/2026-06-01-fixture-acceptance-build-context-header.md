@@ -167,6 +167,7 @@ What changed:
 
 - Added .NET SDK, WPF app project, WPF app target framework, and WPF enabled fields to generated fixture acceptance notes.
 - Kept checklist-only behavior, fixture creation, WPF launch, Storage Scan, fixture execution, restore behavior, real-profile/custom blockers, permanent deletion, and cleanup history unchanged.
+- Later packet `Full Local MVP Preflight After Build Context Header` confirmed the full `.cmd` MVP preflight still passes after this launcher/docs change.
 
 Files changed:
 
@@ -185,6 +186,7 @@ Tests run:
 - Inspected `.local\fixture-review-acceptance\fixture-acceptance-20260601-111237.md` and confirmed it includes .NET SDK `8.0.421`, WPF app project, `net8.0-windows`, and `WPF enabled: true`.
 - `cmd.exe /c tools\Start-MvpFixtureReview.cmd -WhatIf -SkipPreflight -SkipLaunch -WriteAcceptanceNotes`
 - `git diff --check`
+- Later full-preflight packet: `cmd.exe /c tools\Invoke-MvpPreflight.cmd` passed restore, build, core tests, WPF app tests, fixture `-WhatIf`, fixture checklist-only output, and whitespace diff without scanning or modifying real user files.
 
 Docs updated:
 
