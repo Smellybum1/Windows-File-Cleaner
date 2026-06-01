@@ -74,8 +74,8 @@ try {
     Write-Host ""
     Write-Host "MVP preflight passed. No real user files were scanned or modified."
     Write-Host "Next manual fixture step:"
-    Write-Host ".\tools\Start-MvpFixtureReview.cmd -SkipPreflight"
-    Write-Host "This creates the synthetic fixture and launches WPF with this Cleanup Scope:"
+    Write-Host ".\tools\Start-MvpFixtureReview.cmd -SkipPreflight -WriteAcceptanceNotes"
+    Write-Host "This creates the synthetic fixture, writes ignored acceptance notes, and launches WPF with this Cleanup Scope:"
     Write-Host $fixtureRoot
 }
 finally {

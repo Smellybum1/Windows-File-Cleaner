@@ -88,7 +88,7 @@ Run the MVP preflight from the repository root before scanning real user files:
 
 The `.cmd` tool wrappers call the existing PowerShell scripts with process-scoped `-ExecutionPolicy Bypass`, so they work when direct `.ps1` execution is blocked without changing your machine or user execution policy. If your shell already allows scripts, the `.ps1` commands still work.
 
-The preflight restores, builds, runs both test harnesses, runs the fixture generator in `-WhatIf` mode, prints the fixture review checklist in checklist-only mode, and runs `git diff --check`. It fails if any child command exits non-zero. It does not scan `C:\Users\moxhe`.
+The preflight restores, builds, runs both test harnesses, runs the fixture generator in `-WhatIf` mode, prints the fixture review checklist in checklist-only mode, and runs `git diff --check`. It fails if any child command exits non-zero. It does not scan `C:\Users\moxhe`. After it passes, the success output points to the notes-enabled fixture launcher command for the next visible fixture pass.
 
 The individual commands are:
 
@@ -119,6 +119,12 @@ Use the fixture review launcher for the manual fixture UI pass:
 
 ```powershell
 .\tools\Start-MvpFixtureReview.cmd
+```
+
+After a fresh preflight pass, use the notes-enabled shortcut printed by preflight to avoid rerunning preflight while still creating acceptance notes:
+
+```powershell
+.\tools\Start-MvpFixtureReview.cmd -SkipPreflight -WriteAcceptanceNotes
 ```
 
 The launcher runs preflight, creates a small synthetic Cleanup Scope inside the repo, and launches the WPF app with that scope. The app does not auto-scan; click `Scan` yourself after it opens.

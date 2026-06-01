@@ -34,7 +34,7 @@ The repo should include a script that:
 - Runs the synthetic fixture generator in `-WhatIf` mode.
 - Prints the fixture review checklist in checklist-only mode.
 - Runs `git diff --check`.
-- Prints the next fixture review launcher command.
+- Prints the next notes-enabled fixture review launcher command.
 - States that no real user files were scanned or modified by preflight.
 
 ## Domain language changes
@@ -145,6 +145,7 @@ What changed:
 - Kept the workflow read-only with respect to real user files.
 - Later packet `2026-05-30-preflight-fixture-checklist-step.md` added a checklist-only fixture review step to the full preflight so manual checklist regressions fail preflight before visible review.
 - Later packet `2026-05-30-ci-preflight-cmd-wrapper.md` made GitHub Actions call the preferred `.cmd` wrapper so CI verifies the same entry point as local user instructions.
+- Later packet `2026-06-01-preflight-fixture-notes-next-step.md` changed the success output to suggest `.\tools\Start-MvpFixtureReview.cmd -SkipPreflight -WriteAcceptanceNotes`, aligning the next manual fixture step with the acceptance-notes workflow.
 
 Files changed:
 
