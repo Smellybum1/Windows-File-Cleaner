@@ -33,6 +33,7 @@ The standalone checklist is the terminal prompt a reviewer sees immediately befo
 
 - `cmd.exe /c tools\Show-RealProfileNextBatchChecklist.cmd` passed and printed the new Fixture Acceptance Notes reminder without launching WPF, scanning, movement, restore, deletion, approval, manifest writes, or cleanup history.
 - `cmd.exe /c tools\Invoke-RealProfileNextBatchReview.cmd -SkipMvpPreflight` passed and printed the reminder through the combined wrapper after read-only evidence. Skipped preflight remains smoke evidence only, not fresh movement evidence.
+- Follow-up full evidence: `cmd.exe /c tools\Invoke-RealProfileQuarantineReadiness.cmd -RequireNextBatchEvidence` passed on `d257090`, including full MVP preflight and current exact-profile manifest evidence, without launching WPF, scanning the real profile, movement, restore, deletion, approval, manifest writes, or cleanup history.
 - `rg -n "Fixture Acceptance Notes status|actual all-pass visible fixture review|Next-Batch Checklist Fixture Notes Guidance|Record-FixtureAcceptanceNotes" tools docs README.md .codex` passed.
 - `git diff --check` passed with expected line-ending normalization warnings only.
 
@@ -42,6 +43,7 @@ The standalone checklist is the terminal prompt a reviewer sees immediately befo
 - `docs/domain/context.md`
 - `docs/domain/glossary.md`
 - `docs/features/2026-06-01-live-product-readiness-roadmap.md`
+- `docs/features/2026-06-02-full-next-batch-evidence-after-checklist-guidance.md`
 - `docs/features/2026-06-02-next-batch-checklist-fixture-notes-guidance.md`
 - `docs/features/2026-06-02-real-profile-next-batch-wpf-checklist.md`
 - `docs/features/2026-06-02-real-profile-next-batch-review-wrapper.md`

@@ -10,6 +10,8 @@ Storage Scan MVP packet implemented and tested by the user against `C:\Users\mox
 
 Latest packet update: the Next-Batch Checklist Fixture Notes Guidance packet added a `Before launch` reminder to `.\tools\Show-RealProfileNextBatchChecklist.cmd` so future tiny exact real-profile batch review explicitly confirms Fixture Acceptance Notes status from the evidence preset, uses the printed recorder command only after an actual all-pass visible fixture review, and fills notes manually when there were issues or not-checked items. This changed checklist/docs wording only; it did not launch WPF, scan, move, restore, delete, approve cleanup, write Restore Manifests, or create cleanup history.
 
+Latest full next-batch evidence refresh after checklist guidance: `cmd.exe /c tools\Invoke-RealProfileQuarantineReadiness.cmd -RequireNextBatchEvidence` passed on current `main` at `d257090`. Full MVP preflight restored, built, ran core tests, ran WPF app tests, ran fixture `-WhatIf`, printed the fixture checklist, and ran whitespace diff checking. Daily readiness verified completed accepted package notes, printed optional Fixture Acceptance Notes status, ran one accepted package verifier pass with the expected package/current-HEAD warning (`bc9b869` accepted package versus `d257090` current `HEAD`), and printed accepted normal/fixture launch commands in print-only mode. Fixture Acceptance Notes remain formally incomplete and the summary printed recorder guidance. Exact-profile Restore Manifest display still showed 4 of 10 manifests, displayed undo work `0`, and displayed recovery review `2`; focused recovery-review evidence still showed the two older failed NVIDIA `DXCache` attempts, and focused undo-work evidence showed zero exact-profile matches. No WPF app was launched, no real-profile scan was started, and no files were moved, restored, deleted, approved, written to Restore Manifests, or added to cleanup history.
+
 Recent UI correction: the user reported `Discover manifests` was not visible in the Quarantine tab after selected restore recovery; it was still buried in the Main Grid detail pane. The follow-up packet moved Restore Manifest discovery, selected readiness, selected restore gate/result, and all-manifest readiness into a dedicated `Restore Manifest Review` panel under the Quarantine tab, and moved detailed Quarantine Preview output into the Quarantine tab.
 
 Latest accepted launcher output update: `.\tools\Start-AcceptedLocalRelease.cmd` now prints that the accepted release launch command is the daily path instead of any debug-build desktop shortcut, and that the launcher does not create shortcuts or install anything. This is terminal output wording only; it does not publish or accept a new package, launch WPF, scan, move, restore, delete, approve cleanup, or create cleanup history.
@@ -28,7 +30,7 @@ Latest daily fixture-notes status: `cmd.exe /c tools\Invoke-DailyLocalReadiness.
 
 Latest fixture acceptance notes guidance update: `.\tools\Summarize-FixtureAcceptanceNotes.cmd` now prints the exact `Record-FixtureAcceptanceNotes.cmd -Path ... -RecordManualAcceptance` follow-up when summarized notes are incomplete, including incomplete `-RequireComplete` output before it exits nonzero. This is guidance only; it does not record notes automatically from chat evidence, launch WPF, create fixtures, scan, move, restore, delete, approve cleanup, write Restore Manifests, or create cleanup history.
 
-Latest full real-profile next-batch evidence refresh: `cmd.exe /c tools\Invoke-RealProfileQuarantineReadiness.cmd -RequireNextBatchEvidence` passed. Full MVP preflight restored, built, ran core tests, ran WPF app tests, ran fixture `-WhatIf`, printed the checklist-only fixture guidance, and ran whitespace diff checking. Daily readiness then verified accepted package notes, printed optional fixture notes status, ran one accepted package verifier pass with the expected package/current-HEAD warning, printed accepted normal/fixture launch commands in print-only mode, and showed exact-profile Restore Manifest display `(4 of 10)` with displayed undo work `0` and displayed recovery review `2`. Focused recovery-review evidence showed the two older failed exact-profile NVIDIA `DXCache` attempts, focused undo-work evidence showed zero exact-profile matches, and preset misuse with all-scope or fixture scope failed as expected. No WPF app was launched, no real-profile scan was started, and no files were moved, restored, deleted, approved, or added to cleanup history.
+Latest full real-profile next-batch evidence refresh: `cmd.exe /c tools\Invoke-RealProfileQuarantineReadiness.cmd -RequireNextBatchEvidence` passed again on `d257090` after checklist fixture-notes guidance. Full MVP preflight restored, built, ran core tests, ran WPF app tests, ran fixture `-WhatIf`, printed the checklist-only fixture guidance, and ran whitespace diff checking. Daily readiness then verified accepted package notes, printed optional fixture notes status, ran one accepted package verifier pass with the expected package/current-HEAD warning, printed accepted normal/fixture launch commands in print-only mode, and showed exact-profile Restore Manifest display `(4 of 10)` with displayed undo work `0` and displayed recovery review `2`. Focused recovery-review evidence showed the two older failed exact-profile NVIDIA `DXCache` attempts, and focused undo-work evidence showed zero exact-profile matches. No WPF app was launched, no real-profile scan was started, and no files were moved, restored, deleted, approved, or added to cleanup history.
 
 Latest WPF UI packet added a compact Main Grid Active Review Lens Summary above Storage Scan rows, mirroring the existing Filter Summary so default scan, Safety Summary shortcut, and stacked filter/search context remain visible after tab switches; it hides for current-session quarantined rows. User visual review on 2026-06-01 approved the compact wide-header layout with Review Shortlist totals before scan totals, and the user later ran the visible fixture review flow and reported that it looks good. The latest fixture-checklist wording packet clarified that the current-session review step's hoverable `?` cue and `Status state:` wording belong to Review Grid Mode Status, while Main Grid Active Review Lens Summary appears for Storage Scan rows and hides for current-session quarantined rows. Current handoff evidence is the current-evidence baseline: full `.cmd` MVP preflight passed after the Checklist-Only Visible Fixture Next Step packet at `71cf15a`, including restore, build, core tests, WPF app tests, fixture `-WhatIf`, sectioned checklist-only output with the exact visible fixture next step, whitespace diff, and the notes-enabled next manual fixture command; user-reported manual fixture visual acceptance is now recorded, while the formal latest notes checklist remains unfilled. The live-product readiness roadmap now separates visible fixture acceptance, fresh real-profile read-only retest, selected real-profile restore, first real-profile Quarantine execution, recovery confidence, packaging, and later deletion/history decisions, and its manual fixture acceptance row names user-reported visual acceptance plus the unfilled clean-worktree notes evidence. The fixture launcher can write an ignored `.local` fixture acceptance notes template from the same checklist item source with `-WriteAcceptanceNotes`; the notes are grouped by fixture review area and now include an acceptance evidence header with repo path, Git branch/commit, worktree status at notes creation, .NET SDK, WPF app project/target framework/WPF flag, preflight command, visible fixture command, preflight/worktree checkboxes, local-not-cleanup-history wording, and embedded exact recorder/summary/completion-check commands. The latest ignored notes file is `.local\fixture-review-acceptance\fixture-acceptance-20260601-132126.md` from clean `main` at `433064e` with `Worktree status at notes creation: clean`, but the acceptance evidence and checklist items remain not recorded unless the user fills them manually or intentionally runs the recorder after an all-pass fixture review. A read-only summary helper can summarize the latest or explicit ignored fixture acceptance notes, including metadata, worktree status at notes creation when present, acceptance-evidence checkbox states, overall result, checklist totals, and issue/not-checked/not-recorded items with compact notes or prompt previews, without launching WPF, scanning, moving, restoring, deleting, or creating cleanup history. The helper also supports `-RequireComplete`, which exits non-zero until local acceptance notes have recorded preflight/worktree evidence, an overall result, and no not-checked or not-recorded checklist items. `.\tools\Record-FixtureAcceptanceNotes.cmd -RecordManualAcceptance` can mark ignored all-pass fixture notes complete after a human visible pass; it updates ignored `.local` notes only and does not launch WPF, create fixtures, scan, move, restore, delete, approve cleanup, or create cleanup history. The fixture launcher now also prints exact recorder, summary, and completion-check commands for the notes file it writes, and MVP preflight success output points to that follow-up after `.\tools\Start-MvpFixtureReview.cmd -SkipPreflight -WriteAcceptanceNotes`. Checklist-only launcher output now also repeats the exact next visible fixture command and the no-preflight/no-fixture/no-WPF/no-scan/no-movement boundary before exiting. No real user files were scanned or modified.
 
@@ -52,6 +54,56 @@ Use `.\tools\Invoke-RealProfileNextBatchReview.cmd` before considering another t
 4. Revisit .NET 10, installer/shortcut automation, permanent deletion, persisted cleanup history, and broad restore only as separate future decisions.
 
 ## Completed packets
+
+### 2026-06-02: Full Next-Batch Evidence After Checklist Guidance
+
+Status: completed
+
+Evidence:
+
+- `cmd.exe /c tools\Invoke-RealProfileQuarantineReadiness.cmd -RequireNextBatchEvidence` passed on current `main` at `d257090`.
+- Full MVP preflight restored, built, ran core tests, ran WPF app tests, ran fixture `-WhatIf`, printed the fixture checklist, and ran whitespace diff checking.
+- Daily readiness verified completed accepted package notes, printed optional Fixture Acceptance Notes status, verified the accepted package with the expected accepted-package/current-HEAD warning, and printed accepted launch commands in print-only mode.
+- Exact-profile Restore Manifest display showed 4 of 10 manifests, displayed undo work `0`, and displayed recovery review `2`.
+- Focused recovery-review evidence still showed the two older failed exact-profile NVIDIA `DXCache` attempts, and focused undo-work evidence showed zero exact-profile matches.
+
+Implementation:
+
+- Updated docs and progress evidence only.
+- Did not launch WPF, scan `C:\Users\moxhe`, move, restore, delete, approve cleanup, write Restore Manifests, or create cleanup history.
+
+Verification:
+
+- `cmd.exe /c tools\Invoke-RealProfileQuarantineReadiness.cmd -RequireNextBatchEvidence`
+- `rg -n "Full Next-Batch Evidence After Checklist Guidance|d257090|displayed undo work|expected accepted-package/current-HEAD warning" docs .codex`
+- `git diff --check`
+
+Docs updated:
+
+- `docs/features/2026-06-02-full-next-batch-evidence-after-checklist-guidance.md`
+- `docs/features/2026-06-02-real-profile-next-batch-evidence-preset.md`
+- `docs/features/2026-06-02-real-profile-quarantine-readiness-review.md`
+- `docs/features/2026-06-02-next-batch-checklist-fixture-notes-guidance.md`
+- `docs/features/2026-06-01-live-product-readiness-roadmap.md`
+- `docs/codex/thread-handoff.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No ADR added. This is read-only evidence for existing terminal tooling and ADR 0017/0018/0019 movement gates.
+
+Open questions:
+
+- Whether formal Fixture Acceptance Notes should be completed before another real-profile movement review or kept optional.
+
+Follow-up work:
+
+- Use `tools\Invoke-RealProfileNextBatchReview.cmd` when evidence plus the manual WPF checklist should stay together before a future tiny exact batch.
+- Keep any future movement exact `C:\Users\moxhe`, capped at 10 rows / 1 GB, readiness-gated, exact-confirmed, immediately revalidated, and human-clicked only.
+
+Risky assumptions:
+
+- The accepted package/current-HEAD warning remains expected because the accepted package is older than docs/tooling-only commits.
 
 ### 2026-06-02: Next-Batch Checklist Fixture Notes Guidance
 

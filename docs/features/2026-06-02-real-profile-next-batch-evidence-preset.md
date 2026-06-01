@@ -84,6 +84,7 @@ ADR-worthy decisions:
 ## Follow-up packets
 
 - `Real-Profile Next-Batch WPF Checklist` added `tools\Show-RealProfileNextBatchChecklist.cmd` so the manual WPF review after this preset can be printed without launching WPF, scanning, movement, restore, deletion, approval, or cleanup history.
+- `Full Next-Batch Evidence After Checklist Guidance` reran `cmd.exe /c tools\Invoke-RealProfileQuarantineReadiness.cmd -RequireNextBatchEvidence` on current `main` at `d257090` after checklist Fixture Acceptance Notes guidance. Full MVP preflight passed, accepted package verification passed with the expected accepted-package/current-HEAD warning, Fixture Acceptance Notes status remained formally incomplete with recorder guidance printed, exact-profile display still showed 4 manifests, displayed undo work 0, and displayed recovery review 2; no WPF app was launched and no files were scanned, moved, restored, deleted, approved, written to Restore Manifests, or added to cleanup history.
 
 ## Risks and assumptions
 
