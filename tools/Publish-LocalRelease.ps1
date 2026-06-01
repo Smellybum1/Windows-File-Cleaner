@@ -110,6 +110,9 @@ $appDir = Join-Path $releaseDir "app"
 $zipPath = Join-Path $releaseRootFullPath "$releaseName.zip"
 $metadataPath = Join-Path $releaseDir "release-metadata.txt"
 $appExePath = Join-Path $appDir "WindowsFileCleaner.App.exe"
+$launchScriptPath = Join-Path $releaseDir "Launch-WindowsFileCleaner.cmd"
+$fixtureLaunchScriptPath = Join-Path $releaseDir "Launch-WindowsFileCleaner-Fixture.cmd"
+$fixtureRoot = [System.IO.Path]::GetFullPath((Join-Path $repoRoot ".local\storage-scan-smoke-fixture")).TrimEnd([System.IO.Path]::DirectorySeparatorChar)
 $publishArguments = @(
     "publish",
     $projectPath,
@@ -175,6 +178,24 @@ try {
         throw "Published executable was not found: $appExePath"
     }
 
+    $launchScript = @(
+        "@echo off",
+        "setlocal",
+        "",
+        '"%~dp0app\WindowsFileCleaner.App.exe" %*',
+        "exit /b %ERRORLEVEL%"
+    )
+    Set-Content -LiteralPath $launchScriptPath -Value $launchScript -Encoding ASCII
+
+    $fixtureLaunchScript = @(
+        "@echo off",
+        "setlocal",
+        "",
+        ('"%~dp0app\WindowsFileCleaner.App.exe" --scope "{0}" %*' -f $fixtureRoot),
+        "exit /b %ERRORLEVEL%"
+    )
+    Set-Content -LiteralPath $fixtureLaunchScriptPath -Value $fixtureLaunchScript -Encoding ASCII
+
     $branch = Get-GitOutput -Arguments @("-c", "safe.directory=$repoRoot", "rev-parse", "--abbrev-ref", "HEAD")
     $commit = Get-GitOutput -Arguments @("-c", "safe.directory=$repoRoot", "rev-parse", "HEAD")
     $sdkVersion = (& dotnet --version | Select-Object -First 1)
@@ -198,6 +219,9 @@ try {
         "App directory: $appDir",
         "Executable: $appExePath",
         "Zip path: $zipPath",
+        "Launch script: $launchScriptPath",
+        "Fixture launch script: $fixtureLaunchScriptPath",
+        "Fixture Cleanup Scope: $fixtureRoot",
         "",
         "Safety boundary:",
         "- Portable v1 is reversible-only: Storage Scan, review, gated Quarantine, and selected restore.",
@@ -222,12 +246,13 @@ try {
     Write-Host "Executable: $appExePath"
     Write-Host "Zip: $zipPath"
     Write-Host "Metadata: $metadataPath"
+    Write-Host "Launch script: $launchScriptPath"
+    Write-Host "Fixture launch script: $fixtureLaunchScriptPath"
     Write-Host ""
     Write-Host "Launch command:"
     Write-Host "& `"$appExePath`""
     Write-Host ""
     Write-Host "Fixture launch command:"
-    $fixtureRoot = [System.IO.Path]::GetFullPath((Join-Path $repoRoot ".local\storage-scan-smoke-fixture")).TrimEnd([System.IO.Path]::DirectorySeparatorChar)
     Write-Host "& `"$appExePath`" --scope `"$fixtureRoot`""
     Write-Host ""
     Write-Host "Release artifacts are under ignored .local; only the publisher scripts and docs should be committed."

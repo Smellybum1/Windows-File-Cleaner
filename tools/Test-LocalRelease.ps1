@@ -140,6 +140,8 @@ $appDir = Join-Path $releaseDir "app"
 $appExePath = Join-Path $appDir "WindowsFileCleaner.App.exe"
 $metadataPath = Join-Path $releaseDir "release-metadata.txt"
 $zipPath = Join-Path (Split-Path -Parent $releaseDir) "$releaseName.zip"
+$launchScriptPath = Join-Path $releaseDir "Launch-WindowsFileCleaner.cmd"
+$fixtureLaunchScriptPath = Join-Path $releaseDir "Launch-WindowsFileCleaner-Fixture.cmd"
 $failures = [System.Collections.Generic.List[string]]::new()
 $warnings = [System.Collections.Generic.List[string]]::new()
 
@@ -154,6 +156,8 @@ Add-CheckResult -Failures $failures -Warnings $warnings -Passed ($releaseName -m
 Add-CheckResult -Failures $failures -Warnings $warnings -Passed (Test-Path -LiteralPath $appExePath -PathType Leaf) -PassedMessage "Published executable exists." -FailureMessage "Published executable is missing: $appExePath"
 Add-CheckResult -Failures $failures -Warnings $warnings -Passed (Test-Path -LiteralPath $metadataPath -PathType Leaf) -PassedMessage "Release metadata exists." -FailureMessage "Release metadata is missing: $metadataPath"
 Add-CheckResult -Failures $failures -Warnings $warnings -Passed (Test-Path -LiteralPath $zipPath -PathType Leaf) -PassedMessage "Release zip exists beside the folder." -FailureMessage "Release zip is missing: $zipPath"
+Add-CheckResult -Failures $failures -Warnings $warnings -Passed (Test-Path -LiteralPath $launchScriptPath -PathType Leaf) -PassedMessage "Launch script exists." -FailureMessage "Launch script is missing: $launchScriptPath"
+Add-CheckResult -Failures $failures -Warnings $warnings -Passed (Test-Path -LiteralPath $fixtureLaunchScriptPath -PathType Leaf) -PassedMessage "Fixture launch script exists." -FailureMessage "Fixture launch script is missing: $fixtureLaunchScriptPath"
 
 if ($failures.Count -eq 0) {
     $metadataLines = @(Get-Content -LiteralPath $metadataPath)
@@ -165,14 +169,32 @@ if ($failures.Count -eq 0) {
     $preflightSkipped = Get-MetadataValue -Lines $metadataLines -Prefix "Preflight skipped:"
     $metadataExecutable = Get-MetadataValue -Lines $metadataLines -Prefix "Executable:"
     $metadataZip = Get-MetadataValue -Lines $metadataLines -Prefix "Zip path:"
+    $metadataLaunchScript = Get-MetadataValue -Lines $metadataLines -Prefix "Launch script:"
+    $metadataFixtureLaunchScript = Get-MetadataValue -Lines $metadataLines -Prefix "Fixture launch script:"
+    $metadataFixtureScope = Get-MetadataValue -Lines $metadataLines -Prefix "Fixture Cleanup Scope:"
 
     Add-CheckResult -Failures $failures -Warnings $warnings -Passed ($metadataBranch -eq "main") -PassedMessage "Metadata branch is main." -FailureMessage "Metadata branch is not main: $metadataBranch"
-    Add-CheckResult -Failures $failures -Warnings $warnings -Passed ($worktreeStatus -eq "clean" -or $AllowDirtyPublish.IsPresent) -PassedMessage "Metadata says publish worktree was clean." -FailureMessage "Metadata says publish worktree was not clean: $worktreeStatus"
+    Add-CheckResult -Failures $failures -Warnings $warnings -Passed ($worktreeStatus -eq "clean" -or $AllowDirtyPublish.IsPresent) -PassedMessage "Metadata publish worktree state is acceptable for this verifier run." -FailureMessage "Metadata says publish worktree was not clean: $worktreeStatus"
     Add-CheckResult -Failures $failures -Warnings $warnings -Passed ($runtime -eq "win-x64") -PassedMessage "Metadata runtime is win-x64." -FailureMessage "Metadata runtime is not win-x64: $runtime"
     Add-CheckResult -Failures $failures -Warnings $warnings -Passed ($selfContained -eq "true") -PassedMessage "Metadata says the package is self-contained." -FailureMessage "Metadata self-contained value is not true: $selfContained"
-    Add-CheckResult -Failures $failures -Warnings $warnings -Passed ($preflightSkipped -eq "False" -or $AllowSkippedPreflight.IsPresent) -PassedMessage "Metadata says preflight was not skipped." -FailureMessage "Metadata says preflight was skipped: $preflightSkipped"
+    Add-CheckResult -Failures $failures -Warnings $warnings -Passed ($preflightSkipped -eq "False" -or $AllowSkippedPreflight.IsPresent) -PassedMessage "Metadata preflight state is acceptable for this verifier run." -FailureMessage "Metadata says preflight was skipped: $preflightSkipped"
     Add-CheckResult -Failures $failures -Warnings $warnings -Passed ($metadataExecutable -eq $appExePath) -PassedMessage "Metadata executable path matches this release." -FailureMessage "Metadata executable path does not match this release: $metadataExecutable"
     Add-CheckResult -Failures $failures -Warnings $warnings -Passed ($metadataZip -eq $zipPath) -PassedMessage "Metadata zip path matches this release." -FailureMessage "Metadata zip path does not match this release: $metadataZip"
+    Add-CheckResult -Failures $failures -Warnings $warnings -Passed ($metadataLaunchScript -eq $launchScriptPath) -PassedMessage "Metadata launch script path matches this release." -FailureMessage "Metadata launch script path does not match this release: $metadataLaunchScript"
+    Add-CheckResult -Failures $failures -Warnings $warnings -Passed ($metadataFixtureLaunchScript -eq $fixtureLaunchScriptPath) -PassedMessage "Metadata fixture launch script path matches this release." -FailureMessage "Metadata fixture launch script path does not match this release: $metadataFixtureLaunchScript"
+    Add-CheckResult -Failures $failures -Warnings $warnings -Passed ($metadataFixtureScope.EndsWith(".local\storage-scan-smoke-fixture", [System.StringComparison]::OrdinalIgnoreCase)) -PassedMessage "Metadata fixture launch scope points at the local smoke fixture." -FailureMessage "Metadata fixture launch scope is not the local smoke fixture: $metadataFixtureScope"
+
+    if (Test-Path -LiteralPath $launchScriptPath -PathType Leaf) {
+        $launchScriptLines = @(Get-Content -LiteralPath $launchScriptPath)
+        Add-CheckResult -Failures $failures -Warnings $warnings -Passed ($launchScriptLines -contains '"%~dp0app\WindowsFileCleaner.App.exe" %*') -PassedMessage "Launch script uses the packaged executable relative to the release folder." -FailureMessage "Launch script does not use the packaged executable relative to the release folder."
+    }
+
+    if (Test-Path -LiteralPath $fixtureLaunchScriptPath -PathType Leaf) {
+        $fixtureLaunchScriptLines = @(Get-Content -LiteralPath $fixtureLaunchScriptPath)
+        $fixtureLaunchLine = $fixtureLaunchScriptLines | Where-Object { $_ -like '*--scope*' } | Select-Object -First 1
+        Add-CheckResult -Failures $failures -Warnings $warnings -Passed (-not [string]::IsNullOrWhiteSpace($fixtureLaunchLine)) -PassedMessage "Fixture launch script passes an explicit Cleanup Scope." -FailureMessage "Fixture launch script does not pass an explicit Cleanup Scope."
+        Add-CheckResult -Failures $failures -Warnings $warnings -Passed ($fixtureLaunchLine -like '*\.local\storage-scan-smoke-fixture*') -PassedMessage "Fixture launch script points at the local smoke fixture." -FailureMessage "Fixture launch script does not point at the local smoke fixture: $fixtureLaunchLine"
+    }
 
     $expectedSafetyLines = @(
         "- Portable v1 is reversible-only: Storage Scan, review, gated Quarantine, and selected restore.",
@@ -195,6 +217,8 @@ if ($failures.Count -eq 0) {
         $zipEntryNames = @($zip.Entries | ForEach-Object { $_.FullName.Replace("/", "\") })
         Add-CheckResult -Failures $failures -Warnings $warnings -Passed ($zipEntryNames -contains "app\WindowsFileCleaner.App.exe") -PassedMessage "Zip contains app\WindowsFileCleaner.App.exe." -FailureMessage "Zip does not contain app\WindowsFileCleaner.App.exe."
         Add-CheckResult -Failures $failures -Warnings $warnings -Passed ($zipEntryNames -contains "release-metadata.txt") -PassedMessage "Zip contains release-metadata.txt." -FailureMessage "Zip does not contain release-metadata.txt."
+        Add-CheckResult -Failures $failures -Warnings $warnings -Passed ($zipEntryNames -contains "Launch-WindowsFileCleaner.cmd") -PassedMessage "Zip contains Launch-WindowsFileCleaner.cmd." -FailureMessage "Zip does not contain Launch-WindowsFileCleaner.cmd."
+        Add-CheckResult -Failures $failures -Warnings $warnings -Passed ($zipEntryNames -contains "Launch-WindowsFileCleaner-Fixture.cmd") -PassedMessage "Zip contains Launch-WindowsFileCleaner-Fixture.cmd." -FailureMessage "Zip does not contain Launch-WindowsFileCleaner-Fixture.cmd."
     }
     finally {
         $zip.Dispose()
@@ -223,3 +247,5 @@ Write-Host ""
 Write-Host "Executable: $appExePath"
 Write-Host "Zip: $zipPath"
 Write-Host "Metadata: $metadataPath"
+Write-Host "Launch script: $launchScriptPath"
+Write-Host "Fixture launch script: $fixtureLaunchScriptPath"

@@ -134,6 +134,15 @@ The publisher runs MVP preflight by default, publishes the WPF app as `Release` 
 
 The release artifacts stay under ignored `.local\releases`. The script prints the exact executable path plus normal and fixture launch commands. This is a portable package, not an installer: it does not create shortcuts, does not enable permanent deletion, does not add persisted cleanup history, and does not add broad/all-manifest restore. Portable v1 remains reversible-only: read-only Storage Scan, review, gated Quarantine, and selected restore.
 
+Each release folder also contains ignored local launch scripts:
+
+```txt
+.local\releases\windows-file-cleaner-vYYYYMMDD-HHMMSS\Launch-WindowsFileCleaner.cmd
+.local\releases\windows-file-cleaner-vYYYYMMDD-HHMMSS\Launch-WindowsFileCleaner-Fixture.cmd
+```
+
+The first launches the packaged app normally. The fixture script launches the same packaged app with the repo-local smoke fixture Cleanup Scope; it does not create the fixture or click `Scan`.
+
 To verify the latest local package without launching WPF or scanning anything:
 
 ```powershell

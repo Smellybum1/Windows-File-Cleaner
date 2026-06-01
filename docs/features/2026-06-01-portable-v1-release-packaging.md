@@ -28,6 +28,7 @@ The app can run from the development output or `dotnet run`, and the current rec
 - The publisher verifies `WindowsFileCleaner.App.exe`, writes `release-metadata.txt`, creates `.local\releases\windows-file-cleaner-vYYYYMMDD-HHMMSS.zip`, and prints exact launch commands.
 - Release metadata records branch, commit, worktree status, SDK, project, configuration, runtime, publish command, executable path, zip path, and the reversible-only safety boundary.
 - Before running preflight, the publisher checks for a running Debug `WindowsFileCleaner.App` process that would lock build output and tells the user to close it instead of letting MSBuild fail with repeated file-copy errors.
+- Later packet `Portable Release Launch Scripts` made the publisher write release-local `Launch-WindowsFileCleaner.cmd` and `Launch-WindowsFileCleaner-Fixture.cmd` scripts, record them in metadata, and include them in the zip without creating installed shortcuts.
 
 ## Verification
 
