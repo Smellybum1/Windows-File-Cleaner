@@ -139,6 +139,7 @@ $releaseName = Split-Path -Leaf $releaseDir
 $appDir = Join-Path $releaseDir "app"
 $appExePath = Join-Path $appDir "WindowsFileCleaner.App.exe"
 $metadataPath = Join-Path $releaseDir "release-metadata.txt"
+$readmePath = Join-Path $releaseDir "README-FIRST.txt"
 $zipPath = Join-Path (Split-Path -Parent $releaseDir) "$releaseName.zip"
 $launchScriptPath = Join-Path $releaseDir "Launch-WindowsFileCleaner.cmd"
 $fixtureLaunchScriptPath = Join-Path $releaseDir "Launch-WindowsFileCleaner-Fixture.cmd"
@@ -155,6 +156,7 @@ Add-CheckResult -Failures $failures -Warnings $warnings -Passed (Test-Path -Lite
 Add-CheckResult -Failures $failures -Warnings $warnings -Passed ($releaseName -match "^windows-file-cleaner-v\d{8}-\d{6}$") -PassedMessage "Release folder name matches portable v1 stamp format." -FailureMessage "Release folder name does not match windows-file-cleaner-vYYYYMMDD-HHMMSS: $releaseName"
 Add-CheckResult -Failures $failures -Warnings $warnings -Passed (Test-Path -LiteralPath $appExePath -PathType Leaf) -PassedMessage "Published executable exists." -FailureMessage "Published executable is missing: $appExePath"
 Add-CheckResult -Failures $failures -Warnings $warnings -Passed (Test-Path -LiteralPath $metadataPath -PathType Leaf) -PassedMessage "Release metadata exists." -FailureMessage "Release metadata is missing: $metadataPath"
+Add-CheckResult -Failures $failures -Warnings $warnings -Passed (Test-Path -LiteralPath $readmePath -PathType Leaf) -PassedMessage "Release README-FIRST.txt exists." -FailureMessage "Release README-FIRST.txt is missing: $readmePath"
 Add-CheckResult -Failures $failures -Warnings $warnings -Passed (Test-Path -LiteralPath $zipPath -PathType Leaf) -PassedMessage "Release zip exists beside the folder." -FailureMessage "Release zip is missing: $zipPath"
 Add-CheckResult -Failures $failures -Warnings $warnings -Passed (Test-Path -LiteralPath $launchScriptPath -PathType Leaf) -PassedMessage "Launch script exists." -FailureMessage "Launch script is missing: $launchScriptPath"
 Add-CheckResult -Failures $failures -Warnings $warnings -Passed (Test-Path -LiteralPath $fixtureLaunchScriptPath -PathType Leaf) -PassedMessage "Fixture launch script exists." -FailureMessage "Fixture launch script is missing: $fixtureLaunchScriptPath"
@@ -169,6 +171,7 @@ if ($failures.Count -eq 0) {
     $preflightSkipped = Get-MetadataValue -Lines $metadataLines -Prefix "Preflight skipped:"
     $metadataExecutable = Get-MetadataValue -Lines $metadataLines -Prefix "Executable:"
     $metadataZip = Get-MetadataValue -Lines $metadataLines -Prefix "Zip path:"
+    $metadataReadme = Get-MetadataValue -Lines $metadataLines -Prefix "Readme:"
     $metadataLaunchScript = Get-MetadataValue -Lines $metadataLines -Prefix "Launch script:"
     $metadataFixtureLaunchScript = Get-MetadataValue -Lines $metadataLines -Prefix "Fixture launch script:"
     $metadataFixtureScope = Get-MetadataValue -Lines $metadataLines -Prefix "Fixture Cleanup Scope:"
@@ -180,9 +183,29 @@ if ($failures.Count -eq 0) {
     Add-CheckResult -Failures $failures -Warnings $warnings -Passed ($preflightSkipped -eq "False" -or $AllowSkippedPreflight.IsPresent) -PassedMessage "Metadata preflight state is acceptable for this verifier run." -FailureMessage "Metadata says preflight was skipped: $preflightSkipped"
     Add-CheckResult -Failures $failures -Warnings $warnings -Passed ($metadataExecutable -eq $appExePath) -PassedMessage "Metadata executable path matches this release." -FailureMessage "Metadata executable path does not match this release: $metadataExecutable"
     Add-CheckResult -Failures $failures -Warnings $warnings -Passed ($metadataZip -eq $zipPath) -PassedMessage "Metadata zip path matches this release." -FailureMessage "Metadata zip path does not match this release: $metadataZip"
+    Add-CheckResult -Failures $failures -Warnings $warnings -Passed ($metadataReadme -eq $readmePath) -PassedMessage "Metadata readme path matches this release." -FailureMessage "Metadata readme path does not match this release: $metadataReadme"
     Add-CheckResult -Failures $failures -Warnings $warnings -Passed ($metadataLaunchScript -eq $launchScriptPath) -PassedMessage "Metadata launch script path matches this release." -FailureMessage "Metadata launch script path does not match this release: $metadataLaunchScript"
     Add-CheckResult -Failures $failures -Warnings $warnings -Passed ($metadataFixtureLaunchScript -eq $fixtureLaunchScriptPath) -PassedMessage "Metadata fixture launch script path matches this release." -FailureMessage "Metadata fixture launch script path does not match this release: $metadataFixtureLaunchScript"
     Add-CheckResult -Failures $failures -Warnings $warnings -Passed ($metadataFixtureScope.EndsWith(".local\storage-scan-smoke-fixture", [System.StringComparison]::OrdinalIgnoreCase)) -PassedMessage "Metadata fixture launch scope points at the local smoke fixture." -FailureMessage "Metadata fixture launch scope is not the local smoke fixture: $metadataFixtureScope"
+
+    if (Test-Path -LiteralPath $readmePath -PathType Leaf) {
+        $readmeLines = @(Get-Content -LiteralPath $readmePath)
+        $expectedReadmeLines = @(
+            "Windows File Cleaner portable v1",
+            "- Fixture launch only prefills the Cleanup Scope.",
+            "- It does not create the fixture, click Scan, move, restore, delete, or approve cleanup.",
+            "- Portable v1 is not an installer and does not create shortcuts, services, scheduled tasks, or background automation.",
+            "- Portable v1 is reversible-only: read-only Storage Scan, review, gated Quarantine, and selected restore.",
+            "- Portable v1 excludes permanent deletion, persisted cleanup history, broad/all-manifest restore, custom real-profile Quarantine, and non-exact real-profile movement.",
+            "- Real-profile movement remains gated by existing readiness checks, exact confirmation text, and explicit user action.",
+            "- Codex and automated checks must not click real-profile movement.",
+            "- See release-metadata.txt in this folder for commit, branch, publish command, executable path, zip path, and safety boundary evidence."
+        )
+
+        foreach ($line in $expectedReadmeLines) {
+            Add-CheckResult -Failures $failures -Warnings $warnings -Passed ($readmeLines -contains $line) -PassedMessage "README-FIRST.txt line present: $line" -FailureMessage "README-FIRST.txt line missing: $line"
+        }
+    }
 
     if (Test-Path -LiteralPath $launchScriptPath -PathType Leaf) {
         $launchScriptLines = @(Get-Content -LiteralPath $launchScriptPath)
@@ -217,6 +240,7 @@ if ($failures.Count -eq 0) {
         $zipEntryNames = @($zip.Entries | ForEach-Object { $_.FullName.Replace("/", "\") })
         Add-CheckResult -Failures $failures -Warnings $warnings -Passed ($zipEntryNames -contains "app\WindowsFileCleaner.App.exe") -PassedMessage "Zip contains app\WindowsFileCleaner.App.exe." -FailureMessage "Zip does not contain app\WindowsFileCleaner.App.exe."
         Add-CheckResult -Failures $failures -Warnings $warnings -Passed ($zipEntryNames -contains "release-metadata.txt") -PassedMessage "Zip contains release-metadata.txt." -FailureMessage "Zip does not contain release-metadata.txt."
+        Add-CheckResult -Failures $failures -Warnings $warnings -Passed ($zipEntryNames -contains "README-FIRST.txt") -PassedMessage "Zip contains README-FIRST.txt." -FailureMessage "Zip does not contain README-FIRST.txt."
         Add-CheckResult -Failures $failures -Warnings $warnings -Passed ($zipEntryNames -contains "Launch-WindowsFileCleaner.cmd") -PassedMessage "Zip contains Launch-WindowsFileCleaner.cmd." -FailureMessage "Zip does not contain Launch-WindowsFileCleaner.cmd."
         Add-CheckResult -Failures $failures -Warnings $warnings -Passed ($zipEntryNames -contains "Launch-WindowsFileCleaner-Fixture.cmd") -PassedMessage "Zip contains Launch-WindowsFileCleaner-Fixture.cmd." -FailureMessage "Zip does not contain Launch-WindowsFileCleaner-Fixture.cmd."
     }
@@ -247,5 +271,6 @@ Write-Host ""
 Write-Host "Executable: $appExePath"
 Write-Host "Zip: $zipPath"
 Write-Host "Metadata: $metadataPath"
+Write-Host "Readme: $readmePath"
 Write-Host "Launch script: $launchScriptPath"
 Write-Host "Fixture launch script: $fixtureLaunchScriptPath"

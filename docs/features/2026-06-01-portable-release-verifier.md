@@ -29,6 +29,7 @@ Add a repeatable local verifier for the latest Portable Release Package so packa
 - It fails the commit mismatch when `-RequireCurrentCommit` is supplied.
 - It reads ignored local release files only and prints that it does not launch WPF, scan, move, restore, delete, or create cleanup history.
 - Later packet `Portable Release Launch Scripts` extended the verifier to check release-local launch scripts, their metadata paths, fixture-scope launch wording, and zip entries.
+- Later packet `Portable Release Start Here Readme` extended the verifier to check release-local `README-FIRST.txt`, its metadata path, key safety-boundary lines, and zip entry.
 
 ## Verification
 

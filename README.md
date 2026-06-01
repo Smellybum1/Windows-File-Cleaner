@@ -130,10 +130,11 @@ The publisher runs MVP preflight by default, publishes the WPF app as `Release` 
 
 ```txt
 .local\releases\windows-file-cleaner-vYYYYMMDD-HHMMSS\app\WindowsFileCleaner.App.exe
+.local\releases\windows-file-cleaner-vYYYYMMDD-HHMMSS\README-FIRST.txt
 .local\releases\windows-file-cleaner-vYYYYMMDD-HHMMSS.zip
 ```
 
-The release artifacts stay under ignored `.local\releases`. The script prints the exact executable path plus normal and fixture launch commands. This is a portable package, not an installer: it does not create shortcuts, does not enable permanent deletion, does not add persisted cleanup history, and does not add broad/all-manifest restore. Portable v1 remains reversible-only: read-only Storage Scan, review, gated Quarantine, and selected restore.
+The release artifacts stay under ignored `.local\releases`. The script prints the exact executable path plus normal and fixture launch commands. `README-FIRST.txt` travels with the folder and zip as the package-local start-here note, including launch options and the reversible-only safety boundary. This is a portable package, not an installer: it does not create shortcuts, does not enable permanent deletion, does not add persisted cleanup history, and does not add broad/all-manifest restore. Portable v1 remains reversible-only: read-only Storage Scan, review, gated Quarantine, and selected restore.
 
 Each release folder also contains ignored local launch scripts:
 
@@ -150,7 +151,7 @@ To verify the latest local package without launching WPF or scanning anything:
 .\tools\Test-LocalRelease.cmd
 ```
 
-The verifier checks the ignored release folder, executable, zip, metadata, safety-boundary lines, and zip entries. By default it warns if the package commit is behind current `HEAD`; use `.\tools\Test-LocalRelease.cmd -RequireCurrentCommit` when you need the package to exactly match the current commit.
+The verifier checks the ignored release folder, executable, `README-FIRST.txt`, zip, metadata, safety-boundary lines, and zip entries. By default it warns if the package commit is behind current `HEAD`; use `.\tools\Test-LocalRelease.cmd -RequireCurrentCommit` when you need the package to exactly match the current commit.
 
 To print or start the latest verified local package from the repo root:
 

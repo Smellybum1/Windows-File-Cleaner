@@ -109,6 +109,7 @@ $releaseDir = Join-Path $releaseRootFullPath $releaseName
 $appDir = Join-Path $releaseDir "app"
 $zipPath = Join-Path $releaseRootFullPath "$releaseName.zip"
 $metadataPath = Join-Path $releaseDir "release-metadata.txt"
+$readmePath = Join-Path $releaseDir "README-FIRST.txt"
 $appExePath = Join-Path $appDir "WindowsFileCleaner.App.exe"
 $launchScriptPath = Join-Path $releaseDir "Launch-WindowsFileCleaner.cmd"
 $fixtureLaunchScriptPath = Join-Path $releaseDir "Launch-WindowsFileCleaner-Fixture.cmd"
@@ -196,6 +197,30 @@ try {
     )
     Set-Content -LiteralPath $fixtureLaunchScriptPath -Value $fixtureLaunchScript -Encoding ASCII
 
+    $releaseReadme = @(
+        "Windows File Cleaner portable v1",
+        "",
+        "Start here:",
+        "1. Run Launch-WindowsFileCleaner.cmd to start the packaged app normally.",
+        "2. Run Launch-WindowsFileCleaner-Fixture.cmd to start with the repo-local smoke fixture Cleanup Scope prefilled.",
+        "3. You can also run app\WindowsFileCleaner.App.exe directly.",
+        "",
+        "Fixture launch boundary:",
+        "- Fixture launch only prefills the Cleanup Scope.",
+        "- It does not create the fixture, click Scan, move, restore, delete, or approve cleanup.",
+        "",
+        "Portable package boundary:",
+        "- Portable v1 is not an installer and does not create shortcuts, services, scheduled tasks, or background automation.",
+        "- Portable v1 is reversible-only: read-only Storage Scan, review, gated Quarantine, and selected restore.",
+        "- Portable v1 excludes permanent deletion, persisted cleanup history, broad/all-manifest restore, custom real-profile Quarantine, and non-exact real-profile movement.",
+        "- Real-profile movement remains gated by existing readiness checks, exact confirmation text, and explicit user action.",
+        "- Codex and automated checks must not click real-profile movement.",
+        "",
+        "Release metadata:",
+        "- See release-metadata.txt in this folder for commit, branch, publish command, executable path, zip path, and safety boundary evidence."
+    )
+    Set-Content -LiteralPath $readmePath -Value $releaseReadme -Encoding ASCII
+
     $branch = Get-GitOutput -Arguments @("-c", "safe.directory=$repoRoot", "rev-parse", "--abbrev-ref", "HEAD")
     $commit = Get-GitOutput -Arguments @("-c", "safe.directory=$repoRoot", "rev-parse", "HEAD")
     $sdkVersion = (& dotnet --version | Select-Object -First 1)
@@ -219,6 +244,7 @@ try {
         "App directory: $appDir",
         "Executable: $appExePath",
         "Zip path: $zipPath",
+        "Readme: $readmePath",
         "Launch script: $launchScriptPath",
         "Fixture launch script: $fixtureLaunchScriptPath",
         "Fixture Cleanup Scope: $fixtureRoot",
@@ -246,6 +272,7 @@ try {
     Write-Host "Executable: $appExePath"
     Write-Host "Zip: $zipPath"
     Write-Host "Metadata: $metadataPath"
+    Write-Host "Readme: $readmePath"
     Write-Host "Launch script: $launchScriptPath"
     Write-Host "Fixture launch script: $fixtureLaunchScriptPath"
     Write-Host ""
