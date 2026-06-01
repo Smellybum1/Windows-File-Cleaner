@@ -108,6 +108,7 @@ $releaseName = "windows-file-cleaner-v$stamp"
 $releaseDir = Join-Path $releaseRootFullPath $releaseName
 $appDir = Join-Path $releaseDir "app"
 $zipPath = Join-Path $releaseRootFullPath "$releaseName.zip"
+$zipSha256Path = "$zipPath.sha256"
 $metadataPath = Join-Path $releaseDir "release-metadata.txt"
 $readmePath = Join-Path $releaseDir "README-FIRST.txt"
 $appExePath = Join-Path $appDir "WindowsFileCleaner.App.exe"
@@ -179,6 +180,8 @@ try {
         throw "Published executable was not found: $appExePath"
     }
 
+    $appExeSha256 = (Get-FileHash -LiteralPath $appExePath -Algorithm SHA256).Hash.ToUpperInvariant()
+
     $launchScript = @(
         "@echo off",
         "setlocal",
@@ -243,7 +246,9 @@ try {
         "Publish command: $publishCommandLine",
         "App directory: $appDir",
         "Executable: $appExePath",
+        "Executable SHA256: $appExeSha256",
         "Zip path: $zipPath",
+        "Zip SHA256 sidecar: $zipSha256Path",
         "Readme: $readmePath",
         "Launch script: $launchScriptPath",
         "Fixture launch script: $fixtureLaunchScriptPath",
@@ -266,11 +271,16 @@ try {
         throw "Release zip was not found: $zipPath"
     }
 
+    $zipSha256 = (Get-FileHash -LiteralPath $zipPath -Algorithm SHA256).Hash.ToUpperInvariant()
+    $zipSha256Line = "{0}  {1}" -f $zipSha256, (Split-Path -Leaf $zipPath)
+    Set-Content -LiteralPath $zipSha256Path -Value @($zipSha256Line) -Encoding ASCII
+
     Write-Host ""
     Write-Host "Portable v1 release package created."
     Write-Host "App folder: $appDir"
     Write-Host "Executable: $appExePath"
     Write-Host "Zip: $zipPath"
+    Write-Host "Zip SHA256: $zipSha256Path"
     Write-Host "Metadata: $metadataPath"
     Write-Host "Readme: $readmePath"
     Write-Host "Launch script: $launchScriptPath"

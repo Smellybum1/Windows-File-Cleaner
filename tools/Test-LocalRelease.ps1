@@ -141,6 +141,7 @@ $appExePath = Join-Path $appDir "WindowsFileCleaner.App.exe"
 $metadataPath = Join-Path $releaseDir "release-metadata.txt"
 $readmePath = Join-Path $releaseDir "README-FIRST.txt"
 $zipPath = Join-Path (Split-Path -Parent $releaseDir) "$releaseName.zip"
+$zipSha256Path = "$zipPath.sha256"
 $launchScriptPath = Join-Path $releaseDir "Launch-WindowsFileCleaner.cmd"
 $fixtureLaunchScriptPath = Join-Path $releaseDir "Launch-WindowsFileCleaner-Fixture.cmd"
 $failures = [System.Collections.Generic.List[string]]::new()
@@ -158,6 +159,7 @@ Add-CheckResult -Failures $failures -Warnings $warnings -Passed (Test-Path -Lite
 Add-CheckResult -Failures $failures -Warnings $warnings -Passed (Test-Path -LiteralPath $metadataPath -PathType Leaf) -PassedMessage "Release metadata exists." -FailureMessage "Release metadata is missing: $metadataPath"
 Add-CheckResult -Failures $failures -Warnings $warnings -Passed (Test-Path -LiteralPath $readmePath -PathType Leaf) -PassedMessage "Release README-FIRST.txt exists." -FailureMessage "Release README-FIRST.txt is missing: $readmePath"
 Add-CheckResult -Failures $failures -Warnings $warnings -Passed (Test-Path -LiteralPath $zipPath -PathType Leaf) -PassedMessage "Release zip exists beside the folder." -FailureMessage "Release zip is missing: $zipPath"
+Add-CheckResult -Failures $failures -Warnings $warnings -Passed (Test-Path -LiteralPath $zipSha256Path -PathType Leaf) -PassedMessage "Release zip SHA256 sidecar exists beside the zip." -FailureMessage "Release zip SHA256 sidecar is missing: $zipSha256Path"
 Add-CheckResult -Failures $failures -Warnings $warnings -Passed (Test-Path -LiteralPath $launchScriptPath -PathType Leaf) -PassedMessage "Launch script exists." -FailureMessage "Launch script is missing: $launchScriptPath"
 Add-CheckResult -Failures $failures -Warnings $warnings -Passed (Test-Path -LiteralPath $fixtureLaunchScriptPath -PathType Leaf) -PassedMessage "Fixture launch script exists." -FailureMessage "Fixture launch script is missing: $fixtureLaunchScriptPath"
 
@@ -170,7 +172,9 @@ if ($failures.Count -eq 0) {
     $selfContained = Get-MetadataValue -Lines $metadataLines -Prefix "Self-contained:"
     $preflightSkipped = Get-MetadataValue -Lines $metadataLines -Prefix "Preflight skipped:"
     $metadataExecutable = Get-MetadataValue -Lines $metadataLines -Prefix "Executable:"
+    $metadataExecutableSha256 = Get-MetadataValue -Lines $metadataLines -Prefix "Executable SHA256:"
     $metadataZip = Get-MetadataValue -Lines $metadataLines -Prefix "Zip path:"
+    $metadataZipSha256Sidecar = Get-MetadataValue -Lines $metadataLines -Prefix "Zip SHA256 sidecar:"
     $metadataReadme = Get-MetadataValue -Lines $metadataLines -Prefix "Readme:"
     $metadataLaunchScript = Get-MetadataValue -Lines $metadataLines -Prefix "Launch script:"
     $metadataFixtureLaunchScript = Get-MetadataValue -Lines $metadataLines -Prefix "Fixture launch script:"
@@ -182,7 +186,10 @@ if ($failures.Count -eq 0) {
     Add-CheckResult -Failures $failures -Warnings $warnings -Passed ($selfContained -eq "true") -PassedMessage "Metadata says the package is self-contained." -FailureMessage "Metadata self-contained value is not true: $selfContained"
     Add-CheckResult -Failures $failures -Warnings $warnings -Passed ($preflightSkipped -eq "False" -or $AllowSkippedPreflight.IsPresent) -PassedMessage "Metadata preflight state is acceptable for this verifier run." -FailureMessage "Metadata says preflight was skipped: $preflightSkipped"
     Add-CheckResult -Failures $failures -Warnings $warnings -Passed ($metadataExecutable -eq $appExePath) -PassedMessage "Metadata executable path matches this release." -FailureMessage "Metadata executable path does not match this release: $metadataExecutable"
+    $actualExecutableSha256 = (Get-FileHash -LiteralPath $appExePath -Algorithm SHA256).Hash.ToUpperInvariant()
+    Add-CheckResult -Failures $failures -Warnings $warnings -Passed ($metadataExecutableSha256 -eq $actualExecutableSha256) -PassedMessage "Metadata executable SHA256 matches the packaged executable." -FailureMessage "Metadata executable SHA256 does not match the packaged executable. Metadata: $metadataExecutableSha256 Actual: $actualExecutableSha256"
     Add-CheckResult -Failures $failures -Warnings $warnings -Passed ($metadataZip -eq $zipPath) -PassedMessage "Metadata zip path matches this release." -FailureMessage "Metadata zip path does not match this release: $metadataZip"
+    Add-CheckResult -Failures $failures -Warnings $warnings -Passed ($metadataZipSha256Sidecar -eq $zipSha256Path) -PassedMessage "Metadata zip SHA256 sidecar path matches this release." -FailureMessage "Metadata zip SHA256 sidecar path does not match this release: $metadataZipSha256Sidecar"
     Add-CheckResult -Failures $failures -Warnings $warnings -Passed ($metadataReadme -eq $readmePath) -PassedMessage "Metadata readme path matches this release." -FailureMessage "Metadata readme path does not match this release: $metadataReadme"
     Add-CheckResult -Failures $failures -Warnings $warnings -Passed ($metadataLaunchScript -eq $launchScriptPath) -PassedMessage "Metadata launch script path matches this release." -FailureMessage "Metadata launch script path does not match this release: $metadataLaunchScript"
     Add-CheckResult -Failures $failures -Warnings $warnings -Passed ($metadataFixtureLaunchScript -eq $fixtureLaunchScriptPath) -PassedMessage "Metadata fixture launch script path matches this release." -FailureMessage "Metadata fixture launch script path does not match this release: $metadataFixtureLaunchScript"
@@ -230,6 +237,13 @@ if ($failures.Count -eq 0) {
         Add-CheckResult -Failures $failures -Warnings $warnings -Passed ($metadataLines -contains $line) -PassedMessage "Safety boundary line present: $line" -FailureMessage "Safety boundary line missing: $line"
     }
 
+    if (Test-Path -LiteralPath $zipSha256Path -PathType Leaf) {
+        $actualZipSha256 = (Get-FileHash -LiteralPath $zipPath -Algorithm SHA256).Hash.ToUpperInvariant()
+        $expectedZipSha256Line = "{0}  {1}" -f $actualZipSha256, (Split-Path -Leaf $zipPath)
+        $zipSha256Line = ((Get-Content -LiteralPath $zipSha256Path -Raw).Trim())
+        Add-CheckResult -Failures $failures -Warnings $warnings -Passed ($zipSha256Line -eq $expectedZipSha256Line) -PassedMessage "Zip SHA256 sidecar matches the release zip." -FailureMessage "Zip SHA256 sidecar does not match the release zip. Expected: $expectedZipSha256Line Actual: $zipSha256Line"
+    }
+
     $currentCommit = Get-GitOutput -Arguments @("-C", $repoRoot, "rev-parse", "HEAD")
     $commitMatches = -not [string]::IsNullOrWhiteSpace($metadataCommit) -and $metadataCommit -eq $currentCommit
     Add-CheckResult -Failures $failures -Warnings $warnings -Passed $commitMatches -PassedMessage "Metadata commit matches current HEAD." -FailureMessage "Metadata commit differs from current HEAD. Package: $metadataCommit Current: $currentCommit" -WarningOnly:(-not $RequireCurrentCommit.IsPresent)
@@ -270,6 +284,7 @@ if ($warnings.Count -gt 0) {
 Write-Host ""
 Write-Host "Executable: $appExePath"
 Write-Host "Zip: $zipPath"
+Write-Host "Zip SHA256: $zipSha256Path"
 Write-Host "Metadata: $metadataPath"
 Write-Host "Readme: $readmePath"
 Write-Host "Launch script: $launchScriptPath"

@@ -30,6 +30,7 @@ The app can run from the development output or `dotnet run`, and the current rec
 - Before running preflight, the publisher checks for a running Debug `WindowsFileCleaner.App` process that would lock build output and tells the user to close it instead of letting MSBuild fail with repeated file-copy errors.
 - Later packet `Portable Release Launch Scripts` made the publisher write release-local `Launch-WindowsFileCleaner.cmd` and `Launch-WindowsFileCleaner-Fixture.cmd` scripts, record them in metadata, and include them in the zip without creating installed shortcuts.
 - Later packet `Portable Release Start Here Readme` made the publisher write release-local `README-FIRST.txt`, record it in metadata, and include it in the zip so the portable folder carries launch instructions and the reversible-only v1 boundary.
+- Later packet `Portable Release Checksum Evidence` made the publisher record the packaged executable SHA-256 in release metadata and write a sibling zip `.sha256` sidecar without adding installer behavior or cleanup history.
 
 ## Verification
 
