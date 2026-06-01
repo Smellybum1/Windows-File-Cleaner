@@ -82,6 +82,7 @@ What changed:
 - Later packet `2026-05-29-review-grid-mode-status-styling.md` updated the checklist to call out styled Review Grid Mode Status states: neutral, informational, and warning.
 - Later packet `2026-05-30-review-grid-mode-status-help-text.md` updated the checklist to call out Review Grid Mode Status tooltip/help text.
 - Later packet `2026-05-30-review-grid-mode-status-help-cue.md` updated the checklist to call out the Review Grid Mode Status `?` help cue.
+- Later packet `2026-06-01-fixture-checklist-grid-mode-cue-wording.md` clarified that the hoverable `?` cue and state-naming tooltip/help text in the current-session review step belong to Review Grid Mode Status, while the Main Grid active review lens summary appears only for Storage Scan rows and hides for current-session quarantined rows.
 - Later packet `2026-05-30-quarantine-preview-status-help-text.md` updated the checklist to call out inline Quarantine Preview status tooltip/help text.
 - Later packet `2026-05-30-quarantine-shortlist-header-styling.md` updated the checklist to call out Quarantine shortlist header state styling.
 - Later packet `2026-05-30-safety-summary-header-styling.md` updated the checklist to call out Safety Summary header state styling.
