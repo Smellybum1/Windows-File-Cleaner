@@ -137,6 +137,8 @@ The publisher runs MVP preflight by default, publishes the WPF app as `Release` 
 
 The release artifacts stay under ignored `.local\releases`. The script prints the exact executable path plus normal and fixture launch commands. `README-FIRST.txt` travels with the folder and zip as the package-local start-here note, including launch options and the reversible-only safety boundary. The publisher records the packaged executable SHA-256 in `release-metadata.txt` and writes a sibling zip checksum sidecar. This is a portable package, not an installer: it does not create shortcuts, does not enable permanent deletion, does not add persisted cleanup history, and does not add broad/all-manifest restore. Portable v1 remains reversible-only: read-only Storage Scan, review, gated Quarantine, and selected restore.
 
+Current accepted local package baseline: `.local\releases\windows-file-cleaner-v20260602-011556` at commit `bc9b869`, with completed ignored acceptance notes at `.local\release-acceptance\release-acceptance-20260602-011743.md`. The notes summary reports verifier/current-commit/normal-launch/fixture-launch evidence recorded, overall result `Pass`, and `6 pass, 0 issue, 0 not checked, 0 not recorded`; those notes are local evidence only and are not app persistence or cleanup history.
+
 Each release folder also contains ignored local launch scripts:
 
 ```txt
