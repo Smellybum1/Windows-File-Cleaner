@@ -207,6 +207,7 @@ Follow-up work:
 
 - Consider installed shortcut or installer automation only as a separate packaging packet.
 - Cut and accept a fresh package only after future behavior changes should ship as the next accepted app package.
+- Later packet `Accepted Package Launch Path Clarity` clarified that any debug-build desktop shortcut is development-only context, not accepted-package evidence, not an installer, and not the recommended daily launch path.
 
 Open questions:
 

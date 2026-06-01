@@ -65,6 +65,8 @@ Later packet note: `Real-Profile Next-Batch WPF Checklist` added `Show-RealProfi
 
 Later packet note: `Real-Profile Next-Batch Review Wrapper` added `Invoke-RealProfileNextBatchReview.cmd` to run the exact-profile next-batch evidence preset and then print the manual WPF checklist without launching WPF, scanning, moving, restoring, deleting, writing Restore Manifests, approving cleanup, or creating cleanup history.
 
+Later packet note: `Accepted Package Launch Path Clarity` clarified that the accepted package launcher is the daily launch-command path and any debug-build desktop shortcut is development-only context, not accepted-package evidence, not an installer, and not the recommended daily path.
+
 ## Domain Language Changes
 
 No new durable domain terms.

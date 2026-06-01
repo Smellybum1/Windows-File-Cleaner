@@ -63,6 +63,8 @@ For ordinary local review, start from the latest accepted portable package rathe
 
 Remove `-PrintOnly` only when you intentionally want to launch the accepted package. `-Fixture` only prefills the repo-local smoke fixture Cleanup Scope; it does not create fixture files or click `Scan`. A verifier warning that the accepted package commit differs from newer docs-only commits is expected.
 
+If a local desktop shortcut still points at the debug build under `src\WindowsFileCleaner.App\bin\Debug`, treat it as a development convenience only. It is not accepted-package evidence, not an installer, and not the recommended daily launch path.
+
 To confirm the accepted package evidence without launching WPF:
 
 ```powershell
