@@ -46,7 +46,7 @@ Future work should follow this readiness sequence.
 | Readiness track | Current evidence | Done when | Next likely packet |
 |---|---|---|---|
 | Manual fixture acceptance | Full `.cmd` MVP preflight passed after the Checklist-Only Visible Fixture Next Step packet at `71cf15a`. Header/tab UI has user visual approval. The user ran the visible fixture review flow on 2026-06-01 and reported that it looks good. The fixture launcher can write an ignored `.local` acceptance notes template from the checklist, grouped by fixture review area, with repo path, Git branch/commit, worktree status at notes creation, .NET SDK, WPF app project/target framework/WPF flag, required preflight, post-preflight visible fixture command, preflight/worktree checkboxes, local-not-cleanup-history wording, and exact post-pass summary/completion commands embedded in the notes, then print the same commands for that notes file. Checklist-only output also repeats the exact notes-enabled visible fixture command and the no-preflight/no-fixture/no-WPF/no-scan/no-movement boundary. The latest ignored notes file was generated from clean `main` at commit `433064e` with `Worktree status at notes creation: clean`, but the formal checklist remains unfilled. A read-only summary helper can report latest ignored notes metadata, worktree status at notes creation, acceptance-evidence checkbox states, overall result, checklist totals, and issue/not-checked/not-recorded items with compact notes or prompt previews, and can fail fast with `-RequireComplete` while notes are incomplete. | The visible fixture pass is user-accepted for current UI/readiness confidence; formal checklist acceptance is done when the ignored notes record preflight/worktree evidence, an overall result, and no not-recorded checklist items. | Optionally complete the latest notes file and run the summary helper with `-RequireComplete`; otherwise move to fresh real-profile read-only retest after a new full preflight. |
-| Fresh real-profile read-only retest | User previously confirmed real-profile scan works and debounced search fixed sluggish typing. | After a fresh preflight, `C:\Users\moxhe` scan is manually retested for scan gate, no-file-modified status, performance, filters/search/focus, Review Shortlist context, and preview-only blockers. | Run only after the user intentionally starts a real-profile retest. |
+| Fresh real-profile read-only retest | User previously confirmed real-profile scan works and debounced search fixed sluggish typing. After the user-reported fixture visual pass, the user completed the requested full preflight plus WPF run against `C:\Users\moxhe` and reported that everything worked well, covering scan gate, read-only scan completion, search responsiveness, tab/header usability, Review Shortlist context, and preview-only Quarantine boundary. | Completed as user-reported read-only evidence; repeat after future code/workflow changes before crossing any movement boundary. | Move only to ADR 0019 selected real-profile restore implementation if the user explicitly approves that movement-boundary packet. |
 | Real-profile selected restore implementation | ADR 0019 and read-only selected restore revalidation evidence exist. | Exactly one selected real-profile Restore Manifest can restore through `UndoQuarantineExecutor` after fresh discovery, selected review, immediate revalidation, exact `RESTORE`, no original-path overwrite, result guidance, and explicit user-approved implementation. | Grill with Docs implementation packet for ADR 0019, with core and WPF tests, only after user approval. |
 | First real-profile Quarantine execution | ADR 0017/0018, root execution safety, pre-execution revalidation, restore readiness, and approval evidence exist as read-only models/output. | Exact `C:\Users\moxhe` can run a first limited real-profile Quarantine action after selected restore recovery is trusted, all readiness dimensions pass, exact `QUARANTINE` is typed, the batch is within 10 rows / 1 GB, and the user explicitly approves crossing the movement boundary. | Only after selected real-profile restore is implemented and manually trusted. |
 | Real-profile recovery confidence | Fixture current undo and fixture selected restore are implemented. Real-profile restore is currently read-only evidence only. | After a real-profile Quarantine action, the app can prove selected restore recovery on the created Restore Manifest without broad all-manifest restore or cleanup history. | Manual recovery proof after the first approved real-profile Quarantine packet. |
@@ -105,6 +105,7 @@ Evidence gathered:
   - The non-`D:` acknowledgement row feels clear.
   - The tabbed/header UI looks much better.
   - The manual fixture visual pass looks good.
+  - The fresh real-profile read-only retest worked well end to end.
   - Do not move, delete, quarantine, or restore real-profile files without explicit approval after Grill with Docs.
 - Existing code/docs inspected:
   - `README.md`
@@ -220,6 +221,7 @@ What changed:
 - Later packet `Full Local MVP Preflight After Checklist-Only Next Step` confirmed the current full `.cmd` MVP preflight after `71cf15a`, including restore, build, core tests, WPF app tests, fixture `-WhatIf`, sectioned checklist-only output with the exact visible fixture next-step block, and whitespace diff before the next visible fixture acceptance pass.
 - Later packet `Fixture Acceptance Current Baseline Notes Preview` generated `.local\fixture-review-acceptance\fixture-acceptance-20260601-131233.md` from clean `main` at `dd86566`, confirmed the clean worktree stamp through explicit summary output, and kept the visible fixture pass as the next gate.
 - Later packet `User-Reported Manual Fixture Visual Pass` recorded that the user ran the visible fixture review flow and reported it looks good; the latest notes file `.local\fixture-review-acceptance\fixture-acceptance-20260601-132126.md` is stamped clean from `433064e` but remains formally unfilled.
+- Later packet `User-Reported Fresh Real-Profile Read-Only Retest` recorded that the user completed the requested full preflight plus WPF run against `C:\Users\moxhe` and reported everything worked well, including scan-gate, scan, search, UI, Review Shortlist, and preview-only Quarantine checks.
 
 Files changed:
 
@@ -240,6 +242,7 @@ Tests run:
 - Later full-preflight-after-checklist-only-next-step packet ran `cmd.exe /c tools\Invoke-MvpPreflight.cmd`; restore, build, core tests, WPF app tests, fixture `-WhatIf`, sectioned checklist-only output with the exact visible fixture next-step block, and whitespace diff passed without launching WPF, scanning real-profile files, moving, restoring, deleting, or creating cleanup history.
 - Later current-baseline notes-preview packet ran checklist-notes output, inspected the generated notes header, ran explicit notes summary, verified explicit `-Path ... -RequireComplete` fails while notes are unfilled, and did not launch WPF, scan, move, restore, delete, or create cleanup history.
 - Later user-reported manual fixture visual pass packet ran the read-only summary helper on `.local\fixture-review-acceptance\fixture-acceptance-20260601-132126.md` and verified `-RequireComplete` still exits non-zero while notes are unfilled.
+- Later user-reported fresh real-profile read-only retest packet recorded user-reported successful completion of the requested full preflight plus WPF real-profile read-only retest steps; Codex did not run a real-profile scan or move/restore/delete files.
 
 Docs updated:
 
@@ -251,10 +254,9 @@ ADRs added or skipped:
 
 Follow-up work:
 
+- Start real-profile selected restore implementation only after explicit user approval for the ADR 0019 movement-boundary packet.
+- Keep first selected real-profile restore selected-manifest-only, exact `C:\Users\moxhe`, exact `RESTORE`, immediate selected-restore revalidation, no original-path overwrite, Restore Manifest-only, no all-manifest restore, no cleanup history, no permanent deletion, and no action-folder cleanup.
 - Optionally fill `.local\fixture-review-acceptance\fixture-acceptance-20260601-132126.md` and run the summary helper with `-RequireComplete` if formal notes evidence is desired.
-- Run a fresh full preflight before any real-profile read-only retest.
-- Record real-profile read-only retest results and any UI/readiness polish needed before real-profile movement work.
-- Start real-profile selected restore implementation only after explicit user approval.
 
 Open questions:
 

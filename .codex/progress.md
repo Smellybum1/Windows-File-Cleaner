@@ -14,20 +14,55 @@ Fresh clean-worktree notes evidence: `cmd.exe /c tools\Start-MvpFixtureReview.cm
 
 User-reported manual fixture visual pass: on 2026-06-01 the user ran the visible fixture review flow and reported that it looks good. The latest local ignored acceptance notes now summarize `.local\fixture-review-acceptance\fixture-acceptance-20260601-132126.md` from clean `main` at `433064e`; its checklist remains unfilled, so this is user-reported visual acceptance rather than formal completed checklist evidence. No real-profile scan, real-profile movement, permanent deletion, or cleanup history was requested or recorded.
 
+User-reported fresh real-profile read-only retest: on 2026-06-01 the user completed the requested full preflight plus WPF run against `C:\Users\moxhe` and reported that everything worked well. This covers the real-profile scan gate, read-only real scan completion, search responsiveness, tab/header usability, Review Shortlist context, and preview-only Quarantine boundary requested in the step-by-step retest. No real-profile Quarantine execution, real-profile restore, permanent deletion, or cleanup history was requested or recorded.
+
 Latest full preflight evidence: `cmd.exe /c tools\Invoke-MvpPreflight.cmd` passed after the Checklist-Only Visible Fixture Next Step packet at `71cf15a`. It restored, built, ran core tests, ran WPF app tests, ran fixture `-WhatIf`, printed sectioned checklist-only output with the exact visible fixture next step and checklist-only safety boundary, ran whitespace diff checking, and ended with `MVP preflight passed. No real user files were scanned or modified.` No WPF app was launched, no real-profile scan was run, and no files were moved, restored, deleted, or added to cleanup history.
 
 Current Evidence Wording Alignment clarified that the clean notes preview from `f181627` plus the then-current full `.cmd` MVP preflight after `8529a91` were the handoff verification pair before the latest preflight refresh. Older `b9bd33d` and `fd8e1d4` references remain only in historical packet summaries. This was docs-only and did not launch WPF, scan, move, restore, delete, or create cleanup history.
 
 ## Next recommended work
 
-1. If formal fixture acceptance notes are useful before the real-profile retest, fill the latest ignored notes from `.local\fixture-review-acceptance\fixture-acceptance-20260601-132126.md`, then run `.\tools\Summarize-FixtureAcceptanceNotes.cmd -Path ".local\fixture-review-acceptance\fixture-acceptance-20260601-132126.md"` and the same command with `-RequireComplete`. The user has already reported that the visible fixture pass looks good, but the local checklist remains unfilled.
-2. Run `.\tools\Invoke-MvpPreflight.cmd` before the next real-profile read-only retest because the worktree will change when this evidence packet is recorded.
-3. Use `README.md` and `docs/features/2026-05-28-mvp-readiness-audit.md` to rerun the WPF app against `C:\Users\moxhe`; confirm `Scan` is disabled until the real-profile preflight acknowledgement is checked and the acknowledgement `?` help cue mirrors the tooltip/help boundary.
-4. Rerun the real scan and check whether the cleanup scope root row, `Relative path`, `Parent`, `Contents`, and `Access` columns, Size filter, `parent:` / `under:` / `access:readable` / `access:access issue` search, Matched Review Mix, Selected Folder Subtree Summary, Storage Hotspot Trail, `Show children`, `Show descendants`, Previous rows / Next rows, Safety Summary candidate and no-category examples, selected-row relative/parent/depth/access context, cache-specific Review guidance, specific rebuildable cache candidates such as `DXCache` and `pip\Cache`, conservative game/mod-manager labels such as OptiFine/CurseForge/Vortex, Cloud sync data and Credential data labels, `Preview file`, Review Shortlist context, and preview-only blockers make unfamiliar rows easier to triage.
-5. Defer real-profile Quarantine execution and broad WPF Undo Quarantine that restores discovered manifests until the Real-Profile Quarantine Readiness Contract has the accepted readiness model, Quarantine Root execution safety, immediate pre-execution revalidation, trusted selected-manifest Undo Quarantine/recovery behavior, explicit approval evidence, and user-approved execution wiring.
-6. Revisit .NET 10 before packaging or long-term distribution.
+1. If the user wants to cross the next movement boundary, start a Grill with Docs implementation packet for ADR 0019 Real-Profile Selected Restore Execution. Keep the first implementation selected-manifest-only, exact `C:\Users\moxhe`, exact `RESTORE`, immediate selected-restore revalidation, no original-path overwrite, Restore Manifest-only durable record, no all-manifest restore, no action-folder cleanup, no permanent deletion, and no cleanup history.
+2. Defer real-profile Quarantine execution until selected real-profile restore is implemented and manually trusted, then revisit ADR 0017/0018 first-phase Quarantine execution with explicit user approval.
+3. If formal fixture acceptance notes are useful before movement work, fill `.local\fixture-review-acceptance\fixture-acceptance-20260601-132126.md`, then run `.\tools\Summarize-FixtureAcceptanceNotes.cmd -Path ".local\fixture-review-acceptance\fixture-acceptance-20260601-132126.md"` and the same command with `-RequireComplete`. The user has already reported that the visible fixture pass looks good, but the local checklist remains unfilled.
+4. Revisit .NET 10 and packaging only after reversible real-profile restore/cleanup behavior is trusted.
 
 ## Completed packets
+
+### 2026-06-01: User-Reported Fresh Real-Profile Read-Only Retest
+
+Status: completed
+
+Evidence:
+
+- After the user-reported manual fixture visual pass, the user completed the requested fresh real-profile read-only retest and reported that everything worked well.
+- The requested retest covered full preflight, launching the WPF app with `--scope "C:\Users\moxhe"`, real-profile scan-gate acknowledgement, read-only scan completion, search responsiveness, tab/header usability, Review Shortlist context, and preview-only Quarantine boundary.
+- No real-profile movement was requested or approved.
+
+Implementation:
+
+- Recorded the user-reported real-profile read-only retest in current progress, roadmap, and handoff docs.
+- Advanced the next recommended work from real-profile read-only retest to the ADR 0019 selected real-profile restore implementation decision point.
+- Kept real-profile Quarantine execution, real-profile selected restore, real-profile Undo Quarantine, permanent deletion, and persisted cleanup history unavailable.
+
+Verification:
+
+- User-reported completion of the requested real-profile read-only retest steps.
+- `git diff --check`
+
+Docs updated:
+
+- `docs/features/2026-06-01-live-product-readiness-roadmap.md`
+- `docs/codex/thread-handoff.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No ADR added. ADR 0019 already records the selected real-profile restore execution contract, and this packet records readiness evidence only.
+
+Open questions:
+
+- Whether the user wants to start the ADR 0019 selected real-profile restore implementation packet next.
 
 ### 2026-06-01: User-Reported Manual Fixture Visual Pass
 
