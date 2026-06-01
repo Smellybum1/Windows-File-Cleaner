@@ -162,6 +162,8 @@ To print or start the latest verified local package from the repo root:
 
 Remove `-PrintOnly` when you intentionally want to launch the packaged WPF app. The fixture mode only prefills the Cleanup Scope with the repo-local smoke fixture; it does not create fixture files or click `Scan`. The launcher verifies the package first unless `-SkipVerify` is used, and launching still does not move, restore, delete, or approve cleanup.
 
+The launcher output also prints the package-local `README-FIRST.txt` path and the matching release-local launch script path, so you can either run from the terminal or open the packaged folder and use the start-here note.
+
 ## WPF Fixture Smoke
 
 Use the fixture review launcher for the manual fixture UI pass:

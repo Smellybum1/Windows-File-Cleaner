@@ -28,6 +28,7 @@ The portable release folder already contains the packaged app, metadata, zip, an
 - The README repeats that portable v1 is not an installer and excludes permanent deletion, persisted cleanup history, broad/all-manifest restore, custom real-profile Quarantine, and non-exact real-profile movement.
 - Release metadata records the README path.
 - `tools\Test-LocalRelease.ps1` verifies the README exists, metadata path matches, key safety-boundary lines are present, and the zip includes it.
+- Later packet `Local Release Launcher Start-Here Output` made `tools\Start-LocalRelease.ps1` print the package-local README path so the start-here note is visible from the repo-level launch command too.
 
 ## Verification
 

@@ -105,6 +105,10 @@ if (-not (Test-Path -LiteralPath $appExePath -PathType Leaf)) {
     throw "Published executable is missing: $appExePath"
 }
 
+$readmePath = Join-Path $releaseDir "README-FIRST.txt"
+$releaseLaunchScriptPath = Join-Path $releaseDir "Launch-WindowsFileCleaner.cmd"
+$releaseFixtureLaunchScriptPath = Join-Path $releaseDir "Launch-WindowsFileCleaner-Fixture.cmd"
+
 if (-not $SkipVerify.IsPresent) {
     $verifierArguments = @{
         ReleaseRoot = $ReleaseRoot
@@ -138,11 +142,14 @@ Write-Host "Portable release launcher"
 Write-Host "Repository: $repoFullPath"
 Write-Host "Release: $releaseDir"
 Write-Host "Executable: $appExePath"
+Write-Host "Start-here README: $readmePath"
 if ($Fixture.IsPresent) {
     Write-Host "Fixture Cleanup Scope: $fixtureScope"
+    Write-Host "Release-local launch script: $releaseFixtureLaunchScriptPath"
     Write-Host "Boundary: fixture launch prefills the Cleanup Scope only; it does not create the fixture, click Scan, move, restore, delete, or approve cleanup."
 }
 else {
+    Write-Host "Release-local launch script: $releaseLaunchScriptPath"
     Write-Host "Boundary: normal launch starts the packaged app only; it does not click Scan, move, restore, delete, or approve cleanup."
 }
 Write-Host "Launch command:"

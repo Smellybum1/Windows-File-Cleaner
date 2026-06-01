@@ -28,6 +28,7 @@ Portable v1 packages already include release-local launch scripts, but using the
 - `-PrintOnly` prints the exact launch command without launching WPF.
 - `-Fixture` adds the repo-local smoke fixture Cleanup Scope and states that fixture launch only prefills the Cleanup Scope.
 - `-SkipVerify` exists for intentional focused local use but is not the default.
+- Later packet `Local Release Launcher Start-Here Output` made the launcher output also print the package-local `README-FIRST.txt` path and the matching release-local launch script path.
 
 ## Verification
 
@@ -51,7 +52,7 @@ No ADR added. This is portable release ergonomics, not a packaging architecture 
 
 ## Follow-up Work
 
-- After committing launcher docs/scripts, cut a fresh ignored portable package so the latest package commit again matches current `HEAD`.
+- After launcher docs/scripts change, cut a fresh ignored portable package so the latest package commit again matches current `HEAD`.
 - Keep installed shortcut or installer automation as a separate future packaging decision.
 
 ## Risks And Assumptions
