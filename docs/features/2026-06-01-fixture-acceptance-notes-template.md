@@ -37,7 +37,7 @@ The next live-product roadmap gate is visible fixture acceptance, but the launch
 - include the fixture Cleanup Scope, safety boundary, overall result checkboxes, and one pass/issue/not-checked notes block per checklist item,
 - exit before preflight, fixture creation, WPF launch, scan, movement, restore, deletion, or cleanup history.
 
-`Start-MvpFixtureReview.cmd -WriteAcceptanceNotes` should also be able to write the notes template before launching the manual fixture app.
+`Start-MvpFixtureReview.cmd -WriteAcceptanceNotes` should also be able to write the notes template before launching the manual fixture app. After a successful preflight, the post-preflight shortcut is `Start-MvpFixtureReview.cmd -SkipPreflight -WriteAcceptanceNotes`.
 
 ## Domain Language Changes
 
@@ -216,7 +216,7 @@ ADRs added or skipped:
 
 Follow-up work:
 
-- Run the visible fixture pass with `.\tools\Start-MvpFixtureReview.cmd -WriteAcceptanceNotes` when the user is ready.
+- Run the visible fixture pass with `.\tools\Start-MvpFixtureReview.cmd -SkipPreflight -WriteAcceptanceNotes` after a successful preflight when the user is ready.
 - Copy relevant manual results from `.local` notes into `.codex/progress.md` after the pass.
 
 Open questions:

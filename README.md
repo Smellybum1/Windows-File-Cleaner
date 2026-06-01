@@ -145,7 +145,7 @@ To also write a local, ignored markdown notes template for the manual pass:
 .\tools\Start-MvpFixtureReview.cmd -ChecklistOnly -WriteAcceptanceNotes
 ```
 
-The template is written under `.local\fixture-review-acceptance` and gives each grouped checklist item pass/issue/not-checked slots. Use `.\tools\Start-MvpFixtureReview.cmd -WriteAcceptanceNotes` when you want the same notes template created before the visible fixture app launches.
+The template is written under `.local\fixture-review-acceptance` and gives each grouped checklist item pass/issue/not-checked slots. Use `.\tools\Start-MvpFixtureReview.cmd -SkipPreflight -WriteAcceptanceNotes` after a successful preflight when you want the same notes template created before the visible fixture app launches.
 
 For focused troubleshooting, the individual fixture commands are:
 

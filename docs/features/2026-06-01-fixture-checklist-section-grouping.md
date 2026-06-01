@@ -125,7 +125,7 @@ ADRs added or skipped:
 
 Follow-up work:
 
-- Run the visible fixture pass with `.\tools\Start-MvpFixtureReview.cmd -WriteAcceptanceNotes` when the user is ready.
+- Run the visible fixture pass with `.\tools\Start-MvpFixtureReview.cmd -SkipPreflight -WriteAcceptanceNotes` after a successful preflight when the user is ready.
 - Use the sectioned local notes to record pass/issue/not-checked results.
 
 Open questions:
