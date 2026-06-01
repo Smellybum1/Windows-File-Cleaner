@@ -105,7 +105,13 @@ function Get-PortableReleaseChecklistItems {
         [string]$NormalLaunchScript,
 
         [Parameter(Mandatory)]
+        [string]$NormalLaunchCommand,
+
+        [Parameter(Mandatory)]
         [string]$FixtureLaunchScript,
+
+        [Parameter(Mandatory)]
+        [string]$FixtureLaunchCommand,
 
         [Parameter(Mandatory)]
         [string]$ExecutablePath,
@@ -127,8 +133,8 @@ function Get-PortableReleaseChecklistItems {
     @(
         $verificationText,
         "Open README-FIRST.txt and confirm it names portable v1, launch choices, fixture-launch boundaries, and reversible-only safety boundaries. README-FIRST.txt: $ReadmeFile",
-        "Normal launch path: use Launch-WindowsFileCleaner.cmd or the printed executable command; confirm the app opens without clicking Scan by itself. Launch script: $NormalLaunchScript. Executable: $ExecutablePath",
-        "Fixture launch path: use Launch-WindowsFileCleaner-Fixture.cmd or the printed fixture command; confirm the Cleanup Scope is prefilled with the fixture path, then click Scan manually and confirm the scan is read-only. Fixture launch script: $FixtureLaunchScript. Fixture Cleanup Scope: $FixtureScopePath",
+        "Normal launch path: use Launch-WindowsFileCleaner.cmd or the printed executable command; confirm the app opens without clicking Scan by itself. Launch script: $NormalLaunchScript. Launch command: $NormalLaunchCommand. Executable: $ExecutablePath",
+        "Fixture launch path: use Launch-WindowsFileCleaner-Fixture.cmd or the printed fixture command; confirm the Cleanup Scope is prefilled with the fixture path, then click Scan manually and confirm the scan is read-only. Fixture launch script: $FixtureLaunchScript. Fixture launch command: $FixtureLaunchCommand. Fixture Cleanup Scope: $FixtureScopePath",
         "Confirm the package remains portable: no installer, shortcut, service, scheduled task, permanent deletion, broad/all-manifest restore, or cleanup history.",
         "Stop before real-profile movement unless a specific user-approved readiness gate and exact confirmation are in place."
     )
@@ -146,7 +152,13 @@ function Write-PortableReleaseChecklist {
         [string]$NormalLaunchScript,
 
         [Parameter(Mandatory)]
+        [string]$NormalLaunchCommand,
+
+        [Parameter(Mandatory)]
         [string]$FixtureLaunchScript,
+
+        [Parameter(Mandatory)]
+        [string]$FixtureLaunchCommand,
 
         [Parameter(Mandatory)]
         [string]$ExecutablePath,
@@ -163,7 +175,9 @@ function Write-PortableReleaseChecklist {
     $checklistItems = Get-PortableReleaseChecklistItems `
         -ReadmeFile $ReadmeFile `
         -NormalLaunchScript $NormalLaunchScript `
+        -NormalLaunchCommand $NormalLaunchCommand `
         -FixtureLaunchScript $FixtureLaunchScript `
+        -FixtureLaunchCommand $FixtureLaunchCommand `
         -ExecutablePath $ExecutablePath `
         -FixtureScopePath $FixtureScopePath `
         -VerificationSkipped $VerificationSkipped
@@ -173,9 +187,11 @@ function Write-PortableReleaseChecklist {
     Write-Host "     README-FIRST.txt: $ReadmeFile"
     Write-Host "  3. Normal launch path: use Launch-WindowsFileCleaner.cmd or the printed executable command; confirm the app opens without clicking Scan by itself."
     Write-Host "     Launch script: $NormalLaunchScript"
+    Write-Host "     Launch command: $NormalLaunchCommand"
     Write-Host "     Executable: $ExecutablePath"
     Write-Host "  4. Fixture launch path: use Launch-WindowsFileCleaner-Fixture.cmd or the printed fixture command; confirm the Cleanup Scope is prefilled with the fixture path, then click Scan manually and confirm the scan is read-only."
     Write-Host "     Fixture launch script: $FixtureLaunchScript"
+    Write-Host "     Fixture launch command: $FixtureLaunchCommand"
     Write-Host "     Fixture Cleanup Scope: $FixtureScopePath"
     Write-Host "  5. Confirm the package remains portable: no installer, shortcut, service, scheduled task, permanent deletion, broad/all-manifest restore, or cleanup history."
     Write-Host "  6. Stop before real-profile movement unless a specific user-approved readiness gate and exact confirmation are in place."
@@ -271,7 +287,13 @@ function New-PortableReleaseAcceptanceNotes {
         [string]$NormalLaunchScript,
 
         [Parameter(Mandatory)]
+        [string]$NormalLaunchCommand,
+
+        [Parameter(Mandatory)]
         [string]$FixtureLaunchScript,
+
+        [Parameter(Mandatory)]
+        [string]$FixtureLaunchCommand,
 
         [Parameter(Mandatory)]
         [string]$ExecutablePath,
@@ -299,7 +321,9 @@ function New-PortableReleaseAcceptanceNotes {
     $checklistItems = Get-PortableReleaseChecklistItems `
         -ReadmeFile $ReadmeFile `
         -NormalLaunchScript $NormalLaunchScript `
+        -NormalLaunchCommand $NormalLaunchCommand `
         -FixtureLaunchScript $FixtureLaunchScript `
+        -FixtureLaunchCommand $FixtureLaunchCommand `
         -ExecutablePath $ExecutablePath `
         -FixtureScopePath $FixtureScopePath `
         -VerificationSkipped $VerificationSkipped
@@ -336,7 +360,9 @@ function New-PortableReleaseAcceptanceNotes {
     $lines.Add("- Executable: $ExecutablePath")
     $lines.Add("- README-FIRST.txt: $ReadmeFile")
     $lines.Add("- Normal launch script: $NormalLaunchScript")
+    $lines.Add("- Normal launch command: $NormalLaunchCommand")
     $lines.Add("- Fixture launch script: $FixtureLaunchScript")
+    $lines.Add("- Fixture launch command: $FixtureLaunchCommand")
     $lines.Add("- Fixture Cleanup Scope: $FixtureScopePath")
     $lines.Add('- Required verifier: `.\tools\Test-LocalRelease.cmd -RequireCurrentCommit`')
     $lines.Add('- Checklist command: `.\tools\Start-LocalRelease.cmd -ChecklistOnly -RequireCurrentCommit`')
@@ -454,6 +480,8 @@ if ($Fixture.IsPresent) {
     $launchArguments = @("--scope", $fixtureScope)
 }
 
+$normalLaunchCommand = Format-LaunchCommand -ExecutablePath $appExePath
+$fixtureLaunchCommand = Format-LaunchCommand -ExecutablePath $appExePath -Arguments @("--scope", $fixtureScope)
 $launchCommand = Format-LaunchCommand -ExecutablePath $appExePath -Arguments $launchArguments
 
 Write-Host ""
@@ -479,7 +507,9 @@ if ($ChecklistOnly.IsPresent) {
         -ReleaseDirectory $releaseDir `
         -ReadmeFile $readmePath `
         -NormalLaunchScript $releaseLaunchScriptPath `
+        -NormalLaunchCommand $normalLaunchCommand `
         -FixtureLaunchScript $releaseFixtureLaunchScriptPath `
+        -FixtureLaunchCommand $fixtureLaunchCommand `
         -ExecutablePath $appExePath `
         -FixtureScopePath $fixtureScope `
         -VerificationSkipped $SkipVerify.IsPresent
@@ -488,7 +518,9 @@ if ($ChecklistOnly.IsPresent) {
             -ReleaseDirectory $releaseDir `
             -ReadmeFile $readmePath `
             -NormalLaunchScript $releaseLaunchScriptPath `
+            -NormalLaunchCommand $normalLaunchCommand `
             -FixtureLaunchScript $releaseFixtureLaunchScriptPath `
+            -FixtureLaunchCommand $fixtureLaunchCommand `
             -ExecutablePath $appExePath `
             -FixtureScopePath $fixtureScope `
             -VerificationSkipped $SkipVerify.IsPresent `

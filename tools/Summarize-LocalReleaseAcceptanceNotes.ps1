@@ -260,6 +260,8 @@ Write-Host ("Git commit: {0}" -f (Get-FirstMetadataValue -Lines $lines -Prefix "
 Write-Host ("Worktree at notes creation: {0}" -f (Get-FirstMetadataValue -Lines $lines -Prefix "- Worktree status at notes creation:"))
 Write-Host ("Release metadata commit: {0}" -f (Get-FirstMetadataValue -Lines $lines -Prefix "- Release metadata commit:"))
 Write-Host ("Release metadata preflight skipped: {0}" -f (Get-FirstMetadataValue -Lines $lines -Prefix "- Release metadata preflight skipped:"))
+Write-Host ("Normal launch command: {0}" -f (Get-FirstMetadataValue -Lines $lines -Prefix "- Normal launch command:"))
+Write-Host ("Fixture launch command: {0}" -f (Get-FirstMetadataValue -Lines $lines -Prefix "- Fixture launch command:"))
 Write-Host ("Acceptance evidence: verifier: {0}; commit: {1}; normal launch: {2}; fixture launch: {3}" -f
     $verifierEvidenceState,
     $commitEvidenceState,

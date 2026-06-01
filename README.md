@@ -172,7 +172,7 @@ To print the package-level acceptance checklist without launching WPF:
 .\tools\Start-LocalRelease.cmd -Fixture -ChecklistOnly -RequireCurrentCommit
 ```
 
-Checklist-only mode verifies the package by default, prints normal and fixture launch review steps, and does not launch WPF, click `Scan`, move, restore, delete, approve cleanup, or create cleanup history.
+Checklist-only mode verifies the package by default, prints normal and fixture launch review steps with exact launch commands, and does not launch WPF, click `Scan`, move, restore, delete, approve cleanup, or create cleanup history.
 
 To also write a local, ignored markdown notes template for package acceptance:
 
@@ -180,7 +180,7 @@ To also write a local, ignored markdown notes template for package acceptance:
 .\tools\Start-LocalRelease.cmd -ChecklistOnly -RequireCurrentCommit -WriteAcceptanceNotes
 ```
 
-The template is written under `.local\release-acceptance`, stamps the repo branch/commit, current worktree state, package metadata commit/preflight evidence, package paths, local evidence checkboxes, and exact post-pass summary commands. When the launcher verifies the package first, the notes pre-record verifier evidence; when `-RequireCurrentCommit` is used and passes, they also pre-record current-commit evidence. Normal launch and fixture launch/scan acceptance remain manual evidence. After filling the notes, summarize the latest ignored notes or a specific notes file:
+The template is written under `.local\release-acceptance`, stamps the repo branch/commit, current worktree state, package metadata commit/preflight evidence, package paths, exact normal and fixture launch commands, local evidence checkboxes, and exact post-pass summary commands. When the launcher verifies the package first, the notes pre-record verifier evidence; when `-RequireCurrentCommit` is used and passes, they also pre-record current-commit evidence. Normal launch and fixture launch/scan acceptance remain manual evidence. After filling the notes, summarize the latest ignored notes or a specific notes file:
 
 ```powershell
 .\tools\Summarize-LocalReleaseAcceptanceNotes.cmd
@@ -188,7 +188,7 @@ The template is written under `.local\release-acceptance`, stamps the repo branc
 .\tools\Summarize-LocalReleaseAcceptanceNotes.cmd -RequireComplete
 ```
 
-The summary helper reads ignored notes only; it does not launch WPF, scan, move, restore, delete, approve cleanup, or create cleanup history.
+The summary helper prints the stamped launch commands from ignored notes and reads ignored notes only; it does not launch WPF, scan, move, restore, delete, approve cleanup, or create cleanup history.
 
 ## WPF Fixture Smoke
 

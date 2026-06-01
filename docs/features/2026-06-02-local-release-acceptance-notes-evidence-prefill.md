@@ -51,6 +51,7 @@ No ADR added. This is local acceptance notes evidence ergonomics, with no instal
 
 - After committing this packet, cut a fresh ignored portable package so the latest package commit again matches current `HEAD`.
 - Generate a clean-worktree notes template against that package for the next human package acceptance pass.
+- Later packet `Local Release Acceptance Notes Launch Commands` made generated notes and summary output include exact normal and fixture launch commands while keeping launch evidence manual.
 
 ## Risks And Assumptions
 

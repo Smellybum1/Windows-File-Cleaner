@@ -31,6 +31,7 @@ Portable v1 packages already include release-local launch scripts, but using the
 - Later packet `Local Release Launcher Start-Here Output` made the launcher output also print the package-local `README-FIRST.txt` path and the matching release-local launch script path.
 - Later packet `Local Release Acceptance Checklist` added `-ChecklistOnly`, which verifies the package by default and prints package-level normal/fixture acceptance steps without launching WPF.
 - Later packet `Local Release Acceptance Notes` added `-ChecklistOnly -WriteAcceptanceNotes`, which writes ignored local package-acceptance notes without launching WPF.
+- Later packet `Local Release Acceptance Notes Launch Commands` made checklist-only output, generated notes, and notes summary output show exact normal and fixture launch commands without launching WPF.
 
 ## Verification
 
