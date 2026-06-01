@@ -3357,6 +3357,7 @@ It is discovery and status review only, not Undo Quarantine execution and not pe
 - WPF discovery output should distinguish discovery from all-manifest restore execution while pointing fixture-only restore toward the selected restore gate.
 - WPF discovery control tooltip and automation help text should state that discovery is read-only and does not restore, move, delete, clean up folders, or create cleanup history.
 - Keep the WPF discovery `?` help cue visible beside `Discover manifests` and mirror the same discovery tooltip/help text.
+- In the tabbed WPF workbench, keep Quarantine Manifest Discovery and selected restore controls in the Quarantine tab's Restore Manifest Review panel, not in the Main Grid detail panel.
 - Do not call this cleanup history.
 
 ### Restore Manifest Summary

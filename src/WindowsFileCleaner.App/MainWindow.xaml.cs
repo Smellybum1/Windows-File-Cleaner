@@ -148,6 +148,23 @@ public partial class MainWindow : Window
         }
     }
 
+    private static bool IsDescendantOf(DependencyObject child, DependencyObject expectedAncestor)
+    {
+        var current = child;
+        while (current is not null)
+        {
+            if (ReferenceEquals(current, expectedAncestor))
+            {
+                return true;
+            }
+
+            current = LogicalTreeHelper.GetParent(current)
+                ?? (current is Visual ? VisualTreeHelper.GetParent(current) : null);
+        }
+
+        return false;
+    }
+
     public bool CanStartStorageScan => ScanButton.IsEnabled;
 
     public bool CanCancelStorageScan => CancelButton.IsEnabled;
@@ -521,6 +538,12 @@ public partial class MainWindow : Window
     public double QuarantineExecutionGateViewportMaxHeight => QuarantineExecutionGateScroll.MaxHeight;
 
     public bool IsQuarantineShortlistExpanded => QuarantineShortlistExpander.IsExpanded;
+
+    public bool IsRestoreManifestReviewExpanded => RestoreManifestReviewExpander.IsExpanded;
+
+    public bool IsRestoreManifestReviewInQuarantineTab => IsDescendantOf(RestoreManifestReviewArea, QuarantineTab);
+
+    public bool IsRestoreManifestReviewInMainGridTab => IsDescendantOf(RestoreManifestReviewArea, MainGridTab);
 
     public bool IsSafetySummaryExpanded => SafetySummaryExpander.IsExpanded;
 

@@ -26,6 +26,7 @@ Give the large WPF review sections their own horizontal tab pages so Safety Summ
 - Moved the Storage Scan / Current-Session Quarantined Review grids and selected-path detail panel to a `Main Grid` tab, selected by default.
 - Kept the existing Expander controls available inside Safety Summary and Quarantine tabs, but expanded by default because the tab pages now provide the recovered space.
 - Later packet `2026-06-01-main-grid-auto-focus.md` made Safety Summary shortcuts and current-session quarantined grid switches select `Main Grid` after they change which rows it shows.
+- Later packet `2026-06-01-quarantine-tab-restore-manifest-review-panel.md` moved Restore Manifest discovery/review out of the Main Grid detail pane and into the Quarantine tab so recovery controls are findable beside Quarantine Root and readiness.
 - Later packet `2026-06-01-main-grid-active-review-lens-summary.md` mirrored the active review lens above Storage Scan rows so shortcut/filter/search context stays visible after tab switches, while hiding it for current-session quarantined rows.
 
 ## Test plan

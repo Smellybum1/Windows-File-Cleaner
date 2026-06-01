@@ -176,6 +176,9 @@ internal sealed class MainWindowSmokeTests
                 window.QuarantineShortlistHeaderStatusStyleValue == "Neutral",
                 "Collapsed Quarantine shortlist header should start with neutral styling before shortlist, preview, or current quarantine state exists.");
             Assert(window.IsQuarantineShortlistExpanded, "Quarantine Shortlist should start expanded inside its own tab page.");
+            Assert(window.IsRestoreManifestReviewExpanded, "Restore Manifest Review should start expanded inside the Quarantine tab page.");
+            Assert(window.IsRestoreManifestReviewInQuarantineTab, "Restore Manifest Review should live in the Quarantine tab with Quarantine Root and selected restore controls.");
+            Assert(!window.IsRestoreManifestReviewInMainGridTab, "Restore Manifest Review should not be buried in the Main Grid detail panel.");
             AssertQuarantineShortlistHeaderHelpCue(window, "Startup Quarantine Shortlist header cue should expose the same help text as the header.");
             AssertReviewGridModeHelpText(window, "Review Grid Mode Status help text should expose the startup grid-mode boundary.");
             AssertSelectedRestoreExecutionGateHelpCue(

@@ -8,6 +8,8 @@ Use it to preserve what was completed, what was verified, what was rejected, and
 
 Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. The app has a broad read-only review workflow, fixture WPF Quarantine execution, current-fixture undo, fixture selected restore, exact real-profile selected restore under ADR 0019 after selected readiness, exact `RESTORE`, and immediate revalidation, and first-phase exact real-profile Quarantine execution under ADR 0017/0018 after readiness, exact `QUARANTINE`, approval evidence, selected restore trust, and immediate pre-execution revalidation. The user completed the sacrificial selected real-profile restore trust test on 2026-06-01 and reported steps 1-9 all succeeded. The user later reported the first exact real-profile folder Quarantine attempt failed safely with `moved 0, failed 1` because Windows `Directory.Move` cannot move directories from `C:` to the preferred `D:` Quarantine Root; the next packet added a guarded cross-volume directory fallback and a taller WPF Quarantine Execution Gate details area. The user then retried and reported another safe `moved 0, failed 1` result because a descendant NVIDIA `.nvph` file was in use by another process; the next packet added in-use source checks to Pre-Execution Revalidation and expanded the WPF Quarantine Execution Gate details area again. The user then approved a different tiny exact real-profile batch and reported a successful first live Quarantine on 2026-06-01: one row moved from `C:\Users\moxhe\AppData\Local\pip\cache\http\b\c`, one Restore Manifest completed, `moved 1, failed 0`, zero readiness blockers, and no Codex-clicked movement. The user then attempted selected restore for that manifest and reported a safe failure, `Restored 0 | Failed 1 | Recovery review: yes`, because directory restore from `D:` back to `C:` hit the same cross-volume limitation. The cross-volume selected restore retry packet fixed directory selected restore with the guarded copy-then-delete fallback, treated still-present `RestoreFailed` selected entries as narrowly retryable when the original path is clear, and added highlighted key-status strips above dense Quarantine and Selected Restore gate text. The user then retried selected restore for that first-live manifest and reported success from the highlighted strip: `selected restore succeeded. Restored 1, failed 0`. Broad/all-manifest WPF Undo Quarantine, custom/non-exact real-profile Quarantine, custom selected restore, permanent deletion, and persisted cleanup history remain unavailable. Fresh-thread handoff notes and a startup prompt live in `docs/codex/thread-handoff.md`.
 
+Latest UI correction: the user reported `Discover manifests` was not visible in the Quarantine tab after selected restore recovery; it was still buried in the Main Grid detail pane. The current packet moves Restore Manifest discovery, selected readiness, selected restore gate/result, and all-manifest readiness into a dedicated `Restore Manifest Review` panel under the Quarantine tab, and moves detailed Quarantine Preview output into the Quarantine tab.
+
 Latest WPF UI packet added a compact Main Grid Active Review Lens Summary above Storage Scan rows, mirroring the existing Filter Summary so default scan, Safety Summary shortcut, and stacked filter/search context remain visible after tab switches; it hides for current-session quarantined rows. User visual review on 2026-06-01 approved the compact wide-header layout with Review Shortlist totals before scan totals, and the user later ran the visible fixture review flow and reported that it looks good. The latest fixture-checklist wording packet clarified that the current-session review step's hoverable `?` cue and `Status state:` wording belong to Review Grid Mode Status, while Main Grid Active Review Lens Summary appears for Storage Scan rows and hides for current-session quarantined rows. Current handoff evidence is the current-evidence baseline: full `.cmd` MVP preflight passed after the Checklist-Only Visible Fixture Next Step packet at `71cf15a`, including restore, build, core tests, WPF app tests, fixture `-WhatIf`, sectioned checklist-only output with the exact visible fixture next step, whitespace diff, and the notes-enabled next manual fixture command; user-reported manual fixture visual acceptance is now recorded, while the formal latest notes checklist remains unfilled. The live-product readiness roadmap now separates visible fixture acceptance, fresh real-profile read-only retest, selected real-profile restore, first real-profile Quarantine execution, recovery confidence, packaging, and later deletion/history decisions, and its manual fixture acceptance row names user-reported visual acceptance plus the unfilled clean-worktree notes evidence. The fixture launcher can write an ignored `.local` fixture acceptance notes template from the same checklist item source with `-WriteAcceptanceNotes`; the notes are grouped by fixture review area and now include an acceptance evidence header with repo path, Git branch/commit, worktree status at notes creation, .NET SDK, WPF app project/target framework/WPF flag, preflight command, visible fixture command, preflight/worktree checkboxes, local-not-cleanup-history wording, and embedded exact summary/completion-check commands. The latest ignored notes file is `.local\fixture-review-acceptance\fixture-acceptance-20260601-132126.md` from clean `main` at `433064e` with `Worktree status at notes creation: clean`, but the acceptance evidence and checklist items remain not recorded. A read-only summary helper can summarize the latest or explicit ignored fixture acceptance notes, including metadata, worktree status at notes creation when present, acceptance-evidence checkbox states, overall result, checklist totals, and issue/not-checked/not-recorded items with compact notes or prompt previews, without launching WPF, scanning, moving, restoring, deleting, or creating cleanup history. The helper also supports `-RequireComplete`, which exits non-zero until local acceptance notes have recorded preflight/worktree evidence, an overall result, and no not-checked or not-recorded checklist items. The fixture launcher now also prints exact summary and completion-check commands for the notes file it writes, and MVP preflight success output points to that follow-up after `.\tools\Start-MvpFixtureReview.cmd -SkipPreflight -WriteAcceptanceNotes`. Checklist-only launcher output now also repeats the exact next visible fixture command and the no-preflight/no-fixture/no-WPF/no-scan/no-movement boundary before exiting. No real user files were scanned or modified.
 
 Fresh clean-worktree notes evidence: `cmd.exe /c tools\Start-MvpFixtureReview.cmd -ChecklistOnly -WriteAcceptanceNotes` generated `.local\fixture-review-acceptance\fixture-acceptance-20260601-131233.md` from `dd86566` with `Worktree status at notes creation: clean`. The read-only summary helper printed that clean stamp, and `-RequireComplete` returned exit code 1 as expected because the checklist-only notes are still unfilled. This did not run preflight, create fixture files, launch WPF, scan, move, restore, delete, or create cleanup history.
@@ -28,6 +30,55 @@ Current Evidence Wording Alignment clarified that the clean notes preview from `
 4. Revisit .NET 10 and packaging only after reversible real-profile restore/cleanup behavior is trusted.
 
 ## Completed packets
+
+### 2026-06-01: Quarantine Tab Restore Manifest Review Panel
+
+Status: completed
+
+Evidence:
+
+- The user reported that `Discover manifests` was not in the Quarantine tab and had to be found in Main Grid.
+- The app had split Quarantine and Main Grid into separate pages, but the manifest recovery surface still lived in the Main Grid detail pane.
+
+Implementation:
+
+- Added a Quarantine-tab `Restore Manifest Review` panel.
+- Moved `Discover manifests`, all-manifest readiness, selected manifest selection/readiness, selected restore gate/result, and Restore Readiness output into that panel.
+- Moved detailed Quarantine Preview output into the Quarantine tab.
+- Added WPF smoke assertions that the Restore Manifest Review panel is expanded inside Quarantine and not inside Main Grid.
+
+Verification:
+
+- `dotnet build tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj "-p:BaseOutputPath=D:/Codex/Windows File Cleaner/.local/test-bin/app-tests/"`
+- `.local\test-bin\app-tests\Debug\net8.0-windows\WindowsFileCleaner.App.Tests.exe`
+- `dotnet run --project tests\WindowsFileCleaner.Tests\WindowsFileCleaner.Tests.csproj`
+- `cmd.exe /c tools\Start-MvpFixtureReview.cmd -ChecklistOnly`
+- `git diff --check`
+
+Docs updated:
+
+- `README.md`
+- `docs/domain/context.md`
+- `docs/domain/glossary.md`
+- `docs/features/2026-06-01-quarantine-tab-restore-manifest-review-panel.md`
+- `tools/Start-MvpFixtureReview.ps1`
+- `.codex/progress.md`
+
+ADRs:
+
+- No ADR added. ADR 0016 already owns the discovered-manifest surface boundary; this packet changes placement only.
+
+Open questions:
+
+- Whether the Quarantine tab still feels roomy enough after adding the Restore Manifest Review panel below Quarantine Shortlist.
+
+Follow-up work:
+
+- Run a visual pass and confirm `Discover manifests` is immediately findable in Quarantine.
+
+Risky assumptions:
+
+- A vertically scrollable Quarantine tab is preferable to splitting recovery into another top-level tab.
 
 ### 2026-06-01: User-Reported Selected Restore Recovery Success
 
