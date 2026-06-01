@@ -132,6 +132,29 @@ function Get-NotesSnippet {
     return ($snippets -join " ")
 }
 
+function Get-CompactSummaryText {
+    param(
+        [string]$Text,
+
+        [int]$MaxLength = 180
+    )
+
+    if ([string]::IsNullOrWhiteSpace($Text)) {
+        return ""
+    }
+
+    $compactText = [regex]::Replace($Text, "\s+", " ").Trim()
+    if ($compactText.Length -le $MaxLength) {
+        return $compactText
+    }
+
+    if ($MaxLength -le 3) {
+        return $compactText.Substring(0, $MaxLength)
+    }
+
+    return ($compactText.Substring(0, $MaxLength - 3).TrimEnd() + "...")
+}
+
 function Get-FixtureChecklistEntries {
     param(
         [string[]]$Lines
@@ -226,7 +249,10 @@ if ($attentionEntries.Count -gt 0) {
     foreach ($entry in $attentionEntries) {
         $line = ("- {0}. {1}: {2}" -f $entry.Number, $entry.Section, $entry.Status)
         if (-not [string]::IsNullOrWhiteSpace($entry.Notes)) {
-            $line = "$line - $($entry.Notes)"
+            $line = "$line - Notes: $(Get-CompactSummaryText -Text $entry.Notes)"
+        }
+        elseif (-not [string]::IsNullOrWhiteSpace($entry.Prompt)) {
+            $line = "$line - Prompt: $(Get-CompactSummaryText -Text $entry.Prompt)"
         }
 
         Write-Host $line

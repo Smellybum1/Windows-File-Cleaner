@@ -154,7 +154,7 @@ After a fixture pass, summarize the latest ignored notes or a specific notes fil
 .\tools\Summarize-FixtureAcceptanceNotes.cmd -Path ".local\fixture-review-acceptance\fixture-acceptance-YYYYMMDD-HHMMSS.md"
 ```
 
-The summary helper reads local notes only, reports the overall result, checklist totals, and issue/not-checked/not-recorded items, and does not launch WPF, scan, move, restore, delete, or create cleanup history.
+The summary helper reads local notes only, reports the overall result, checklist totals, and issue/not-checked/not-recorded items with compact notes or prompt previews, and does not launch WPF, scan, move, restore, delete, or create cleanup history.
 
 For focused troubleshooting, the individual fixture commands are:
 

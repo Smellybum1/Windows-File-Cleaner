@@ -189,6 +189,7 @@ What changed:
 - Later packet `2026-06-01-fixture-acceptance-build-context-header.md` added .NET SDK, WPF app project, WPF app target framework, and WPF enabled evidence to the notes header.
 - Later packet `2026-06-01-fixture-acceptance-current-commit-notes-preview.md` generated a current-commit checklist-only notes preview at `.local\fixture-review-acceptance\fixture-acceptance-20260601-112248.md`, stamped with commit `fd8e1d4` and the build-context fields.
 - Later packet `2026-06-01-fixture-acceptance-notes-summary-helper.md` added `.\tools\Summarize-FixtureAcceptanceNotes.cmd` to read ignored notes and print overall result, checklist totals, and issue/not-checked/not-recorded items without launching WPF, scanning, moving, restoring, deleting, or creating cleanup history.
+- Later packet `Fixture Acceptance Summary Prompt Preview` made the summary output include compact notes or prompt previews for open checklist items.
 - Updated docs and handoff/progress notes.
 
 Files changed:
