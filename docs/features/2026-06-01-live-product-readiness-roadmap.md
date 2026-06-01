@@ -45,7 +45,7 @@ Future work should follow this readiness sequence.
 
 | Readiness track | Current evidence | Done when | Next likely packet |
 |---|---|---|---|
-| Manual fixture acceptance | Full `.cmd` MVP preflight passed after the Checklist-Only Visible Fixture Next Step packet at `71cf15a`. Header/tab UI has user visual approval. The fixture launcher can write an ignored `.local` acceptance notes template from the checklist, grouped by fixture review area, with repo path, Git branch/commit, worktree status at notes creation, .NET SDK, WPF app project/target framework/WPF flag, required preflight, post-preflight visible fixture command, preflight/worktree checkboxes, local-not-cleanup-history wording, and exact post-pass summary/completion commands embedded in the notes, then print the same commands for that notes file. Checklist-only output also repeats the exact notes-enabled visible fixture command and the no-preflight/no-fixture/no-WPF/no-scan/no-movement boundary. A fresh checklist-only notes preview was generated from clean `main` at commit `dd86566` with `Worktree status at notes creation: clean`. A read-only summary helper can report latest ignored notes metadata, worktree status at notes creation, acceptance-evidence checkbox states, overall result, checklist totals, and issue/not-checked/not-recorded items with compact notes or prompt previews, and can fail fast with `-RequireComplete` while notes are incomplete. | The visible fixture pass is run through Quarantine Preview, fixture execution, current-session review, undo, discovery, selected restore gate, fixture selected restore, and ADR 0017/0018/0019 blocker wording. | Support `.\tools\Start-MvpFixtureReview.cmd -SkipPreflight -WriteAcceptanceNotes` when the user is ready, then run the notes/printed summary/completion commands and record results. |
+| Manual fixture acceptance | Full `.cmd` MVP preflight passed after the Checklist-Only Visible Fixture Next Step packet at `71cf15a`. Header/tab UI has user visual approval. The user ran the visible fixture review flow on 2026-06-01 and reported that it looks good. The fixture launcher can write an ignored `.local` acceptance notes template from the checklist, grouped by fixture review area, with repo path, Git branch/commit, worktree status at notes creation, .NET SDK, WPF app project/target framework/WPF flag, required preflight, post-preflight visible fixture command, preflight/worktree checkboxes, local-not-cleanup-history wording, and exact post-pass summary/completion commands embedded in the notes, then print the same commands for that notes file. Checklist-only output also repeats the exact notes-enabled visible fixture command and the no-preflight/no-fixture/no-WPF/no-scan/no-movement boundary. The latest ignored notes file was generated from clean `main` at commit `433064e` with `Worktree status at notes creation: clean`, but the formal checklist remains unfilled. A read-only summary helper can report latest ignored notes metadata, worktree status at notes creation, acceptance-evidence checkbox states, overall result, checklist totals, and issue/not-checked/not-recorded items with compact notes or prompt previews, and can fail fast with `-RequireComplete` while notes are incomplete. | The visible fixture pass is user-accepted for current UI/readiness confidence; formal checklist acceptance is done when the ignored notes record preflight/worktree evidence, an overall result, and no not-recorded checklist items. | Optionally complete the latest notes file and run the summary helper with `-RequireComplete`; otherwise move to fresh real-profile read-only retest after a new full preflight. |
 | Fresh real-profile read-only retest | User previously confirmed real-profile scan works and debounced search fixed sluggish typing. | After a fresh preflight, `C:\Users\moxhe` scan is manually retested for scan gate, no-file-modified status, performance, filters/search/focus, Review Shortlist context, and preview-only blockers. | Run only after the user intentionally starts a real-profile retest. |
 | Real-profile selected restore implementation | ADR 0019 and read-only selected restore revalidation evidence exist. | Exactly one selected real-profile Restore Manifest can restore through `UndoQuarantineExecutor` after fresh discovery, selected review, immediate revalidation, exact `RESTORE`, no original-path overwrite, result guidance, and explicit user-approved implementation. | Grill with Docs implementation packet for ADR 0019, with core and WPF tests, only after user approval. |
 | First real-profile Quarantine execution | ADR 0017/0018, root execution safety, pre-execution revalidation, restore readiness, and approval evidence exist as read-only models/output. | Exact `C:\Users\moxhe` can run a first limited real-profile Quarantine action after selected restore recovery is trusted, all readiness dimensions pass, exact `QUARANTINE` is typed, the batch is within 10 rows / 1 GB, and the user explicitly approves crossing the movement boundary. | Only after selected real-profile restore is implemented and manually trusted. |
@@ -104,6 +104,7 @@ Evidence gathered:
   - Debounced search fixed large-scan sluggish typing.
   - The non-`D:` acknowledgement row feels clear.
   - The tabbed/header UI looks much better.
+  - The manual fixture visual pass looks good.
   - Do not move, delete, quarantine, or restore real-profile files without explicit approval after Grill with Docs.
 - Existing code/docs inspected:
   - `README.md`
@@ -218,6 +219,7 @@ What changed:
 - Later packet `Checklist-Only Visible Fixture Next Step` made plain checklist-only output repeat the exact notes-enabled visible fixture command and the no-preflight/no-fixture/no-WPF/no-scan/no-movement boundary so the next manual fixture pass is discoverable without launching anything.
 - Later packet `Full Local MVP Preflight After Checklist-Only Next Step` confirmed the current full `.cmd` MVP preflight after `71cf15a`, including restore, build, core tests, WPF app tests, fixture `-WhatIf`, sectioned checklist-only output with the exact visible fixture next-step block, and whitespace diff before the next visible fixture acceptance pass.
 - Later packet `Fixture Acceptance Current Baseline Notes Preview` generated `.local\fixture-review-acceptance\fixture-acceptance-20260601-131233.md` from clean `main` at `dd86566`, confirmed the clean worktree stamp through explicit summary output, and kept the visible fixture pass as the next gate.
+- Later packet `User-Reported Manual Fixture Visual Pass` recorded that the user ran the visible fixture review flow and reported it looks good; the latest notes file `.local\fixture-review-acceptance\fixture-acceptance-20260601-132126.md` is stamped clean from `433064e` but remains formally unfilled.
 
 Files changed:
 
@@ -237,6 +239,7 @@ Tests run:
 - Later full-preflight-after-current-evidence packet ran `cmd.exe /c tools\Invoke-MvpPreflight.cmd`; restore, build, core tests, WPF app tests, fixture `-WhatIf`, sectioned checklist-only output, and whitespace diff passed without launching WPF, scanning real-profile files, moving, restoring, deleting, or creating cleanup history.
 - Later full-preflight-after-checklist-only-next-step packet ran `cmd.exe /c tools\Invoke-MvpPreflight.cmd`; restore, build, core tests, WPF app tests, fixture `-WhatIf`, sectioned checklist-only output with the exact visible fixture next-step block, and whitespace diff passed without launching WPF, scanning real-profile files, moving, restoring, deleting, or creating cleanup history.
 - Later current-baseline notes-preview packet ran checklist-notes output, inspected the generated notes header, ran explicit notes summary, verified explicit `-Path ... -RequireComplete` fails while notes are unfilled, and did not launch WPF, scan, move, restore, delete, or create cleanup history.
+- Later user-reported manual fixture visual pass packet ran the read-only summary helper on `.local\fixture-review-acceptance\fixture-acceptance-20260601-132126.md` and verified `-RequireComplete` still exits non-zero while notes are unfilled.
 
 Docs updated:
 
@@ -248,10 +251,9 @@ ADRs added or skipped:
 
 Follow-up work:
 
-- Run the visible fixture pass when the user is ready.
-- Run the embedded or printed `.\tools\Summarize-FixtureAcceptanceNotes.cmd -Path ...` command after the visible fixture pass to review open notes items.
-- Run the embedded or printed `.\tools\Summarize-FixtureAcceptanceNotes.cmd -Path ... -RequireComplete` command after filling notes when you want a non-zero completion check before copying results into progress docs.
-- Record manual fixture results and any UI/readiness polish needed before real-profile retest.
+- Optionally fill `.local\fixture-review-acceptance\fixture-acceptance-20260601-132126.md` and run the summary helper with `-RequireComplete` if formal notes evidence is desired.
+- Run a fresh full preflight before any real-profile read-only retest.
+- Record real-profile read-only retest results and any UI/readiness polish needed before real-profile movement work.
 - Start real-profile selected restore implementation only after explicit user approval.
 
 Open questions:
