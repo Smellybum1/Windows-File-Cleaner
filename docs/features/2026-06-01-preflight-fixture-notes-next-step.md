@@ -91,6 +91,7 @@ What changed:
 
 - Updated `tools/Invoke-MvpPreflight.ps1` so successful preflight output suggests `.\tools\Start-MvpFixtureReview.cmd -SkipPreflight -WriteAcceptanceNotes`.
 - Later packet `Fixture Acceptance Post-Pass Guidance` updated the success output to tell the user that the notes-enabled launcher will print exact summary and completion-check commands after it writes a notes file.
+- Later packet `Fixture Acceptance Notes Embedded Commands` made the generated notes file include those commands too.
 - Updated README and preflight docs to match the notes-enabled fixture-review workflow.
 - Kept all preflight steps, fixture launcher behavior, Storage Scan behavior, fixture execution behavior, real-profile blockers, permanent deletion, and cleanup history unchanged.
 
@@ -119,7 +120,7 @@ ADRs added or skipped:
 
 Follow-up work:
 
-- Run the visible fixture pass with `.\tools\Start-MvpFixtureReview.cmd -SkipPreflight -WriteAcceptanceNotes` after a successful preflight when the user is ready, then run the printed summary and completion-check commands after filling notes.
+- Run the visible fixture pass with `.\tools\Start-MvpFixtureReview.cmd -SkipPreflight -WriteAcceptanceNotes` after a successful preflight when the user is ready, then run the embedded or printed summary and completion-check commands after filling notes.
 
 Open questions:
 

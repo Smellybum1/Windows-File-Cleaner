@@ -89,6 +89,7 @@ What changed:
 
 - Updated current-facing fixture acceptance wording to recommend `.\tools\Start-MvpFixtureReview.cmd -SkipPreflight -WriteAcceptanceNotes` after successful preflight.
 - Later packet `Fixture Acceptance Post-Pass Guidance` kept that launcher command but made the launcher print exact post-pass summary and completion-check commands for the notes file it writes.
+- Later packet `Fixture Acceptance Notes Embedded Commands` made the generated notes file include the same exact commands.
 - Kept launcher behavior, preflight behavior, Storage Scan behavior, fixture execution behavior, real-profile blockers, permanent deletion, and cleanup history unchanged.
 
 Files changed:
@@ -116,7 +117,7 @@ ADRs added or skipped:
 
 Follow-up work:
 
-- Run the visible fixture pass with `.\tools\Start-MvpFixtureReview.cmd -SkipPreflight -WriteAcceptanceNotes` after successful preflight when the user is ready, then run the printed summary and completion-check commands after filling notes.
+- Run the visible fixture pass with `.\tools\Start-MvpFixtureReview.cmd -SkipPreflight -WriteAcceptanceNotes` after successful preflight when the user is ready, then run the embedded or printed summary and completion-check commands after filling notes.
 
 Open questions:
 

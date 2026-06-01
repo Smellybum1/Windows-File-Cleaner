@@ -157,6 +157,7 @@ What changed:
 - Updated docs to make the next step the visible fixture pass, not another checklist-only preparation step.
 - Later packet `2026-06-01-fixture-acceptance-notes-summary-helper.md` added a read-only helper that can summarize this ignored notes preview or the latest future notes file.
 - Later packet `Fixture Acceptance Post-Pass Guidance` made newly written notes print exact summary and completion-check commands, so future visible passes do not need to infer the next terminal step.
+- Later packet `Fixture Acceptance Notes Embedded Commands` made newly written notes include those exact commands inside the notes file too.
 
 Files changed:
 
@@ -183,8 +184,8 @@ ADRs added or skipped:
 Follow-up work:
 
 - Run the visible fixture pass with `.\tools\Start-MvpFixtureReview.cmd -SkipPreflight -WriteAcceptanceNotes` when the user is ready.
-- Run the printed `.\tools\Summarize-FixtureAcceptanceNotes.cmd -Path ...` command after the visible pass to review open notes items.
-- Run the printed `.\tools\Summarize-FixtureAcceptanceNotes.cmd -Path ... -RequireComplete` command after filling notes when a non-zero completion check is useful.
+- Run the embedded or printed `.\tools\Summarize-FixtureAcceptanceNotes.cmd -Path ...` command after the visible pass to review open notes items.
+- Run the embedded or printed `.\tools\Summarize-FixtureAcceptanceNotes.cmd -Path ... -RequireComplete` command after filling notes when a non-zero completion check is useful.
 - Record manual results or issues from the visible pass in `.codex/progress.md`.
 
 Open questions:
