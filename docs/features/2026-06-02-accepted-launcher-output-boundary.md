@@ -34,6 +34,8 @@ Tracked docs now clarify that debug-build desktop shortcuts are development-only
 - `rg -n "Daily path: use this accepted release launch command|debug-build desktop shortcut|Accepted Launcher Output Boundary" tools README.md docs\codex\thread-handoff.md .codex\progress.md docs\features`
 - `git diff --check`
 
+Follow-up evidence: `cmd.exe /c tools\Invoke-DailyLocalReadiness.cmd -IncludeFixtureAcceptanceNotes -CleanupScope "C:\Users\moxhe" -RequireAnyDisplayedRestoreManifest -RequireNoDisplayedUndoWork` passed on `9dc5b98` and showed the new daily-path/debug-shortcut boundary in the accepted normal and fixture print-only launch sections.
+
 ## Docs
 
 - `README.md`
