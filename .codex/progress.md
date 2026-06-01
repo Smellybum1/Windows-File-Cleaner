@@ -12,6 +12,8 @@ Latest packet update: the Next-Batch Checklist Fixture Notes Guidance packet add
 
 Latest full next-batch evidence refresh after checklist guidance: `cmd.exe /c tools\Invoke-RealProfileQuarantineReadiness.cmd -RequireNextBatchEvidence` passed on current `main` at `d257090`. Full MVP preflight restored, built, ran core tests, ran WPF app tests, ran fixture `-WhatIf`, printed the fixture checklist, and ran whitespace diff checking. Daily readiness verified completed accepted package notes, printed optional Fixture Acceptance Notes status, ran one accepted package verifier pass with the expected package/current-HEAD warning (`bc9b869` accepted package versus `d257090` current `HEAD`), and printed accepted normal/fixture launch commands in print-only mode. Fixture Acceptance Notes remain formally incomplete and the summary printed recorder guidance. Exact-profile Restore Manifest display still showed 4 of 10 manifests, displayed undo work `0`, and displayed recovery review `2`; focused recovery-review evidence still showed the two older failed NVIDIA `DXCache` attempts, and focused undo-work evidence showed zero exact-profile matches. No WPF app was launched, no real-profile scan was started, and no files were moved, restored, deleted, approved, written to Restore Manifests, or added to cleanup history.
 
+Latest startup prompt cleanup: `docs/codex/thread-handoff.md` now starts the startup prompt with the current Startup Prompt Current Evidence Cleanup packet, folds the `d257090` full next-batch evidence refresh into the main current-state paragraph, and removes the superseded Fixture Acceptance Summary Recorder Guidance and Next-Batch Checklist Fixture Notes Guidance delta override paragraphs. This was docs-only and did not launch WPF, scan, move, restore, delete, approve cleanup, write Restore Manifests, or create cleanup history.
+
 Recent UI correction: the user reported `Discover manifests` was not visible in the Quarantine tab after selected restore recovery; it was still buried in the Main Grid detail pane. The follow-up packet moved Restore Manifest discovery, selected readiness, selected restore gate/result, and all-manifest readiness into a dedicated `Restore Manifest Review` panel under the Quarantine tab, and moved detailed Quarantine Preview output into the Quarantine tab.
 
 Latest accepted launcher output update: `.\tools\Start-AcceptedLocalRelease.cmd` now prints that the accepted release launch command is the daily path instead of any debug-build desktop shortcut, and that the launcher does not create shortcuts or install anything. This is terminal output wording only; it does not publish or accept a new package, launch WPF, scan, move, restore, delete, approve cleanup, or create cleanup history.
@@ -54,6 +56,49 @@ Use `.\tools\Invoke-RealProfileNextBatchReview.cmd` before considering another t
 4. Revisit .NET 10, installer/shortcut automation, permanent deletion, persisted cleanup history, and broad restore only as separate future decisions.
 
 ## Completed packets
+
+### 2026-06-02: Startup Prompt Current Evidence Cleanup
+
+Status: completed
+
+Evidence:
+
+- `docs/codex/thread-handoff.md` still had a startup-prompt current-state line naming Fixture Acceptance Summary Recorder Guidance as the latest packet.
+- The same startup prompt stacked older delta paragraphs for Fixture Acceptance Summary Recorder Guidance and Next-Batch Checklist Fixture Notes Guidance before the current Full Next-Batch Evidence After Checklist Guidance delta.
+
+Implementation:
+
+- Updated the startup prompt current-state paragraph to name Startup Prompt Current Evidence Cleanup as the latest packet.
+- Folded the `d257090` full next-batch evidence refresh into the startup prompt's main current-state paragraph.
+- Removed the two superseded older delta paragraphs so the startup prompt has one current delta path.
+- Did not launch WPF, scan, move, restore, delete, approve cleanup, write Restore Manifests, or create cleanup history.
+
+Verification:
+
+- `rg -n "Startup Prompt Current Evidence Cleanup|Full Next-Batch Evidence After Checklist Guidance|d257090|Current state: main is pushed through" docs/codex/thread-handoff.md .codex/progress.md`
+- `powershell.exe -NoProfile -Command "if (Select-String -Path 'docs\codex\thread-handoff.md' -Pattern 'Current state: main is pushed through the latest Fixture Acceptance Summary Recorder Guidance|Fresh startup-prompt delta: the latest packet is now Fixture Acceptance Summary Recorder Guidance|Fresh startup-prompt delta override: the latest packet is now Next-Batch Checklist Fixture Notes Guidance' -Quiet) { exit 1 }"`
+- `git diff --check`
+
+Docs updated:
+
+- `docs/codex/thread-handoff.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No ADR added. This is handoff wording cleanup only.
+
+Open questions:
+
+- None.
+
+Follow-up work:
+
+- Keep the startup prompt current when future packets update the handoff.
+
+Risky assumptions:
+
+- Removing superseded delta paragraphs improves fresh-thread startup clarity without losing needed historical evidence, because that evidence remains in the handoff and feature briefs outside the startup prompt.
 
 ### 2026-06-02: Full Next-Batch Evidence After Checklist Guidance
 
