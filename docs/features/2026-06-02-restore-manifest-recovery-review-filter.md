@@ -216,3 +216,12 @@ Open questions:
 Risky assumptions:
 
 - The failed older real-profile attempts should remain visible as recovery-review evidence rather than being hidden or auto-cleaned.
+
+## Follow-up evidence: Exact-profile entry review
+
+Packet `Exact-Profile Recovery Review Entry Evidence` reran `cmd.exe /c tools\Summarize-RestoreManifests.cmd -CleanupScope "C:\Users\moxhe" -RecoveryReviewOnly -ShowEntries` and confirmed the two displayed recovery-review manifests are failed-only NVIDIA `DXCache` directory attempts with moved count `0` and undo work `no`.
+
+- `quarantine-action-draft-20260601110130-9010b9d9`: failed because a descendant `.nvph` file was in use by another process.
+- `quarantine-action-draft-20260601103558-b3e00fc2`: failed because source and destination roots differed before the guarded cross-volume fallback existed.
+
+The follow-up also reran exact-profile undo-work evidence; `-UndoWorkOnly` showed zero matches, and `-RequireAnyDisplayed -RequireNoDisplayedUndoWork` passed with 4 exact-profile displayed manifests, displayed undo work `0`, and displayed recovery review `2`.

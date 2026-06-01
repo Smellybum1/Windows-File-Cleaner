@@ -71,6 +71,8 @@ Later packet note: `Next-Batch Checklist Fixture Notes Guidance` added a `Before
 
 Later packet note: `Full Next-Batch Evidence After Checklist Guidance` reran the full next-batch evidence preset on `d257090` after the checklist guidance packet; full MVP preflight passed and exact-profile displayed undo work remained zero without launching WPF, scanning, movement, restore, deletion, approval, manifest writes, or cleanup history.
 
+Later packet note: `Exact-Profile Recovery Review Entry Evidence` reran focused exact `C:\Users\moxhe` Restore Manifest evidence and confirmed the two recovery-review manifests are failed-only NVIDIA `DXCache` attempts with moved count `0` and undo work `no`; one failed because a descendant `.nvph` file was in use, and the older one failed before the cross-volume directory fallback existed. This remains read-only evidence and not cleanup approval or repair.
+
 Later packet note: `Accepted Package Launch Path Clarity` clarified that the accepted package launcher is the daily launch-command path and any debug-build desktop shortcut is development-only context, not accepted-package evidence, not an installer, and not the recommended daily path.
 
 Later packet note: `Accepted Launcher Output Boundary` made `Start-AcceptedLocalRelease.cmd` print the daily-path/debug-shortcut boundary directly, without creating shortcuts, installing anything, launching WPF, scanning, moving, restoring, deleting, approving cleanup, or creating cleanup history.
