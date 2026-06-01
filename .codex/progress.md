@@ -12,6 +12,8 @@ Latest WPF UI packet added a compact Main Grid Active Review Lens Summary above 
 
 Fresh clean-worktree notes evidence: `cmd.exe /c tools\Start-MvpFixtureReview.cmd -ChecklistOnly -WriteAcceptanceNotes` generated `.local\fixture-review-acceptance\fixture-acceptance-20260601-122940.md` from `f181627` with `Worktree status at notes creation: clean`. The read-only summary helper printed that clean stamp, and `-RequireComplete` returned exit code 1 as expected because the checklist-only notes are still unfilled. This did not run preflight, create fixture files, launch WPF, scan, move, restore, delete, or create cleanup history.
 
+Latest full preflight evidence: `cmd.exe /c tools\Invoke-MvpPreflight.cmd` passed after the Fixture Acceptance Clean Worktree Notes Preview packet at `8529a91`. It restored, built, ran core tests, ran WPF app tests, ran fixture `-WhatIf`, printed sectioned checklist-only output, ran whitespace diff checking, and ended with `MVP preflight passed. No real user files were scanned or modified.` No WPF app was launched, no real-profile scan was run, and no files were moved, restored, deleted, or added to cleanup history.
+
 ## Next recommended work
 
 1. Run the visible fixture pass with `.\tools\Start-MvpFixtureReview.cmd -SkipPreflight -WriteAcceptanceNotes` after the latest successful full preflight, then use the embedded or printed `.\tools\Summarize-FixtureAcceptanceNotes.cmd -Path ...` command to review acceptance-evidence checkboxes and open notes items with compact notes/prompt previews before copying relevant results into progress. After filling the notes, use the embedded or printed `.\tools\Summarize-FixtureAcceptanceNotes.cmd -Path ... -RequireComplete` command when you want a non-zero completion check. Focus the visible pass on the full fixture flow: Quarantine Preview/readiness, fixture Quarantine execution, current-session quarantined review, undo, manifest discovery, selected restore gate, selected restore, and ADR 0017/0018/0019 blocker wording. The wide header layout is already visually approved; only revisit header spacing if a narrower-window pass shows crowding.
@@ -23,6 +25,42 @@ Fresh clean-worktree notes evidence: `cmd.exe /c tools\Start-MvpFixtureReview.cm
 7. Revisit .NET 10 before packaging or long-term distribution.
 
 ## Completed packets
+
+### 2026-06-01: Full Local MVP Preflight After Clean Notes Preview
+
+Status: completed
+
+Evidence:
+
+- The worktree-stamp and clean-notes preview packets changed fixture acceptance tooling/docs after the previous full preflight evidence.
+- A current full `.cmd` MVP preflight re-establishes the verification baseline before the next visible fixture pass.
+
+Implementation:
+
+- Ran the full `.cmd` MVP preflight from the repository root after `8529a91`.
+- Preflight restored packages, built the solution, ran core tests, ran WPF app tests, ran the synthetic fixture generator in `-WhatIf` mode, printed the sectioned fixture checklist in checklist-only mode, and ran whitespace diff checking.
+- No WPF app was launched, no real-profile scan was run, and no files were moved, restored, deleted, or added to cleanup history.
+
+Verification:
+
+- `cmd.exe /c tools\Invoke-MvpPreflight.cmd`
+- Preflight output ended with `MVP preflight passed. No real user files were scanned or modified.`
+- Preflight printed the next manual fixture command: `.\tools\Start-MvpFixtureReview.cmd -SkipPreflight -WriteAcceptanceNotes`
+
+Docs updated:
+
+- `docs/features/2026-05-28-mvp-preflight-script.md`
+- `docs/features/2026-06-01-live-product-readiness-roadmap.md`
+- `docs/codex/thread-handoff.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No ADR added. This is verification evidence only, with no architecture, persistence, cleanup execution, restore behavior, data-model, or security change.
+
+Open questions:
+
+- Whether the next visible fixture pass records any Quarantine/readiness or selected-restore UI polish before a fresh real-profile read-only retest.
 
 ### 2026-06-01: Fixture Acceptance Clean Worktree Notes Preview
 
