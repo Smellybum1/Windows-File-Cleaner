@@ -32,6 +32,12 @@ After the cross-volume selected restore retry and gate-highlight fix was pushed,
 
 - `Key status: selected restore succeeded. Restored 1, failed 0. Rediscover manifests and rescan.`
 
+After the Quarantine-tab Restore Manifest Review panel made rediscovery easier to find, the user completed the follow-up rediscovery/rescan check and reported all three manual checks succeeded:
+
+- Rediscovery showed the selected manifest as restored/already restored.
+- The rescan completed normally.
+- The restored `pip\cache\http\b\c` path appeared again.
+
 ## Implementation
 
 - `UndoQuarantineExecutor` now restores directories through the guarded directory move fallback instead of direct `Directory.Move`.
@@ -47,10 +53,12 @@ After the cross-volume selected restore retry and gate-highlight fix was pushed,
 - `.local\test-bin\app-tests\Debug\net8.0-windows\WindowsFileCleaner.App.Tests.exe`
 - `cmd.exe /c tools\Start-MvpFixtureReview.cmd -ChecklistOnly`
 - `git diff --check` passed with only existing LF-to-CRLF working-copy warnings.
+- User-reported manual rediscovery/rescan confirmation after selected restore recovery: manifest restored/already restored, rescan completed normally, restored `pip\cache\http\b\c` path visible again.
 
 ## Follow-up Work
 
-- Rediscover manifests and rescan before any further real-profile cleanup review.
+- Rediscovery and rescan for the first-live selected restore recovery are complete by user report.
+- Any further real-profile cleanup review should still start with fresh preflight and a new tiny exact selected batch.
 - Keep recovery selected-manifest-only. Do not add broad Undo Quarantine or deletion in this packet.
 
 ## ADRs

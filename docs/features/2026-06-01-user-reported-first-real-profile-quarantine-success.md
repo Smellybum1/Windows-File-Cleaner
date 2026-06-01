@@ -53,6 +53,7 @@ Broad/all-manifest real-profile Undo Quarantine, custom/non-exact real-profile Q
 ## Follow-Up Work
 
 - Recovery proof for this created Restore Manifest later succeeded by user report after the cross-volume selected restore retry fix: highlighted result `selected restore succeeded. Restored 1, failed 0`.
+- The user then rediscovered manifests and rescanned, reporting that the manifest showed restored/already restored, the rescan completed normally, and the restored `pip\cache\http\b\c` path appeared again.
 - Do not proceed to larger real-profile Quarantine batches without fresh preflight, a new tiny selected batch, and explicit user review; broad/all-manifest restore remains unavailable.
 - Keep packaging and any deletion/history decisions separate from this first live-trust evidence.
 
