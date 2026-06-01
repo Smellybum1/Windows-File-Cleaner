@@ -28,6 +28,8 @@ Before considering another tiny exact real-profile Quarantine batch, run the ter
 
 That command runs full MVP preflight by default, then the daily local readiness check plus focused Restore Manifest recovery-review and undo-work summaries. Its Restore Manifest display focus defaults to the exact real-profile Cleanup Scope `C:\Users\moxhe`; use `-AllCleanupScopes` only when you intentionally want the older all-scope display. It is evidence only: it does not launch WPF, click `Scan`, scan `C:\Users\moxhe`, move, restore, delete, approve cleanup, or create cleanup history, and it does not replace WPF readiness, exact `QUARANTINE`, Real-Profile Quarantine Approval Evidence, immediate Pre-Execution Revalidation, or explicit approval for a specific tiny batch.
 
+When the exact-profile Restore Manifest display itself should be enforced, add displayed strictness flags such as `-RequireAnyDisplayedRestoreManifest -RequireNoDisplayedUndoWork`. Those flags check only the current displayed manifest focus; they are still terminal evidence only and do not approve cleanup.
+
 For ordinary local review, start from the latest accepted portable package rather than rebuilding from the current docs-only `HEAD`:
 
 ```powershell
@@ -383,7 +385,14 @@ To focus only manifests that still have undo work:
 .\tools\Summarize-RestoreManifests.cmd -UndoWorkOnly -ShowEntries
 ```
 
-The summary helper reads `actions\*\restore-manifest.json`, reports manifest counts, entry status counts, size, cleanup scopes, undo-work and recovery-review flags, and discovery issues. It is read-only: it does not launch WPF, scan, move, restore, delete, write manifests, approve cleanup, or create cleanup history. Use `-CleanupScope` as a display filter when exact real-profile evidence should be separated from fixture evidence; full-root aggregate counts remain visible. Use `-RequireAny` when a verification step should fail if no valid Restore Manifests are found. Use `-RequireNoRecoveryReview` when a read-only check should fail if any valid Restore Manifest still needs recovery review; use `-RequireNoUndoWork` when a read-only check should fail if any valid Restore Manifest still has moved entries. These checks are evidence only and do not restore or clean anything.
+To fail a read-only check on the displayed exact-profile evidence instead of the full selected Quarantine Root:
+
+```powershell
+.\tools\Summarize-RestoreManifests.cmd -CleanupScope "C:\Users\moxhe" -RequireAnyDisplayed -RequireNoDisplayedUndoWork
+.\tools\Summarize-RestoreManifests.cmd -CleanupScope "C:\Users\moxhe" -RecoveryReviewOnly -RequireNoDisplayedRecoveryReview
+```
+
+The summary helper reads `actions\*\restore-manifest.json`, reports manifest counts, entry status counts, size, cleanup scopes, undo-work and recovery-review flags, and discovery issues. It is read-only: it does not launch WPF, scan, move, restore, delete, write manifests, approve cleanup, or create cleanup history. Use `-CleanupScope` as a display filter when exact real-profile evidence should be separated from fixture evidence; full-root aggregate counts remain visible. Use `-RequireAny`, `-RequireNoRecoveryReview`, and `-RequireNoUndoWork` when a verification step should check the full selected Quarantine Root. Use `-RequireAnyDisplayed`, `-RequireNoDisplayedRecoveryReview`, and `-RequireNoDisplayedUndoWork` when a verification step should check only the currently displayed manifest set. These checks are evidence only and do not restore or clean anything.
 
 ## Run The App
 

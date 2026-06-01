@@ -229,6 +229,7 @@ Follow-up work:
 
 - Use `-CleanupScope "C:\Users\moxhe" -RecoveryReviewOnly -ShowEntries` when exact real-profile recovery-review evidence is needed.
 - Use `-CleanupScope "C:\Users\moxhe" -UndoWorkOnly` when exact real-profile moved-entry evidence is needed.
+- Later packet `Restore Manifest Displayed Strictness` builds on this display filter with displayed-only strict checks such as `-RequireAnyDisplayed` and `-RequireNoDisplayedUndoWork`.
 
 Open questions:
 

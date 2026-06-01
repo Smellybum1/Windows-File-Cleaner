@@ -12,9 +12,15 @@ param(
 
     [switch]$RequireAny,
 
+    [switch]$RequireAnyDisplayed,
+
     [switch]$RequireNoRecoveryReview,
 
-    [switch]$RequireNoUndoWork
+    [switch]$RequireNoUndoWork,
+
+    [switch]$RequireNoDisplayedRecoveryReview,
+
+    [switch]$RequireNoDisplayedUndoWork
 )
 
 Set-StrictMode -Version Latest
@@ -308,6 +314,17 @@ if ($UndoWorkOnly.IsPresent) {
     [void]$displayFilterLabels.Add("undo-work manifests only")
 }
 
+$displayRecoveryReviewCount = 0
+$displayUndoWorkCount = 0
+foreach ($summary in $displayManifests) {
+    if ($summary.RequiresRecoveryReview) {
+        $displayRecoveryReviewCount++
+    }
+    if ($summary.HasUndoWork) {
+        $displayUndoWorkCount++
+    }
+}
+
 $totalEntries = 0
 $totalBytes = [long]0
 $recoveryReviewCount = 0
@@ -337,6 +354,11 @@ Write-Host "Manifests needing recovery review: $recoveryReviewCount"
 if ($displayFilterLabels.Count -gt 0) {
     $displayFilterText = [string]::Join("; ", [string[]]$displayFilterLabels.ToArray())
     Write-Host ("Display filter: {0} ({1} of {2})" -f $displayFilterText, $displayManifests.Count, $orderedManifests.Count)
+}
+
+if ($displayFilterLabels.Count -gt 0 -or $RequireAnyDisplayed.IsPresent -or $RequireNoDisplayedRecoveryReview.IsPresent -or $RequireNoDisplayedUndoWork.IsPresent) {
+    Write-Host "Displayed manifests with undo work: $displayUndoWorkCount"
+    Write-Host "Displayed manifests needing recovery review: $displayRecoveryReviewCount"
 }
 
 if ($cleanupScopes.Count -gt 0) {
@@ -406,6 +428,12 @@ if ($RequireAny.IsPresent -and $orderedManifests.Count -eq 0) {
     exit 1
 }
 
+if ($RequireAnyDisplayed.IsPresent -and $displayManifests.Count -eq 0) {
+    Write-Host ""
+    Write-Host "Restore Manifest summary failed because -RequireAnyDisplayed was set and no manifests matched the selected display filter."
+    exit 1
+}
+
 if ($RequireNoRecoveryReview.IsPresent -and $recoveryReviewCount -gt 0) {
     Write-Host ""
     Write-Host "Restore Manifest summary failed because -RequireNoRecoveryReview was set and $recoveryReviewCount manifest(s) need recovery review."
@@ -415,5 +443,17 @@ if ($RequireNoRecoveryReview.IsPresent -and $recoveryReviewCount -gt 0) {
 if ($RequireNoUndoWork.IsPresent -and $undoWorkCount -gt 0) {
     Write-Host ""
     Write-Host "Restore Manifest summary failed because -RequireNoUndoWork was set and $undoWorkCount manifest(s) still have undo work."
+    exit 1
+}
+
+if ($RequireNoDisplayedRecoveryReview.IsPresent -and $displayRecoveryReviewCount -gt 0) {
+    Write-Host ""
+    Write-Host "Restore Manifest summary failed because -RequireNoDisplayedRecoveryReview was set and $displayRecoveryReviewCount displayed manifest(s) need recovery review."
+    exit 1
+}
+
+if ($RequireNoDisplayedUndoWork.IsPresent -and $displayUndoWorkCount -gt 0) {
+    Write-Host ""
+    Write-Host "Restore Manifest summary failed because -RequireNoDisplayedUndoWork was set and $displayUndoWorkCount displayed manifest(s) still have undo work."
     exit 1
 }

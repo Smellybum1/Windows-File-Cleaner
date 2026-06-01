@@ -16,7 +16,13 @@ param(
 
     [switch]$RequireNoRecoveryReview,
 
-    [switch]$RequireNoUndoWork
+    [switch]$RequireNoUndoWork,
+
+    [switch]$RequireAnyDisplayedRestoreManifest,
+
+    [switch]$RequireNoDisplayedRecoveryReview,
+
+    [switch]$RequireNoDisplayedUndoWork
 )
 
 Set-StrictMode -Version Latest
@@ -112,6 +118,12 @@ function New-RestoreManifestArguments {
     if ($RequireNoUndoWork.IsPresent) {
         $arguments += "-RequireNoUndoWork"
     }
+    if ($RequireNoDisplayedRecoveryReview.IsPresent) {
+        $arguments += "-RequireNoDisplayedRecoveryReview"
+    }
+    if ($RequireNoDisplayedUndoWork.IsPresent) {
+        $arguments += "-RequireNoDisplayedUndoWork"
+    }
 
     return $arguments
 }
@@ -157,6 +169,15 @@ if ($RequireNoRecoveryReview.IsPresent) {
 }
 if ($RequireNoUndoWork.IsPresent) {
     $dailyArguments += "-RequireNoUndoWork"
+}
+if ($RequireAnyDisplayedRestoreManifest.IsPresent) {
+    $dailyArguments += "-RequireAnyDisplayedRestoreManifest"
+}
+if ($RequireNoDisplayedRecoveryReview.IsPresent) {
+    $dailyArguments += "-RequireNoDisplayedRecoveryReview"
+}
+if ($RequireNoDisplayedUndoWork.IsPresent) {
+    $dailyArguments += "-RequireNoDisplayedUndoWork"
 }
 
 Invoke-RealProfileReadinessStep -Title "Daily local readiness" -CommandPath $dailyReadiness -Arguments $dailyArguments

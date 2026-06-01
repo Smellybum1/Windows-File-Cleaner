@@ -16,6 +16,12 @@ param(
 
     [switch]$RequireNoUndoWork,
 
+    [switch]$RequireAnyDisplayedRestoreManifest,
+
+    [switch]$RequireNoDisplayedRecoveryReview,
+
+    [switch]$RequireNoDisplayedUndoWork,
+
     [switch]$RequireAnyRestoreManifest
 )
 
@@ -90,6 +96,15 @@ if ($RequireNoRecoveryReview.IsPresent) {
 }
 if ($RequireNoUndoWork.IsPresent) {
     $restoreArguments += "-RequireNoUndoWork"
+}
+if ($RequireAnyDisplayedRestoreManifest.IsPresent) {
+    $restoreArguments += "-RequireAnyDisplayed"
+}
+if ($RequireNoDisplayedRecoveryReview.IsPresent) {
+    $restoreArguments += "-RequireNoDisplayedRecoveryReview"
+}
+if ($RequireNoDisplayedUndoWork.IsPresent) {
+    $restoreArguments += "-RequireNoDisplayedUndoWork"
 }
 if ($RequireAnyRestoreManifest.IsPresent) {
     $restoreArguments += "-RequireAny"
