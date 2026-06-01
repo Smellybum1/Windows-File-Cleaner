@@ -51,6 +51,7 @@ function Invoke-DailyReadinessStep {
 Write-Host "Daily local readiness check"
 Write-Host "Repository: $repoFullPath"
 Write-Host "Boundary: read-only and print-only; this does not create shortcuts, install anything, launch WPF, click Scan, scan, move, restore, delete, approve cleanup, or create cleanup history."
+Write-Host "Package verification: the accepted package verifier runs once before printing the normal launch command; the fixture print-only command then skips duplicate package verification in this same readiness flow."
 Write-Host "Stop before real-profile movement unless the specific batch or selected Restore Manifest has fresh readiness evidence, exact confirmation, and explicit user approval."
 
 $notesArguments = @("-RequireComplete")
@@ -59,7 +60,7 @@ if (-not [string]::IsNullOrWhiteSpace($AcceptanceNotesPath)) {
 }
 
 $acceptedNormalArguments = @("-PrintOnly")
-$acceptedFixtureArguments = @("-Fixture", "-PrintOnly")
+$acceptedFixtureArguments = @("-Fixture", "-PrintOnly", "-SkipVerify")
 if (-not [string]::IsNullOrWhiteSpace($AcceptanceNotesPath)) {
     $acceptedNormalArguments += @("-AcceptanceNotesPath", $AcceptanceNotesPath)
     $acceptedFixtureArguments += @("-AcceptanceNotesPath", $AcceptanceNotesPath)
@@ -91,7 +92,7 @@ if ($RequireAnyRestoreManifest.IsPresent) {
 
 Invoke-DailyReadinessStep -Title "Accepted package evidence" -CommandPath $releaseNotesSummary -Arguments $notesArguments
 Invoke-DailyReadinessStep -Title "Accepted normal launch command" -CommandPath $acceptedLauncher -Arguments $acceptedNormalArguments
-Invoke-DailyReadinessStep -Title "Accepted fixture launch command" -CommandPath $acceptedLauncher -Arguments $acceptedFixtureArguments
+Invoke-DailyReadinessStep -Title "Accepted fixture launch command (same verified package)" -CommandPath $acceptedLauncher -Arguments $acceptedFixtureArguments
 Invoke-DailyReadinessStep -Title "Restore Manifest summary" -CommandPath $restoreManifestSummary -Arguments $restoreArguments
 
 Write-Host ""

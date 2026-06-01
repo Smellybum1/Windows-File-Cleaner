@@ -8,6 +8,8 @@ param(
 
     [switch]$PrintOnly,
 
+    [switch]$SkipVerify,
+
     [switch]$AllowDirtyPublish,
 
     [switch]$AllowSkippedPreflight
@@ -214,6 +216,9 @@ Write-Host "Acceptance notes: $notesPath"
 Write-Host "Accepted release: $releasePath"
 Write-Host "Boundary: accepted package selection reads ignored notes only; it does not launch WPF until the delegated launcher is allowed to start it."
 Write-Host "Note: the package verifier may warn when the accepted app package commit is behind newer docs-only commits; accepted notes remain the package acceptance source."
+if ($SkipVerify.IsPresent) {
+    Write-Host "Delegated package verification: skipped by request. Use only after package verification already passed in this same local readiness or acceptance flow."
+}
 Write-Host ""
 
 $launcherArguments = @{
@@ -227,6 +232,9 @@ if ($ChecklistOnly.IsPresent) {
 }
 if ($PrintOnly.IsPresent) {
     $launcherArguments["PrintOnly"] = $true
+}
+if ($SkipVerify.IsPresent) {
+    $launcherArguments["SkipVerify"] = $true
 }
 if ($AllowDirtyPublish.IsPresent) {
     $launcherArguments["AllowDirtyPublish"] = $true

@@ -12,13 +12,13 @@ Fresh-thread handoff notes live in `docs/codex/thread-handoff.md`.
 
 ## Daily Local Use
 
-For a read-only daily readiness check that verifies accepted package evidence, prints accepted normal/fixture launch commands, and summarizes Restore Manifests without launching WPF:
+For a read-only daily readiness check that verifies accepted package evidence, verifies the accepted package once, prints accepted normal/fixture launch commands, and summarizes Restore Manifests without launching WPF:
 
 ```powershell
 .\tools\Invoke-DailyLocalReadiness.cmd
 ```
 
-This command is intentionally not a shortcut or installer. It does not create shortcuts, install anything, launch WPF, click `Scan`, scan, move, restore, delete, approve cleanup, or create cleanup history.
+This command is intentionally not a shortcut or installer. It does not create shortcuts, install anything, launch WPF, click `Scan`, scan, move, restore, delete, approve cleanup, or create cleanup history. It runs the accepted package verifier once before printing the normal launch command, then skips duplicate package verification for the fixture print-only command in the same readiness run.
 
 For ordinary local review, start from the latest accepted portable package rather than rebuilding from the current docs-only `HEAD`:
 
