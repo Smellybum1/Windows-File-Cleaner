@@ -10,6 +10,31 @@ The remaining path to a safe live product is tracked in `docs/features/2026-06-0
 
 Fresh-thread handoff notes live in `docs/codex/thread-handoff.md`.
 
+## Daily Local Use
+
+For ordinary local review, start from the latest accepted portable package rather than rebuilding from the current docs-only `HEAD`:
+
+```powershell
+.\tools\Start-AcceptedLocalRelease.cmd -PrintOnly
+.\tools\Start-AcceptedLocalRelease.cmd -Fixture -PrintOnly
+```
+
+Remove `-PrintOnly` only when you intentionally want to launch the accepted package. `-Fixture` only prefills the repo-local smoke fixture Cleanup Scope; it does not create fixture files or click `Scan`. A verifier warning that the accepted package commit differs from newer docs-only commits is expected.
+
+To confirm the accepted package evidence without launching WPF:
+
+```powershell
+.\tools\Summarize-LocalReleaseAcceptanceNotes.cmd -RequireComplete
+```
+
+For read-only recovery evidence after Quarantine or selected restore work, summarize Restore Manifests from the terminal:
+
+```powershell
+.\tools\Summarize-RestoreManifests.cmd
+```
+
+Stop before any real-profile Quarantine or selected restore execution unless the specific batch or selected Restore Manifest has fresh readiness evidence, exact confirmation, and explicit user approval.
+
 ## Safety Status
 
 - Storage Scan does not modify scanned files.
