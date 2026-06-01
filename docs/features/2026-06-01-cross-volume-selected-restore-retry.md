@@ -34,6 +34,7 @@ The same output showed selected readiness and pre-execution revalidation were ot
 - The fallback can copy a directory to the original path and then delete the quarantined directory when source and destination are on different volumes.
 - A selected restore entry in `RestoreFailed` state can be retried when the quarantine path still exists, the original path is absent, and the selected manifest remains otherwise safe; all-manifest readiness still treats the same entry as recovery-review context.
 - Quarantine and Selected Restore panes now show a highlighted key-status strip above the detailed gate text so the main blocker, ready state, or result is visible without reading the full audit output.
+- Follow-up polish after user review: the selected-restore highlighted ready strip now explicitly includes `Can execute: yes`, exact `RESTORE` matched, and real-profile `Can proceed: yes` when revalidation evidence exists.
 
 ## Verification
 

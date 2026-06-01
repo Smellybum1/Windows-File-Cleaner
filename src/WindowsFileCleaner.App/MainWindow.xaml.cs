@@ -2208,6 +2208,7 @@ public partial class MainWindow : Window
 
     private static GateHighlight FormatSelectedRestoreExecutionHighlight(
         SelectedRestoreExecutionGate? gate,
+        SelectedRestorePreExecutionRevalidation? selectedRestorePreExecutionRevalidation,
         UndoQuarantineResult? selectedRestoreResult)
     {
         if (selectedRestoreResult is not null)
@@ -2224,16 +2225,22 @@ public partial class MainWindow : Window
 
         if (gate.CanExecute)
         {
-            return new GateHighlight("Key status: Ready. Exact RESTORE matches and selected restore can execute after reviewing the detailed revalidation lines below.", GateHighlightTone.Ready);
+            var revalidationStatus = selectedRestorePreExecutionRevalidation is null
+                ? ""
+                : $" | Can proceed: {FormatYesNo(selectedRestorePreExecutionRevalidation.CanProceed)}";
+            return new GateHighlight($"Key status: Ready. Can execute: yes{revalidationStatus} | Exact RESTORE matched: yes. Review the detailed readiness lines below before clicking Restore selected manifest.", GateHighlightTone.Ready);
         }
 
         if (gate.HasBlockers)
         {
-            return new GateHighlight($"Key blocker: {gate.Blockers[0]}", GateHighlightTone.Warning);
+            var revalidationStatus = selectedRestorePreExecutionRevalidation is null
+                ? ""
+                : $" | Can proceed: {FormatYesNo(selectedRestorePreExecutionRevalidation.CanProceed)}";
+            return new GateHighlight($"Key blocker: Can execute: no{revalidationStatus} | {gate.Blockers[0]}", GateHighlightTone.Warning);
         }
 
         return gate.IsConfirmationTextMatched
-            ? new GateHighlight("Key status: exact RESTORE matches, but selected restore is still unavailable for this manifest.", GateHighlightTone.Warning)
+            ? new GateHighlight("Key status: Can execute: no | Exact RESTORE matched: yes, but selected restore is still unavailable for this manifest.", GateHighlightTone.Warning)
             : new GateHighlight("Key next step: type exact RESTORE only after selected manifest readiness and revalidation are clean.", GateHighlightTone.Neutral);
     }
 
@@ -4041,14 +4048,15 @@ public partial class MainWindow : Window
         AutomationProperties.SetHelpText(SelectedRestoreExecutionGateText, helpText);
         SelectedRestoreExecutionGateHelpCue.ToolTip = helpText;
         AutomationProperties.SetHelpText(SelectedRestoreExecutionGateHelpCue, helpText);
-        UpdateSelectedRestoreExecutionHighlight(gate, selectedRestoreResult);
+        UpdateSelectedRestoreExecutionHighlight(gate, _currentSelectedRestorePreExecutionRevalidation, selectedRestoreResult);
     }
 
     private void UpdateSelectedRestoreExecutionHighlight(
         SelectedRestoreExecutionGate? gate,
+        SelectedRestorePreExecutionRevalidation? selectedRestorePreExecutionRevalidation,
         UndoQuarantineResult? selectedRestoreResult)
     {
-        var highlight = FormatSelectedRestoreExecutionHighlight(gate, selectedRestoreResult);
+        var highlight = FormatSelectedRestoreExecutionHighlight(gate, selectedRestorePreExecutionRevalidation, selectedRestoreResult);
         ApplyGateHighlight(
             SelectedRestoreExecutionHighlightBorder,
             SelectedRestoreExecutionHighlightText,

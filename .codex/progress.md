@@ -45,6 +45,7 @@ Implementation:
 - `UndoQuarantineExecutor` now routes directory restore through the guarded `QuarantineDirectoryMove` copy-then-delete fallback.
 - Restore Manifest entries already marked `RestoreFailed` are narrowly retryable through selected restore when the quarantine path still exists and the original path is absent.
 - WPF Quarantine and Selected Restore panes now show highlighted key-status strips above dense gate text, summarizing ready, blocker, result, and next-action states.
+- User visual review confirmed the selected-restore ready strip was easier to see, but asked for the exact `Can execute: yes` / `Can proceed: yes` evidence to be highlighted too; the follow-up polish added those exact labels to the selected-restore highlight.
 
 Verification:
 

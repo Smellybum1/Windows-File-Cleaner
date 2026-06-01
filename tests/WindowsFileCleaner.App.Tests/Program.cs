@@ -2499,6 +2499,7 @@ internal sealed class MainWindowSmokeTests
                 "Exact RESTORE should open selected fixture restore execution. Text: " + matchedSelectedGateText);
             Assert(
                 discoveryWindow.SelectedRestoreExecutionHighlightTextValue.Contains("Key status: Ready", StringComparison.OrdinalIgnoreCase)
+                && discoveryWindow.SelectedRestoreExecutionHighlightTextValue.Contains("Can execute: yes", StringComparison.OrdinalIgnoreCase)
                 && discoveryWindow.SelectedRestoreExecutionHighlightTextValue.Contains("Exact RESTORE", StringComparison.OrdinalIgnoreCase),
                 "Selected restore highlight should show the ready state when the gate opens.");
             Assert(
@@ -3052,6 +3053,11 @@ internal sealed class MainWindowSmokeTests
                 && window.SelectedRestoreExecutionGateTextValue.Contains("Exact RESTORE matched: yes", StringComparison.OrdinalIgnoreCase)
                 && window.SelectedRestoreExecutionGateTextValue.Contains("real-profile selected restore reruns it immediately before movement", StringComparison.OrdinalIgnoreCase),
                 "Exact real-profile selected restore gate should show passing selected restore pre-execution revalidation evidence. Text: " + window.SelectedRestoreExecutionGateTextValue);
+            Assert(
+                window.SelectedRestoreExecutionHighlightTextValue.Contains("Can execute: yes", StringComparison.OrdinalIgnoreCase)
+                && window.SelectedRestoreExecutionHighlightTextValue.Contains("Can proceed: yes", StringComparison.OrdinalIgnoreCase)
+                && window.SelectedRestoreExecutionHighlightTextValue.Contains("Exact RESTORE matched: yes", StringComparison.OrdinalIgnoreCase),
+                "Exact real-profile selected restore highlight should show the main go/no-go evidence without requiring the dense gate text.");
             AssertSelectedRestoreExecutionGateHelpCue(
                 window,
                 "Exact real-profile selected restore gate cue should open after exact RESTORE.",

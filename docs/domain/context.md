@@ -3519,7 +3519,7 @@ In the current WPF app, selected restore execution availability can be true only
 - Showing `Can execute: no` for custom non-fixture or non-exact real-profile selected Restore Manifests.
 - Showing an approval boundary that says selected manifest readiness is not restore approval.
 - Showing a visible hoverable `?` cue beside the WPF gate readout that mirrors the current waiting, closed, open, or restored gate state.
-- Showing a highlighted key-status strip above the dense WPF gate readout so the current blocker, ready state, or result is visible before the audit text.
+- Showing a highlighted key-status strip above the dense WPF gate readout so the current blocker, ready state, or result is visible before the audit text; when the selected restore gate is ready, the strip should explicitly name `Can execute: yes`, exact `RESTORE` matched, and real-profile `Can proceed: yes` evidence when revalidation exists.
 - Reporting confirmation-readiness blockers before any future restore action can open.
 
 #### Non-examples
