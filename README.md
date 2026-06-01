@@ -6,6 +6,8 @@ The current MVP centers on a read-only Storage Scan. It can also execute and und
 
 Current readiness evidence is tracked in `docs/features/2026-05-28-mvp-readiness-audit.md`.
 
+The remaining path to a safe live product is tracked in `docs/features/2026-06-01-live-product-readiness-roadmap.md`.
+
 Fresh-thread handoff notes live in `docs/codex/thread-handoff.md`.
 
 ## Safety Status
