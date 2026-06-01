@@ -3815,6 +3815,7 @@ Implementation implications:
 - The first version should verify scanner behavior against fixture directories before scanning the real Cleanup Scope.
 - The WPF app may be launched with `--scope` to prefill a synthetic Cleanup Scope for manual smoke testing; startup must not auto-scan.
 - The WPF app should show a Cleanup Scope Safety Note so fixture and real-profile scopes are visibly distinct.
+- Fixture acceptance notes may be written, summarized, or recorded under ignored `.local` after human fixture review, but those notes are local evidence only. The recorder must not launch WPF, create fixtures, scan, move, restore, delete, approve cleanup, create cleanup history, or replace the human visible pass.
 - Storage Scan must not modify files.
 - WPF scan cancellation tooltip and automation help text should state that cancellation only requests stopping the in-progress read-only Storage Scan and does not move, delete, quarantine, restore, or approve cleanup.
 

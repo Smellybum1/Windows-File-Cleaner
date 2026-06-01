@@ -288,7 +288,7 @@ To also write a local, ignored markdown notes template for the manual pass:
 .\tools\Start-MvpFixtureReview.cmd -ChecklistOnly -WriteAcceptanceNotes
 ```
 
-The template is written under `.local\fixture-review-acceptance`, stamps the repo path, Git branch/commit, worktree status at notes creation, .NET SDK, WPF app project/target framework/WPF flag, required preflight command, local evidence checkboxes, and exact post-pass summary commands, then gives each grouped checklist item pass/issue/not-checked slots. Use `.\tools\Start-MvpFixtureReview.cmd -SkipPreflight -WriteAcceptanceNotes` after a successful preflight when you want the same notes template created before the visible fixture app launches. When notes are written, the launcher also prints exact follow-up summary commands for that notes file, including the `-RequireComplete` completion check.
+The template is written under `.local\fixture-review-acceptance`, stamps the repo path, Git branch/commit, worktree status at notes creation, .NET SDK, WPF app project/target framework/WPF flag, required preflight command, local evidence checkboxes, and exact post-pass recorder and summary commands, then gives each grouped checklist item pass/issue/not-checked slots. Use `.\tools\Start-MvpFixtureReview.cmd -SkipPreflight -WriteAcceptanceNotes` after a successful preflight when you want the same notes template created before the visible fixture app launches. When notes are written, the launcher also prints exact follow-up recorder, summary, and `-RequireComplete` completion-check commands for that notes file.
 
 After a fixture pass, summarize the latest ignored notes or a specific notes file:
 
@@ -299,6 +299,22 @@ After a fixture pass, summarize the latest ignored notes or a specific notes fil
 ```
 
 The summary helper reads local notes only, reports the stamped worktree status at notes creation, acceptance-evidence checkbox states, the overall result, checklist totals, and issue/not-checked/not-recorded items with compact notes or prompt previews, and does not launch WPF, scan, move, restore, delete, or create cleanup history. `-RequireComplete` exits non-zero until the local notes have recorded preflight/worktree evidence, an overall pass result, and no not-checked or not-recorded checklist items.
+
+After you have actually completed an all-pass visible fixture acceptance pass, you can record the manual evidence in the latest ignored notes without hand-editing markdown:
+
+```powershell
+.\tools\Record-FixtureAcceptanceNotes.cmd -RecordManualAcceptance
+.\tools\Summarize-FixtureAcceptanceNotes.cmd -RequireComplete
+```
+
+Or use an explicit notes file:
+
+```powershell
+.\tools\Record-FixtureAcceptanceNotes.cmd -Path ".local\fixture-review-acceptance\fixture-acceptance-YYYYMMDD-HHMMSS.md" -RecordManualAcceptance
+.\tools\Summarize-FixtureAcceptanceNotes.cmd -Path ".local\fixture-review-acceptance\fixture-acceptance-YYYYMMDD-HHMMSS.md" -RequireComplete
+```
+
+`Record-FixtureAcceptanceNotes` updates ignored `.local` notes only. Use it only after the visible fixture pass, read-only fixture Scan, fixture Quarantine/undo review, Restore Manifest review, selected restore review, and real-profile/custom blocker checks have actually been manually confirmed; it does not launch WPF, create fixtures, scan, move, restore, delete, approve cleanup, or create cleanup history.
 
 For focused troubleshooting, the individual fixture commands are:
 

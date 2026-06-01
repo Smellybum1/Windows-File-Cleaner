@@ -197,6 +197,7 @@ What changed:
 - Later packet `Fixture Acceptance Notes Worktree Stamp` added the worktree status at notes creation to the ignored notes header so a visible fixture pass records whether it started from a clean or intentionally dirty repository state.
 - Later packet `Fixture Acceptance Clean Worktree Notes Preview` generated `.local\fixture-review-acceptance\fixture-acceptance-20260601-122940.md` from clean `main` at `f181627` and confirmed the header stamped `Worktree status at notes creation: clean`.
 - Later packet `Fixture Acceptance Current Baseline Notes Preview` generated `.local\fixture-review-acceptance\fixture-acceptance-20260601-131233.md` from clean `main` at `dd86566` after the latest full preflight evidence and confirmed the header stamped `Worktree status at notes creation: clean`.
+- Later packet `Fixture Acceptance Notes Recorder` added `.\tools\Record-FixtureAcceptanceNotes.cmd -RecordManualAcceptance` to mark all-pass ignored notes complete after a human fixture pass without launching WPF, scanning, moving, restoring, deleting, approving cleanup, or creating cleanup history.
 - Updated docs and handoff/progress notes.
 
 Files changed:
@@ -238,6 +239,7 @@ ADRs added or skipped:
 Follow-up work:
 
 - Run the visible fixture pass with `.\tools\Start-MvpFixtureReview.cmd -SkipPreflight -WriteAcceptanceNotes` after a successful preflight when the user is ready.
+- After an all-pass visible fixture pass, optionally run the printed `.\tools\Record-FixtureAcceptanceNotes.cmd -Path ... -RecordManualAcceptance` command to complete the ignored notes without hand-editing markdown.
 - Run the printed `.\tools\Summarize-FixtureAcceptanceNotes.cmd -Path ...` command after the pass to review open checklist items for that notes file.
 - Use the printed `.\tools\Summarize-FixtureAcceptanceNotes.cmd -Path ... -RequireComplete` command when you want a non-zero exit for incomplete local notes before copying results into progress docs.
 - Copy relevant manual results from `.local` notes into `.codex/progress.md` after the pass.

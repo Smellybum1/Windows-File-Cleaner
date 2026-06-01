@@ -86,10 +86,12 @@ function Write-FixtureAcceptanceNotesNextSteps {
         [string]$NotesPath
     )
 
-    Write-Host "After the visible pass, fill the notes file, then run:"
+    Write-Host "After the visible pass, either fill the notes file or record an all-pass manual acceptance with:"
+    Write-Host ".\tools\Record-FixtureAcceptanceNotes.cmd -Path `"$NotesPath`" -RecordManualAcceptance"
+    Write-Host "Then review with:"
     Write-Host ".\tools\Summarize-FixtureAcceptanceNotes.cmd -Path `"$NotesPath`""
     Write-Host ".\tools\Summarize-FixtureAcceptanceNotes.cmd -Path `"$NotesPath`" -RequireComplete"
-    Write-Host "These summary commands read ignored notes only; they do not launch WPF, scan, move, restore, delete, or create cleanup history."
+    Write-Host "These notes commands read or update ignored notes only; they do not launch WPF, create fixtures, scan, move, restore, delete, or create cleanup history."
 }
 
 function Write-FixtureReviewVisiblePassNextStep {
@@ -103,7 +105,7 @@ function Write-FixtureReviewVisiblePassNextStep {
     Write-Host ".\tools\Start-MvpFixtureReview.cmd -SkipPreflight -WriteAcceptanceNotes"
     Write-Host "This creates the synthetic fixture, writes ignored acceptance notes, and launches WPF with this Cleanup Scope:"
     Write-Host $FixturePath
-    Write-Host "When that command writes notes, use the printed Summarize-FixtureAcceptanceNotes commands after the visible pass to review open items and require completion."
+    Write-Host "When that command writes notes, use the printed Record-FixtureAcceptanceNotes command after an all-pass visible fixture pass or the printed Summarize-FixtureAcceptanceNotes commands to review open items and require completion."
     Write-Host "This checklist-only run did not run preflight, create fixture files, launch WPF, scan, move, restore, delete, or create cleanup history."
 }
 
@@ -260,14 +262,15 @@ function New-FixtureAcceptanceNotes {
     $lines.Add("")
     $lines.Add("Post-pass summary commands:")
     $lines.Add("")
-    $lines.Add("After filling this file, run these commands from the repository root:")
+    $lines.Add("After the visible pass, either fill this file manually or record an all-pass manual acceptance from the repository root:")
     $lines.Add("")
     $lines.Add('```powershell')
+    $lines.Add(('.\tools\Record-FixtureAcceptanceNotes.cmd -Path "{0}" -RecordManualAcceptance' -f $notesPath))
     $lines.Add(('.\tools\Summarize-FixtureAcceptanceNotes.cmd -Path "{0}"' -f $notesPath))
     $lines.Add(('.\tools\Summarize-FixtureAcceptanceNotes.cmd -Path "{0}" -RequireComplete' -f $notesPath))
     $lines.Add('```')
     $lines.Add("")
-    $lines.Add("These commands read this ignored notes file only. They do not launch WPF, scan, move, restore, delete, or create cleanup history.")
+    $lines.Add("These commands read or update this ignored notes file only. They do not launch WPF, create fixtures, scan, move, restore, delete, or create cleanup history.")
     $lines.Add("")
     $lines.Add("Overall result:")
     $lines.Add("")

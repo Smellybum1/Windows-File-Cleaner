@@ -109,6 +109,7 @@ What changed:
 - Later packet `Fixture Acceptance Notes Worktree Stamp` made generated notes record worktree status at notes creation and made this summary helper print that status. Older notes that lack the line show `unknown`.
 - Later packet `Fixture Acceptance Clean Worktree Notes Preview` summarized `.local\fixture-review-acceptance\fixture-acceptance-20260601-122940.md` and printed `Worktree at notes creation: clean`; `-RequireComplete` returned non-zero as expected for the unfilled template.
 - Later packet `Fixture Acceptance Current Baseline Notes Preview` summarized `.local\fixture-review-acceptance\fixture-acceptance-20260601-131233.md` from commit `dd86566` and printed `Worktree at notes creation: clean`; `-RequireComplete` returned non-zero as expected for the unfilled template.
+- Later packet `Fixture Acceptance Notes Recorder` added `.\tools\Record-FixtureAcceptanceNotes.cmd -RecordManualAcceptance` to update ignored notes after an all-pass human fixture review; this summary helper remains the read-only evidence check and `-RequireComplete` verifier.
 
 Files changed:
 
@@ -146,7 +147,7 @@ ADRs added or skipped:
 Follow-up work:
 
 - Run the visible fixture pass with `.\tools\Start-MvpFixtureReview.cmd -SkipPreflight -WriteAcceptanceNotes` when the user is ready.
-- After the pass, run the printed `.\tools\Summarize-FixtureAcceptanceNotes.cmd -Path ...` command, use the printed `-RequireComplete` command after filling notes, and copy relevant manual results into `.codex\progress.md`.
+- After the pass, fill notes manually or run the printed `.\tools\Record-FixtureAcceptanceNotes.cmd -Path ... -RecordManualAcceptance` command for an all-pass review, then use the printed summary and `-RequireComplete` commands before copying relevant manual results into `.codex\progress.md`.
 
 Open questions:
 
