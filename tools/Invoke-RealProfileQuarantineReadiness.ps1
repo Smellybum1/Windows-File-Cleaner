@@ -12,6 +12,8 @@ param(
 
     [switch]$SkipMvpPreflight,
 
+    [switch]$RequireNextBatchEvidence,
+
     [switch]$IncludeFixtureAcceptanceNotes,
 
     [switch]$RequireFixtureAcceptanceComplete,
@@ -40,10 +42,16 @@ $mvpPreflight = Join-Path $PSScriptRoot "Invoke-MvpPreflight.cmd"
 $dailyReadiness = Join-Path $PSScriptRoot "Invoke-DailyLocalReadiness.cmd"
 $restoreManifestSummary = Join-Path $PSScriptRoot "Summarize-RestoreManifests.cmd"
 $defaultRealProfileCleanupScope = "C:\Users\moxhe"
+$defaultRealProfileCleanupScopeFullPath = [System.IO.Path]::GetFullPath($defaultRealProfileCleanupScope).TrimEnd([System.IO.Path]::DirectorySeparatorChar)
 $cleanupScopeWasProvided = $PSBoundParameters.ContainsKey("CleanupScope")
 
 if ($AllCleanupScopes.IsPresent -and $cleanupScopeWasProvided) {
     Write-Host "Choose either -CleanupScope or -AllCleanupScopes, not both."
+    exit 1
+}
+
+if ($RequireNextBatchEvidence.IsPresent -and $AllCleanupScopes.IsPresent) {
+    Write-Host "-RequireNextBatchEvidence is only for the exact real-profile Cleanup Scope $defaultRealProfileCleanupScope. Do not combine it with -AllCleanupScopes."
     exit 1
 }
 
@@ -67,7 +75,16 @@ if (-not $AllCleanupScopes.IsPresent) {
     }
 
     $effectiveCleanupScope = [System.IO.Path]::GetFullPath($effectiveCleanupScope).TrimEnd([System.IO.Path]::DirectorySeparatorChar)
+
+    if ($RequireNextBatchEvidence.IsPresent -and -not ([StringComparer]::OrdinalIgnoreCase.Equals($effectiveCleanupScope, $defaultRealProfileCleanupScopeFullPath))) {
+        Write-Host "-RequireNextBatchEvidence is only for the exact real-profile Cleanup Scope $defaultRealProfileCleanupScope. Remove the preset or use -CleanupScope `"$defaultRealProfileCleanupScope`"."
+        exit 1
+    }
 }
+
+$shouldIncludeFixtureAcceptanceNotes = $IncludeFixtureAcceptanceNotes.IsPresent -or $RequireNextBatchEvidence.IsPresent
+$shouldRequireAnyDisplayedRestoreManifest = $RequireAnyDisplayedRestoreManifest.IsPresent -or $RequireNextBatchEvidence.IsPresent
+$shouldRequireNoDisplayedUndoWork = $RequireNoDisplayedUndoWork.IsPresent -or $RequireNextBatchEvidence.IsPresent
 
 function Invoke-RealProfileReadinessStep {
     param(
@@ -127,7 +144,7 @@ function New-RestoreManifestArguments {
     if ($RequireNoDisplayedRecoveryReview.IsPresent) {
         $arguments += "-RequireNoDisplayedRecoveryReview"
     }
-    if ($RequireNoDisplayedUndoWork.IsPresent) {
+    if ($shouldRequireNoDisplayedUndoWork) {
         $arguments += "-RequireNoDisplayedUndoWork"
     }
 
@@ -140,6 +157,9 @@ Write-Host "Boundary: terminal evidence only; this does not launch WPF, click Sc
 Write-Host "Purpose: gather preflight, accepted-package, and Restore Manifest evidence before a future user-clicked exact C:\Users\moxhe Quarantine batch."
 Write-Host "Stop boundary: Codex must not click real-profile movement. The user must explicitly approve a specific tiny batch after reviewing WPF readiness, exact QUARANTINE, approval evidence, and immediate revalidation."
 Write-Host "Fixture acceptance notes: optional daily-readiness evidence only; require completion only when formal fixture notes should be a strict gate."
+if ($RequireNextBatchEvidence.IsPresent) {
+    Write-Host "Next-batch evidence preset: exact C:\Users\moxhe display focus, Fixture Acceptance Notes status, required displayed Restore Manifest evidence, and zero displayed undo-work manifests."
+}
 if ($null -ne $effectiveCleanupScope) {
     Write-Host "Restore Manifest display focus: $effectiveCleanupScope"
 }
@@ -162,7 +182,7 @@ if (-not [string]::IsNullOrWhiteSpace($AcceptanceNotesPath)) {
 if (-not [string]::IsNullOrWhiteSpace($FixtureAcceptanceNotesPath)) {
     $dailyArguments += @("-FixtureAcceptanceNotesPath", $FixtureAcceptanceNotesPath)
 }
-if ($IncludeFixtureAcceptanceNotes.IsPresent) {
+if ($shouldIncludeFixtureAcceptanceNotes) {
     $dailyArguments += "-IncludeFixtureAcceptanceNotes"
 }
 if ($RequireFixtureAcceptanceComplete.IsPresent) {
@@ -186,13 +206,13 @@ if ($RequireNoRecoveryReview.IsPresent) {
 if ($RequireNoUndoWork.IsPresent) {
     $dailyArguments += "-RequireNoUndoWork"
 }
-if ($RequireAnyDisplayedRestoreManifest.IsPresent) {
+if ($shouldRequireAnyDisplayedRestoreManifest) {
     $dailyArguments += "-RequireAnyDisplayedRestoreManifest"
 }
 if ($RequireNoDisplayedRecoveryReview.IsPresent) {
     $dailyArguments += "-RequireNoDisplayedRecoveryReview"
 }
-if ($RequireNoDisplayedUndoWork.IsPresent) {
+if ($shouldRequireNoDisplayedUndoWork) {
     $dailyArguments += "-RequireNoDisplayedUndoWork"
 }
 
