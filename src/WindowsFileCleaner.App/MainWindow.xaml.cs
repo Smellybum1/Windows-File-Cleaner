@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Automation;
 using System.Windows.Controls;
+using System.Windows.Media;
 using System.Windows.Threading;
 using Microsoft.Win32;
 using WindowsFileCleaner.Core;
@@ -56,6 +57,17 @@ public partial class MainWindow : Window
     private bool _isUpdatingSelectedRestoreConfirmationBox;
     private bool _isWindowInitialized;
     private bool _isShowingQuarantinedRows;
+
+    private enum GateHighlightTone
+    {
+        Neutral,
+        Ready,
+        Success,
+        Warning,
+        Error
+    }
+
+    private readonly record struct GateHighlight(string Text, GateHighlightTone Tone);
 
     public MainWindow()
         : this(StorageScanOptions.DefaultForCurrentUser().CleanupScopePath)
@@ -496,6 +508,10 @@ public partial class MainWindow : Window
 
     public string QuarantineExecutionGateAutomationHelpTextValue => AutomationProperties.GetHelpText(QuarantineExecutionGateText);
 
+    public string QuarantineExecutionHighlightTextValue => QuarantineExecutionHighlightText.Text;
+
+    public string QuarantineExecutionHighlightBackgroundValue => QuarantineExecutionHighlightBorder.Background.ToString();
+
     public string QuarantineExecutionGateHelpCueToolTipValue => QuarantineExecutionGateHelpCue.ToolTip?.ToString() ?? "";
 
     public string QuarantineExecutionGateHelpCueAutomationNameValue => AutomationProperties.GetName(QuarantineExecutionGateHelpCue);
@@ -527,6 +543,10 @@ public partial class MainWindow : Window
     public string SelectedRestoreExecutionGateToolTipValue => SelectedRestoreExecutionGateText.ToolTip?.ToString() ?? "";
 
     public string SelectedRestoreExecutionGateAutomationHelpTextValue => AutomationProperties.GetHelpText(SelectedRestoreExecutionGateText);
+
+    public string SelectedRestoreExecutionHighlightTextValue => SelectedRestoreExecutionHighlightText.Text;
+
+    public string SelectedRestoreExecutionHighlightBackgroundValue => SelectedRestoreExecutionHighlightBorder.Background.ToString();
 
     public string SelectedRestoreExecutionGateHelpCueToolTipValue => SelectedRestoreExecutionGateHelpCue.ToolTip?.ToString() ?? "";
 
@@ -2085,8 +2105,28 @@ public partial class MainWindow : Window
         AutomationProperties.SetHelpText(QuarantineExecutionGateText, gateHelpText);
         QuarantineExecutionGateHelpCue.ToolTip = gateHelpText;
         AutomationProperties.SetHelpText(QuarantineExecutionGateHelpCue, gateHelpText);
+        UpdateQuarantineExecutionHighlight(
+            _currentQuarantineExecutionGate,
+            executionReadiness,
+            _currentQuarantineExecutionResult,
+            _currentUndoQuarantineResult);
         UpdateQuarantineReadinessSummary(_currentQuarantineExecutionGate, executionReadiness, hasExecutedCurrentPreview);
         UpdateQuarantineShortlistHeader();
+    }
+
+    private void UpdateQuarantineExecutionHighlight(
+        QuarantineExecutionGate? gate,
+        QuarantineExecutionReadiness? executionReadiness,
+        QuarantineExecutionResult? executionResult,
+        UndoQuarantineResult? undoResult)
+    {
+        var highlight = FormatQuarantineExecutionHighlight(gate, executionReadiness, executionResult, undoResult);
+        ApplyGateHighlight(
+            QuarantineExecutionHighlightBorder,
+            QuarantineExecutionHighlightText,
+            highlight.Text,
+            highlight.Tone,
+            "Highlighted Quarantine status. This summarizes the most important readiness, blocker, or result line; the detailed gate text remains the audit trail and does not approve cleanup.");
     }
 
     private void UpdateQuarantineReadinessSummary(
@@ -2119,6 +2159,135 @@ public partial class MainWindow : Window
         var helpText = $"{text} Summary state: {FormatQuarantineReadinessSummaryState(style)}. Readiness summary is read-only review context; it does not create folders, move files, restore files, delete files, write manifests, or approve cleanup.";
         QuarantineReadinessSummaryText.ToolTip = helpText;
         AutomationProperties.SetHelpText(QuarantineReadinessSummaryText, helpText);
+    }
+
+    private static GateHighlight FormatQuarantineExecutionHighlight(
+        QuarantineExecutionGate? gate,
+        QuarantineExecutionReadiness? executionReadiness,
+        QuarantineExecutionResult? executionResult,
+        UndoQuarantineResult? undoResult)
+    {
+        if (undoResult is not null)
+        {
+            return undoResult.Succeeded
+                ? new GateHighlight($"Key status: Undo restored {undoResult.RestoredCount:N0} row(s). Rescan before further review.", GateHighlightTone.Success)
+                : new GateHighlight($"Key status: Undo needs recovery review. Restored {undoResult.RestoredCount:N0}, failed {undoResult.FailedCount:N0}. {FirstUndoIssue(undoResult)}", GateHighlightTone.Error);
+        }
+
+        if (executionResult is not null)
+        {
+            return executionResult.Succeeded
+                ? new GateHighlight($"Key status: Quarantine succeeded. Moved {executionResult.MovedCount:N0}, failed {executionResult.FailedCount:N0}. Rescan before further review.", GateHighlightTone.Success)
+                : new GateHighlight($"Key status: Quarantine needs recovery review. Moved {executionResult.MovedCount:N0}, failed {executionResult.FailedCount:N0}. {FirstQuarantineIssue(executionResult)}", GateHighlightTone.Error);
+        }
+
+        if (gate is null)
+        {
+            return new GateHighlight("Key status: preview the shortlist to see Quarantine readiness.", GateHighlightTone.Neutral);
+        }
+
+        if (gate.CanExecute)
+        {
+            return new GateHighlight("Key status: Ready. Exact QUARANTINE matches and the current gate can execute after reviewing the detailed readiness lines below.", GateHighlightTone.Ready);
+        }
+
+        if (gate.HasBlockers)
+        {
+            return new GateHighlight($"Key blocker: {gate.Blockers[0]}", GateHighlightTone.Warning);
+        }
+
+        if (executionReadiness?.HasBlockers == true)
+        {
+            return new GateHighlight($"Key readiness blocker: {executionReadiness.Blockers[0]}", GateHighlightTone.Warning);
+        }
+
+        return gate.IsConfirmationTextMatched
+            ? new GateHighlight("Key status: confirmation matches, but execution is still unavailable. Review the scope/readiness lines below.", GateHighlightTone.Warning)
+            : new GateHighlight("Key next step: type exact QUARANTINE only after the preview/readiness details match the reviewed shortlist.", GateHighlightTone.Neutral);
+    }
+
+    private static GateHighlight FormatSelectedRestoreExecutionHighlight(
+        SelectedRestoreExecutionGate? gate,
+        UndoQuarantineResult? selectedRestoreResult)
+    {
+        if (selectedRestoreResult is not null)
+        {
+            return selectedRestoreResult.Succeeded
+                ? new GateHighlight($"Key status: selected restore succeeded. Restored {selectedRestoreResult.RestoredCount:N0}, failed {selectedRestoreResult.FailedCount:N0}. Rediscover manifests and rescan.", GateHighlightTone.Success)
+                : new GateHighlight($"Key status: selected restore needs recovery review. Restored {selectedRestoreResult.RestoredCount:N0}, failed {selectedRestoreResult.FailedCount:N0}. {FirstUndoIssue(selectedRestoreResult)}", GateHighlightTone.Error);
+        }
+
+        if (gate is null)
+        {
+            return new GateHighlight("Key status: select a Restore Manifest and preview selected readiness.", GateHighlightTone.Neutral);
+        }
+
+        if (gate.CanExecute)
+        {
+            return new GateHighlight("Key status: Ready. Exact RESTORE matches and selected restore can execute after reviewing the detailed revalidation lines below.", GateHighlightTone.Ready);
+        }
+
+        if (gate.HasBlockers)
+        {
+            return new GateHighlight($"Key blocker: {gate.Blockers[0]}", GateHighlightTone.Warning);
+        }
+
+        return gate.IsConfirmationTextMatched
+            ? new GateHighlight("Key status: exact RESTORE matches, but selected restore is still unavailable for this manifest.", GateHighlightTone.Warning)
+            : new GateHighlight("Key next step: type exact RESTORE only after selected manifest readiness and revalidation are clean.", GateHighlightTone.Neutral);
+    }
+
+    private static string FirstQuarantineIssue(QuarantineExecutionResult result)
+    {
+        if (result.Blockers.Count > 0)
+        {
+            return $"First blocker: {result.Blockers[0]}";
+        }
+
+        var failedEntry = result.Entries.FirstOrDefault(entry => !entry.WasMoved);
+        return failedEntry is null || string.IsNullOrWhiteSpace(failedEntry.ErrorMessage)
+            ? "Review the failed row details below."
+            : $"First error: {failedEntry.ErrorMessage}";
+    }
+
+    private static string FirstUndoIssue(UndoQuarantineResult result)
+    {
+        if (result.Blockers.Count > 0)
+        {
+            return $"First blocker: {result.Blockers[0]}";
+        }
+
+        var failedEntry = result.Entries.FirstOrDefault(entry => !entry.WasRestored);
+        return failedEntry is null || string.IsNullOrWhiteSpace(failedEntry.ErrorMessage)
+            ? "Review the failed row details below."
+            : $"First error: {failedEntry.ErrorMessage}";
+    }
+
+    private static void ApplyGateHighlight(
+        Border border,
+        TextBlock textBlock,
+        string text,
+        GateHighlightTone tone,
+        string helpText)
+    {
+        textBlock.Text = text;
+        textBlock.ToolTip = helpText;
+        AutomationProperties.SetHelpText(textBlock, helpText);
+        border.ToolTip = helpText;
+        AutomationProperties.SetHelpText(border, helpText);
+
+        var colors = tone switch
+        {
+            GateHighlightTone.Ready => (Background: Color.FromRgb(230, 246, 235), Border: Color.FromRgb(132, 189, 154), Foreground: Color.FromRgb(19, 107, 48)),
+            GateHighlightTone.Success => (Background: Color.FromRgb(230, 246, 235), Border: Color.FromRgb(132, 189, 154), Foreground: Color.FromRgb(19, 107, 48)),
+            GateHighlightTone.Warning => (Background: Color.FromRgb(255, 248, 224), Border: Color.FromRgb(226, 194, 108), Foreground: Color.FromRgb(122, 84, 0)),
+            GateHighlightTone.Error => (Background: Color.FromRgb(255, 236, 236), Border: Color.FromRgb(219, 143, 143), Foreground: Color.FromRgb(142, 38, 38)),
+            _ => (Background: Color.FromRgb(244, 247, 250), Border: Color.FromRgb(212, 222, 232), Foreground: Color.FromRgb(52, 66, 85))
+        };
+
+        border.Background = new SolidColorBrush(colors.Background);
+        border.BorderBrush = new SolidColorBrush(colors.Border);
+        textBlock.Foreground = new SolidColorBrush(colors.Foreground);
     }
 
     private static (string Text, QuarantineReadinessSummaryStyle Style) FormatQuarantineReadinessSummary(
@@ -3872,6 +4041,20 @@ public partial class MainWindow : Window
         AutomationProperties.SetHelpText(SelectedRestoreExecutionGateText, helpText);
         SelectedRestoreExecutionGateHelpCue.ToolTip = helpText;
         AutomationProperties.SetHelpText(SelectedRestoreExecutionGateHelpCue, helpText);
+        UpdateSelectedRestoreExecutionHighlight(gate, selectedRestoreResult);
+    }
+
+    private void UpdateSelectedRestoreExecutionHighlight(
+        SelectedRestoreExecutionGate? gate,
+        UndoQuarantineResult? selectedRestoreResult)
+    {
+        var highlight = FormatSelectedRestoreExecutionHighlight(gate, selectedRestoreResult);
+        ApplyGateHighlight(
+            SelectedRestoreExecutionHighlightBorder,
+            SelectedRestoreExecutionHighlightText,
+            highlight.Text,
+            highlight.Tone,
+            "Highlighted selected restore status. This summarizes the most important gate, blocker, result, or next action; the detailed gate text remains the audit trail and does not approve restore.");
     }
 
     private void SetRestoreManifestSelectionOptions(IReadOnlyList<RestoreManifestSummary> manifests)
@@ -4152,7 +4335,10 @@ public partial class MainWindow : Window
             }
         }
 
-        _currentSelectedRestoreResult = UndoQuarantineExecutor.Undo(manifest);
+        _currentSelectedRestoreResult = UndoQuarantineExecutor.Undo(
+            manifest,
+            RestoreManifestFileStore.Write,
+            allowRestoreFailedRetry: true);
         _currentSelectedRestoreExecutionGate = _currentSelectedRestoreExecutionGate with
         {
             Blockers = _currentSelectedRestoreExecutionGate.Blockers

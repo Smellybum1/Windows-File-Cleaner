@@ -86,6 +86,7 @@ The first parallel app-test attempt failed because both test projects tried to r
 ## Follow-up Work
 
 - The user completed the sacrificial selected real-profile restore trust test on 2026-06-01 and reported steps 1-9 all succeeded.
+- The user later tried selected restore for the first live Quarantine manifest and hit a cross-volume directory restore failure; the follow-up packet `2026-06-01-cross-volume-selected-restore-retry.md` fixed directory restore and retryability for this selected-manifest recovery case.
 - Run a full `.cmd` MVP preflight before any manual real-profile restore attempt.
 - Have the user manually inspect the exact selected Restore Manifest and click restore only when they explicitly choose to test real-profile selected restore.
 - Keep real-profile Quarantine execution deferred until a separate ADR 0017/0018 first-movement Grill with Docs packet and explicit user approval for the specific batch.

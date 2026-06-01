@@ -6,7 +6,7 @@ public static class RestoreReadinessPreviewBuilder
     {
         var discovery = QuarantineManifestDiscoveryBuilder.Discover(quarantineRootPath);
         var manifestPreviews = discovery.RestoreManifests
-            .Select(BuildManifestPreview)
+            .Select(manifest => BuildManifestPreview(manifest))
             .OrderByDescending(preview => preview.UpdatedAtUtc)
             .ThenBy(preview => preview.ActionId, StringComparer.OrdinalIgnoreCase)
             .ToArray();
@@ -18,12 +18,16 @@ public static class RestoreReadinessPreviewBuilder
             discovery.Issues);
     }
 
-    public static RestoreReadinessManifestPreview BuildManifestPreview(RestoreManifest manifest)
+    public static RestoreReadinessManifestPreview BuildManifestPreview(
+        RestoreManifest manifest,
+        bool allowRestoreFailedRetry = false)
     {
         var manifestBlockers = BuildManifestBlockers(manifest);
         var entries = manifest.Entries
-            .Select(entry => BuildEntryPreview(entry, manifestBlockers.Count > 0))
+            .Select(entry => BuildEntryPreview(entry, manifestBlockers.Count > 0, allowRestoreFailedRetry))
             .ToArray();
+        var requiresRecoveryReview = manifest.RequiresRecoveryReview
+            && !(allowRestoreFailedRetry && IsRetryableSelectedRestoreFailure(manifest, entries));
 
         return new RestoreReadinessManifestPreview(
             manifest.ManifestPath,
@@ -32,14 +36,15 @@ public static class RestoreReadinessPreviewBuilder
             manifest.UpdatedAtUtc,
             manifest.EntryCount,
             manifest.TotalBytes,
-            manifest.RequiresRecoveryReview,
+            requiresRecoveryReview,
             manifestBlockers,
             entries);
     }
 
     private static RestoreReadinessEntryPreview BuildEntryPreview(
         RestoreManifestEntry entry,
-        bool manifestHasBlockers)
+        bool manifestHasBlockers,
+        bool allowRestoreFailedRetry)
     {
         if (manifestHasBlockers)
         {
@@ -52,6 +57,15 @@ public static class RestoreReadinessPreviewBuilder
         if (entry.Status == RestoreManifestEntryStatus.Restored)
         {
             return CreateEntryPreview(entry, RestoreReadinessDisposition.AlreadyRestored, []);
+        }
+
+        if (allowRestoreFailedRetry && entry.Status == RestoreManifestEntryStatus.RestoreFailed)
+        {
+            var retryBlockers = BuildMovedEntryBlockers(entry);
+            return CreateEntryPreview(
+                entry,
+                retryBlockers.Count == 0 ? RestoreReadinessDisposition.Restorable : RestoreReadinessDisposition.Blocked,
+                retryBlockers);
         }
 
         if (entry.Status is RestoreManifestEntryStatus.Failed
@@ -78,6 +92,18 @@ public static class RestoreReadinessPreviewBuilder
             entry,
             blockers.Count == 0 ? RestoreReadinessDisposition.Restorable : RestoreReadinessDisposition.Blocked,
             blockers);
+    }
+
+    private static bool IsRetryableSelectedRestoreFailure(
+        RestoreManifest manifest,
+        IReadOnlyList<RestoreReadinessEntryPreview> entries)
+    {
+        return manifest.ActionStatus is RestoreManifestActionStatus.RestoreFailed or RestoreManifestActionStatus.RestorePartialFailure
+            && entries.Any(entry => entry.CurrentStatus == RestoreManifestEntryStatus.RestoreFailed
+                && entry.Disposition == RestoreReadinessDisposition.Restorable)
+            && entries.All(entry =>
+                entry.CurrentStatus == RestoreManifestEntryStatus.Restored
+                || entry.CurrentStatus == RestoreManifestEntryStatus.RestoreFailed);
     }
 
     private static RestoreReadinessEntryPreview CreateEntryPreview(

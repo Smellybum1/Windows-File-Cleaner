@@ -2471,6 +2471,10 @@ internal sealed class MainWindowSmokeTests
                 && selectedGateText.Contains("No files were modified", StringComparison.OrdinalIgnoreCase),
                 "Selected restore gate pane should show fixture confirmation evidence before exact RESTORE. Text: " + selectedGateText);
             Assert(
+                discoveryWindow.SelectedRestoreExecutionHighlightTextValue.Contains("Key blocker", StringComparison.OrdinalIgnoreCase)
+                && discoveryWindow.SelectedRestoreExecutionHighlightTextValue.Contains("RESTORE", StringComparison.OrdinalIgnoreCase),
+                "Selected restore highlight should surface the exact confirmation blocker before the dense gate text.");
+            Assert(
                 discoveryWindow.RestoreManifestReviewSummaryTextValue.Contains("selected restore gate closed", StringComparison.OrdinalIgnoreCase)
                 && discoveryWindow.RestoreManifestReviewSummaryStyleValue == "Information",
                 "Manifest review summary should show the closed selected restore gate before exact RESTORE.");
@@ -2493,6 +2497,10 @@ internal sealed class MainWindowSmokeTests
                 && !matchedSelectedGateText.Contains("Execution implemented", StringComparison.OrdinalIgnoreCase)
                 && matchedSelectedGateText.Contains("Can execute: yes", StringComparison.OrdinalIgnoreCase),
                 "Exact RESTORE should open selected fixture restore execution. Text: " + matchedSelectedGateText);
+            Assert(
+                discoveryWindow.SelectedRestoreExecutionHighlightTextValue.Contains("Key status: Ready", StringComparison.OrdinalIgnoreCase)
+                && discoveryWindow.SelectedRestoreExecutionHighlightTextValue.Contains("Exact RESTORE", StringComparison.OrdinalIgnoreCase),
+                "Selected restore highlight should show the ready state when the gate opens.");
             Assert(
                 discoveryWindow.RestoreManifestReviewSummaryTextValue.Contains("selected restore gate open", StringComparison.OrdinalIgnoreCase)
                 && discoveryWindow.RestoreManifestReviewSummaryStyleValue == "Success"
@@ -2559,6 +2567,10 @@ internal sealed class MainWindowSmokeTests
                 && discoveryWindow.SelectedRestoreExecutionGateTextValue.Contains("Current scan, discovery, and readiness rows are stale", StringComparison.OrdinalIgnoreCase)
                 && discoveryWindow.SelectedRestoreExecutionGateTextValue.Contains("Selected restore row | Restored", StringComparison.OrdinalIgnoreCase),
                 "Selected restore gate pane should show fixture restore result evidence.");
+            Assert(
+                discoveryWindow.SelectedRestoreExecutionHighlightTextValue.Contains("selected restore succeeded", StringComparison.OrdinalIgnoreCase)
+                && discoveryWindow.SelectedRestoreExecutionHighlightTextValue.Contains("Restored 1", StringComparison.OrdinalIgnoreCase),
+                "Selected restore highlight should summarize the successful restore result.");
             AssertSelectedRestoreExecutionGateHelpCue(
                 discoveryWindow,
                 "Restored fixture selected restore gate cue should expose stale-state guidance.",

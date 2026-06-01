@@ -75,6 +75,8 @@ tests.UndoQuarantineFailsMissingQuarantinePathWithoutCreatingOriginal();
 tests.UndoQuarantineStopsBeforeRestoreWhenManifestWriteFails();
 tests.UndoQuarantineRequiresRecoveryReviewWhenPostRestoreManifestWriteFails();
 tests.UndoQuarantineRestoresFixtureDirectories();
+tests.UndoQuarantineRestoresDirectoriesWithCopyDeleteFallback();
+tests.SelectedRestoreCanRetryRestoreFailedDirectoryWhenQuarantinePathStillExists();
 tests.ChildSummaryShowsLargestImmediateChildren();
 tests.StorageHotspotTrailShowsLargestDescendantPath();
 tests.StorageSubtreeReviewSummaryCountsDescendantReviewSignals();
@@ -3072,6 +3074,79 @@ internal sealed class StorageScanTests
         Assert(!File.Exists(quarantinedChildPath), "Directory restore should move child files out of quarantine.");
     }
 
+    public void UndoQuarantineRestoresDirectoriesWithCopyDeleteFallback()
+    {
+        using var fixture = TestFixture.Create();
+
+        fixture.WriteText(@"AppData\Local\pip\cache\http\b\c\payload.bin", "cache-payload", DateTimeOffset.UtcNow.AddDays(-5));
+        var plan = BuildPlannedRestoreManifest(fixture, [@"AppData\Local\pip\cache\http\b\c"], "undo-directory-copy-delete");
+        var forward = QuarantineExecutor.Execute(plan.Manifest);
+        var entry = forward.RestoreManifest.Entries.Single();
+        var restoredChildPath = Path.Combine(entry.OriginalPath, "payload.bin");
+        var quarantinedChildPath = Path.Combine(entry.QuarantinePath, "payload.bin");
+
+        var undo = UndoQuarantineExecutor.Undo(
+            forward.RestoreManifest,
+            RestoreManifestFileStore.Write,
+            forceDirectoryCopyDeleteFallback: true);
+
+        Assert(forward.Succeeded, "Fixture setup should quarantine the directory before copy-delete undo.");
+        Assert(undo.Succeeded, "Undo Quarantine should restore directories when copy-delete fallback is required.");
+        Assert(Directory.Exists(entry.OriginalPath), "Copy-delete restore should recreate the original directory.");
+        Assert(File.Exists(restoredChildPath), "Copy-delete restore should include child files.");
+        Assert(File.ReadAllText(restoredChildPath) == "cache-payload", "Copy-delete restore should preserve child file contents.");
+        Assert(!Directory.Exists(entry.QuarantinePath), "Copy-delete restore should remove the quarantined directory after successful restore.");
+        Assert(!File.Exists(quarantinedChildPath), "Copy-delete restore should move child files out of quarantine.");
+    }
+
+    public void SelectedRestoreCanRetryRestoreFailedDirectoryWhenQuarantinePathStillExists()
+    {
+        using var fixture = TestFixture.Create();
+
+        fixture.WriteText(@"AppData\Local\pip\cache\http\b\c\payload.bin", "cache-payload", DateTimeOffset.UtcNow.AddDays(-5));
+        var plan = BuildPlannedRestoreManifest(fixture, [@"AppData\Local\pip\cache\http\b\c"], "retry-restore-failed-directory");
+        var forward = QuarantineExecutor.Execute(plan.Manifest);
+        var movedEntry = forward.RestoreManifest.Entries.Single();
+        var restoreFailedManifest = RestoreManifestBuilder.WithEntryStatus(
+            forward.RestoreManifest,
+            movedEntry.OriginalPath,
+            RestoreManifestEntryStatus.RestoreFailed,
+            DateTimeOffset.UtcNow,
+            "Previous restore failed across volumes.");
+        RestoreManifestFileStore.Write(restoreFailedManifest);
+        var allManifestPreview = RestoreReadinessPreviewBuilder.BuildForQuarantineRoot(
+            restoreFailedManifest.QuarantineRootPath);
+        var review = BuildSelectedRestoreManifestReview(
+            restoreFailedManifest.QuarantineRootPath,
+            restoreFailedManifest.ManifestPath);
+        var draft = SelectedRestoreConfirmationDraftBuilder.Build(
+            review,
+            DateTimeOffset.UtcNow,
+            "retry-restore-failed-directory",
+            isExecutionImplemented: true);
+        var gate = SelectedRestoreExecutionGateBuilder.Build(draft, "RESTORE");
+        var defaultUndo = UndoQuarantineExecutor.Undo(restoreFailedManifest);
+
+        var undo = UndoQuarantineExecutor.Undo(
+            restoreFailedManifest,
+            RestoreManifestFileStore.Write,
+            forceDirectoryCopyDeleteFallback: true,
+            allowRestoreFailedRetry: true);
+
+        Assert(forward.Succeeded, "Fixture setup should quarantine the directory before retrying a restore-failed entry.");
+        Assert(allManifestPreview.RestorableEntryCount == 0, "All-manifest readiness should not treat restore-failed entries as broadly restorable.");
+        Assert(allManifestPreview.RecoveryReviewEntryCount == 1, "All-manifest readiness should keep restore-failed entries in recovery review.");
+        Assert(review.Readiness?.RestorableCount == 1, "Restore-failed entries should be retryable when the quarantine path exists and the original path is absent.");
+        Assert(review.Readiness?.RecoveryReviewCount == 0, "Retryable restore-failed entries should not stay in recovery-review rows.");
+        Assert(review.Readiness?.RequiresRecoveryReview == false, "Retryable restore-failed manifests should not block selected restore solely because the previous attempt failed.");
+        Assert(draft.Blockers.Count == 0, "Selected restore confirmation should open for a retryable restore-failed entry.");
+        Assert(gate.CanExecute, "Exact RESTORE should open the selected restore gate for a retryable restore-failed entry.");
+        Assert(!defaultUndo.Succeeded, "Default Undo should not retry restore-failed entries outside the selected restore retry path.");
+        Assert(undo.Succeeded, "Undo Quarantine should restore a retryable restore-failed directory after the fallback fix.");
+        Assert(File.Exists(Path.Combine(movedEntry.OriginalPath, "payload.bin")), "Retry restore should put the directory contents back at the original path.");
+        Assert(!Directory.Exists(movedEntry.QuarantinePath), "Retry restore should remove the quarantined directory after success.");
+    }
+
     public void ChildSummaryShowsLargestImmediateChildren()
     {
         using var fixture = TestFixture.Create();
@@ -3633,7 +3708,7 @@ internal sealed class StorageScanTests
         Assert(manifestWriteMatches.Length == 1, "Only RestoreManifestFileStore should write Restore Manifest JSON.");
         Assert(executorWriteMatches.Length == 2, "Only QuarantineExecutor should create destination parents and move files.");
         Assert(quarantineDirectoryMoveMatches.Length == 7, "Only QuarantineDirectoryMove should move or copy-delete quarantined directories.");
-        Assert(undoExecutorWriteMatches.Length == 3, "Only UndoQuarantineExecutor should create original parents and move files or folders back.");
+        Assert(undoExecutorWriteMatches.Length == 2, "Only UndoQuarantineExecutor should create original parents and move files back; directory restore uses the guarded directory move fallback component.");
         Assert(writeTextMatches.Length == reportWriteMatches.Length + manifestWriteMatches.Length, "Every File.WriteAllText production use should be explicitly allowlisted.");
     }
 

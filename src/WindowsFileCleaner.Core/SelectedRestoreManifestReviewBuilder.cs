@@ -56,7 +56,7 @@ public static class SelectedRestoreManifestReviewBuilder
             discovery.ActionsRootPath,
             selectedSummary.ManifestPath,
             selectedSummary,
-            RestoreReadinessPreviewBuilder.BuildManifestPreview(selectedManifest),
+            RestoreReadinessPreviewBuilder.BuildManifestPreview(selectedManifest, allowRestoreFailedRetry: true),
             []);
     }
 

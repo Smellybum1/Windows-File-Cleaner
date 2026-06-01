@@ -973,6 +973,22 @@
                                    TextWrapping="Wrap"
                                    ToolTip="Execution readiness summary: waiting for Preview shortlist quarantine. No files were modified. Readiness summary is read-only review context; it does not create folders, move files, restore files, delete files, write manifests, or approve cleanup."
                                    AutomationProperties.HelpText="Execution readiness summary: waiting for Preview shortlist quarantine. No files were modified. Readiness summary is read-only review context; it does not create folders, move files, restore files, delete files, write manifests, or approve cleanup." />
+                        <Border x:Name="QuarantineExecutionHighlightBorder"
+                                Margin="0,8,26,0"
+                                Padding="10,8"
+                                Background="#F4F7FA"
+                                BorderBrush="#D4DEE8"
+                                BorderThickness="1"
+                                CornerRadius="4">
+                            <TextBlock x:Name="QuarantineExecutionHighlightText"
+                                       Text="Key status: preview the shortlist to see Quarantine readiness."
+                                       FontSize="12"
+                                       FontWeight="SemiBold"
+                                       Foreground="#344255"
+                                       TextWrapping="Wrap"
+                                       ToolTip="Highlighted Quarantine gate status. It summarizes the most important readiness, blocker, or result line; the detailed gate text below remains the audit trail and does not approve cleanup."
+                                       AutomationProperties.HelpText="Highlighted Quarantine gate status. It summarizes the most important readiness, blocker, or result line; the detailed gate text below remains the audit trail and does not approve cleanup." />
+                        </Border>
                         <WrapPanel Margin="0,6,0,0">
                             <TextBlock Text="Shortlist confirmation"
                                        VerticalAlignment="Center"
@@ -1515,6 +1531,22 @@
                                         ToolTipService.ShowOnDisabled="True"
                                         Click="ExecuteSelectedRestoreButton_Click" />
                             </WrapPanel>
+                            <Border x:Name="SelectedRestoreExecutionHighlightBorder"
+                                    Margin="0,8,26,0"
+                                    Padding="10,8"
+                                    Background="#F4F7FA"
+                                    BorderBrush="#D4DEE8"
+                                    BorderThickness="1"
+                                    CornerRadius="4">
+                                <TextBlock x:Name="SelectedRestoreExecutionHighlightText"
+                                           Text="Key status: select a Restore Manifest and preview selected readiness."
+                                           FontSize="12"
+                                           FontWeight="SemiBold"
+                                           Foreground="#344255"
+                                           TextWrapping="Wrap"
+                                           ToolTip="Highlighted selected restore status. It summarizes the most important gate, blocker, result, or next action; the detailed gate text below remains the audit trail and does not approve restore."
+                                           AutomationProperties.HelpText="Highlighted selected restore status. It summarizes the most important gate, blocker, result, or next action; the detailed gate text below remains the audit trail and does not approve restore." />
+                            </Border>
                             <DockPanel Margin="0,6,0,0"
                                        LastChildFill="True">
                                 <Border x:Name="SelectedRestoreExecutionGateHelpCue"

@@ -5,7 +5,8 @@ public static class QuarantineDirectoryMove
     public static void Move(
         string sourcePath,
         string destinationPath,
-        bool forceCopyDeleteFallback = false)
+        bool forceCopyDeleteFallback = false,
+        string copiedButCouldNotDeleteSourceMessage = "Copied directory to destination, but could not remove the source directory. Recovery review is required. ")
     {
         if (string.IsNullOrWhiteSpace(sourcePath))
         {
@@ -46,7 +47,11 @@ public static class QuarantineDirectoryMove
             return;
         }
 
-        CopyThenDeleteDirectory(sourcePath, destinationPath, destinationParent);
+        CopyThenDeleteDirectory(
+            sourcePath,
+            destinationPath,
+            destinationParent,
+            copiedButCouldNotDeleteSourceMessage);
     }
 
     private static bool HaveSameRoot(string sourcePath, string destinationPath)
@@ -59,7 +64,8 @@ public static class QuarantineDirectoryMove
     private static void CopyThenDeleteDirectory(
         string sourcePath,
         string destinationPath,
-        string destinationParent)
+        string destinationParent,
+        string copiedButCouldNotDeleteSourceMessage)
     {
         var stagingPath = Path.Combine(
             destinationParent,
@@ -83,7 +89,7 @@ public static class QuarantineDirectoryMove
             catch (Exception ex)
             {
                 throw new IOException(
-                    "Copied directory to quarantine, but could not remove the original directory. Recovery review is required. "
+                    copiedButCouldNotDeleteSourceMessage
                     + ex.Message,
                     ex);
             }

@@ -9,9 +9,11 @@ public static class UndoQuarantineExecutor
 
     public static UndoQuarantineResult Undo(
         RestoreManifest manifest,
-        Func<RestoreManifest, RestoreManifestFileWriteResult> writeManifest)
+        Func<RestoreManifest, RestoreManifestFileWriteResult> writeManifest,
+        bool forceDirectoryCopyDeleteFallback = false,
+        bool allowRestoreFailedRetry = false)
     {
-        var blockers = ValidateManifestForUndo(manifest);
+        var blockers = ValidateManifestForUndo(manifest, allowRestoreFailedRetry);
         if (blockers.Count > 0)
         {
             return new UndoQuarantineResult(
@@ -28,7 +30,7 @@ public static class UndoQuarantineExecutor
         var results = new List<UndoQuarantineEntryResult>();
         var undoBlockers = new List<string>();
 
-        foreach (var entry in currentManifest.Entries.Where(entry => entry.Status == RestoreManifestEntryStatus.Moved))
+        foreach (var entry in currentManifest.Entries.Where(entry => CanAttemptRestore(entry, allowRestoreFailedRetry)))
         {
             currentManifest = RestoreManifestBuilder.WithEntryStatus(
                 currentManifest,
@@ -47,7 +49,7 @@ public static class UndoQuarantineExecutor
                 break;
             }
 
-            var restoreError = TryRestoreEntry(entry);
+            var restoreError = TryRestoreEntry(entry, forceDirectoryCopyDeleteFallback);
             if (restoreError is null)
             {
                 currentManifest = RestoreManifestBuilder.WithEntryStatus(
@@ -94,13 +96,17 @@ public static class UndoQuarantineExecutor
         return new UndoQuarantineResult(currentManifest, results, undoBlockers);
     }
 
-    private static IReadOnlyList<string> ValidateManifestForUndo(RestoreManifest manifest)
+    private static IReadOnlyList<string> ValidateManifestForUndo(
+        RestoreManifest manifest,
+        bool allowRestoreFailedRetry)
     {
         var blockers = new List<string>();
 
-        if (manifest.Entries.All(entry => entry.Status != RestoreManifestEntryStatus.Moved))
+        if (manifest.Entries.All(entry => !CanAttemptRestore(entry, allowRestoreFailedRetry)))
         {
-            blockers.Add("Undo Quarantine requires at least one moved Restore Manifest entry.");
+            blockers.Add(allowRestoreFailedRetry
+                ? "Undo Quarantine requires at least one moved or retryable restore-failed Restore Manifest entry."
+                : "Undo Quarantine requires at least one moved Restore Manifest entry.");
         }
 
         if (!PathSafety.IsWithinScope(manifest.QuarantineRootPath, manifest.ActionRootPath))
@@ -147,7 +153,9 @@ public static class UndoQuarantineExecutor
         }
     }
 
-    private static string? TryRestoreEntry(RestoreManifestEntry entry)
+    private static string? TryRestoreEntry(
+        RestoreManifestEntry entry,
+        bool forceDirectoryCopyDeleteFallback)
     {
         try
         {
@@ -176,7 +184,11 @@ public static class UndoQuarantineExecutor
 
             if (entry.IsDirectory)
             {
-                Directory.Move(entry.QuarantinePath, entry.OriginalPath);
+                QuarantineDirectoryMove.Move(
+                    entry.QuarantinePath,
+                    entry.OriginalPath,
+                    forceDirectoryCopyDeleteFallback,
+                    copiedButCouldNotDeleteSourceMessage: "Copied directory to original path, but could not remove the quarantined directory. Recovery review is required. ");
             }
             else
             {
@@ -208,5 +220,13 @@ public static class UndoQuarantineExecutor
     private static bool IsReparsePoint(string path)
     {
         return File.GetAttributes(path).HasFlag(FileAttributes.ReparsePoint);
+    }
+
+    private static bool CanAttemptRestore(
+        RestoreManifestEntry entry,
+        bool allowRestoreFailedRetry)
+    {
+        return entry.Status == RestoreManifestEntryStatus.Moved
+            || (allowRestoreFailedRetry && entry.Status == RestoreManifestEntryStatus.RestoreFailed);
     }
 }
