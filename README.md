@@ -353,7 +353,13 @@ To focus only manifests that need manual recovery review:
 .\tools\Summarize-RestoreManifests.cmd -RecoveryReviewOnly -ShowEntries
 ```
 
-The summary helper reads `actions\*\restore-manifest.json`, reports manifest counts, entry status counts, size, cleanup scopes, undo-work and recovery-review flags, and discovery issues. It is read-only: it does not launch WPF, scan, move, restore, delete, write manifests, approve cleanup, or create cleanup history. Use `-RequireAny` when a verification step should fail if no valid Restore Manifests are found. Use `-RequireNoRecoveryReview` when a read-only check should fail if any valid Restore Manifest still needs recovery review; this is evidence only and does not restore or clean anything.
+To focus only manifests that still have undo work:
+
+```powershell
+.\tools\Summarize-RestoreManifests.cmd -UndoWorkOnly -ShowEntries
+```
+
+The summary helper reads `actions\*\restore-manifest.json`, reports manifest counts, entry status counts, size, cleanup scopes, undo-work and recovery-review flags, and discovery issues. It is read-only: it does not launch WPF, scan, move, restore, delete, write manifests, approve cleanup, or create cleanup history. Use `-RequireAny` when a verification step should fail if no valid Restore Manifests are found. Use `-RequireNoRecoveryReview` when a read-only check should fail if any valid Restore Manifest still needs recovery review; use `-RequireNoUndoWork` when a read-only check should fail if any valid Restore Manifest still has moved entries. These checks are evidence only and do not restore or clean anything.
 
 ## Run The App
 
