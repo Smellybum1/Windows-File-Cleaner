@@ -8,6 +8,8 @@ param(
 
     [switch]$ChecklistOnly,
 
+    [switch]$WriteAcceptanceNotes,
+
     [switch]$PrintOnly,
 
     [switch]$SkipVerify,
@@ -94,6 +96,44 @@ function Format-LaunchCommand {
     return ($parts -join " ")
 }
 
+function Get-PortableReleaseChecklistItems {
+    param(
+        [Parameter(Mandatory)]
+        [string]$ReadmeFile,
+
+        [Parameter(Mandatory)]
+        [string]$NormalLaunchScript,
+
+        [Parameter(Mandatory)]
+        [string]$FixtureLaunchScript,
+
+        [Parameter(Mandatory)]
+        [string]$ExecutablePath,
+
+        [Parameter(Mandatory)]
+        [string]$FixtureScopePath,
+
+        [Parameter(Mandatory)]
+        [bool]$VerificationSkipped
+    )
+
+    $verificationText = if ($VerificationSkipped) {
+        "Verification was skipped by request; run tools\Test-LocalRelease.cmd -RequireCurrentCommit before trusting this package."
+    }
+    else {
+        "Confirm the verifier output above passed for this release folder."
+    }
+
+    @(
+        $verificationText,
+        "Open README-FIRST.txt and confirm it names portable v1, launch choices, fixture-launch boundaries, and reversible-only safety boundaries. README-FIRST.txt: $ReadmeFile",
+        "Normal launch path: use Launch-WindowsFileCleaner.cmd or the printed executable command; confirm the app opens without clicking Scan by itself. Launch script: $NormalLaunchScript. Executable: $ExecutablePath",
+        "Fixture launch path: use Launch-WindowsFileCleaner-Fixture.cmd or the printed fixture command; confirm the Cleanup Scope is prefilled with the fixture path, then click Scan manually and confirm the scan is read-only. Fixture launch script: $FixtureLaunchScript. Fixture Cleanup Scope: $FixtureScopePath",
+        "Confirm the package remains portable: no installer, shortcut, service, scheduled task, permanent deletion, broad/all-manifest restore, or cleanup history.",
+        "Stop before real-profile movement unless a specific user-approved readiness gate and exact confirmation are in place."
+    )
+}
+
 function Write-PortableReleaseChecklist {
     param(
         [Parameter(Mandatory)]
@@ -120,13 +160,15 @@ function Write-PortableReleaseChecklist {
 
     Write-Host ""
     Write-Host "Portable release acceptance checklist:"
-    if ($VerificationSkipped) {
-        Write-Host "  1. Verification was skipped by request; run tools\Test-LocalRelease.cmd -RequireCurrentCommit before trusting this package."
-    }
-    else {
-        Write-Host "  1. Confirm the verifier output above passed for this release folder."
-    }
+    $checklistItems = Get-PortableReleaseChecklistItems `
+        -ReadmeFile $ReadmeFile `
+        -NormalLaunchScript $NormalLaunchScript `
+        -FixtureLaunchScript $FixtureLaunchScript `
+        -ExecutablePath $ExecutablePath `
+        -FixtureScopePath $FixtureScopePath `
+        -VerificationSkipped $VerificationSkipped
 
+    Write-Host ("  1. {0}" -f $checklistItems[0])
     Write-Host "  2. Open README-FIRST.txt and confirm it names portable v1, launch choices, fixture-launch boundaries, and reversible-only safety boundaries."
     Write-Host "     README-FIRST.txt: $ReadmeFile"
     Write-Host "  3. Normal launch path: use Launch-WindowsFileCleaner.cmd or the printed executable command; confirm the app opens without clicking Scan by itself."
@@ -139,6 +181,212 @@ function Write-PortableReleaseChecklist {
     Write-Host "  6. Stop before real-profile movement unless a specific user-approved readiness gate and exact confirmation are in place."
     Write-Host "Checklist-only mode did not launch WPF, click Scan, move, restore, delete, approve cleanup, or create cleanup history."
     Write-Host "Release folder: $ReleaseDirectory"
+}
+
+function Get-LocalReleaseGitValue {
+    param(
+        [Parameter(Mandatory)]
+        [string[]]$Arguments
+    )
+
+    try {
+        $output = & git @Arguments 2>$null
+        if ($LASTEXITCODE -eq 0) {
+            $value = $output | Select-Object -First 1
+            if (-not [string]::IsNullOrWhiteSpace([string]$value)) {
+                return ([string]$value).Trim()
+            }
+        }
+    }
+    catch {
+    }
+
+    return "unknown"
+}
+
+function Get-LocalReleaseWorktreeStatus {
+    param(
+        [Parameter(Mandatory)]
+        [string]$RepositoryPath
+    )
+
+    try {
+        $output = & git -C $RepositoryPath status --short 2>$null
+        if ($LASTEXITCODE -ne 0) {
+            return "unknown"
+        }
+
+        $statusLines = @($output | Where-Object { -not [string]::IsNullOrWhiteSpace([string]$_) })
+        if ($statusLines.Count -eq 0) {
+            return "clean"
+        }
+
+        $suffix = if ($statusLines.Count -eq 1) { "" } else { "s" }
+        return ("not clean ({0} status line{1})" -f $statusLines.Count, $suffix)
+    }
+    catch {
+    }
+
+    return "unknown"
+}
+
+function Get-LocalReleaseMetadataValue {
+    param(
+        [string[]]$Lines,
+
+        [Parameter(Mandatory)]
+        [string]$Prefix
+    )
+
+    foreach ($line in $Lines) {
+        if ($line.StartsWith($Prefix, [System.StringComparison]::OrdinalIgnoreCase)) {
+            return $line.Substring($Prefix.Length).Trim()
+        }
+    }
+
+    return "unknown"
+}
+
+function Write-PortableReleaseAcceptanceNotesNextSteps {
+    param(
+        [Parameter(Mandatory)]
+        [string]$NotesPath
+    )
+
+    Write-Host "After the package acceptance pass, fill the notes file, then run:"
+    Write-Host ".\tools\Summarize-LocalReleaseAcceptanceNotes.cmd -Path `"$NotesPath`""
+    Write-Host ".\tools\Summarize-LocalReleaseAcceptanceNotes.cmd -Path `"$NotesPath`" -RequireComplete"
+    Write-Host "These summary commands read ignored notes only; they do not launch WPF, scan, move, restore, delete, approve cleanup, or create cleanup history."
+}
+
+function New-PortableReleaseAcceptanceNotes {
+    param(
+        [Parameter(Mandatory)]
+        [string]$ReleaseDirectory,
+
+        [Parameter(Mandatory)]
+        [string]$ReadmeFile,
+
+        [Parameter(Mandatory)]
+        [string]$NormalLaunchScript,
+
+        [Parameter(Mandatory)]
+        [string]$FixtureLaunchScript,
+
+        [Parameter(Mandatory)]
+        [string]$ExecutablePath,
+
+        [Parameter(Mandatory)]
+        [string]$FixtureScopePath,
+
+        [Parameter(Mandatory)]
+        [bool]$VerificationSkipped
+    )
+
+    $notesRoot = Join-Path $repoRoot ".local\release-acceptance"
+    $timestamp = Get-Date -Format "yyyyMMdd-HHmmss"
+    $notesPath = Join-Path $notesRoot ("release-acceptance-{0}.md" -f $timestamp)
+    $metadataPath = Join-Path $ReleaseDirectory "release-metadata.txt"
+    $metadataLines = if (Test-Path -LiteralPath $metadataPath -PathType Leaf) {
+        @(Get-Content -LiteralPath $metadataPath)
+    }
+    else {
+        @()
+    }
+    $checklistItems = Get-PortableReleaseChecklistItems `
+        -ReadmeFile $ReadmeFile `
+        -NormalLaunchScript $NormalLaunchScript `
+        -FixtureLaunchScript $FixtureLaunchScript `
+        -ExecutablePath $ExecutablePath `
+        -FixtureScopePath $FixtureScopePath `
+        -VerificationSkipped $VerificationSkipped
+    $gitBranch = Get-LocalReleaseGitValue -Arguments @("-C", $repoFullPath, "rev-parse", "--abbrev-ref", "HEAD")
+    $gitCommit = Get-LocalReleaseGitValue -Arguments @("-C", $repoFullPath, "rev-parse", "--short", "HEAD")
+    $worktreeStatus = Get-LocalReleaseWorktreeStatus -RepositoryPath $repoFullPath
+
+    New-Item -ItemType Directory -Path $notesRoot -Force | Out-Null
+
+    $lines = [System.Collections.Generic.List[string]]::new()
+    $lines.Add("# Portable Release Acceptance Notes")
+    $lines.Add("")
+    $lines.Add("Created: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')")
+    $lines.Add("Release folder: $ReleaseDirectory")
+    $lines.Add("")
+    $lines.Add("Acceptance evidence:")
+    $lines.Add("")
+    $lines.Add("- Repository: $repoFullPath")
+    $lines.Add("- Git branch: $gitBranch")
+    $lines.Add("- Git commit: $gitCommit")
+    $lines.Add("- Worktree status at notes creation: $worktreeStatus")
+    $lines.Add("- Release metadata commit: $(Get-LocalReleaseMetadataValue -Lines $metadataLines -Prefix 'Commit:')")
+    $lines.Add("- Release metadata worktree status at publish: $(Get-LocalReleaseMetadataValue -Lines $metadataLines -Prefix 'Worktree status at publish:')")
+    $lines.Add("- Release metadata preflight skipped: $(Get-LocalReleaseMetadataValue -Lines $metadataLines -Prefix 'Preflight skipped:')")
+    $lines.Add("- Executable: $ExecutablePath")
+    $lines.Add("- README-FIRST.txt: $ReadmeFile")
+    $lines.Add("- Normal launch script: $NormalLaunchScript")
+    $lines.Add("- Fixture launch script: $FixtureLaunchScript")
+    $lines.Add("- Fixture Cleanup Scope: $FixtureScopePath")
+    $lines.Add('- Required verifier: `.\tools\Test-LocalRelease.cmd -RequireCurrentCommit`')
+    $lines.Add('- Checklist command: `.\tools\Start-LocalRelease.cmd -ChecklistOnly -RequireCurrentCommit`')
+    $lines.Add('- Fixture checklist command: `.\tools\Start-LocalRelease.cmd -Fixture -ChecklistOnly -RequireCurrentCommit`')
+    $lines.Add("- [ ] Verifier passed for this release package.")
+    $lines.Add("- [ ] Package commit matched current HEAD or mismatch was intentionally recorded.")
+    $lines.Add("- [ ] Package was launched normally or normal launch was intentionally deferred.")
+    $lines.Add("- [ ] Fixture launch and read-only fixture Scan were completed or intentionally deferred.")
+    $lines.Add('- Notes file is local/ignored under `.local` and is not app persistence or cleanup history.')
+    $lines.Add("")
+    $lines.Add("Safety boundary:")
+    $lines.Add("")
+    $lines.Add("- Portable v1 is reversible-only: read-only Storage Scan, review, gated Quarantine, and selected restore.")
+    $lines.Add("- Portable v1 is not an installer and does not create shortcuts, services, scheduled tasks, or background automation.")
+    $lines.Add("- Portable v1 excludes permanent deletion, persisted cleanup history, broad/all-manifest restore, custom real-profile Quarantine, and non-exact real-profile movement.")
+    $lines.Add("- Fixture launch only prefills the Cleanup Scope; it does not create fixtures or click Scan.")
+    $lines.Add("- Do not move, restore, delete, or modify real-profile files from this acceptance pass.")
+    $lines.Add("")
+    $lines.Add("Post-pass summary commands:")
+    $lines.Add("")
+    $lines.Add("After filling this file, run these commands from the repository root:")
+    $lines.Add("")
+    $lines.Add('```powershell')
+    $lines.Add(('.\tools\Summarize-LocalReleaseAcceptanceNotes.cmd -Path "{0}"' -f $notesPath))
+    $lines.Add(('.\tools\Summarize-LocalReleaseAcceptanceNotes.cmd -Path "{0}" -RequireComplete' -f $notesPath))
+    $lines.Add('```')
+    $lines.Add("")
+    $lines.Add("These commands read this ignored notes file only. They do not launch WPF, scan, move, restore, delete, approve cleanup, or create cleanup history.")
+    $lines.Add("")
+    $lines.Add("Overall result:")
+    $lines.Add("")
+    $lines.Add("- [ ] Pass")
+    $lines.Add("- [ ] Pass with issues noted")
+    $lines.Add("- [ ] Blocked")
+    $lines.Add("")
+    $lines.Add("Summary:")
+    $lines.Add("")
+    $lines.Add("- ")
+    $lines.Add("")
+    $lines.Add("Checklist:")
+    $lines.Add("")
+    $lines.Add("Checklist numbers match the terminal output.")
+
+    for ($index = 0; $index -lt $checklistItems.Count; $index++) {
+        $lines.Add("")
+        $lines.Add("### $($index + 1). Portable release check")
+        $lines.Add("")
+        $lines.Add("Prompt: $($checklistItems[$index])")
+        $lines.Add("")
+        $lines.Add("- [ ] Pass")
+        $lines.Add("- [ ] Issue")
+        $lines.Add("- [ ] Not checked")
+        $lines.Add("")
+        $lines.Add("Notes:")
+        $lines.Add("")
+        $lines.Add("- ")
+    }
+
+    $utf8NoBom = [System.Text.UTF8Encoding]::new($false)
+    [System.IO.File]::WriteAllLines($notesPath, $lines, $utf8NoBom)
+
+    return $notesPath
 }
 
 $releaseRootFullPath = Resolve-UnderLocalPath -Path $ReleaseRoot -Description "Release root"
@@ -213,6 +461,19 @@ if ($ChecklistOnly.IsPresent) {
         -ExecutablePath $appExePath `
         -FixtureScopePath $fixtureScope `
         -VerificationSkipped $SkipVerify.IsPresent
+    if ($WriteAcceptanceNotes.IsPresent) {
+        $notesPath = New-PortableReleaseAcceptanceNotes `
+            -ReleaseDirectory $releaseDir `
+            -ReadmeFile $readmePath `
+            -NormalLaunchScript $releaseLaunchScriptPath `
+            -FixtureLaunchScript $releaseFixtureLaunchScriptPath `
+            -ExecutablePath $appExePath `
+            -FixtureScopePath $fixtureScope `
+            -VerificationSkipped $SkipVerify.IsPresent
+        Write-Host ""
+        Write-Host "Portable release acceptance notes template: $notesPath"
+        Write-PortableReleaseAcceptanceNotesNextSteps -NotesPath $notesPath
+    }
     exit 0
 }
 

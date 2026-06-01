@@ -26,6 +26,7 @@ Portable packages can already be published, verified, and launched through repo-
 - The checklist prints the package-local `README-FIRST.txt`, normal launch script, fixture launch script, executable path, fixture scope, and release folder.
 - The checklist names normal launch review, fixture launch review, portable/no-installer boundaries, and the stop-before-real-profile-movement boundary.
 - Checklist-only mode exits before WPF launch and explicitly states that it did not launch WPF, click `Scan`, move, restore, delete, approve cleanup, or create cleanup history.
+- Later packet `Local Release Acceptance Notes` added `-WriteAcceptanceNotes` for checklist-only release review and `tools\Summarize-LocalReleaseAcceptanceNotes.cmd` for read-only notes summaries.
 
 ## Verification
 

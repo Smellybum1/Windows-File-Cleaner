@@ -174,6 +174,22 @@ To print the package-level acceptance checklist without launching WPF:
 
 Checklist-only mode verifies the package by default, prints normal and fixture launch review steps, and does not launch WPF, click `Scan`, move, restore, delete, approve cleanup, or create cleanup history.
 
+To also write a local, ignored markdown notes template for package acceptance:
+
+```powershell
+.\tools\Start-LocalRelease.cmd -ChecklistOnly -RequireCurrentCommit -WriteAcceptanceNotes
+```
+
+The template is written under `.local\release-acceptance`, stamps the repo branch/commit, current worktree state, package metadata commit/preflight evidence, package paths, local evidence checkboxes, and exact post-pass summary commands. After filling the notes, summarize the latest ignored notes or a specific notes file:
+
+```powershell
+.\tools\Summarize-LocalReleaseAcceptanceNotes.cmd
+.\tools\Summarize-LocalReleaseAcceptanceNotes.cmd -Path ".local\release-acceptance\release-acceptance-YYYYMMDD-HHMMSS.md"
+.\tools\Summarize-LocalReleaseAcceptanceNotes.cmd -RequireComplete
+```
+
+The summary helper reads ignored notes only; it does not launch WPF, scan, move, restore, delete, approve cleanup, or create cleanup history.
+
 ## WPF Fixture Smoke
 
 Use the fixture review launcher for the manual fixture UI pass:
