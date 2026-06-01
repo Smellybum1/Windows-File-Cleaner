@@ -44,7 +44,7 @@ The future first real-profile selected restore implementation must:
 - avoid empty action-folder cleanup in the first real-profile phase,
 - avoid all-manifest restore, permanent deletion, and persisted cleanup history.
 
-This ADR is design-only. WPF must continue to keep selected restore execution unavailable for real-profile and custom non-fixture manifests until a later implementation packet adds tests and the user explicitly approves crossing the real-profile restore boundary.
+This ADR was design-only when accepted. As of the 2026-06-01 implementation packet, WPF can restore one selected exact real-profile Restore Manifest after this contract's gates pass; custom non-fixture and non-exact real-profile selected restore remain unavailable.
 
 ## Options considered
 
@@ -106,15 +106,19 @@ Negative consequences:
 - The first real-profile restore implementation must recompute readiness and may block often when filesystem state has changed.
 - Result wording must be careful so selected restore does not look like broad history or cleanup approval.
 
+## Implementation note
+
+As of 2026-06-01, WPF implements this contract for one selected exact `C:\Users\moxhe` Restore Manifest. The implementation keeps real-profile Quarantine execution, all-manifest restore, action-folder cleanup, permanent deletion, and persisted cleanup history unavailable.
+
 ## Reversal cost
 
 Medium. A later ADR could choose all-manifest restore or a richer cleanup history, but future implementations that follow this contract will likely add WPF tests and wording around selected-only restore, exact `RESTORE`, and execution-time revalidation.
 
 ## Follow-up work
 
-- Add core and WPF tests proving real-profile selected restore remains unavailable until the implementation packet.
-- Implement Real-Profile Selected Restore Execution as a narrow selected-manifest path after explicit user approval.
-- Wire `SelectedRestorePreExecutionRevalidation` into the WPF execution path before calling `UndoQuarantineExecutor`; the core read-only model exists as of 2026-05-31, but WPF real-profile restore remains unavailable.
+- Keep core and WPF tests proving custom and stale real-profile selected restore remain unavailable, while exact real-profile selected restore can open only after clean revalidation.
+- Manually trust Real-Profile Selected Restore Execution only after explicit user approval for a specific selected Restore Manifest.
+- Keep `SelectedRestorePreExecutionRevalidation` wired into the WPF execution path before calling `UndoQuarantineExecutor`.
 - Decide later whether all-manifest real-profile restore or cleanup history is needed.
 
 ## Supersedes

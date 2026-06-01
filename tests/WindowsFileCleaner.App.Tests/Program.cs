@@ -37,7 +37,7 @@ internal static class Program
                 tests.MainWindowShowsRealProfileChildReadinessContractForSyntheticPreview();
                 tests.MainWindowKeepsQuarantineExecutionUnavailableForCustomScope();
                 tests.MainWindowKeepsSelectedRestoreUnavailableForCustomScope();
-                tests.MainWindowKeepsSelectedRestoreUnavailableForRealProfileManifest();
+                tests.MainWindowOpensSelectedRestoreForExactRealProfileManifest();
                 tests.MainWindowShowsSelectedRestoreRevalidationBlockersForStaleRealProfileManifest();
                 tests.MainWindowBlocksQuarantinePreviewForParentWithProtectedDescendant();
             }
@@ -182,7 +182,7 @@ internal sealed class MainWindowSmokeTests
                 window,
                 "Startup Selected Restore Execution Gate cue should expose preview-gate guidance.",
                 "Preview selected restore gate",
-                "Real-profile/custom selected restore remains unavailable");
+                "Custom selected restore remains unavailable");
             AssertQuarantineConfirmationHelpCue(
                 window,
                 "Startup shortlist confirmation cue should mirror exact QUARANTINE boundaries.");
@@ -843,22 +843,22 @@ internal sealed class MainWindowSmokeTests
                 "Preview selected restore gate automation help text should explain confirmation gate scope.");
             Assert(
                 window.SelectedRestoreConfirmationToolTipValue.Contains("Exact RESTORE", StringComparison.OrdinalIgnoreCase)
-                && window.SelectedRestoreConfirmationToolTipValue.Contains("real-profile/custom selected restore remains unavailable", StringComparison.OrdinalIgnoreCase),
-                "Selected restore confirmation tooltip should explain fixture-only selected restore.");
+                && window.SelectedRestoreConfirmationToolTipValue.Contains("custom selected restore remains unavailable", StringComparison.OrdinalIgnoreCase),
+                "Selected restore confirmation tooltip should explain selected restore scope.");
             Assert(
                 window.SelectedRestoreConfirmationAutomationHelpTextValue.Contains("Exact RESTORE", StringComparison.OrdinalIgnoreCase)
-                && window.SelectedRestoreConfirmationAutomationHelpTextValue.Contains("real-profile/custom selected restore remains unavailable", StringComparison.OrdinalIgnoreCase),
-                "Selected restore confirmation automation help text should explain fixture-only selected restore.");
+                && window.SelectedRestoreConfirmationAutomationHelpTextValue.Contains("custom selected restore remains unavailable", StringComparison.OrdinalIgnoreCase),
+                "Selected restore confirmation automation help text should explain selected restore scope.");
             Assert(
-                window.ExecuteSelectedRestoreButtonToolTipValue.Contains("Fixture selected restore only", StringComparison.OrdinalIgnoreCase)
+                window.ExecuteSelectedRestoreButtonToolTipValue.Contains("Selected restore only", StringComparison.OrdinalIgnoreCase)
                 && window.ExecuteSelectedRestoreButtonToolTipValue.Contains("selected manifest readiness", StringComparison.OrdinalIgnoreCase)
-                && window.ExecuteSelectedRestoreButtonToolTipValue.Contains("real-profile/custom selected restore remains unavailable", StringComparison.OrdinalIgnoreCase),
-                "Restore selected fixture manifest tooltip should explain fixture-only selected restore.");
+                && window.ExecuteSelectedRestoreButtonToolTipValue.Contains("custom selected restore remains unavailable", StringComparison.OrdinalIgnoreCase),
+                "Restore selected manifest tooltip should explain selected restore scope.");
             Assert(
-                window.ExecuteSelectedRestoreButtonAutomationHelpTextValue.Contains("Fixture selected restore only", StringComparison.OrdinalIgnoreCase)
+                window.ExecuteSelectedRestoreButtonAutomationHelpTextValue.Contains("Selected restore only", StringComparison.OrdinalIgnoreCase)
                 && window.ExecuteSelectedRestoreButtonAutomationHelpTextValue.Contains("selected manifest readiness", StringComparison.OrdinalIgnoreCase)
-                && window.ExecuteSelectedRestoreButtonAutomationHelpTextValue.Contains("real-profile/custom selected restore remains unavailable", StringComparison.OrdinalIgnoreCase),
-                "Restore selected fixture manifest automation help text should explain fixture-only selected restore.");
+                && window.ExecuteSelectedRestoreButtonAutomationHelpTextValue.Contains("custom selected restore remains unavailable", StringComparison.OrdinalIgnoreCase),
+                "Restore selected manifest automation help text should explain selected restore scope.");
             Assert(
                 window.QuarantineExecutionGateTextValue.Contains("Use Preview shortlist quarantine before entering confirmation text", StringComparison.OrdinalIgnoreCase)
                 && !window.QuarantineExecutionGateTextValue.Contains("Create a Quarantine Preview before entering confirmation text", StringComparison.OrdinalIgnoreCase)
@@ -2460,10 +2460,10 @@ internal sealed class MainWindowSmokeTests
                 && selectedGateText.Contains("Selected Restore Execution Gate: read-only", StringComparison.OrdinalIgnoreCase)
                 && !selectedGateText.Contains("Execution implemented", StringComparison.OrdinalIgnoreCase)
                 && selectedGateText.Contains("Execution scope status:", StringComparison.OrdinalIgnoreCase)
-                && selectedGateText.Contains("Fixture-only selected restore is available", StringComparison.OrdinalIgnoreCase)
+                && selectedGateText.Contains("Fixture or exact real-profile selected restore is available", StringComparison.OrdinalIgnoreCase)
                 && selectedGateText.Contains("Approval boundary:", StringComparison.OrdinalIgnoreCase)
                 && selectedGateText.Contains("not restore approval", StringComparison.OrdinalIgnoreCase)
-                && selectedGateText.Contains("only fixture selected restore", StringComparison.OrdinalIgnoreCase)
+                && selectedGateText.Contains("fixture or exact real-profile selected restore", StringComparison.OrdinalIgnoreCase)
                 && selectedGateText.Contains("Can execute: no", StringComparison.OrdinalIgnoreCase)
                 && selectedGateText.Contains("No files were modified", StringComparison.OrdinalIgnoreCase),
                 "Selected restore gate pane should show fixture confirmation evidence before exact RESTORE. Text: " + selectedGateText);
@@ -2486,7 +2486,7 @@ internal sealed class MainWindowSmokeTests
             var matchedSelectedGateText = discoveryWindow.SelectedRestoreExecutionGateTextValue;
             Assert(
                 matchedSelectedGateText.Contains("Entered confirmation matches: yes", StringComparison.OrdinalIgnoreCase)
-                && matchedSelectedGateText.Contains("Fixture-only selected restore is available", StringComparison.OrdinalIgnoreCase)
+                && matchedSelectedGateText.Contains("Fixture or exact real-profile selected restore is available", StringComparison.OrdinalIgnoreCase)
                 && !matchedSelectedGateText.Contains("Execution implemented", StringComparison.OrdinalIgnoreCase)
                 && matchedSelectedGateText.Contains("Can execute: yes", StringComparison.OrdinalIgnoreCase),
                 "Exact RESTORE should open selected fixture restore execution. Text: " + matchedSelectedGateText);
@@ -2499,14 +2499,14 @@ internal sealed class MainWindowSmokeTests
                 discoveryWindow,
                 "Open fixture selected restore gate cue should expose fixture-only restore state.",
                 "Gate is open",
-                "fixture selected restore",
-                "Real-profile/custom selected restore remains unavailable");
+                "fixture or exact real-profile selected restore",
+                "Custom selected restore remains unavailable");
             Assert(discoveryWindow.CanExecuteSelectedRestore, "Exact RESTORE should enable selected fixture restore execution.");
             Assert(
-                discoveryWindow.ExecuteSelectedRestoreButtonToolTipValue.Contains("Fixture selected restore only", StringComparison.OrdinalIgnoreCase)
+                discoveryWindow.ExecuteSelectedRestoreButtonToolTipValue.Contains("Selected restore only", StringComparison.OrdinalIgnoreCase)
                 && discoveryWindow.ExecuteSelectedRestoreButtonToolTipValue.Contains("selected manifest readiness", StringComparison.OrdinalIgnoreCase)
                 && discoveryWindow.ExecuteSelectedRestoreButtonToolTipValue.Contains("exact RESTORE", StringComparison.OrdinalIgnoreCase),
-                "Enabled selected fixture restore tooltip should still explain the fixture-only gate.");
+                "Enabled selected fixture restore tooltip should still explain the selected restore gate.");
             Assert(File.Exists(quarantinePath), "Selected restore gate should not move quarantined files.");
             Assert(!File.Exists(originalPath), "Selected restore gate should not restore original paths.");
 
@@ -2547,7 +2547,7 @@ internal sealed class MainWindowSmokeTests
                 && discoveryWindow.CurrentStatusText.Contains("Rediscover", StringComparison.OrdinalIgnoreCase),
                 "Selected fixture restore status should report completion and stale discovery state.");
             Assert(
-                discoveryWindow.RestoreManifestReviewSummaryTextValue.Contains("fixture selected restore already ran", StringComparison.OrdinalIgnoreCase)
+                discoveryWindow.RestoreManifestReviewSummaryTextValue.Contains("selected restore already ran", StringComparison.OrdinalIgnoreCase)
                 && discoveryWindow.RestoreManifestReviewSummaryTextValue.Contains("rediscover manifests and rescan", StringComparison.OrdinalIgnoreCase)
                 && discoveryWindow.RestoreManifestReviewSummaryStyleValue == "Success",
                 "Manifest review summary should switch to selected-restore result and stale-state guidance.");
@@ -2559,7 +2559,7 @@ internal sealed class MainWindowSmokeTests
             AssertSelectedRestoreExecutionGateHelpCue(
                 discoveryWindow,
                 "Restored fixture selected restore gate cue should expose stale-state guidance.",
-                "Fixture Selected Restore has already run",
+                "Selected Restore has already run",
                 "rediscover manifests",
                 "rescan");
         }
@@ -2945,7 +2945,7 @@ internal sealed class MainWindowSmokeTests
                 !window.SelectedRestoreExecutionGateTextValue.Contains("Execution implemented", StringComparison.OrdinalIgnoreCase)
                 && window.SelectedRestoreExecutionGateTextValue.Contains("Execution scope status:", StringComparison.OrdinalIgnoreCase)
                 && window.SelectedRestoreExecutionGateTextValue.Contains("Preview only for this selected Restore Manifest", StringComparison.OrdinalIgnoreCase)
-                && window.SelectedRestoreExecutionGateTextValue.Contains("real-profile and custom selected restore remain unavailable", StringComparison.OrdinalIgnoreCase)
+                && window.SelectedRestoreExecutionGateTextValue.Contains("custom and non-exact real-profile selected restore remain unavailable", StringComparison.OrdinalIgnoreCase)
                 && window.SelectedRestoreExecutionGateTextValue.Contains("Approval boundary:", StringComparison.OrdinalIgnoreCase)
                 && window.SelectedRestoreExecutionGateTextValue.Contains("not restore approval", StringComparison.OrdinalIgnoreCase),
                 "Custom-scope selected restore gate should keep execution unavailable with visible scope wording.");
@@ -2954,7 +2954,7 @@ internal sealed class MainWindowSmokeTests
                 "Custom-scope selected restore gate cue should expose preview-only blocker.",
                 "Gate is closed",
                 "Type RESTORE",
-                "Real-profile/custom selected restore remains unavailable");
+                "Custom selected restore remains unavailable");
             window.SetSelectedRestoreConfirmationText("RESTORE");
             Assert(
                 window.SelectedRestoreExecutionGateTextValue.Contains("Entered confirmation matches: yes", StringComparison.OrdinalIgnoreCase)
@@ -2983,7 +2983,7 @@ internal sealed class MainWindowSmokeTests
         }
     }
 
-    public void MainWindowKeepsSelectedRestoreUnavailableForRealProfileManifest()
+    public void MainWindowOpensSelectedRestoreForExactRealProfileManifest()
     {
         using var fixture = SmokeFixture.CreateCustomScope();
         var realProfileScope = StorageScanOptions.DefaultForCurrentUser().CleanupScopePath;
@@ -3016,34 +3016,32 @@ internal sealed class MainWindowSmokeTests
 
             Assert(
                 window.SelectedRestoreExecutionGateTextValue.Contains("Entered confirmation matches: yes", StringComparison.OrdinalIgnoreCase)
-                && window.SelectedRestoreExecutionGateTextValue.Contains("Can execute: no", StringComparison.OrdinalIgnoreCase)
-                && window.SelectedRestoreExecutionGateTextValue.Contains("Preview only for this selected Restore Manifest", StringComparison.OrdinalIgnoreCase)
-                && window.SelectedRestoreExecutionGateTextValue.Contains("real-profile and custom selected restore remain unavailable", StringComparison.OrdinalIgnoreCase)
-                && window.SelectedRestoreExecutionGateTextValue.Contains("Selected restore execution is not available", StringComparison.OrdinalIgnoreCase),
-                "Real-profile selected restore gate should match RESTORE but stay closed. Text: " + window.SelectedRestoreExecutionGateTextValue);
+                && window.SelectedRestoreExecutionGateTextValue.Contains("Can execute: yes", StringComparison.OrdinalIgnoreCase)
+                && window.SelectedRestoreExecutionGateTextValue.Contains("Fixture or exact real-profile selected restore is available", StringComparison.OrdinalIgnoreCase)
+                && !window.SelectedRestoreExecutionGateTextValue.Contains("Selected restore execution is not available", StringComparison.OrdinalIgnoreCase),
+                "Exact real-profile selected restore gate should match RESTORE and open after clean revalidation. Text: " + window.SelectedRestoreExecutionGateTextValue);
             Assert(
                 window.SelectedRestoreExecutionGateTextValue.Contains("Real-Profile Restore Readiness: checked", StringComparison.OrdinalIgnoreCase)
-                && window.SelectedRestoreExecutionGateTextValue.Contains("Can support forward Quarantine: no", StringComparison.OrdinalIgnoreCase)
+                && window.SelectedRestoreExecutionGateTextValue.Contains("Can support forward Quarantine: yes", StringComparison.OrdinalIgnoreCase)
                 && window.SelectedRestoreExecutionGateTextValue.Contains("Selected manifest real-profile scope: yes", StringComparison.OrdinalIgnoreCase)
-                && window.SelectedRestoreExecutionGateTextValue.Contains("Selected real-profile Undo implemented: no", StringComparison.OrdinalIgnoreCase)
-                && window.SelectedRestoreExecutionGateTextValue.Contains("Selected-manifest real-profile Undo Quarantine remains unavailable", StringComparison.OrdinalIgnoreCase),
-                "Real-profile selected restore gate should show read-only restore readiness evidence without enabling restore. Text: " + window.SelectedRestoreExecutionGateTextValue);
+                && window.SelectedRestoreExecutionGateTextValue.Contains("Selected real-profile Undo implemented: yes", StringComparison.OrdinalIgnoreCase)
+                && !window.SelectedRestoreExecutionGateTextValue.Contains("Selected-manifest real-profile Undo Quarantine remains unavailable", StringComparison.OrdinalIgnoreCase),
+                "Exact real-profile selected restore gate should show restore readiness evidence with selected undo implemented. Text: " + window.SelectedRestoreExecutionGateTextValue);
             Assert(
                 window.SelectedRestoreExecutionGateTextValue.Contains("Selected Restore Pre-Execution Revalidation: checked", StringComparison.OrdinalIgnoreCase)
-                && window.SelectedRestoreExecutionGateTextValue.Contains("Can proceed: no", StringComparison.OrdinalIgnoreCase)
+                && window.SelectedRestoreExecutionGateTextValue.Contains("Can proceed: yes", StringComparison.OrdinalIgnoreCase)
                 && window.SelectedRestoreExecutionGateTextValue.Contains("Exact RESTORE matched: yes", StringComparison.OrdinalIgnoreCase)
-                && window.SelectedRestoreExecutionGateTextValue.Contains("Selected restore revalidation boundary: read-only evidence only", StringComparison.OrdinalIgnoreCase)
-                && window.SelectedRestoreExecutionGateTextValue.Contains("Selected-manifest real-profile Undo Quarantine remains unavailable", StringComparison.OrdinalIgnoreCase),
-                "Real-profile selected restore gate should show read-only selected restore pre-execution revalidation evidence without enabling restore. Text: " + window.SelectedRestoreExecutionGateTextValue);
+                && window.SelectedRestoreExecutionGateTextValue.Contains("real-profile selected restore reruns it immediately before movement", StringComparison.OrdinalIgnoreCase),
+                "Exact real-profile selected restore gate should show passing selected restore pre-execution revalidation evidence. Text: " + window.SelectedRestoreExecutionGateTextValue);
             AssertSelectedRestoreExecutionGateHelpCue(
                 window,
-                "Real-profile selected restore gate cue should stay blocked after exact RESTORE.",
-                "Gate is closed",
-                "Selected restore execution is not available",
-                "Real-profile/custom selected restore remains unavailable");
-            Assert(!window.CanExecuteSelectedRestore, "Real-profile selected restore execution should remain unavailable even with clean readiness and exact RESTORE.");
-            Assert(File.Exists(setup.QuarantinePath), "Blocked real-profile selected restore should leave the synthetic quarantine source in place.");
-            Assert(!File.Exists(setup.OriginalPath), "Blocked real-profile selected restore should not restore into the real profile.");
+                "Exact real-profile selected restore gate cue should open after exact RESTORE.",
+                "Gate is open",
+                "exact real-profile selected restore",
+                "reruns revalidation immediately before movement");
+            Assert(window.CanExecuteSelectedRestore, "Exact real-profile selected restore execution should become available after clean readiness, exact RESTORE, and passing revalidation.");
+            Assert(File.Exists(setup.QuarantinePath), "Gate-open real-profile selected restore test should leave the synthetic quarantine source in place until the user clicks restore.");
+            Assert(!File.Exists(setup.OriginalPath), "Gate-open real-profile selected restore test must not restore into the real profile during readiness review.");
         }
         finally
         {
@@ -3323,9 +3321,9 @@ internal sealed class MainWindowSmokeTests
     {
         Assert(
             window.SelectedRestoreConfirmationToolTipValue.Contains("Exact RESTORE", StringComparison.OrdinalIgnoreCase)
-            && window.SelectedRestoreConfirmationToolTipValue.Contains("fixture selected restore", StringComparison.OrdinalIgnoreCase)
-            && window.SelectedRestoreConfirmationToolTipValue.Contains("real-profile/custom", StringComparison.OrdinalIgnoreCase),
-            message + " Confirmation tooltip should expose fixture-only exact-confirmation boundaries.");
+            && window.SelectedRestoreConfirmationToolTipValue.Contains("exact real-profile selected restore", StringComparison.OrdinalIgnoreCase)
+            && window.SelectedRestoreConfirmationToolTipValue.Contains("custom selected restore remains unavailable", StringComparison.OrdinalIgnoreCase),
+            message + " Confirmation tooltip should expose selected restore exact-confirmation boundaries.");
         Assert(
             string.Equals(window.SelectedRestoreConfirmationAutomationHelpTextValue, window.SelectedRestoreConfirmationToolTipValue, StringComparison.Ordinal),
             message + " Confirmation automation help text should mirror the tooltip.");

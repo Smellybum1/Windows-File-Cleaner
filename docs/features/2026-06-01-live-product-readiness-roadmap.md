@@ -13,7 +13,7 @@ The roadmap should help future packets choose the next safest work while preserv
 ## Non-goals
 
 - Do not enable real-profile Quarantine execution.
-- Do not enable real-profile selected restore execution.
+- Do not enable real-profile selected restore execution in this roadmap packet.
 - Do not enable broad real-profile Undo Quarantine.
 - Do not enable permanent deletion.
 - Do not add persisted cleanup history.
@@ -31,13 +31,13 @@ The app is a local WPF desktop reviewer with:
 - read-only Storage Scan,
 - fixture-only Quarantine execution,
 - current-fixture Undo Quarantine,
-- fixture-only selected restore,
+- fixture selected restore and exact real-profile selected restore under ADR 0019,
 - read-only real-profile/custom Quarantine readiness and approval evidence,
 - read-only selected restore revalidation evidence,
 - a full `.cmd` MVP preflight,
 - a manual fixture review checklist.
 
-Real-profile movement, permanent deletion, and persisted cleanup history remain intentionally unavailable.
+Real-profile Quarantine movement, permanent deletion, and persisted cleanup history remain intentionally unavailable.
 
 ## Desired Behavior
 
@@ -46,10 +46,10 @@ Future work should follow this readiness sequence.
 | Readiness track | Current evidence | Done when | Next likely packet |
 |---|---|---|---|
 | Manual fixture acceptance | Full `.cmd` MVP preflight passed after the Checklist-Only Visible Fixture Next Step packet at `71cf15a`. Header/tab UI has user visual approval. The user ran the visible fixture review flow on 2026-06-01 and reported that it looks good. The fixture launcher can write an ignored `.local` acceptance notes template from the checklist, grouped by fixture review area, with repo path, Git branch/commit, worktree status at notes creation, .NET SDK, WPF app project/target framework/WPF flag, required preflight, post-preflight visible fixture command, preflight/worktree checkboxes, local-not-cleanup-history wording, and exact post-pass summary/completion commands embedded in the notes, then print the same commands for that notes file. Checklist-only output also repeats the exact notes-enabled visible fixture command and the no-preflight/no-fixture/no-WPF/no-scan/no-movement boundary. The latest ignored notes file was generated from clean `main` at commit `433064e` with `Worktree status at notes creation: clean`, but the formal checklist remains unfilled. A read-only summary helper can report latest ignored notes metadata, worktree status at notes creation, acceptance-evidence checkbox states, overall result, checklist totals, and issue/not-checked/not-recorded items with compact notes or prompt previews, and can fail fast with `-RequireComplete` while notes are incomplete. | The visible fixture pass is user-accepted for current UI/readiness confidence; formal checklist acceptance is done when the ignored notes record preflight/worktree evidence, an overall result, and no not-recorded checklist items. | Optionally complete the latest notes file and run the summary helper with `-RequireComplete`; otherwise move to fresh real-profile read-only retest after a new full preflight. |
-| Fresh real-profile read-only retest | User previously confirmed real-profile scan works and debounced search fixed sluggish typing. After the user-reported fixture visual pass, the user completed the requested full preflight plus WPF run against `C:\Users\moxhe` and reported that everything worked well, covering scan gate, read-only scan completion, search responsiveness, tab/header usability, Review Shortlist context, and preview-only Quarantine boundary. | Completed as user-reported read-only evidence; repeat after future code/workflow changes before crossing any movement boundary. | Move only to ADR 0019 selected real-profile restore implementation if the user explicitly approves that movement-boundary packet. |
-| Real-profile selected restore implementation | ADR 0019 and read-only selected restore revalidation evidence exist. | Exactly one selected real-profile Restore Manifest can restore through `UndoQuarantineExecutor` after fresh discovery, selected review, immediate revalidation, exact `RESTORE`, no original-path overwrite, result guidance, and explicit user-approved implementation. | Grill with Docs implementation packet for ADR 0019, with core and WPF tests, only after user approval. |
-| First real-profile Quarantine execution | ADR 0017/0018, root execution safety, pre-execution revalidation, restore readiness, and approval evidence exist as read-only models/output. | Exact `C:\Users\moxhe` can run a first limited real-profile Quarantine action after selected restore recovery is trusted, all readiness dimensions pass, exact `QUARANTINE` is typed, the batch is within 10 rows / 1 GB, and the user explicitly approves crossing the movement boundary. | Only after selected real-profile restore is implemented and manually trusted. |
-| Real-profile recovery confidence | Fixture current undo and fixture selected restore are implemented. Real-profile restore is currently read-only evidence only. | After a real-profile Quarantine action, the app can prove selected restore recovery on the created Restore Manifest without broad all-manifest restore or cleanup history. | Manual recovery proof after the first approved real-profile Quarantine packet. |
+| Fresh real-profile read-only retest | User previously confirmed real-profile scan works and debounced search fixed sluggish typing. After the user-reported fixture visual pass, the user completed the requested full preflight plus WPF run against `C:\Users\moxhe` and reported that everything worked well, covering scan gate, read-only scan completion, search responsiveness, tab/header usability, Review Shortlist context, and preview-only Quarantine boundary. | Completed as user-reported read-only evidence; repeat after future code/workflow changes before crossing any new movement boundary. | Already followed by the approved ADR 0019 selected real-profile restore implementation packet. |
+| Real-profile selected restore implementation | ADR 0019 is implemented in WPF for one selected exact `C:\Users\moxhe` Restore Manifest after selected readiness, exact `RESTORE`, and immediate revalidation. Automated WPF coverage opens a synthetic exact real-profile gate without executing movement and proves stale missing-quarantine paths keep the gate blocked. | Completed for implementation; manual trust is done only after the user intentionally selects a real-profile Restore Manifest and clicks restore after full preflight and review. | Manual trust pass only if the user explicitly wants to test selected real-profile restore. |
+| First real-profile Quarantine execution | ADR 0017/0018, root execution safety, pre-execution revalidation, restore readiness, approval evidence, and selected real-profile restore implementation exist. | Exact `C:\Users\moxhe` can run a first limited real-profile Quarantine action after selected restore recovery is manually trusted, all readiness dimensions pass, exact `QUARANTINE` is typed, the batch is within 10 rows / 1 GB, and the user explicitly approves crossing the movement boundary. | Only after selected real-profile restore is manually trusted. |
+| Real-profile recovery confidence | Fixture current undo, fixture selected restore, and exact real-profile selected restore implementation are available. | After a real-profile Quarantine action, the app can prove selected restore recovery on the created Restore Manifest without broad all-manifest restore or cleanup history. | Manual recovery proof after the first approved real-profile Quarantine packet. |
 | Release/packaging readiness | Local debug run and desktop shortcut target exist. | A repeatable release build or local install/update path exists, with README instructions and preflight/recovery docs still matching behavior. | Add packaging only after reversible real-profile cleanup is trusted. |
 | Later full cleanup expansion | Permanent deletion and persisted cleanup history are intentionally unavailable. | Only if the user chooses them after reversible Quarantine and recovery are trusted, with new ADRs, tests, recovery wording, and explicit approval. | Separate Grill with Docs packets; do not bundle with first real-profile Quarantine. |
 
@@ -91,7 +91,7 @@ Questions that can be deferred:
 ### Dependencies Between Decisions
 
 - Real-profile Quarantine depends on selected real-profile restore readiness.
-- Selected real-profile restore depends on ADR 0019 implementation and explicit user approval.
+- Selected real-profile restore manual trust depends on the implemented ADR 0019 path and explicit user approval for the specific restore click.
 - Permanent deletion and cleanup history depend on trusted reversible Quarantine/recovery first.
 - Packaging is lower risk after behavior is stable, but should not distract from safety gates.
 
@@ -254,7 +254,7 @@ ADRs added or skipped:
 
 Follow-up work:
 
-- Start real-profile selected restore implementation only after explicit user approval for the ADR 0019 movement-boundary packet.
+- Manually trust real-profile selected restore only after explicit user approval for the specific selected Restore Manifest.
 - Keep first selected real-profile restore selected-manifest-only, exact `C:\Users\moxhe`, exact `RESTORE`, immediate selected-restore revalidation, no original-path overwrite, Restore Manifest-only, no all-manifest restore, no cleanup history, no permanent deletion, and no action-folder cleanup.
 - Optionally fill `.local\fixture-review-acceptance\fixture-acceptance-20260601-132126.md` and run the summary helper with `-RequireComplete` if formal notes evidence is desired.
 

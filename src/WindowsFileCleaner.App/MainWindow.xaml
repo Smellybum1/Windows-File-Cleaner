@@ -1468,8 +1468,8 @@
                                         Content="Preview selected restore gate"
                                         MinWidth="210"
                                         IsEnabled="False"
-                                        ToolTip="Read-only selected restore confirmation gate for the selected Restore Manifest; exact RESTORE is required before fixture selected restore can execute."
-                                        AutomationProperties.HelpText="Read-only selected restore confirmation gate for the selected Restore Manifest; exact RESTORE is required before fixture selected restore can execute."
+                                        ToolTip="Read-only selected restore confirmation gate for the selected Restore Manifest; exact RESTORE is required before fixture or exact real-profile selected restore can execute."
+                                        AutomationProperties.HelpText="Read-only selected restore confirmation gate for the selected Restore Manifest; exact RESTORE is required before fixture or exact real-profile selected restore can execute."
                                         ToolTipService.ShowOnDisabled="True"
                                         Click="PreviewSelectedRestoreGateButton_Click" />
                                 <TextBlock Text="Confirmation"
@@ -1487,9 +1487,9 @@
                                         CornerRadius="9"
                                         Cursor="Help"
                                         ToolTipService.InitialShowDelay="250"
-                                        ToolTip="Selected restore gate. Exact RESTORE can open only fixture selected restore; real-profile/custom selected restore remains unavailable."
+                                        ToolTip="Selected restore gate. Exact RESTORE can open fixture or exact real-profile selected restore; custom selected restore remains unavailable."
                                         AutomationProperties.Name="Selected restore confirmation help cue"
-                                        AutomationProperties.HelpText="Selected restore gate. Exact RESTORE can open only fixture selected restore; real-profile/custom selected restore remains unavailable.">
+                                        AutomationProperties.HelpText="Selected restore gate. Exact RESTORE can open fixture or exact real-profile selected restore; custom selected restore remains unavailable.">
                                     <TextBlock Text="?"
                                                HorizontalAlignment="Center"
                                                VerticalAlignment="Center"
@@ -1502,16 +1502,16 @@
                                          Height="30"
                                          IsEnabled="False"
                                          VerticalContentAlignment="Center"
-                                         ToolTip="Selected restore gate. Exact RESTORE can open only fixture selected restore; real-profile/custom selected restore remains unavailable."
-                                         AutomationProperties.HelpText="Selected restore gate. Exact RESTORE can open only fixture selected restore; real-profile/custom selected restore remains unavailable."
+                                         ToolTip="Selected restore gate. Exact RESTORE can open fixture or exact real-profile selected restore; custom selected restore remains unavailable."
+                                         AutomationProperties.HelpText="Selected restore gate. Exact RESTORE can open fixture or exact real-profile selected restore; custom selected restore remains unavailable."
                                          ToolTipService.ShowOnDisabled="True"
                                          TextChanged="SelectedRestoreConfirmationBox_TextChanged" />
                                 <Button x:Name="ExecuteSelectedRestoreButton"
-                                        Content="Restore selected fixture manifest"
+                                        Content="Restore selected manifest"
                                         MinWidth="215"
                                         IsEnabled="False"
-                                        ToolTip="Fixture selected restore only after selected manifest readiness and exact RESTORE; real-profile/custom selected restore remains unavailable."
-                                        AutomationProperties.HelpText="Fixture selected restore only after selected manifest readiness and exact RESTORE; real-profile/custom selected restore remains unavailable."
+                                        ToolTip="Selected restore only after selected manifest readiness and exact RESTORE; real-profile selected restore also reruns immediate revalidation. Custom selected restore remains unavailable."
+                                        AutomationProperties.HelpText="Selected restore only after selected manifest readiness and exact RESTORE; real-profile selected restore also reruns immediate revalidation. Custom selected restore remains unavailable."
                                         ToolTipService.ShowOnDisabled="True"
                                         Click="ExecuteSelectedRestoreButton_Click" />
                             </WrapPanel>
@@ -1529,9 +1529,9 @@
                                         CornerRadius="9"
                                         Cursor="Help"
                                         ToolTipService.InitialShowDelay="250"
-                                        ToolTip="Selected Restore Execution Gate appears after Preview selected restore gate. The gate text is review context; only the separate fixture selected restore button can restore files after selected manifest readiness and exact RESTORE. Real-profile/custom selected restore remains unavailable. This cue does not create folders, move files, restore files, delete files, write manifests, clean up folders, or approve restore."
+                                        ToolTip="Selected Restore Execution Gate appears after Preview selected restore gate. The gate text is review context; only the separate selected restore button can restore files after selected manifest readiness and exact RESTORE. Custom selected restore remains unavailable; real-profile selected restore is selected-manifest only and reruns revalidation immediately before movement. This cue does not create folders, move files, restore files, delete files, write manifests, clean up folders, or approve restore."
                                         AutomationProperties.Name="Selected Restore Execution Gate help cue"
-                                        AutomationProperties.HelpText="Selected Restore Execution Gate appears after Preview selected restore gate. The gate text is review context; only the separate fixture selected restore button can restore files after selected manifest readiness and exact RESTORE. Real-profile/custom selected restore remains unavailable. This cue does not create folders, move files, restore files, delete files, write manifests, clean up folders, or approve restore.">
+                                        AutomationProperties.HelpText="Selected Restore Execution Gate appears after Preview selected restore gate. The gate text is review context; only the separate selected restore button can restore files after selected manifest readiness and exact RESTORE. Custom selected restore remains unavailable; real-profile selected restore is selected-manifest only and reruns revalidation immediately before movement. This cue does not create folders, move files, restore files, delete files, write manifests, clean up folders, or approve restore.">
                                     <TextBlock Text="?"
                                                HorizontalAlignment="Center"
                                                VerticalAlignment="Center"
@@ -1544,8 +1544,8 @@
                                            FontFamily="Consolas"
                                            FontSize="12"
                                            TextWrapping="Wrap"
-                                           ToolTip="Selected Restore Execution Gate appears after Preview selected restore gate. The gate text is review context; only the separate fixture selected restore button can restore files after selected manifest readiness and exact RESTORE. Real-profile/custom selected restore remains unavailable. This cue does not create folders, move files, restore files, delete files, write manifests, clean up folders, or approve restore."
-                                           AutomationProperties.HelpText="Selected Restore Execution Gate appears after Preview selected restore gate. The gate text is review context; only the separate fixture selected restore button can restore files after selected manifest readiness and exact RESTORE. Real-profile/custom selected restore remains unavailable. This cue does not create folders, move files, restore files, delete files, write manifests, clean up folders, or approve restore." />
+                                           ToolTip="Selected Restore Execution Gate appears after Preview selected restore gate. The gate text is review context; only the separate selected restore button can restore files after selected manifest readiness and exact RESTORE. Custom selected restore remains unavailable; real-profile selected restore is selected-manifest only and reruns revalidation immediately before movement. This cue does not create folders, move files, restore files, delete files, write manifests, clean up folders, or approve restore."
+                                           AutomationProperties.HelpText="Selected Restore Execution Gate appears after Preview selected restore gate. The gate text is review context; only the separate selected restore button can restore files after selected manifest readiness and exact RESTORE. Custom selected restore remains unavailable; real-profile selected restore is selected-manifest only and reruns revalidation immediately before movement. This cue does not create folders, move files, restore files, delete files, write manifests, clean up folders, or approve restore." />
                             </DockPanel>
                             <TextBlock x:Name="RestoreReadinessPreviewText"
                                        Text="Read-only all-manifest readiness appears after using Preview all-manifest readiness."

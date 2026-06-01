@@ -186,6 +186,8 @@ Assumptions:
 
 Completed on: 2026-05-31
 
+Later implementation note: `docs/features/2026-06-01-real-profile-selected-restore-execution.md` implements this contract for one selected exact `C:\Users\moxhe` Restore Manifest while keeping real-profile Quarantine execution, all-manifest restore, action-folder cleanup, permanent deletion, and cleanup history unavailable.
+
 What changed:
 
 - Added ADR 0019 for the Real-Profile Selected Restore Execution contract.

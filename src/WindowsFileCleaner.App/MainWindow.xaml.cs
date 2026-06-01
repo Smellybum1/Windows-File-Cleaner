@@ -2454,6 +2454,9 @@ public partial class MainWindow : Window
             SelectedRestoreConfirmationBox.Text);
         _currentRealProfileRestoreReadiness = BuildRealProfileRestoreReadinessForDisplay();
         _currentSelectedRestorePreExecutionRevalidation = BuildSelectedRestorePreExecutionRevalidationForDisplay();
+        _currentSelectedRestoreExecutionGate = ApplySelectedRestorePreExecutionRevalidationBlockers(
+            _currentSelectedRestoreExecutionGate,
+            _currentSelectedRestorePreExecutionRevalidation);
         SetSelectedRestoreExecutionGateText(
             FormatSelectedRestoreExecutionGate(
                 _currentSelectedRestoreConfirmationDraft,
@@ -3498,7 +3501,7 @@ public partial class MainWindow : Window
             && _currentSelectedRestoreConfirmationDraft is not null
             && _currentSelectedRestoreResult is null;
         ExecuteSelectedRestoreButton.IsEnabled = !_isScanning
-            && _currentSelectedRestoreExecutionGate?.CanExecute == true
+            && CanExecuteSelectedRestoreForCurrentGate()
             && _currentSelectedRestoreResult is null;
         UpdateRestoreManifestReviewSummary();
     }
@@ -3545,8 +3548,8 @@ public partial class MainWindow : Window
         if (_currentSelectedRestoreResult is not null)
         {
             var resultState = _currentSelectedRestoreResult.Succeeded
-                ? $"fixture selected restore already ran: {_currentSelectedRestoreResult.RestoredCount:N0} restored"
-                : $"fixture selected restore needs recovery review: {_currentSelectedRestoreResult.RestoredCount:N0} restored/{_currentSelectedRestoreResult.FailedCount:N0} failed";
+                ? $"selected restore already ran: {_currentSelectedRestoreResult.RestoredCount:N0} restored"
+                : $"selected restore needs recovery review: {_currentSelectedRestoreResult.RestoredCount:N0} restored/{_currentSelectedRestoreResult.FailedCount:N0} failed";
             return ($"Manifest review summary: {discoveryState}; {resultState}; rediscover manifests and rescan before more restore review. No files were modified by this summary.", _currentSelectedRestoreResult.Succeeded ? RestoreManifestReviewSummaryStyle.Success : RestoreManifestReviewSummaryStyle.Warning);
         }
 
@@ -3699,7 +3702,33 @@ public partial class MainWindow : Window
             return false;
         }
 
-        return CleanupScopeSafetyNoteBuilder.Build(cleanupScopePath).IsFixtureScope;
+        return CleanupScopeSafetyNoteBuilder.Build(cleanupScopePath).IsFixtureScope
+            || IsDefaultRealProfileCleanupScope(cleanupScopePath);
+    }
+
+    private bool CanExecuteSelectedRestoreForCurrentGate()
+    {
+        if (_currentSelectedRestoreExecutionGate?.CanExecute != true
+            || _currentSelectedRestoreManifestReview?.SelectedManifest is null)
+        {
+            return false;
+        }
+
+        var cleanupScopePath = _currentSelectedRestoreManifestReview.SelectedManifest.CleanupScopePath;
+        if (CleanupScopeSafetyNoteBuilder.Build(cleanupScopePath).IsFixtureScope)
+        {
+            return true;
+        }
+
+        return IsDefaultRealProfileCleanupScope(cleanupScopePath)
+            && _currentSelectedRestorePreExecutionRevalidation?.CanProceed == true;
+    }
+
+    private bool IsSelectedRestoreManifestRealProfileScope()
+    {
+        var cleanupScopePath = _currentSelectedRestoreManifestReview?.SelectedManifest?.CleanupScopePath;
+        return !string.IsNullOrWhiteSpace(cleanupScopePath)
+            && IsDefaultRealProfileCleanupScope(cleanupScopePath);
     }
 
     private RestoreManifest? FindSelectedRestoreManifest()
@@ -3915,6 +3944,9 @@ public partial class MainWindow : Window
             SelectedRestoreConfirmationBox.Text);
         _currentRealProfileRestoreReadiness = BuildRealProfileRestoreReadinessForDisplay();
         _currentSelectedRestorePreExecutionRevalidation = BuildSelectedRestorePreExecutionRevalidationForDisplay();
+        _currentSelectedRestoreExecutionGate = ApplySelectedRestorePreExecutionRevalidationBlockers(
+            _currentSelectedRestoreExecutionGate,
+            _currentSelectedRestorePreExecutionRevalidation);
         SetSelectedRestoreExecutionGateText(
             FormatSelectedRestoreExecutionGate(
                 _currentSelectedRestoreConfirmationDraft,
@@ -3986,6 +4018,41 @@ public partial class MainWindow : Window
             return;
         }
 
+        if (IsDefaultRealProfileCleanupScope(manifest.CleanupScopePath))
+        {
+            var immediateGate = SelectedRestoreExecutionGateBuilder.Build(
+                _currentSelectedRestoreConfirmationDraft,
+                SelectedRestoreConfirmationBox.Text);
+            var immediateRevalidation = SelectedRestorePreExecutionRevalidationBuilder.Build(
+                _currentSelectedRestoreManifestReview,
+                _currentSelectedRestoreConfirmationDraft,
+                immediateGate,
+                DateTimeOffset.UtcNow,
+                isSelectedManifestRealProfileUndoImplemented: true);
+
+            _currentSelectedRestorePreExecutionRevalidation = immediateRevalidation;
+            _currentSelectedRestoreExecutionGate = ApplySelectedRestorePreExecutionRevalidationBlockers(
+                immediateGate,
+                immediateRevalidation);
+            _currentRealProfileRestoreReadiness = BuildRealProfileRestoreReadinessForDisplay();
+
+            if (!immediateRevalidation.CanProceed)
+            {
+                SetSelectedRestoreExecutionGateText(
+                    FormatSelectedRestoreExecutionGate(
+                        _currentSelectedRestoreConfirmationDraft,
+                        _currentSelectedRestoreExecutionGate,
+                        _currentRealProfileRestoreReadiness,
+                        _currentSelectedRestorePreExecutionRevalidation,
+                        _currentSelectedRestoreResult),
+                    _currentSelectedRestoreExecutionGate,
+                    _currentSelectedRestoreResult);
+                UpdateQuarantineManifestDiscoveryControls();
+                StatusText.Text = "Selected real-profile restore revalidation is blocked. No files were modified.";
+                return;
+            }
+        }
+
         _currentSelectedRestoreResult = UndoQuarantineExecutor.Undo(manifest);
         _currentSelectedRestoreExecutionGate = _currentSelectedRestoreExecutionGate with
         {
@@ -4006,9 +4073,12 @@ public partial class MainWindow : Window
         UpdateQuarantineManifestDiscoveryControls();
 
         var result = _currentSelectedRestoreResult;
+        var selectedRestoreScope = IsDefaultRealProfileCleanupScope(manifest.CleanupScopePath)
+            ? "Real-profile Selected Restore"
+            : "Fixture Selected Restore";
         StatusText.Text = result.Succeeded
-            ? $"Fixture Selected Restore completed: {result.RestoredCount:N0} restored. Rediscover manifests and rescan before further review."
-            : $"Fixture Selected Restore needs recovery review: {result.RestoredCount:N0} restored, {result.FailedCount:N0} failed. Rediscover manifests and rescan before further review.";
+            ? $"{selectedRestoreScope} completed: {result.RestoredCount:N0} restored. Rediscover manifests and rescan before further review."
+            : $"{selectedRestoreScope} needs recovery review: {result.RestoredCount:N0} restored, {result.FailedCount:N0} failed. Rediscover manifests and rescan before further review.";
     }
 
     public void UndoQuarantineForCurrentExecution()
@@ -4409,7 +4479,7 @@ public partial class MainWindow : Window
         lines.Add(
             $"Restore readiness entries: restorable {restoreReadiness.RestorableEntryCount:N0}, blocked {restoreReadiness.BlockedEntryCount:N0}, recovery review {restoreReadiness.RecoveryReviewEntryCount:N0}, already restored {restoreReadiness.AlreadyRestoredEntryCount:N0}, not moved {restoreReadiness.NotMovedEntryCount:N0}, size {restoreReadiness.RestorableSizeDisplay}.");
         lines.Add($"Restore readiness selected manifest: {selectedPath}");
-        lines.Add("Restore readiness boundary: read-only evidence only; it does not restore files, write manifests, move files, or approve cleanup.");
+        lines.Add("Restore readiness boundary: readiness evidence only; it does not restore files, write manifests, move files, or approve cleanup.");
 
         foreach (var blocker in restoreReadiness.Blockers.Take(6))
         {
@@ -4442,7 +4512,7 @@ public partial class MainWindow : Window
         lines.Add(
             $"Selected restore revalidation entries: restorable {revalidation.RestorableEntryCount:N0}, blocked {revalidation.BlockedEntryCount:N0}, recovery review {revalidation.RecoveryReviewEntryCount:N0}, already restored {revalidation.AlreadyRestoredEntryCount:N0}, not moved {revalidation.NotMovedEntryCount:N0}, size {revalidation.RestorableSizeDisplay}.");
         lines.Add($"Selected restore revalidation manifest: {selectedPath}");
-        lines.Add("Selected restore revalidation boundary: read-only evidence only; it does not restore files, write manifests, move files, or approve restore, and must run again immediately before any future real-profile selected restore movement.");
+        lines.Add("Selected restore revalidation boundary: evidence only in the preview; real-profile selected restore reruns it immediately before movement.");
 
         foreach (var blocker in revalidation.Blockers.Take(6))
         {
@@ -4628,7 +4698,7 @@ public partial class MainWindow : Window
             $"Quarantine root: {discovery.QuarantineRootPath}",
             $"Actions root: {discovery.ActionsRootPath}",
             $"Discovered manifests: {discovery.ManifestCount:N0} | Issues: {discovery.Issues.Count:N0}",
-            "No all-manifest restore action is available from this discovery pane; fixture selected restore must go through selected manifest readiness and the selected restore gate."
+            "No all-manifest restore action is available from this discovery pane; selected restore must go through selected manifest readiness and the selected restore gate."
         };
 
         foreach (var summary in discovery.Manifests.Take(8))
@@ -4663,7 +4733,7 @@ public partial class MainWindow : Window
             $"Actions root: {preview.ActionsRootPath}",
             $"Manifests: {preview.ManifestCount:N0} | Restorable manifests: {preview.RestorableManifestCount:N0} | Restorable entries: {preview.RestorableEntryCount:N0} | Blocked entries: {preview.BlockedEntryCount:N0} | Recovery review entries: {preview.RecoveryReviewEntryCount:N0}",
             $"Discovery issues: {preview.DiscoveryIssues.Count:N0}",
-            "No all-manifest restore action is available from this readiness preview; fixture selected restore must go through selected manifest readiness and the selected restore gate."
+            "No all-manifest restore action is available from this readiness preview; selected restore must go through selected manifest readiness and the selected restore gate."
         };
 
         foreach (var manifest in preview.Manifests.Take(6))
@@ -4700,7 +4770,7 @@ public partial class MainWindow : Window
             $"Quarantine root: {review.QuarantineRootPath}",
             $"Actions root: {review.ActionsRootPath}",
             $"Selected manifest: {selectedPath}",
-            "Selected Restore Manifest Review is readiness evidence only; fixture selected restore must go through the selected restore gate."
+            "Selected Restore Manifest Review is readiness evidence only; selected restore must go through the selected restore gate."
         };
 
         foreach (var issue in review.SelectionIssues.Take(6))
@@ -4744,7 +4814,7 @@ public partial class MainWindow : Window
             $"Can execute: {FormatYesNo(gate.CanExecute)}",
             selectedRestoreResult is null
                 ? "No files were modified by this selected restore gate."
-                : "Fixture Selected Restore has restored synthetic files where possible. Current scan, discovery, and readiness rows are stale."
+                : "Selected Restore has restored files where possible. Current scan, discovery, and readiness rows are stale."
         };
 
         foreach (var blocker in gate.Blockers.Take(8))
@@ -4806,7 +4876,7 @@ public partial class MainWindow : Window
             _currentSelectedRestoreConfirmationDraft,
             _currentSelectedRestoreExecutionGate,
             DateTimeOffset.UtcNow,
-            isSelectedManifestRealProfileUndoImplemented: false);
+            isSelectedManifestRealProfileUndoImplemented: IsSelectedRestoreManifestRealProfileScope());
     }
 
     private SelectedRestorePreExecutionRevalidation? BuildSelectedRestorePreExecutionRevalidationForDisplay()
@@ -4824,7 +4894,25 @@ public partial class MainWindow : Window
             _currentSelectedRestoreConfirmationDraft,
             _currentSelectedRestoreExecutionGate,
             DateTimeOffset.UtcNow,
-            isSelectedManifestRealProfileUndoImplemented: false);
+            isSelectedManifestRealProfileUndoImplemented: IsSelectedRestoreManifestRealProfileScope());
+    }
+
+    private static SelectedRestoreExecutionGate ApplySelectedRestorePreExecutionRevalidationBlockers(
+        SelectedRestoreExecutionGate gate,
+        SelectedRestorePreExecutionRevalidation? revalidation)
+    {
+        if (revalidation is null || revalidation.CanProceed)
+        {
+            return gate;
+        }
+
+        var blockers = gate.Blockers
+            .Concat(["Selected restore pre-execution revalidation must pass immediately before real-profile selected restore execution."])
+            .Concat(revalidation.Blockers.Select(blocker => $"Selected restore pre-execution revalidation: {blocker}"))
+            .Distinct(StringComparer.Ordinal)
+            .ToArray();
+
+        return gate with { Blockers = blockers };
     }
 
     private static bool IsDefaultRealProfileCleanupScope(string cleanupScopePath)
@@ -4846,28 +4934,28 @@ public partial class MainWindow : Window
         var state = gate is null
             ? "Preview selected restore gate after selected manifest readiness to review exact RESTORE confirmation."
             : selectedRestoreResult is not null
-            ? "Fixture Selected Restore has already run; rediscover manifests and rescan before further review."
+            ? "Selected Restore has already run; rediscover manifests and rescan before further review."
             : gate.CanExecute
-            ? "Gate is open for fixture selected restore after selected manifest readiness and exact RESTORE confirmation."
+            ? "Gate is open for fixture or exact real-profile selected restore after selected manifest readiness, exact RESTORE confirmation, and any required real-profile revalidation."
             : gate.HasBlockers
             ? $"Gate is closed: {gate.Blockers[0]}"
             : "Gate is closed until exact RESTORE confirmation.";
 
-        return $"Selected Restore Execution Gate: {state} The gate text is review context; only the separate fixture selected restore button can restore files after selected manifest readiness and exact RESTORE. Real-profile/custom selected restore remains unavailable. This cue does not create folders, move files, restore files, delete files, write manifests, clean up folders, or approve restore.";
+        return $"Selected Restore Execution Gate: {state} The gate text is review context; only the separate selected restore button can restore files after selected manifest readiness and exact RESTORE. Custom selected restore remains unavailable; real-profile selected restore is selected-manifest only and reruns revalidation immediately before movement. This cue does not create folders, move files, restore files, delete files, write manifests, clean up folders, or approve restore.";
     }
 
     private static string FormatSelectedRestoreExecutionScopeStatus(bool isExecutionImplemented)
     {
         return isExecutionImplemented
-            ? "Fixture-only selected restore is available only after selected manifest readiness and exact RESTORE confirmation."
-            : "Preview only for this selected Restore Manifest; real-profile and custom selected restore remain unavailable.";
+            ? "Fixture or exact real-profile selected restore is available only after selected manifest readiness, exact RESTORE confirmation, and required real-profile revalidation."
+            : "Preview only for this selected Restore Manifest; custom and non-exact real-profile selected restore remain unavailable.";
     }
 
     private static string FormatSelectedRestoreApprovalBoundary(bool isExecutionImplemented)
     {
         return isExecutionImplemented
-            ? "Selected Restore Manifest Review and readiness preview are not restore approval; exact RESTORE can open only fixture selected restore in this build."
-            : "Selected Restore Manifest Review and readiness preview are not restore approval; real-profile and custom selected restore remain unavailable.";
+            ? "Selected Restore Manifest Review and readiness preview are not restore approval; exact RESTORE can open only fixture or exact real-profile selected restore in this build."
+            : "Selected Restore Manifest Review and readiness preview are not restore approval; custom and non-exact real-profile selected restore remain unavailable.";
     }
 
     private static void AddRestoreReadinessManifestLines(

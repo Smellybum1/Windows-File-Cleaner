@@ -3626,9 +3626,11 @@ internal sealed class StorageScanTests
             selectedRestoreMethod.Contains("_currentSelectedRestoreExecutionGate?.CanExecute != true", StringComparison.Ordinal)
             && selectedRestoreMethod.Contains("_currentSelectedRestoreConfirmationDraft is null", StringComparison.Ordinal)
             && selectedRestoreMethod.Contains("FindSelectedRestoreManifest()", StringComparison.Ordinal)
+            && selectedRestoreMethod.Contains("SelectedRestorePreExecutionRevalidationBuilder.Build", StringComparison.Ordinal)
+            && selectedRestoreMethod.Contains("immediateRevalidation.CanProceed", StringComparison.Ordinal)
             && selectedRestoreMethod.IndexOf("UndoQuarantineExecutor.Undo(", StringComparison.Ordinal)
-                > selectedRestoreMethod.IndexOf("FindSelectedRestoreManifest()", StringComparison.Ordinal),
-            "WPF selected restore execution should remain behind the selected restore gate and current discovery lookup.");
+                > selectedRestoreMethod.IndexOf("immediateRevalidation.CanProceed", StringComparison.Ordinal),
+            "WPF selected restore execution should remain behind the selected restore gate, current discovery lookup, and immediate real-profile revalidation.");
 
         var undoMethod = ExtractMethodText(sourceLines, "public void UndoQuarantineForCurrentExecution()");
         Assert(
@@ -3648,8 +3650,9 @@ internal sealed class StorageScanTests
             undoAvailabilityMethod.Contains("IsFixtureQuarantineExecutionAvailable()", StringComparison.Ordinal),
             "WPF current-fixture undo availability should depend on fixture Quarantine execution availability.");
         Assert(
-            selectedRestoreAvailabilityMethod.Contains(".IsFixtureScope", StringComparison.Ordinal),
-            "WPF selected restore execution availability should remain fixture-scope based.");
+            selectedRestoreAvailabilityMethod.Contains(".IsFixtureScope", StringComparison.Ordinal)
+            && selectedRestoreAvailabilityMethod.Contains("IsDefaultRealProfileCleanupScope(cleanupScopePath)", StringComparison.Ordinal),
+            "WPF selected restore execution availability should remain limited to fixture scope or the exact real-profile cleanup scope.");
     }
 
     public void WpfRealProfileApprovalEvidenceStaysDisplayOnly()
