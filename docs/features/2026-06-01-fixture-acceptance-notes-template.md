@@ -187,6 +187,7 @@ What changed:
 - Later packet `2026-06-01-fixture-checklist-section-grouping.md` added matching section headings to the notes template while preserving the same numbered prompts.
 - Later packet `2026-06-01-fixture-acceptance-evidence-header.md` added repository, Git branch/commit, preflight command, visible fixture command, and local evidence checkboxes to the notes header.
 - Later packet `2026-06-01-fixture-acceptance-build-context-header.md` added .NET SDK, WPF app project, WPF app target framework, and WPF enabled evidence to the notes header.
+- Later packet `2026-06-01-fixture-acceptance-current-commit-notes-preview.md` generated a current-commit checklist-only notes preview at `.local\fixture-review-acceptance\fixture-acceptance-20260601-112248.md`, stamped with commit `fd8e1d4` and the build-context fields.
 - Updated docs and handoff/progress notes.
 
 Files changed:
@@ -207,6 +208,7 @@ Tests run:
 - `cmd.exe /c tools\Start-MvpFixtureReview.cmd -ChecklistOnly -WriteAcceptanceNotes`
 - `cmd.exe /c tools\Start-MvpFixtureReview.cmd -WhatIf -SkipPreflight -SkipLaunch -WriteAcceptanceNotes`
 - `git diff --check`
+- Later current-commit notes-preview packet inspected `.local\fixture-review-acceptance\fixture-acceptance-20260601-112248.md` after `cmd.exe /c tools\Start-MvpFixtureReview.cmd -ChecklistOnly -WriteAcceptanceNotes`.
 
 Docs updated:
 
