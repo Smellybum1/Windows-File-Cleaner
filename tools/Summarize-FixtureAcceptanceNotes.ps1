@@ -82,6 +82,28 @@ function Get-CheckedLabel {
     return "Not recorded"
 }
 
+function Get-CheckboxEvidenceState {
+    param(
+        [string[]]$Lines,
+
+        [Parameter(Mandatory)]
+        [string]$Label
+    )
+
+    $escapedLabel = [regex]::Escape($Label)
+    foreach ($line in $Lines) {
+        if ($line -match "^- \[[xX]\] $escapedLabel$") {
+            return "Recorded"
+        }
+
+        if ($line -match "^- \[ \] $escapedLabel$") {
+            return "Not recorded"
+        }
+    }
+
+    return "Missing"
+}
+
 function Get-NotesSnippet {
     param(
         [string[]]$Lines,
@@ -239,6 +261,9 @@ Write-Host ("WPF app: {0}; {1}; WPF enabled: {2}" -f
     (Get-FirstMetadataValue -Lines $lines -Prefix "- WPF app project:"),
     (Get-FirstMetadataValue -Lines $lines -Prefix "- WPF app target framework:"),
     (Get-FirstMetadataValue -Lines $lines -Prefix "- WPF enabled:"))
+Write-Host ("Acceptance evidence: preflight passed: {0}; worktree clean/intentional: {1}" -f
+    (Get-CheckboxEvidenceState -Lines $lines -Label "Preflight passed immediately before this visible fixture pass."),
+    (Get-CheckboxEvidenceState -Lines $lines -Label "Worktree was clean or intentional changes were recorded before launch."))
 Write-Host ("Overall result: {0}" -f $overallResult)
 Write-Host ("Checklist totals: {0} pass, {1} issue, {2} not checked, {3} not recorded" -f $passCount, $issueCount, $notCheckedCount, $openCount)
 
