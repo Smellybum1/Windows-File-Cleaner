@@ -3363,11 +3363,13 @@ It is discovery and status review only, not Undo Quarantine execution and not pe
 ### Restore Manifest Summary
 
 Status: draft
-Last reviewed: 2026-05-29
+Last reviewed: 2026-06-01
 
 #### Definition
 
 Restore Manifest Summary is a compact read-only status view of one discovered Restore Manifest.
+
+It can appear in WPF discovery output or in terminal-only local tooling that summarizes action-scoped Restore Manifests under a selected Quarantine Root.
 
 #### Examples
 
@@ -3377,17 +3379,20 @@ Restore Manifest Summary is a compact read-only status view of one discovered Re
 - Entry count and total size.
 - Moved/restored/failed counts.
 - Recovery-review flag.
+- Terminal-only summary of discovered action manifests under `D:\WindowsFileCleanerQuarantine`.
 
 #### Non-examples
 
 - The full Restore Manifest JSON.
 - Approval to restore.
 - Cleanup history.
+- A broad or all-manifest restore action.
 
 #### Lifecycle
 
 - Created from a valid discovered Restore Manifest.
 - Shown in Quarantine Manifest Discovery.
+- Printed by local read-only summary tooling on demand.
 - Discarded when the Quarantine Root changes or discovery is rerun.
 
 #### Relationships
@@ -3398,7 +3403,9 @@ Restore Manifest Summary is a compact read-only status view of one discovered Re
 #### Code implications
 
 - Use `RestoreManifestSummary`.
+- Use `Summarize-RestoreManifests` for local terminal-only summary tooling.
 - Keep it read-only and derived from manifest metadata.
+- The summary tool must not launch WPF, scan, move, restore, delete, write manifests, approve cleanup, or create cleanup history.
 
 ### Selected Restore Manifest Review
 

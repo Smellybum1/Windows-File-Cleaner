@@ -22,6 +22,7 @@ Fresh-thread handoff notes live in `docs/codex/thread-handoff.md`.
 - The visible WPF app can restore a selected discovered fixture Restore Manifest after selected manifest readiness and exact `RESTORE` confirmation.
 - The visible WPF app can restore exactly one selected real-profile Restore Manifest whose Cleanup Scope is exactly `C:\Users\moxhe` after selected manifest readiness, exact `RESTORE`, and immediate selected-restore revalidation; Codex and automated tests do not run this movement.
 - Cross-volume selected restore for directories uses the same guarded copy-then-delete directory fallback as cross-volume Quarantine. The first live selected restore retry for the first real-profile Quarantine manifest succeeded by user report with `Restored 1, failed 0`; follow-up rediscovery showed the manifest restored/already restored, rescan completed normally, and the restored `pip\cache\http\b\c` path appeared again.
+- `.\tools\Summarize-RestoreManifests.cmd` can summarize action-scoped Restore Manifests under a selected Quarantine Root without launching WPF, scanning, moving, restoring, deleting, writing manifests, approving cleanup, or creating cleanup history.
 - The visible WPF app keeps selected restore execution unavailable for custom non-fixture Restore Manifests and non-exact real-profile Restore Manifests.
 - Discovery, selected-manifest review, and restore-readiness panes live in the Quarantine tab's `Restore Manifest Review` panel and do not expose all-manifest restore actions; selected restore goes through selected manifest readiness and the selected restore gate.
 - The Restore Manifest review summary compactly names discovery, selected-manifest readiness, all-manifest readiness, selected restore gate, and selected restore result state with read-only/no-restore tooltip and automation help text.
@@ -249,6 +250,22 @@ dotnet run --project src\WindowsFileCleaner.App -- --scope "C:\Users\moxhe"
 
 Stop there. Do not use this trust test as approval for real-profile Quarantine execution.
 
+## Restore Manifest Summary
+
+To summarize action-scoped Restore Manifests under the default Quarantine Root without restoring anything:
+
+```powershell
+.\tools\Summarize-RestoreManifests.cmd
+```
+
+To summarize a specific Quarantine Root and include entry-level paths:
+
+```powershell
+.\tools\Summarize-RestoreManifests.cmd -QuarantineRoot "D:\WindowsFileCleanerQuarantine" -ShowEntries
+```
+
+The summary helper reads `actions\*\restore-manifest.json`, reports manifest counts, entry status counts, size, cleanup scopes, undo-work and recovery-review flags, and discovery issues. It is read-only: it does not launch WPF, scan, move, restore, delete, write manifests, approve cleanup, or create cleanup history. Use `-RequireAny` when a verification step should fail if no valid Restore Manifests are found.
+
 ## Run The App
 
 ```powershell
@@ -319,8 +336,9 @@ The intended review flow is:
 14. Select one discovered Restore Manifest after checking the selected manifest `?` help cue, then use `Preview selected manifest readiness` when you want one-action blocker evidence before any future broad Undo Quarantine.
 15. Use `Preview selected restore gate` and type `RESTORE` after checking the selected restore confirmation `?` help cue; fixture selected manifests can be restored, and exact real-profile selected manifests can be restored only after passing immediate revalidation. Custom and non-exact real-profile selected restore stays unavailable.
 16. Use `Preview all-manifest readiness` after checking its `?` help cue when you want read-only blocker evidence across all discovered manifests.
-17. For the exact real-profile scope `C:\Users\moxhe`, use `Quarantine included shortlist` only for a specifically approved first-phase batch after ADR 0018 readiness, exact `QUARANTINE`, approval evidence, and immediate revalidation pass. Broad Undo stays unavailable; recovery goes through `Discover manifests` and selected restore readiness.
-18. Stop before custom cleanup execution, broad Undo, permanent deletion, or cleanup history.
+17. Use `.\tools\Summarize-RestoreManifests.cmd` when you want terminal-only Restore Manifest status without launching WPF or restoring anything.
+18. For the exact real-profile scope `C:\Users\moxhe`, use `Quarantine included shortlist` only for a specifically approved first-phase batch after ADR 0018 readiness, exact `QUARANTINE`, approval evidence, and immediate revalidation pass. Broad Undo stays unavailable; recovery goes through `Discover manifests` and selected restore readiness.
+19. Stop before custom cleanup execution, broad Undo, permanent deletion, or cleanup history.
 
 ## Not Implemented Yet
 
