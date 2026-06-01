@@ -80,6 +80,18 @@ function Write-FixtureReviewChecklist {
     }
 }
 
+function Write-FixtureAcceptanceNotesNextSteps {
+    param(
+        [Parameter(Mandatory)]
+        [string]$NotesPath
+    )
+
+    Write-Host "After the visible pass, fill the notes file, then run:"
+    Write-Host ".\tools\Summarize-FixtureAcceptanceNotes.cmd -Path `"$NotesPath`""
+    Write-Host ".\tools\Summarize-FixtureAcceptanceNotes.cmd -Path `"$NotesPath`" -RequireComplete"
+    Write-Host "These summary commands read ignored notes only; they do not launch WPF, scan, move, restore, delete, or create cleanup history."
+}
+
 function Get-FixtureReviewGitValue {
     param(
         [Parameter(Mandatory)]
@@ -267,6 +279,7 @@ if ($ChecklistOnly) {
         $notesPath = New-FixtureAcceptanceNotes -FixturePath $fixtureFullPath
         Write-Host ""
         Write-Host "Fixture acceptance notes template: $notesPath"
+        Write-FixtureAcceptanceNotesNextSteps -NotesPath $notesPath
     }
     return
 }
@@ -294,6 +307,7 @@ try {
         $notesPath = New-FixtureAcceptanceNotes -FixturePath $fixtureFullPath
         Write-Host ""
         Write-Host "Fixture acceptance notes template: $notesPath"
+        Write-FixtureAcceptanceNotesNextSteps -NotesPath $notesPath
     }
 
     if (-not $SkipLaunch) {

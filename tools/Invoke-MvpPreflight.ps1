@@ -77,6 +77,7 @@ try {
     Write-Host ".\tools\Start-MvpFixtureReview.cmd -SkipPreflight -WriteAcceptanceNotes"
     Write-Host "This creates the synthetic fixture, writes ignored acceptance notes, and launches WPF with this Cleanup Scope:"
     Write-Host $fixtureRoot
+    Write-Host "After filling the notes, use the printed Summarize-FixtureAcceptanceNotes commands to review open items and require completion."
 }
 finally {
     Pop-Location

@@ -104,6 +104,7 @@ What changed:
 - Later packet `Fixture Acceptance Summary Prompt Preview` made open checklist items show compact recorded notes or, when no notes exist, a trimmed prompt preview.
 - Later packet `Fixture Acceptance Evidence Checkbox Summary` made the summary output show whether the preflight-passed and worktree-clean/intentional evidence checkboxes were recorded.
 - Later packet `Fixture Acceptance Completion Check` added `-RequireComplete` so the command can fail fast when acceptance notes are still incomplete after a manual pass.
+- Later packet `Fixture Acceptance Post-Pass Guidance` made the fixture launcher print the exact `-Path` summary and `-RequireComplete` commands for the notes file it writes.
 
 Files changed:
 
@@ -124,6 +125,7 @@ Tests run:
 - Later prompt-preview packet reran the same two summary commands plus `git diff --check`.
 - Later evidence-checkbox packet reran the same two summary commands plus `git diff --check`.
 - Later completion-check packet reran the normal and explicit summary commands, verified `-RequireComplete` fails on the current checklist-only preview, and ran `git diff --check`.
+- Later post-pass-guidance packet ran checklist-notes output, summarized the newly written notes file by explicit `-Path`, verified explicit `-Path ... -RequireComplete` fails while the checklist-only notes are incomplete, inspected the focused preflight success-output wording, and ran `git diff --check`.
 
 Docs updated:
 
@@ -136,7 +138,7 @@ ADRs added or skipped:
 Follow-up work:
 
 - Run the visible fixture pass with `.\tools\Start-MvpFixtureReview.cmd -SkipPreflight -WriteAcceptanceNotes` when the user is ready.
-- After the pass, run `.\tools\Summarize-FixtureAcceptanceNotes.cmd` and copy relevant manual results into `.codex\progress.md`.
+- After the pass, run the printed `.\tools\Summarize-FixtureAcceptanceNotes.cmd -Path ...` command, use the printed `-RequireComplete` command after filling notes, and copy relevant manual results into `.codex\progress.md`.
 
 Open questions:
 

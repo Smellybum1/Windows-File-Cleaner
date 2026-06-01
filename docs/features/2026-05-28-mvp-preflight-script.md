@@ -145,7 +145,7 @@ What changed:
 - Kept the workflow read-only with respect to real user files.
 - Later packet `2026-05-30-preflight-fixture-checklist-step.md` added a checklist-only fixture review step to the full preflight so manual checklist regressions fail preflight before visible review.
 - Later packet `2026-05-30-ci-preflight-cmd-wrapper.md` made GitHub Actions call the preferred `.cmd` wrapper so CI verifies the same entry point as local user instructions.
-- Later packet `2026-06-01-preflight-fixture-notes-next-step.md` changed the success output to suggest `.\tools\Start-MvpFixtureReview.cmd -SkipPreflight -WriteAcceptanceNotes`, aligning the next manual fixture step with the acceptance-notes workflow.
+- Later packet `2026-06-01-preflight-fixture-notes-next-step.md` changed the success output to suggest `.\tools\Start-MvpFixtureReview.cmd -SkipPreflight -WriteAcceptanceNotes`, aligning the next manual fixture step with the acceptance-notes workflow. Later packet `Fixture Acceptance Post-Pass Guidance` added a reminder that the notes-enabled launcher prints the exact post-pass summary and completion-check commands after it writes notes.
 
 Files changed:
 
