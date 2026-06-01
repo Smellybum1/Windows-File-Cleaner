@@ -22,12 +22,48 @@ Current Evidence Wording Alignment clarified that the clean notes preview from `
 
 ## Next recommended work
 
-1. If the user wants to manually trust the new movement path, run a full `.cmd` MVP preflight, then have the user select an exact real-profile Restore Manifest and click `Restore selected manifest` only after explicit review. Codex should not run real-profile restore on the user's behalf.
+1. If the user wants to manually trust the new movement path, run a full `.cmd` MVP preflight, create a sacrificial trust manifest with `.\tools\New-RealProfileSelectedRestoreTrustManifest.cmd`, then have the user select that exact real-profile Restore Manifest and click `Restore selected manifest` only after explicit review. Codex should not run real-profile restore on the user's behalf.
 2. Defer real-profile Quarantine execution until selected real-profile restore is manually trusted, then revisit ADR 0017/0018 first-phase Quarantine execution with explicit user approval.
 3. If formal fixture acceptance notes are useful before movement work, fill `.local\fixture-review-acceptance\fixture-acceptance-20260601-132126.md`, then run `.\tools\Summarize-FixtureAcceptanceNotes.cmd -Path ".local\fixture-review-acceptance\fixture-acceptance-20260601-132126.md"` and the same command with `-RequireComplete`. The user has already reported that the visible fixture pass looks good, but the local checklist remains unfilled.
 4. Revisit .NET 10 and packaging only after reversible real-profile restore/cleanup behavior is trusted.
 
 ## Completed packets
+
+### 2026-06-01: Real-Profile Selected Restore Trust Helper
+
+Status: completed
+
+Evidence:
+
+- The user reported the real-profile read-only pass still looked good and explicitly chose to proceed with a restore test.
+- There was no existing helper for creating a safe exact real-profile Restore Manifest without first enabling real-profile Quarantine execution.
+
+Implementation:
+
+- Added `tools\New-RealProfileSelectedRestoreTrustManifest.ps1` plus a `.cmd` wrapper.
+- The helper creates one sacrificial Restore Manifest under `D:\WindowsFileCleanerQuarantine` by default and targets `C:\Users\moxhe\WindowsFileCleanerRestoreTrustTest\restore-target.txt`.
+- The helper refuses to proceed if the restore target already exists, uses exact `C:\Users\moxhe` cleanup scope, and does not quarantine existing personal files.
+- README now has a manual trust-test checklist that leaves the restore click to the user.
+
+Verification:
+
+- `cmd.exe /c tools\New-RealProfileSelectedRestoreTrustManifest.cmd -WhatIf`
+- `cmd.exe /c tools\New-RealProfileSelectedRestoreTrustManifest.cmd -QuarantineRoot "D:\Codex\Windows File Cleaner\.local\real-profile-selected-restore-trust-helper-smoke"`
+- Inspected the generated ignored `.local` Restore Manifest and confirmed ISO timestamp JSON.
+
+Docs updated:
+
+- `README.md`
+- `.codex/progress.md`
+- `docs/codex/thread-handoff.md`
+
+ADRs:
+
+- No ADR added. This is a helper for manually trusting the ADR 0019 path, not a new restore policy.
+
+Open questions:
+
+- Whether the manual trust click restores the sacrificial file cleanly on the user's machine.
 
 ### 2026-06-01: Real-Profile Selected Restore Execution
 

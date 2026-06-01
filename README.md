@@ -178,6 +178,40 @@ Use `-SkipChecklist` only when you intentionally want the launcher output withou
 
 The automated `WindowsFileCleaner.App.Tests` project also scans a synthetic fixture through the WPF shell, exercises read-only review interactions, proves fixture-only Quarantine execution and undo, verifies manifest discovery, selected manifest review, selected restore confirmation gate, fixture selected restore execution, all-manifest readiness preview, and read-only Quarantine Root Execution Safety, Pre-Execution Revalidation, Real-Profile Restore Readiness, and Selected Restore Pre-Execution Revalidation evidence in preview/gate output, verifies custom non-fixture execution, synthetic real-profile and real-profile child readiness output, keeps ADR 0018 first-phase real-profile blockers visible in WPF preview/gate output, proves exact real-profile selected restore gates can open without executing movement in tests, proves stale real-profile selected restore remains blocked, checks review navigation/export, report/preview, browse, selected-row, execution-gate, selected-restore gate, and restore-readiness tooltip and automation help text boundaries, and checks that the review toolbars use wrapping layout, but it does not replace checking the visible layout and controls by eye.
 
+## Real-Profile Selected Restore Trust Test
+
+Use this only when you intentionally want to test the ADR 0019 selected real-profile restore path. It does not run real-profile Quarantine and does not use existing personal files.
+
+1. Run full preflight:
+
+```powershell
+.\tools\Invoke-MvpPreflight.cmd
+```
+
+2. Create one sacrificial Restore Manifest:
+
+```powershell
+.\tools\New-RealProfileSelectedRestoreTrustManifest.cmd
+```
+
+The helper writes a synthetic quarantined file and Restore Manifest under `D:\WindowsFileCleanerQuarantine`, targets `C:\Users\moxhe\WindowsFileCleanerRestoreTrustTest\restore-target.txt`, and refuses to continue if that restore target already exists.
+
+3. Launch the app:
+
+```powershell
+dotnet run --project src\WindowsFileCleaner.App -- --scope "C:\Users\moxhe"
+```
+
+4. In the app, open `Quarantine`, set Quarantine Root to `D:\WindowsFileCleanerQuarantine`, then use `Discover manifests`.
+5. Select the generated `real-profile-selected-restore-trust-*` Restore Manifest.
+6. Click `Preview selected manifest readiness`.
+7. Click `Preview selected restore gate`.
+8. Type exactly `RESTORE`.
+9. Click `Restore selected manifest` only if the gate says `Can execute: yes` and the selected restore revalidation says `Can proceed: yes`.
+10. Confirm the result says `Selected restore result: Restored 1`, then rediscover manifests and rescan before further review.
+
+Stop there. Do not use this trust test as approval for real-profile Quarantine execution.
+
 ## Run The App
 
 ```powershell

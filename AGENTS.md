@@ -28,6 +28,7 @@ dotnet run --project tests\WindowsFileCleaner.Tests\WindowsFileCleaner.Tests.csp
 dotnet run --project tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj
 .\tools\Invoke-MvpPreflight.cmd
 .\tools\New-StorageScanSmokeFixture.cmd
+.\tools\New-RealProfileSelectedRestoreTrustManifest.cmd
 .\tools\Start-MvpFixtureReview.cmd
 .\tools\Start-MvpFixtureReview.cmd -ChecklistOnly
 dotnet run --project src\WindowsFileCleaner.App
