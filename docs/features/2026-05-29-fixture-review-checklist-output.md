@@ -96,6 +96,7 @@ What changed:
 - Later packet `2026-05-30-execution-policy-friendly-fixture-launcher.md` added `Start-MvpFixtureReview.cmd`, so the same checklist can be launched when direct `.ps1` execution is blocked by local policy.
 - Later packet `2026-05-30-fixture-checklist-hoverable-help-cues.md` aligned the checklist wording with the hoverable `?` cue affordance and prompt tooltip behavior.
 - Later packet `2026-05-31-fixture-checklist-selected-restore-boundary.md` aligned the final real-profile/custom blocker prompt with both ADR 0017 Quarantine blockers and ADR 0019 selected-restore blockers.
+- Later packet `2026-06-01-fixture-acceptance-notes-template.md` refactored the checklist text into a shared item source and added `-WriteAcceptanceNotes`, which writes a local ignored markdown notes template from the same checklist items without launching WPF in checklist-only mode.
 
 Tests run:
 

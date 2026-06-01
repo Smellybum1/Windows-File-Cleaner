@@ -8,7 +8,7 @@ Use it to preserve what was completed, what was verified, what was rejected, and
 
 Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. The app has a broad read-only review workflow, manual fixture Show children/Clipboard crash fix, scan cancel help text, scan-gate summary help text plus a visible hoverable `?` help cue in a compact wrapping scan-header status strip, real-profile acknowledgement help text plus a visible hoverable `?` help cue, Cleanup Scope Safety Note and Quarantine Root Safety Note help text plus visible hoverable `?` help cues, Review Mix, Matched Review Mix, Review Shortlist Safety Mix, Review Grid Mode Status, inline Quarantine Preview status, Quarantine Execution Gate, Selected Restore Execution Gate, exact-confirmation fields, Quarantine Manifest Discovery, Restore Manifest selection, Restore Readiness Preview, Safety Summary header, and Quarantine Shortlist header hoverable `?` help cues with tooltip/help text and affordance smoke coverage plus a full `.cmd` MVP preflight after scan-gate cue coverage, Safety Summary shortcut help text, Safety Summary collapsed-header state styling, review-lens filter help text, manifest discovery/selection help text, debounced Storage Review Search for large real-profile scans, Storage Review Search input automation help text, scan-gate automation help text, Cleanup Scope input/browse automation help text, Quarantine Root input/browse automation help text, selected-row action automation help text, visible-row shortlist automation help text, execution/readiness automation help text, review report/preview automation help text, review toolbar automation help text, review navigation/export tooltip clarity, Review Grid Mode Status tooltip/help text, scope-specific Cleanup Scope Scan Gate discoverability polish, Cleanup Scope and Quarantine Root browse tooltip clarity, selected-row action tooltip clarity, Matched Review Mix, Review Shortlist Safety Mix, visible-row Review Shortlist bulk labels/tooltips, review toolbar report/preview tooltip clarity, Selected Folder Subtree Summary, Storage Hotspot Trail, Selected Folder Child Focus, Selected Folder Descendant Focus, execution-policy-friendly fixture/preflight tooling with checklist output, checklist-only mode now covered by MVP preflight and GitHub Actions now running preflight through the same `.cmd` wrapper as local user instructions, hoverable help-cue checklist wording, approval-boundary prompt coverage, selected-restore scope-status checklist coverage, all-manifest restore boundary checklist coverage, manifest review and selected-restore gate checklist steps split for easier fixture review, redundant parent/child preview overlap cleanup through `Remove overlapping parents`, execution-control tooltip clarity, readiness scope tooltip clarity, Undo Quarantine domain consistency, Restore Manifest wording polish, Selected Manifest Readiness label polish, and All-Manifest Readiness label polish, Quarantine Preview and Quarantine Execution Gate scope-status/approval-boundary wording without technical implementation-flag wording plus a full `.cmd` MVP preflight after that wording packet, fixture checklist wording aligned to the visible `Quarantine included shortlist` button plus a full `.cmd` MVP preflight after that checklist label packet, WPF Quarantine Preview and Execution Gate placeholder text aligned to the visible `Preview shortlist quarantine` button plus a full `.cmd` MVP preflight after that placeholder label packet, WPF Quarantine Execution Gate missing-preview blocker aligned to the visible `Preview shortlist quarantine` button, Quarantine Execution Gate help cue plus a full `.cmd` MVP preflight after that help-cue packet, Restore Manifest Draft, Quarantine Confirmation Draft, confirmation label wording polish, Quarantine Action Draft, write-ahead Restore Manifest persistence, core Quarantine execution, core Undo Quarantine, fixture-only WPF Quarantine execution, WPF undo for the current fixture execution, Current quarantined grid switching with a moved-entry count label for current-session moved entries plus a full `.cmd` MVP preflight after that count-label packet, Quarantine Manifest Discovery with all-manifest restore wording and a visible discovery `?` help cue, Selected Restore Manifest Review with readiness-evidence wording and a visible selection `?` help cue, Selected Restore Confirmation Gate with scope-status/approval-boundary wording, visible help cue, and without technical implementation-flag wording, Fixture-only Selected Restore Execution, Restore Readiness Preview with all-manifest restore wording and a visible all-manifest readiness `?` help cue, a Real-Profile Quarantine Readiness Contract in ADR 0017 with WPF regression coverage for real/custom execution blockers, and a compact `AGENTS.md` that points to detailed workflow docs instead of duplicating them. Real-profile WPF Quarantine execution, real-profile WPF Undo Quarantine, permanent deletion, and persisted cleanup history remain unavailable. Fresh-thread handoff notes and a startup prompt live in `docs/codex/thread-handoff.md`.
 
-Latest WPF UI packet added a compact Main Grid Active Review Lens Summary above Storage Scan rows, mirroring the existing Filter Summary so default scan, Safety Summary shortcut, and stacked filter/search context remain visible after tab switches; it hides for current-session quarantined rows. User visual review on 2026-06-01 approved the compact wide-header layout with Review Shortlist totals before scan totals. The latest fixture-checklist wording packet clarified that the current-session review step's hoverable `?` cue and `Status state:` wording belong to Review Grid Mode Status, while Main Grid Active Review Lens Summary appears for Storage Scan rows and hides for current-session quarantined rows. Current handoff evidence remains explicit: full `.cmd` MVP preflight passed after the latest fixture-checklist grid-mode cue wording packet. The live-product readiness roadmap now separates visible fixture acceptance, fresh real-profile read-only retest, selected real-profile restore, first real-profile Quarantine execution, recovery confidence, packaging, and later deletion/history decisions. No real user files were scanned or modified.
+Latest WPF UI packet added a compact Main Grid Active Review Lens Summary above Storage Scan rows, mirroring the existing Filter Summary so default scan, Safety Summary shortcut, and stacked filter/search context remain visible after tab switches; it hides for current-session quarantined rows. User visual review on 2026-06-01 approved the compact wide-header layout with Review Shortlist totals before scan totals. The latest fixture-checklist wording packet clarified that the current-session review step's hoverable `?` cue and `Status state:` wording belong to Review Grid Mode Status, while Main Grid Active Review Lens Summary appears for Storage Scan rows and hides for current-session quarantined rows. Current handoff evidence remains explicit: full `.cmd` MVP preflight passed after the latest fixture-checklist grid-mode cue wording packet. The live-product readiness roadmap now separates visible fixture acceptance, fresh real-profile read-only retest, selected real-profile restore, first real-profile Quarantine execution, recovery confidence, packaging, and later deletion/history decisions. The fixture launcher can write an ignored `.local` fixture acceptance notes template from the same checklist item source with `-WriteAcceptanceNotes`, so the next visible fixture pass has a place to record pass/issue/not-checked results. No real user files were scanned or modified.
 
 ## Next recommended work
 
@@ -21,6 +21,51 @@ Latest WPF UI packet added a compact Main Grid Active Review Lens Summary above 
 7. Revisit .NET 10 before packaging or long-term distribution.
 
 ## Completed packets
+
+### 2026-06-01: Fixture Acceptance Notes Template
+
+Status: completed
+
+Evidence:
+
+- The live-product readiness roadmap names visible fixture acceptance as the next gate.
+- The fixture launcher already prints the current checklist, but the pass needed an easy local place to record results.
+- Checklist-only output is the safest verification path because it does not run preflight, create fixture files, launch WPF, scan, move, restore, delete, or create cleanup history.
+
+Implementation:
+
+- Added `-WriteAcceptanceNotes` to `tools/Start-MvpFixtureReview.ps1`.
+- Refactored the terminal checklist text into a shared checklist item source.
+- Added timestamped markdown notes templates under ignored `.local\fixture-review-acceptance` with safety boundary, overall result, and pass/issue/not-checked slots for each checklist item.
+- Kept normal launcher and checklist-only behavior unchanged unless `-WriteAcceptanceNotes` is passed.
+- Kept Storage Scan, Review Shortlist membership behavior, Quarantine Preview, fixture execution, selected restore, real-profile/custom movement blockers, permanent deletion, and cleanup history unchanged.
+
+Verification:
+
+- `cmd.exe /c tools\Start-MvpFixtureReview.cmd -ChecklistOnly` passed and printed the checklist without preflight, fixture creation, WPF launch, scan, move, restore, delete, or cleanup history.
+- `cmd.exe /c tools\Start-MvpFixtureReview.cmd -ChecklistOnly -WriteAcceptanceNotes` passed, printed the checklist, and wrote an ignored `.local\fixture-review-acceptance\fixture-acceptance-*.md` notes template.
+- `cmd.exe /c tools\Start-MvpFixtureReview.cmd -WhatIf -SkipPreflight -SkipLaunch -WriteAcceptanceNotes` passed and did not write notes under `-WhatIf`.
+- `git diff --check` passed with line-ending normalization warnings only.
+
+Docs updated:
+
+- `README.md`
+- `tools/Start-MvpFixtureReview.ps1`
+- `docs/features/2026-05-28-mvp-fixture-review-launcher.md`
+- `docs/features/2026-05-29-fixture-review-checklist-output.md`
+- `docs/features/2026-05-29-fixture-review-checklist-only-mode.md`
+- `docs/features/2026-06-01-fixture-acceptance-notes-template.md`
+- `docs/features/2026-06-01-live-product-readiness-roadmap.md`
+- `docs/codex/thread-handoff.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No ADR added. This is local fixture-review evidence capture with no architecture, persistence, cleanup execution, restore behavior, data-model, or security policy change.
+
+Open questions:
+
+- Should the acceptance notes template become tab-grouped after the next visible fixture pass?
 
 ### 2026-06-01: Live Product Readiness Roadmap
 

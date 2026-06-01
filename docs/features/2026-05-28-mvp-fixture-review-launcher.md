@@ -34,6 +34,7 @@ The repo should include a script that:
 - Supports `-WhatIf` so the command can be tested without running preflight, writing fixture files, or launching WPF.
 - Supports `-SkipPreflight` and `-SkipLaunch` for focused loops.
 - Prints a compact fixture review checklist before launch unless `-SkipChecklist` is passed.
+- Later packet `2026-06-01-fixture-acceptance-notes-template.md` added `-WriteAcceptanceNotes` so the launcher can write an ignored local markdown notes template before the visible pass.
 
 ## Domain language changes
 
@@ -143,6 +144,7 @@ What changed:
 - The launcher runs MVP preflight by default, creates the synthetic fixture Cleanup Scope inside the repo, and launches the WPF app with the fixture scope.
 - The launcher states that the app will not auto-scan and the user must click `Scan`.
 - Kept the workflow away from `C:\Users\moxhe` unless the user later runs the normal app manually.
+- Later packet `2026-06-01-fixture-acceptance-notes-template.md` added `-WriteAcceptanceNotes`, which writes a timestamped `.local\fixture-review-acceptance\fixture-acceptance-*.md` notes template from the same checklist item source without changing normal launch behavior.
 
 Files changed:
 

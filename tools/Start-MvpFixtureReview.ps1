@@ -4,7 +4,8 @@ param(
     [switch]$SkipPreflight,
     [switch]$SkipLaunch,
     [switch]$SkipChecklist,
-    [switch]$ChecklistOnly
+    [switch]$ChecklistOnly,
+    [switch]$WriteAcceptanceNotes
 )
 
 Set-StrictMode -Version Latest
@@ -15,24 +16,97 @@ $repoFullPath = [System.IO.Path]::GetFullPath($repoRoot).TrimEnd([System.IO.Path
 $preflightScript = Join-Path $PSScriptRoot "Invoke-MvpPreflight.ps1"
 $fixtureScript = Join-Path $PSScriptRoot "New-StorageScanSmokeFixture.ps1"
 
+function Get-FixtureReviewChecklistItems {
+    param(
+        [Parameter(Mandatory)]
+        [string]$FixturePath
+    )
+
+    @(
+        "Confirm the header says Fixture Cleanup Scope, the Cleanup Scope Safety Note / scan-gate status share a compact wrapping strip, their ? help cues stay paired with the related text and mirror read-only/gated wording, Cleanup Scope browse tooltip is path-only, and fixture cleanup actions stay gated.",
+        "Click Scan manually; confirm the status says no files were modified.",
+        "Check the compact header Review Shortlist totals sit to the left of Total size when space allows, compact scan totals remain readable, and the horizontal tabbed workbench: Main Grid should be selected by default, Safety Summary / Review / Quarantine / Main Grid tabs should each have their own page, Safety Summary shortcuts should auto-focus Main Grid after applying their read-only review lens, Main Grid should mirror the active review lens above Storage Scan rows without implying rescan or cleanup approval, Safety Summary should start expanded with the Safety Summary panel-name prefix plus hoverable ? header help cue, and Review Mix, Matched Review Mix, and Review Shortlist Safety Mix hoverable ? help cues plus prompt tooltip/help text, header state styling, state-naming tooltip/help text, review navigation/export tooltips, and Review Shortlist labels/tooltips should stay readable.",
+        "Try search examples: old-installer, parent:$FixturePath\Downloads, under:$FixturePath\AppData.",
+        "Select folders and try selected-row tooltips, Show children, Show descendants, hotspot trail, subtree summary, and file preview.",
+        "Shortlist fixture cleanup candidates, open the Quarantine tab, check the Quarantine Shortlist starts expanded with the Quarantine Shortlist panel-name prefix plus hoverable ? header help cue, and check header state styling, state-naming tooltip/help text, Quarantine Root browse tooltip plus safety-note ? help cue, non-D root readiness acknowledgement wording plus its hoverable ? help cue, styled inline preview readiness (neutral/success/warning/error) plus its hoverable ? help cue and state-naming tooltip/help text, compact Quarantine Readiness Summary states/tooltips including preview-only movement unavailable wording and Key blockers labels such as custom scope preview-only, exact profile scope, pre-execution revalidation, restore readiness, current build unavailable, 10-row cap, 1 GB cap, no-category rows, and strict descendant checks when those blockers apply, Remove overlapping parents for redundant parent/child previews, the shortlist confirmation ? help cue, the Quarantine Execution Gate ? help cue, preview/export tooltips, Approval boundary, Execution scope status, and execution tooltips.",
+        "For fixture only, type QUARANTINE, click Quarantine included shortlist, confirm Current quarantined shows the moved-entry count, use Current quarantined / Back to scan rows and confirm both auto-focus Main Grid, check styled Review Grid Mode Status (neutral/informational/warning) plus its hoverable ? help cue and state-naming tooltip/help text, confirm the Main Grid active review lens summary appears when scan rows are showing and hides for current-session quarantined rows, then Undo fixture quarantine and rescan before more review.",
+        "Use Discover manifests and Preview all-manifest readiness; check the Discover manifests ? help cue, selected manifest ? help cue, all-manifest readiness ? help cue, Restore Manifest review summary states/tooltips, cue/control pairs stay together when rows wrap, no all-manifest restore action wording, and all-manifest readiness scope tooltips.",
+        "Use selected manifest readiness and the selected restore gate; check selected-only readiness wording, selected restore confirmation ? help cue, selected restore Approval boundary, Execution scope status, Selected Restore Execution Gate ? help cue in waiting/closed/open/restored states without crowding the gate area, fixture restore tooltips, and read-only selected restore revalidation evidence for exact real-profile Restore Manifests when available.",
+        "Without scanning C:\Users\moxhe as part of this fixture pass, confirm real-profile/custom scopes stay preview-only when using custom preview-only paths or existing synthetic readiness evidence: Review Shortlist, clean Quarantine Preview, exact QUARANTINE, real-profile scan acknowledgement, exact RESTORE, and clean selected restore revalidation evidence do not unlock Quarantine or selected restore; the Quarantine Execution Gate should show read-only Real-Profile Quarantine Approval Evidence with Can approve real-profile movement: no, while ADR 0017 Quarantine blockers, ADR 0018 first-phase limits such as 10 rows, 1 GB, no-category, and strict descendant checks, and ADR 0019 selected-restore blockers stay explicit before any real-profile movement."
+    )
+}
+
 function Write-FixtureReviewChecklist {
     param(
         [Parameter(Mandatory)]
         [string]$FixturePath
     )
 
+    $checklistItems = Get-FixtureReviewChecklistItems -FixturePath $FixturePath
+
     Write-Host ""
     Write-Host "Manual fixture review checklist:"
-    Write-Host "  1. Confirm the header says Fixture Cleanup Scope, the Cleanup Scope Safety Note / scan-gate status share a compact wrapping strip, their ? help cues stay paired with the related text and mirror read-only/gated wording, Cleanup Scope browse tooltip is path-only, and fixture cleanup actions stay gated."
-    Write-Host "  2. Click Scan manually; confirm the status says no files were modified."
-    Write-Host "  3. Check the compact header Review Shortlist totals sit to the left of Total size when space allows, compact scan totals remain readable, and the horizontal tabbed workbench: Main Grid should be selected by default, Safety Summary / Review / Quarantine / Main Grid tabs should each have their own page, Safety Summary shortcuts should auto-focus Main Grid after applying their read-only review lens, Main Grid should mirror the active review lens above Storage Scan rows without implying rescan or cleanup approval, Safety Summary should start expanded with the Safety Summary panel-name prefix plus hoverable ? header help cue, and Review Mix, Matched Review Mix, and Review Shortlist Safety Mix hoverable ? help cues plus prompt tooltip/help text, header state styling, state-naming tooltip/help text, review navigation/export tooltips, and Review Shortlist labels/tooltips should stay readable."
-    Write-Host "  4. Try search examples: old-installer, parent:$FixturePath\Downloads, under:$FixturePath\AppData."
-    Write-Host "  5. Select folders and try selected-row tooltips, Show children, Show descendants, hotspot trail, subtree summary, and file preview."
-    Write-Host "  6. Shortlist fixture cleanup candidates, open the Quarantine tab, check the Quarantine Shortlist starts expanded with the Quarantine Shortlist panel-name prefix plus hoverable ? header help cue, and check header state styling, state-naming tooltip/help text, Quarantine Root browse tooltip plus safety-note ? help cue, non-D root readiness acknowledgement wording plus its hoverable ? help cue, styled inline preview readiness (neutral/success/warning/error) plus its hoverable ? help cue and state-naming tooltip/help text, compact Quarantine Readiness Summary states/tooltips including preview-only movement unavailable wording and Key blockers labels such as custom scope preview-only, exact profile scope, pre-execution revalidation, restore readiness, current build unavailable, 10-row cap, 1 GB cap, no-category rows, and strict descendant checks when those blockers apply, Remove overlapping parents for redundant parent/child previews, the shortlist confirmation ? help cue, the Quarantine Execution Gate ? help cue, preview/export tooltips, Approval boundary, Execution scope status, and execution tooltips."
-    Write-Host "  7. For fixture only, type QUARANTINE, click Quarantine included shortlist, confirm Current quarantined shows the moved-entry count, use Current quarantined / Back to scan rows and confirm both auto-focus Main Grid, check styled Review Grid Mode Status (neutral/informational/warning) plus its hoverable ? help cue and state-naming tooltip/help text, confirm the Main Grid active review lens summary appears when scan rows are showing and hides for current-session quarantined rows, then Undo fixture quarantine and rescan before more review."
-    Write-Host "  8. Use Discover manifests and Preview all-manifest readiness; check the Discover manifests ? help cue, selected manifest ? help cue, all-manifest readiness ? help cue, Restore Manifest review summary states/tooltips, cue/control pairs stay together when rows wrap, no all-manifest restore action wording, and all-manifest readiness scope tooltips."
-    Write-Host "  9. Use selected manifest readiness and the selected restore gate; check selected-only readiness wording, selected restore confirmation ? help cue, selected restore Approval boundary, Execution scope status, Selected Restore Execution Gate ? help cue in waiting/closed/open/restored states without crowding the gate area, fixture restore tooltips, and read-only selected restore revalidation evidence for exact real-profile Restore Manifests when available."
-    Write-Host "  10. Without scanning C:\Users\moxhe as part of this fixture pass, confirm real-profile/custom scopes stay preview-only when using custom preview-only paths or existing synthetic readiness evidence: Review Shortlist, clean Quarantine Preview, exact QUARANTINE, real-profile scan acknowledgement, exact RESTORE, and clean selected restore revalidation evidence do not unlock Quarantine or selected restore; the Quarantine Execution Gate should show read-only Real-Profile Quarantine Approval Evidence with Can approve real-profile movement: no, while ADR 0017 Quarantine blockers, ADR 0018 first-phase limits such as 10 rows, 1 GB, no-category, and strict descendant checks, and ADR 0019 selected-restore blockers stay explicit before any real-profile movement."
+    for ($index = 0; $index -lt $checklistItems.Count; $index++) {
+        Write-Host ("  {0}. {1}" -f ($index + 1), $checklistItems[$index])
+    }
+}
+
+function New-FixtureAcceptanceNotes {
+    param(
+        [Parameter(Mandatory)]
+        [string]$FixturePath
+    )
+
+    $notesRoot = Join-Path $repoRoot ".local\fixture-review-acceptance"
+    $timestamp = Get-Date -Format "yyyyMMdd-HHmmss"
+    $notesPath = Join-Path $notesRoot ("fixture-acceptance-{0}.md" -f $timestamp)
+    $checklistItems = Get-FixtureReviewChecklistItems -FixturePath $FixturePath
+
+    New-Item -ItemType Directory -Path $notesRoot -Force | Out-Null
+
+    $lines = [System.Collections.Generic.List[string]]::new()
+    $lines.Add("# Fixture Acceptance Notes")
+    $lines.Add("")
+    $lines.Add("Created: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')")
+    $lines.Add("Fixture Cleanup Scope: $FixturePath")
+    $lines.Add("")
+    $lines.Add("Safety boundary:")
+    $lines.Add("")
+    $lines.Add("- Do not scan C:\Users\moxhe as part of this fixture pass.")
+    $lines.Add("- Do not move, restore, delete, or modify real-profile files.")
+    $lines.Add("- Fixture-only Quarantine execution and fixture-only selected restore are allowed only inside the synthetic Cleanup Scope.")
+    $lines.Add("")
+    $lines.Add("Overall result:")
+    $lines.Add("")
+    $lines.Add("- [ ] Pass")
+    $lines.Add("- [ ] Pass with issues noted")
+    $lines.Add("- [ ] Blocked")
+    $lines.Add("")
+    $lines.Add("Summary:")
+    $lines.Add("")
+    $lines.Add("- ")
+    $lines.Add("")
+    $lines.Add("Checklist:")
+
+    for ($index = 0; $index -lt $checklistItems.Count; $index++) {
+        $lines.Add("")
+        $lines.Add("## $($index + 1). Fixture check")
+        $lines.Add("")
+        $lines.Add("Prompt: $($checklistItems[$index])")
+        $lines.Add("")
+        $lines.Add("- [ ] Pass")
+        $lines.Add("- [ ] Issue")
+        $lines.Add("- [ ] Not checked")
+        $lines.Add("")
+        $lines.Add("Notes:")
+        $lines.Add("")
+        $lines.Add("- ")
+    }
+
+    $utf8NoBom = [System.Text.UTF8Encoding]::new($false)
+    [System.IO.File]::WriteAllLines($notesPath, $lines, $utf8NoBom)
+
+    return $notesPath
 }
 
 if ([System.IO.Path]::IsPathRooted($FixtureRoot)) {
@@ -52,6 +126,11 @@ if ($ChecklistOnly) {
     Write-Host "Fixture Cleanup Scope: $fixtureFullPath"
     Write-Host "Checklist-only mode. No preflight, fixture creation, or WPF launch will run."
     Write-FixtureReviewChecklist -FixturePath $fixtureFullPath
+    if ($WriteAcceptanceNotes -and $PSCmdlet.ShouldProcess($fixtureFullPath, "Write fixture acceptance notes template")) {
+        $notesPath = New-FixtureAcceptanceNotes -FixturePath $fixtureFullPath
+        Write-Host ""
+        Write-Host "Fixture acceptance notes template: $notesPath"
+    }
     return
 }
 
@@ -73,6 +152,11 @@ try {
     Write-Host "After the app opens, click Scan yourself and confirm the status says no files were modified."
     if (-not $SkipChecklist) {
         Write-FixtureReviewChecklist -FixturePath $fixtureFullPath
+    }
+    if ($WriteAcceptanceNotes -and $PSCmdlet.ShouldProcess($fixtureFullPath, "Write fixture acceptance notes template")) {
+        $notesPath = New-FixtureAcceptanceNotes -FixturePath $fixtureFullPath
+        Write-Host ""
+        Write-Host "Fixture acceptance notes template: $notesPath"
     }
 
     if (-not $SkipLaunch) {
