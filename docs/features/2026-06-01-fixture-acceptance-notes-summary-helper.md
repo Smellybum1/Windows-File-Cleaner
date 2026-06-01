@@ -33,7 +33,7 @@ The notes template is intentionally detailed. After a pass, the reviewer still n
 
 - read the latest `.local\fixture-review-acceptance\fixture-acceptance-*.md` file by default,
 - accept `-Path` for a specific notes file inside the repo,
-- print the notes file path, creation time, Git branch/commit, WPF build context, acceptance-evidence checkbox states, overall result, checklist totals, and items needing review with compact recorded notes or prompt previews,
+- print the notes file path, creation time, Git branch/commit, worktree status at notes creation when present, WPF build context, acceptance-evidence checkbox states, overall result, checklist totals, and items needing review with compact recorded notes or prompt previews,
 - support `-RequireComplete`, which exits non-zero until the notes have recorded preflight/worktree evidence, an overall pass result, and no not-checked or not-recorded checklist items,
 - stay read-only and avoid WPF launch, scan, movement, restore, delete, and cleanup history.
 
@@ -106,6 +106,7 @@ What changed:
 - Later packet `Fixture Acceptance Completion Check` added `-RequireComplete` so the command can fail fast when acceptance notes are still incomplete after a manual pass.
 - Later packet `Fixture Acceptance Post-Pass Guidance` made the fixture launcher print the exact `-Path` summary and `-RequireComplete` commands for the notes file it writes.
 - Later packet `Fixture Acceptance Notes Embedded Commands` made the generated notes file include the exact `-Path` summary and `-RequireComplete` commands too.
+- Later packet `Fixture Acceptance Notes Worktree Stamp` made generated notes record worktree status at notes creation and made this summary helper print that status. Older notes that lack the line show `unknown`.
 
 Files changed:
 
@@ -128,6 +129,7 @@ Tests run:
 - Later completion-check packet reran the normal and explicit summary commands, verified `-RequireComplete` fails on the current checklist-only preview, and ran `git diff --check`.
 - Later post-pass-guidance packet ran checklist-notes output, summarized the newly written notes file by explicit `-Path`, verified explicit `-Path ... -RequireComplete` fails while the checklist-only notes are incomplete, inspected the focused preflight success-output wording, and ran `git diff --check`.
 - Later embedded-commands packet ran checklist-notes output, inspected the generated notes command block, summarized the newly written notes file by explicit `-Path`, verified explicit `-Path ... -RequireComplete` fails while the checklist-only notes are incomplete, and ran `git diff --check`.
+- Later worktree-stamp packet ran checklist-notes output, inspected the generated notes header, summarized the newly written notes file by explicit `-Path`, and ran whitespace checks.
 
 Docs updated:
 

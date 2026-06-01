@@ -113,6 +113,32 @@ function Get-FixtureReviewGitValue {
     return "unknown"
 }
 
+function Get-FixtureReviewWorktreeStatus {
+    param(
+        [Parameter(Mandatory)]
+        [string]$RepositoryPath
+    )
+
+    try {
+        $output = & git -C $RepositoryPath status --short 2>$null
+        if ($LASTEXITCODE -ne 0) {
+            return "unknown"
+        }
+
+        $statusLines = @($output | Where-Object { -not [string]::IsNullOrWhiteSpace([string]$_) })
+        if ($statusLines.Count -eq 0) {
+            return "clean"
+        }
+
+        $suffix = if ($statusLines.Count -eq 1) { "" } else { "s" }
+        return ("not clean ({0} status line{1})" -f $statusLines.Count, $suffix)
+    }
+    catch {
+    }
+
+    return "unknown"
+}
+
 function Get-FixtureReviewCommandValue {
     param(
         [Parameter(Mandatory)]
@@ -177,6 +203,7 @@ function New-FixtureAcceptanceNotes {
     $checklistItems = Get-FixtureReviewChecklistItems -FixturePath $FixturePath
     $gitBranch = Get-FixtureReviewGitValue -Arguments @("-C", $repoFullPath, "rev-parse", "--abbrev-ref", "HEAD")
     $gitCommit = Get-FixtureReviewGitValue -Arguments @("-C", $repoFullPath, "rev-parse", "--short", "HEAD")
+    $worktreeStatus = Get-FixtureReviewWorktreeStatus -RepositoryPath $repoFullPath
     $dotnetSdkVersion = Get-FixtureReviewCommandValue -Command "dotnet" -Arguments @("--version")
     $appProjectRelativePath = "src\WindowsFileCleaner.App\WindowsFileCleaner.App.csproj"
     $appProjectPath = Join-Path $repoRoot $appProjectRelativePath
@@ -199,6 +226,7 @@ function New-FixtureAcceptanceNotes {
     $lines.Add("- Repository: $repoFullPath")
     $lines.Add("- Git branch: $gitBranch")
     $lines.Add("- Git commit: $gitCommit")
+    $lines.Add("- Worktree status at notes creation: $worktreeStatus")
     $lines.Add("- .NET SDK: $dotnetSdkVersion")
     $lines.Add("- WPF app project: $appProjectRelativePath")
     $lines.Add("- WPF app target framework: $appTargetFramework")

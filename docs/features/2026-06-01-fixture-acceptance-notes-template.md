@@ -194,6 +194,7 @@ What changed:
 - Later packet `Fixture Acceptance Completion Check` added `.\tools\Summarize-FixtureAcceptanceNotes.cmd -RequireComplete` so incomplete acceptance notes can fail fast after a manual pass.
 - Later packet `Fixture Acceptance Post-Pass Guidance` made the fixture launcher print the exact summary and completion-check commands for the notes file it just wrote.
 - Later packet `Fixture Acceptance Notes Embedded Commands` added those same exact summary and completion-check commands inside the generated notes file so the next terminal step travels with the notes.
+- Later packet `Fixture Acceptance Notes Worktree Stamp` added the worktree status at notes creation to the ignored notes header so a visible fixture pass records whether it started from a clean or intentionally dirty repository state.
 - Updated docs and handoff/progress notes.
 
 Files changed:
@@ -220,6 +221,7 @@ Tests run:
 - Later summary-helper packet ran `cmd.exe /c tools\Summarize-FixtureAcceptanceNotes.cmd` and `cmd.exe /c tools\Summarize-FixtureAcceptanceNotes.cmd -Path .local\fixture-review-acceptance\fixture-acceptance-20260601-112248.md`.
 - Later post-pass-guidance packet ran checklist-notes output, explicit `-Path` summary, expected explicit `-Path ... -RequireComplete` failure on a fresh incomplete notes file, and `git diff --check`.
 - Later embedded-commands packet ran checklist-notes output, inspected the generated notes command block, explicit `-Path` summary, expected explicit `-Path ... -RequireComplete` failure on a fresh incomplete notes file, and `git diff --check`.
+- Later worktree-stamp packet ran checklist-notes output, inspected the generated notes header for `Worktree status at notes creation`, ran an explicit `-Path` summary that printed the stamped status, and ran whitespace checks.
 
 Docs updated:
 

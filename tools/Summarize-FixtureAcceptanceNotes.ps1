@@ -261,6 +261,7 @@ Write-Host "Notes file: $fullNotesPath"
 Write-Host ("Created: {0}" -f (Get-FirstMetadataValue -Lines $lines -Prefix "Created:"))
 Write-Host ("Git branch: {0}" -f (Get-FirstMetadataValue -Lines $lines -Prefix "- Git branch:"))
 Write-Host ("Git commit: {0}" -f (Get-FirstMetadataValue -Lines $lines -Prefix "- Git commit:"))
+Write-Host ("Worktree at notes creation: {0}" -f (Get-FirstMetadataValue -Lines $lines -Prefix "- Worktree status at notes creation:"))
 Write-Host ("WPF app: {0}; {1}; WPF enabled: {2}" -f
     (Get-FirstMetadataValue -Lines $lines -Prefix "- WPF app project:"),
     (Get-FirstMetadataValue -Lines $lines -Prefix "- WPF app target framework:"),
