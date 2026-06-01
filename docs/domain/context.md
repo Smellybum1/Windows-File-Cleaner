@@ -2956,6 +2956,7 @@ Pre-Execution Revalidation is the immediate live-filesystem check that reruns af
 It proves that the files and destinations about to be touched still match the Review Shortlist, Quarantine Preview, Restore Manifest Draft, and Quarantine Action Draft that the user reviewed.
 
 The model does not create folders or approve cleanup by itself. WPF shows its evidence in Quarantine Preview and Quarantine Execution Gate output when a Quarantine Action Draft and Quarantine Root Execution Safety exist, and requires it as one input before exact first-phase real-profile execution can open.
+It also checks whether included source files, or descendant files inside an included source folder, are currently in use or inaccessible so active cache files can block before manifest write and movement.
 
 #### Examples
 
@@ -2965,6 +2966,7 @@ The model does not create folders or approve cleanup by itself. WPF shows its ev
 - Block execution when preview/draft counts, bytes, paths, or action paths no longer match.
 - Block execution when the action root or Restore Manifest path already exists.
 - Block execution when a reviewed source file size or modified timestamp changed after preview.
+- Block execution when a reviewed source file or folder descendant is currently in use by another process.
 
 #### Non-examples
 

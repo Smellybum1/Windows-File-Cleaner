@@ -9,7 +9,7 @@ Use this when starting a fresh Codex thread for this repository.
 - Repo: `D:\Codex\Windows File Cleaner`
 - GitHub: `Smellybum1/Windows-File-Cleaner`
 - Branch: `main`
-- Latest completed packet: Cross-Volume Directory Quarantine Fallback
+- Latest completed packet: In-Use Source Pre-Execution Revalidation
 - Current app stack: C# / WPF / .NET 8
 - Desktop shortcut target: `D:\Codex\Windows File Cleaner\src\WindowsFileCleaner.App\bin\Debug\net8.0-windows\WindowsFileCleaner.App.exe`
 
@@ -31,7 +31,7 @@ User-reported fresh real-profile read-only retest now exists: on 2026-06-01 the 
 
 The manual selected-restore trust helper exists: `.\tools\New-RealProfileSelectedRestoreTrustManifest.cmd` creates one sacrificial exact real-profile Restore Manifest under `D:\WindowsFileCleanerQuarantine` by default and targets `C:\Users\moxhe\WindowsFileCleanerRestoreTrustTest\restore-target.txt`. It refuses to run if the restore target already exists and does not quarantine existing personal files. Use it only after full preflight and explicit user intent to click the restore test in WPF.
 
-First real-profile Quarantine implementation evidence now exists: core tests and WPF app tests pass; synthetic exact real-profile missing-source execution attempts rerun immediate pre-execution revalidation and report no movement; custom and real-profile-child scopes remain preview-only. The user attempted a first exact real-profile folder Quarantine on 2026-06-01 and reported the app failed safely with `moved 0, failed 1` because `Directory.Move` cannot move directories from `C:` to the preferred `D:` Quarantine Root. The latest packet adds a guarded cross-volume directory copy-then-delete fallback under `QuarantineExecutor` and expands the WPF Quarantine Execution Gate details area. Before any retry, run full `.cmd` MVP preflight and have the user explicitly approve/click only the specific reviewed batch.
+First real-profile Quarantine implementation evidence now exists: core tests and WPF app tests pass; synthetic exact real-profile missing-source execution attempts rerun immediate pre-execution revalidation and report no movement; custom and real-profile-child scopes remain preview-only. The user attempted a first exact real-profile folder Quarantine on 2026-06-01 and reported the app failed safely with `moved 0, failed 1` because `Directory.Move` cannot move directories from `C:` to the preferred `D:` Quarantine Root. The next packet added a guarded cross-volume directory copy-then-delete fallback under `QuarantineExecutor`. The user retried and reported another safe `moved 0, failed 1` result because a descendant NVIDIA `.nvph` cache file was in use by another process. The latest packet adds source/file-in-use access checks to Pre-Execution Revalidation and expands the WPF Quarantine Execution Gate details area again. Before any retry, run full `.cmd` MVP preflight and have the user explicitly approve/click only the specific reviewed batch.
 
 ## Safety boundary
 
@@ -42,6 +42,7 @@ First real-profile Quarantine implementation evidence now exists: core tests and
 - Do not wire additional movement paths without updating the source guard, tests, and safety docs.
 - Do not treat `QuarantineRootExecutionSafety` as execution approval; it is one input to readiness and does not move files or write manifests.
 - Do not treat `PreExecutionRevalidation` as execution approval; it is one input to readiness and does not move files or write manifests.
+- Treat in-use source file or folder-descendant blockers as real readiness blockers; do not force-close processes or bypass them from Codex.
 - Do not treat `RealProfileRestoreReadiness` as restore or quarantine approval; it is one input to readiness and does not move files or write manifests.
 - Do not treat `SelectedRestorePreExecutionRevalidation` as restore approval; it is a non-moving rediscovery/revalidation model and must run again immediately before selected real-profile restore movement.
 - Do not treat the Restore Manifest review summary as restore approval; it is a compact read-only orientation line for discovery/readiness/gate state and does not replace the detailed panes.

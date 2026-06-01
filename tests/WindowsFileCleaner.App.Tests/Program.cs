@@ -2010,8 +2010,8 @@ internal sealed class MainWindowSmokeTests
                 !window.QuarantineExecutionGateTextValue.Contains("Real-Profile Quarantine Approval Evidence", StringComparison.OrdinalIgnoreCase),
                 "Fixture execution gate should not show real-profile approval evidence noise.");
             Assert(
-                window.QuarantineExecutionGateViewportMaxHeight >= 220
-                && window.QuarantineExecutionGateViewportMaxHeight <= 320,
+                window.QuarantineExecutionGateViewportMaxHeight >= 480
+                && window.QuarantineExecutionGateViewportMaxHeight <= 620,
                 "Quarantine shortlist gate details should have enough room for real-profile evidence while staying height-constrained.");
             Assert(window.IsQuarantineShortlistExpanded, "Quarantine shortlist area should start expanded on its dedicated tab page.");
             window.SetQuarantineShortlistExpanded(false);

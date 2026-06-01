@@ -200,6 +200,8 @@ public static class PreExecutionRevalidationBuilder
             {
                 blockers.Add($"Included source is no longer a directory: {sourcePath}");
             }
+
+            AddDirectoryDescendantAccessBlockers(sourcePath, blockers);
         }
         else
         {
@@ -208,6 +210,8 @@ public static class PreExecutionRevalidationBuilder
                 blockers.Add($"Included source is no longer a file: {sourcePath}");
                 return;
             }
+
+            AddFileAccessBlocker(sourcePath, "Included source file is currently in use or inaccessible", blockers);
 
             var fileInfo = new FileInfo(sourcePath);
             if (fileInfo.Length != previewEntry.SizeBytes || fileInfo.Length != actionEntry.SizeBytes)
@@ -260,6 +264,57 @@ public static class PreExecutionRevalidationBuilder
         catch (UnauthorizedAccessException)
         {
             return true;
+        }
+    }
+
+    private static void AddDirectoryDescendantAccessBlockers(string sourcePath, List<string> blockers)
+    {
+        const int maxFileAccessBlockers = 5;
+        var initialCount = blockers.Count;
+
+        try
+        {
+            foreach (var filePath in Directory.EnumerateFiles(sourcePath, "*", SearchOption.AllDirectories))
+            {
+                AddFileAccessBlocker(
+                    filePath,
+                    "Included source directory contains a file currently in use or inaccessible",
+                    blockers);
+
+                if (blockers.Count - initialCount >= maxFileAccessBlockers)
+                {
+                    blockers.Add($"Included source directory has additional files that could not be checked: {sourcePath}");
+                    break;
+                }
+            }
+        }
+        catch (Exception ex) when (ex is IOException
+            or UnauthorizedAccessException
+            or ArgumentException
+            or NotSupportedException
+            or PathTooLongException)
+        {
+            blockers.Add($"Included source directory could not be fully checked before movement: {sourcePath} {ex.Message}");
+        }
+    }
+
+    private static void AddFileAccessBlocker(string filePath, string messagePrefix, List<string> blockers)
+    {
+        try
+        {
+            using var stream = new FileStream(
+                filePath,
+                FileMode.Open,
+                FileAccess.Read,
+                FileShare.None);
+        }
+        catch (Exception ex) when (ex is IOException
+            or UnauthorizedAccessException
+            or ArgumentException
+            or NotSupportedException
+            or PathTooLongException)
+        {
+            blockers.Add($"{messagePrefix}: {filePath} {ex.Message}");
         }
     }
 

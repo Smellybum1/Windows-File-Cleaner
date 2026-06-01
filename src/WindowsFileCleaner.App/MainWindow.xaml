@@ -1052,7 +1052,7 @@
                                            Foreground="#526171" />
                             </Border>
                             <ScrollViewer x:Name="QuarantineExecutionGateScroll"
-                                          MaxHeight="260"
+                                          MaxHeight="520"
                                           VerticalScrollBarVisibility="Auto"
                                           HorizontalScrollBarVisibility="Disabled">
                                 <TextBlock x:Name="QuarantineExecutionGateText"

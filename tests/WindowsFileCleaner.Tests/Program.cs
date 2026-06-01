@@ -38,6 +38,7 @@ tests.QuarantineRootExecutionSafetyBlocksCapacityAndCollisions();
 tests.QuarantineExecutionReadinessConsumesRootExecutionSafety();
 tests.PreExecutionRevalidationPassesUnchangedFixtureAction();
 tests.PreExecutionRevalidationBlocksMissingChangedAndDestinationCollision();
+tests.PreExecutionRevalidationBlocksInUseSourceFilesBeforeMovement();
 tests.PreExecutionRevalidationBlocksStaleActionDraftMismatch();
 tests.QuarantineExecutionReadinessConsumesPreExecutionRevalidation();
 tests.RealProfileRestoreReadinessRequiresSelectedManifestBoundary();
@@ -1754,6 +1755,52 @@ internal sealed class StorageScanTests
         Assert(!collision.CanProceed, "Destination collision should block pre-execution revalidation.");
         Assert(collision.Blockers.Any(blocker => blocker.Contains("item destination now exists", StringComparison.OrdinalIgnoreCase)), "Destination collision blocker should be explicit.");
         Assert(collision.Blockers.Any(blocker => blocker.Contains("action root now exists", StringComparison.OrdinalIgnoreCase)), "Action root collision should be explicit.");
+    }
+
+    public void PreExecutionRevalidationBlocksInUseSourceFilesBeforeMovement()
+    {
+        using var fileFixture = TestFixture.Create();
+        var filePlan = BuildFixtureRevalidationPlan(fileFixture, "preexec-file-in-use");
+
+        using (new FileStream(filePlan.SourcePath, FileMode.Open, FileAccess.Read, FileShare.None))
+        {
+            var revalidation = PreExecutionRevalidationBuilder.Build(
+                filePlan.Preview,
+                filePlan.Confirmation,
+                filePlan.ActionDraft,
+                filePlan.RootExecutionSafety,
+                DateTimeOffset.UtcNow);
+
+            Assert(!revalidation.CanProceed, "In-use source files should block pre-execution revalidation before movement.");
+            Assert(
+                revalidation.Blockers.Any(blocker => blocker.Contains("currently in use or inaccessible", StringComparison.OrdinalIgnoreCase)),
+                "In-use source file blocker should be explicit.");
+        }
+
+        using var directoryFixture = TestFixture.Create();
+        directoryFixture.WriteFile(@"cleanup-scope\AppData\Local\NVIDIA\DXCache\shader.bin", 1024, new DateTimeOffset(2026, 5, 1, 1, 2, 3, TimeSpan.Zero));
+        var directoryPlan = BuildManualFixtureRevalidationPlan(
+            directoryFixture,
+            @"AppData\Local\NVIDIA\DXCache",
+            "preexec-directory-in-use");
+        var lockedDescendantPath = Path.Combine(directoryFixture.RootPath, @"cleanup-scope\AppData\Local\NVIDIA\DXCache\shader.bin");
+
+        using (new FileStream(lockedDescendantPath, FileMode.Open, FileAccess.Read, FileShare.None))
+        {
+            var revalidation = PreExecutionRevalidationBuilder.Build(
+                directoryPlan.Preview,
+                directoryPlan.Confirmation,
+                directoryPlan.ActionDraft,
+                directoryPlan.RootExecutionSafety,
+                DateTimeOffset.UtcNow);
+
+            Assert(!revalidation.CanProceed, "In-use folder descendants should block pre-execution revalidation before folder movement.");
+            Assert(
+                revalidation.Blockers.Any(blocker =>
+                    blocker.Contains("directory contains a file currently in use or inaccessible", StringComparison.OrdinalIgnoreCase)
+                    && blocker.Contains("shader.bin", StringComparison.OrdinalIgnoreCase)),
+                "In-use folder descendant blocker should name the locked file.");
+        }
     }
 
     public void PreExecutionRevalidationBlocksStaleActionDraftMismatch()
@@ -4142,13 +4189,21 @@ internal sealed class StorageScanTests
     {
         var sourceLastModified = new DateTimeOffset(2026, 5, 1, 1, 2, 3, TimeSpan.Zero);
         fixture.WriteFile(@"cleanup-scope\Downloads\old-installer.msi", 1024, sourceLastModified);
+        return BuildManualFixtureRevalidationPlan(fixture, @"Downloads\old-installer.msi", actionId);
+    }
+
+    private static PreExecutionTestPlan BuildManualFixtureRevalidationPlan(
+        TestFixture fixture,
+        string relativePath,
+        string actionId)
+    {
         var cleanupScopePath = Path.Combine(fixture.RootPath, "cleanup-scope");
         var quarantineRootPath = Path.Combine(fixture.RootPath, "quarantine-root");
         var scanner = new StorageScanner();
         var result = scanner.Scan(new StorageScanOptions(cleanupScopePath));
         var review = StorageScanReviewBuilder.Build(result);
-        var installer = SingleReviewEntry(review.Entries, @"Downloads\old-installer.msi");
-        var preview = QuarantinePreviewBuilder.Build([installer], cleanupScopePath, quarantineRootPath);
+        var reviewEntry = SingleReviewEntry(review.Entries, relativePath);
+        var preview = QuarantinePreviewBuilder.Build([reviewEntry], cleanupScopePath, quarantineRootPath);
         var manifestDraft = RestoreManifestDraftBuilder.Build(
             preview,
             new DateTimeOffset(2026, 5, 31, 1, 2, 3, TimeSpan.Zero),
@@ -4174,7 +4229,7 @@ internal sealed class StorageScanTests
             confirmation,
             actionDraft,
             rootSafety,
-            installer.Entry.FullPath);
+            reviewEntry.Entry.FullPath);
     }
 
     private static StorageReviewEntry ManualReviewEntry(
