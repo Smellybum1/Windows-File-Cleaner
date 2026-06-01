@@ -67,6 +67,8 @@ Later packet note: `Real-Profile Next-Batch Review Wrapper` added `Invoke-RealPr
 
 Later packet note: `Accepted Package Launch Path Clarity` clarified that the accepted package launcher is the daily launch-command path and any debug-build desktop shortcut is development-only context, not accepted-package evidence, not an installer, and not the recommended daily path.
 
+Later packet note: `Accepted Launcher Output Boundary` made `Start-AcceptedLocalRelease.cmd` print the daily-path/debug-shortcut boundary directly, without creating shortcuts, installing anything, launching WPF, scanning, moving, restoring, deleting, approving cleanup, or creating cleanup history.
+
 ## Domain Language Changes
 
 No new durable domain terms.

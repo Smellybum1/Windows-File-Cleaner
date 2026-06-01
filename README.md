@@ -65,6 +65,8 @@ Remove `-PrintOnly` only when you intentionally want to launch the accepted pack
 
 If a local desktop shortcut still points at the debug build under `src\WindowsFileCleaner.App\bin\Debug`, treat it as a development convenience only. It is not accepted-package evidence, not an installer, and not the recommended daily launch path.
 
+The accepted launcher output repeats this boundary when it prints launch commands.
+
 To confirm the accepted package evidence without launching WPF:
 
 ```powershell

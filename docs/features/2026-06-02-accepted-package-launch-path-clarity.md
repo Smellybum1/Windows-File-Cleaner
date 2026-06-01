@@ -25,6 +25,7 @@ The handoff still listed a desktop shortcut target under `src\WindowsFileCleaner
 - Updated README Daily Local Use to state that debug-build shortcuts are development conveniences only.
 - Updated the handoff current-state and startup prompt so new threads start from the accepted package launcher rather than a debug shortcut.
 - Recorded the packet in progress docs without changing app or tool behavior.
+- Later packet `Accepted Launcher Output Boundary` made `Start-AcceptedLocalRelease.cmd` print the same daily-path/debug-shortcut boundary in print-only output.
 
 ## Verification
 

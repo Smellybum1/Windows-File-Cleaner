@@ -10,6 +10,8 @@ Storage Scan MVP packet implemented and tested by the user against `C:\Users\mox
 
 Recent UI correction: the user reported `Discover manifests` was not visible in the Quarantine tab after selected restore recovery; it was still buried in the Main Grid detail pane. The follow-up packet moved Restore Manifest discovery, selected readiness, selected restore gate/result, and all-manifest readiness into a dedicated `Restore Manifest Review` panel under the Quarantine tab, and moved detailed Quarantine Preview output into the Quarantine tab.
 
+Latest accepted launcher output update: `.\tools\Start-AcceptedLocalRelease.cmd` now prints that the accepted release launch command is the daily path instead of any debug-build desktop shortcut, and that the launcher does not create shortcuts or install anything. This is terminal output wording only; it does not publish or accept a new package, launch WPF, scan, move, restore, delete, approve cleanup, or create cleanup history.
+
 Latest readiness tooling update: `.\tools\Invoke-RealProfileQuarantineReadiness.cmd` runs full MVP preflight by default, then daily local readiness plus focused Restore Manifest recovery-review and undo-work summaries before any future tiny exact real-profile Quarantine batch review. Restore Manifest display focus defaults to exact `C:\Users\moxhe`, while `-AllCleanupScopes` preserves the older fixture-inclusive display path. `-RequireNextBatchEvidence` is now the exact-profile-only preset for the next tiny batch review: it includes Fixture Acceptance Notes status, requires displayed Restore Manifest evidence, and requires zero displayed undo-work manifests. Displayed strictness flags such as `-RequireAnyDisplayedRestoreManifest -RequireNoDisplayedUndoWork` can still be supplied directly for custom evidence runs, and `-IncludeFixtureAcceptanceNotes` / `-RequireFixtureAcceptanceComplete` can forward optional fixture notes evidence through the daily readiness step. It is terminal evidence only and does not launch WPF, click `Scan`, scan `C:\Users\moxhe`, move, restore, delete, approve cleanup, or create cleanup history. It does not replace WPF readiness, exact `QUARANTINE`, Real-Profile Quarantine Approval Evidence, immediate Pre-Execution Revalidation, or explicit user approval for a specific tiny batch.
 
 Latest next-batch WPF checklist update: `.\tools\Show-RealProfileNextBatchChecklist.cmd` prints the recommended combined review wrapper, the separate next-batch evidence preset, and the manual WPF review checklist. It names exact `C:\Users\moxhe` scope, accepted package launch-command printing, scan/shortlist review, 10-row/1 GB caps, hard blockers, Quarantine tab evidence, the human-only exact `QUARANTINE` click boundary, and rediscover/rescan follow-up without launching WPF, scanning, moving, restoring, deleting, approval, manifest writes, or cleanup history.
@@ -40,12 +42,59 @@ Current Evidence Wording Alignment clarified that the clean notes preview from `
 
 Use `.\tools\Invoke-RealProfileNextBatchReview.cmd` before considering another tiny exact real-profile Quarantine batch when both terminal evidence and the manual WPF checklist should be shown together. Use `.\tools\Invoke-RealProfileQuarantineReadiness.cmd -RequireNextBatchEvidence` when only evidence is needed; it focuses Restore Manifest display rows to exact `C:\Users\moxhe`, includes formal fixture-notes status, proves the exact-profile display exists, and requires zero displayed undo-work manifests. Use `.\tools\Show-RealProfileNextBatchChecklist.cmd` when only the post-preset manual WPF checklist is needed. Use `.\tools\Invoke-RealProfileQuarantineReadiness.cmd -AllCleanupScopes` only when fixture manifests should also be displayed outside the preset. Use `.\tools\Summarize-RestoreManifests.cmd -CleanupScope "C:\Users\moxhe" -RequireAnyDisplayed -RequireNoDisplayedUndoWork` for direct exact-profile displayed undo-work evidence, and `.\tools\Summarize-RestoreManifests.cmd -CleanupScope "C:\Users\moxhe" -RecoveryReviewOnly -ShowEntries` when exact real-profile recovery-review debt needs inspection. These commands are evidence-only; WPF readiness, exact `QUARANTINE`, Real-Profile Quarantine Approval Evidence, immediate Pre-Execution Revalidation, and explicit user approval for the specific click still remain required.
 
-1. Next safest live-product step is to reuse the latest daily evidence refresh or rerun `.\tools\Invoke-DailyLocalReadiness.cmd` from the README Daily Local Use section when accepted package and Restore Manifest evidence should be refreshed, add `-IncludeFixtureAcceptanceNotes` when formal fixture notes status should be visible, use `.\tools\Start-AcceptedLocalRelease.cmd -PrintOnly` when only the accepted package launch command is needed, use `.\tools\Invoke-RealProfileNextBatchReview.cmd` when another tiny exact real-profile batch is being reviewed and both evidence plus checklist should be shown together, complete formal fixture acceptance notes if desired, decide whether a shortcut/installer is worth a later explicit user-approved packaging packet, or guide only another tiny exact real-profile Quarantine batch after fresh full MVP preflight. Treat any debug-build desktop shortcut as development-only context, not accepted-package evidence or the recommended daily path. The first-live selected restore recovery loop is complete by user report: rediscovery showed restored/already restored, rescan completed normally, and the restored `pip\cache\http\b\c` path appeared again. Keep future movement selected-batch-only, exact `C:\Users\moxhe`, exact confirmation, immediate revalidation, no broad/all-manifest Undo, no permanent deletion, and no cleanup history.
+1. Next safest live-product step is to reuse the latest daily evidence refresh or rerun `.\tools\Invoke-DailyLocalReadiness.cmd` from the README Daily Local Use section when accepted package and Restore Manifest evidence should be refreshed, add `-IncludeFixtureAcceptanceNotes` when formal fixture notes status should be visible, use `.\tools\Start-AcceptedLocalRelease.cmd -PrintOnly` when only the accepted package launch command is needed, use `.\tools\Invoke-RealProfileNextBatchReview.cmd` when another tiny exact real-profile batch is being reviewed and both evidence plus checklist should be shown together, complete formal fixture acceptance notes if desired, decide whether a shortcut/installer is worth a later explicit user-approved packaging packet, or guide only another tiny exact real-profile Quarantine batch after fresh full MVP preflight. Treat any debug-build desktop shortcut as development-only context, not accepted-package evidence or the recommended daily path; the accepted launcher output now repeats this boundary. The first-live selected restore recovery loop is complete by user report: rediscovery showed restored/already restored, rescan completed normally, and the restored `pip\cache\http\b\c` path appeared again. Keep future movement selected-batch-only, exact `C:\Users\moxhe`, exact confirmation, immediate revalidation, no broad/all-manifest Undo, no permanent deletion, and no cleanup history.
 2. Do not run or click real-profile Quarantine or restore execution from Codex; the user must explicitly approve each specific batch or selected Restore Manifest after reviewing the readiness output.
 3. If formal fixture acceptance notes are useful before movement work after an all-pass visible fixture review, run `.\tools\Record-FixtureAcceptanceNotes.cmd -Path ".local\fixture-review-acceptance\fixture-acceptance-20260601-132126.md" -RecordManualAcceptance`, then run `.\tools\Summarize-FixtureAcceptanceNotes.cmd -Path ".local\fixture-review-acceptance\fixture-acceptance-20260601-132126.md" -RequireComplete`; fill notes manually instead when there were issues or not-checked items. The user has already reported that the visible fixture pass looks good, but the local checklist remains unfilled.
 4. Revisit .NET 10, installer/shortcut automation, permanent deletion, persisted cleanup history, and broad restore only as separate future decisions.
 
 ## Completed packets
+
+### 2026-06-02: Accepted Launcher Output Boundary
+
+Status: completed
+
+Evidence:
+
+- The previous launch-path clarity packet made tracked docs point at the accepted package launcher and demote debug-build desktop shortcuts to development-only context.
+- Day-to-day use still relies on terminal output, so the accepted launcher itself should repeat the boundary.
+
+Implementation:
+
+- Added one `Start-AcceptedLocalRelease.ps1` output line: the accepted release launch command is the daily path instead of any debug-build desktop shortcut, and the launcher does not create shortcuts or install anything.
+- Updated README, handoff, roadmap, launch-path feature notes, and progress notes.
+- Did not create, modify, or delete shortcuts; did not publish or accept a new package; did not launch WPF; did not scan, move, restore, delete, approve cleanup, write Restore Manifests, or create cleanup history.
+
+Verification:
+
+- `cmd.exe /c tools\Start-AcceptedLocalRelease.cmd -PrintOnly`
+- `cmd.exe /c tools\Start-AcceptedLocalRelease.cmd -Fixture -PrintOnly`
+- `rg -n "Daily path: use this accepted release launch command|debug-build desktop shortcut|Accepted Launcher Output Boundary" tools README.md docs\codex\thread-handoff.md .codex\progress.md docs\features`
+- `git diff --check`
+
+Docs updated:
+
+- `README.md`
+- `docs/features/2026-06-02-accepted-package-launch-path-clarity.md`
+- `docs/features/2026-06-02-accepted-launcher-output-boundary.md`
+- `docs/features/2026-06-01-live-product-readiness-roadmap.md`
+- `docs/codex/thread-handoff.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No ADR added. This is terminal-output wording for existing accepted-package tooling, not a durable architecture, persistence, cleanup execution, restore scope, deployment model, data model, or security change.
+
+Open questions:
+
+- Whether a later installed shortcut or installer should target the accepted package launcher, a release-local script, or a future installer flow.
+
+Follow-up work:
+
+- Consider installed shortcut or installer automation only as a separate explicit user-approved packaging packet.
+
+Risky assumptions:
+
+- Repeating the boundary in terminal output reduces launch-path mistakes more than it adds noise.
 
 ### 2026-06-02: Accepted Package Launch Path Clarity
 
