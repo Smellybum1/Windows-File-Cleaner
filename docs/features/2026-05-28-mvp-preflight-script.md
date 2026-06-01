@@ -149,6 +149,7 @@ What changed:
 - Later packet `Full Local MVP Preflight After Clean Notes Preview` reran `cmd.exe /c tools\Invoke-MvpPreflight.cmd` after `8529a91`; restore, build, core tests, WPF app tests, fixture `-WhatIf`, sectioned checklist-only output, and whitespace diff passed without launching WPF, scanning real-profile files, moving, restoring, deleting, or creating cleanup history.
 - Later packet `Full Local MVP Preflight After Current Evidence Wording Alignment` reran `cmd.exe /c tools\Invoke-MvpPreflight.cmd` after `466ad79`; restore, build, core tests, WPF app tests, fixture `-WhatIf`, sectioned checklist-only output, and whitespace diff passed without launching WPF, scanning real-profile files, moving, restoring, deleting, or creating cleanup history.
 - Later packet `Checklist-Only Visible Fixture Next Step` made the checklist-only output printed by preflight more self-contained by repeating the exact notes-enabled visible fixture command and the checklist-only no-preflight/no-fixture/no-WPF/no-scan/no-movement boundary.
+- Later packet `Full Local MVP Preflight After Checklist-Only Next Step` reran `cmd.exe /c tools\Invoke-MvpPreflight.cmd` after `71cf15a`; restore, build, core tests, WPF app tests, fixture `-WhatIf`, sectioned checklist-only output with the exact visible fixture next-step block, and whitespace diff passed without launching WPF, scanning real-profile files, moving, restoring, deleting, or creating cleanup history.
 
 Files changed:
 
@@ -166,6 +167,7 @@ Tests run:
 - Later full-preflight-after-clean-notes packet ran `cmd.exe /c tools\Invoke-MvpPreflight.cmd`.
 - Later full-preflight-after-current-evidence packet ran `cmd.exe /c tools\Invoke-MvpPreflight.cmd`.
 - Later checklist-only-next-step packet ran `cmd.exe /c tools\Start-MvpFixtureReview.cmd -ChecklistOnly`, `cmd.exe /c tools\Start-MvpFixtureReview.cmd -ChecklistOnly -WriteAcceptanceNotes`, `cmd.exe /c tools\Start-MvpFixtureReview.cmd -WhatIf -SkipPreflight -SkipLaunch -WriteAcceptanceNotes`, `cmd.exe /c tools\Invoke-MvpPreflight.cmd -SkipRestore`, and whitespace checks.
+- Later full-preflight-after-checklist-only-next-step packet ran `cmd.exe /c tools\Invoke-MvpPreflight.cmd`.
 
 Docs updated:
 
