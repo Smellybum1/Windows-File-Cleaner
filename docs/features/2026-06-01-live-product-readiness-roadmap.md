@@ -45,7 +45,7 @@ Future work should follow this readiness sequence.
 
 | Readiness track | Current evidence | Done when | Next likely packet |
 |---|---|---|---|
-| Manual fixture acceptance | Full `.cmd` MVP preflight and checklist-only output are current. Header/tab UI has user visual approval. The fixture launcher can write an ignored `.local` acceptance notes template from the checklist. | The visible fixture pass is run through Quarantine Preview, fixture execution, current-session review, undo, discovery, selected restore gate, fixture selected restore, and ADR 0017/0018/0019 blocker wording. | Support `.\tools\Start-MvpFixtureReview.cmd -WriteAcceptanceNotes` when the user is ready, then record results. |
+| Manual fixture acceptance | Full `.cmd` MVP preflight and checklist-only output are current. Header/tab UI has user visual approval. The fixture launcher can write an ignored `.local` acceptance notes template from the checklist, and the checklist/notes are grouped by fixture review area. | The visible fixture pass is run through Quarantine Preview, fixture execution, current-session review, undo, discovery, selected restore gate, fixture selected restore, and ADR 0017/0018/0019 blocker wording. | Support `.\tools\Start-MvpFixtureReview.cmd -WriteAcceptanceNotes` when the user is ready, then record results. |
 | Fresh real-profile read-only retest | User previously confirmed real-profile scan works and debounced search fixed sluggish typing. | After a fresh preflight, `C:\Users\moxhe` scan is manually retested for scan gate, no-file-modified status, performance, filters/search/focus, Review Shortlist context, and preview-only blockers. | Run only after the user intentionally starts a real-profile retest. |
 | Real-profile selected restore implementation | ADR 0019 and read-only selected restore revalidation evidence exist. | Exactly one selected real-profile Restore Manifest can restore through `UndoQuarantineExecutor` after fresh discovery, selected review, immediate revalidation, exact `RESTORE`, no original-path overwrite, result guidance, and explicit user-approved implementation. | Grill with Docs implementation packet for ADR 0019, with core and WPF tests, only after user approval. |
 | First real-profile Quarantine execution | ADR 0017/0018, root execution safety, pre-execution revalidation, restore readiness, and approval evidence exist as read-only models/output. | Exact `C:\Users\moxhe` can run a first limited real-profile Quarantine action after selected restore recovery is trusted, all readiness dimensions pass, exact `QUARANTINE` is typed, the batch is within 10 rows / 1 GB, and the user explicitly approves crossing the movement boundary. | Only after selected real-profile restore is implemented and manually trusted. |
@@ -197,6 +197,7 @@ What changed:
 - Linked the roadmap from README and handoff docs.
 - Recorded the packet in the progress log.
 - Later packet `2026-06-01-fixture-acceptance-notes-template.md` updated the manual fixture acceptance track to note the launcher can write an ignored `.local` acceptance notes template from the checklist.
+- Later packet `2026-06-01-fixture-checklist-section-grouping.md` updated the manual fixture acceptance track to note grouped checklist and notes output.
 
 Files changed:
 

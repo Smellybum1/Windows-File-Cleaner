@@ -184,6 +184,7 @@ What changed:
 - Added `-WriteAcceptanceNotes` to `Start-MvpFixtureReview.ps1`.
 - Refactored terminal checklist output to reuse a single checklist item source.
 - Added timestamped markdown notes templates under `.local\fixture-review-acceptance`.
+- Later packet `2026-06-01-fixture-checklist-section-grouping.md` added matching section headings to the notes template while preserving the same numbered prompts.
 - Updated docs and handoff/progress notes.
 
 Files changed:
@@ -220,7 +221,7 @@ Follow-up work:
 
 Open questions:
 
-- Should the acceptance notes template become tab-grouped after the next manual pass?
+- After a real manual pass, should any section be split or shortened further?
 
 Risky assumptions:
 

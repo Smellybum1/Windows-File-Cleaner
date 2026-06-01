@@ -36,6 +36,28 @@ function Get-FixtureReviewChecklistItems {
     )
 }
 
+function Get-FixtureReviewChecklistSection {
+    param(
+        [Parameter(Mandatory)]
+        [int]$Index
+    )
+
+    if ($Index -le 1) {
+        return "Scan header and gate"
+    }
+    elseif ($Index -le 4) {
+        return "Safety Summary, Review, and Main Grid"
+    }
+    elseif ($Index -le 6) {
+        return "Quarantine Preview and fixture Quarantine"
+    }
+    elseif ($Index -le 8) {
+        return "Restore Manifest review and selected restore"
+    }
+
+    return "Real-profile and custom blockers"
+}
+
 function Write-FixtureReviewChecklist {
     param(
         [Parameter(Mandatory)]
@@ -46,8 +68,15 @@ function Write-FixtureReviewChecklist {
 
     Write-Host ""
     Write-Host "Manual fixture review checklist:"
+    $currentSection = $null
     for ($index = 0; $index -lt $checklistItems.Count; $index++) {
-        Write-Host ("  {0}. {1}" -f ($index + 1), $checklistItems[$index])
+        $section = Get-FixtureReviewChecklistSection -Index $index
+        if ($section -ne $currentSection) {
+            $currentSection = $section
+            Write-Host ("  {0}:" -f $currentSection)
+        }
+
+        Write-Host ("    {0}. {1}" -f ($index + 1), $checklistItems[$index])
     }
 }
 
@@ -87,10 +116,20 @@ function New-FixtureAcceptanceNotes {
     $lines.Add("- ")
     $lines.Add("")
     $lines.Add("Checklist:")
+    $lines.Add("")
+    $lines.Add("The sections mirror the fixture review flow. Checklist numbers match the terminal output.")
 
+    $currentSection = $null
     for ($index = 0; $index -lt $checklistItems.Count; $index++) {
+        $section = Get-FixtureReviewChecklistSection -Index $index
+        if ($section -ne $currentSection) {
+            $currentSection = $section
+            $lines.Add("")
+            $lines.Add("## $currentSection")
+        }
+
         $lines.Add("")
-        $lines.Add("## $($index + 1). Fixture check")
+        $lines.Add("### $($index + 1). Fixture check")
         $lines.Add("")
         $lines.Add("Prompt: $($checklistItems[$index])")
         $lines.Add("")

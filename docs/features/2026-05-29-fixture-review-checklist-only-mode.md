@@ -72,6 +72,7 @@ What changed:
 - Kept repository containment validation for custom fixture roots.
 - Later packet `2026-05-30-execution-policy-friendly-fixture-launcher.md` added `Start-MvpFixtureReview.cmd`, so checklist-only mode can be launched as `.\tools\Start-MvpFixtureReview.cmd -ChecklistOnly` when direct `.ps1` execution is blocked.
 - Later packet `2026-06-01-fixture-acceptance-notes-template.md` added `-WriteAcceptanceNotes`, so checklist-only mode can also write a local ignored markdown notes template before exiting without preflight, fixture creation, WPF launch, scan, movement, restore, delete, or cleanup history.
+- Later packet `2026-06-01-fixture-checklist-section-grouping.md` added section headers to checklist-only output while keeping the same numbered prompts and safety boundaries.
 
 Tests run:
 
