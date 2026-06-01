@@ -220,6 +220,8 @@ Tests run:
 - `cmd.exe /c tools\Invoke-DailyLocalReadiness.cmd -QuarantineRoot "D:\Codex\Windows File Cleaner\.local\restore-manifest-summary-smoke" -RequireAnyRestoreManifest -RequireNoRecoveryReview -RequireNoUndoWork` passed, proving explicit root and strict Restore Manifest forwarding on a repo-local smoke root with 1 restored manifest and no recovery/undo work.
 - `cmd.exe /c tools\Start-MvpFixtureReview.cmd -ChecklistOnly` passed.
 - `git diff --check` passed with expected line-ending normalization warnings only.
+- Follow-up current-HEAD refresh: `cmd.exe /c tools\Invoke-DailyLocalReadiness.cmd -IncludeFixtureAcceptanceNotes -CleanupScope "C:\Users\moxhe" -RequireAnyDisplayedRestoreManifest -RequireNoDisplayedUndoWork` passed on `0bc2e96`. It verified accepted package notes, printed optional Fixture Acceptance Notes status, verified the accepted package once with the expected package/current-HEAD warning, printed accepted normal/fixture launch commands, and showed exact-profile display `(4 of 10)`, displayed undo work `0`, and displayed recovery review `2` without launching WPF, scanning, movement, restore, deletion, approval, manifest writes, or cleanup history.
+- Follow-up focused evidence: `cmd.exe /c tools\Summarize-RestoreManifests.cmd -CleanupScope "C:\Users\moxhe" -RecoveryReviewOnly -ShowEntries` showed the two older failed NVIDIA `DXCache` attempts with entry-level error evidence, `cmd.exe /c tools\Summarize-RestoreManifests.cmd -CleanupScope "C:\Users\moxhe" -UndoWorkOnly` showed zero exact-profile undo-work manifests, and `cmd.exe /c tools\Summarize-LocalReleaseAcceptanceNotes.cmd -RequireComplete` passed.
 
 Docs updated:
 
