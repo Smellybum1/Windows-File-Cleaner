@@ -34,6 +34,7 @@ The first live exact real-profile Quarantine and selected restore recovery loop 
   - per-manifest status, counts, size, manifest path, and updated timestamp.
 - `-ShowEntries` includes entry-level paths and errors.
 - `-RequireAny` exits non-zero when no valid manifests are found.
+- Later packet `2026-06-02-restore-manifest-recovery-review-filter.md` added `-RecoveryReviewOnly` to focus displayed manifests that need manual recovery review and `-RequireNoRecoveryReview` to fail a read-only terminal evidence check when any valid manifest still needs recovery review.
 - The output repeats the selected-only/no-all-manifest restore boundary.
 
 ## Verification

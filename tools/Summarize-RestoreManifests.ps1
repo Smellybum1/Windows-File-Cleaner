@@ -4,7 +4,11 @@ param(
 
     [switch]$ShowEntries,
 
-    [switch]$RequireAny
+    [switch]$RecoveryReviewOnly,
+
+    [switch]$RequireAny,
+
+    [switch]$RequireNoRecoveryReview
 )
 
 Set-StrictMode -Version Latest
@@ -275,6 +279,11 @@ else {
 }
 
 $orderedManifests = @($manifests | Sort-Object -Property UpdatedAtUtc -Descending)
+$displayManifests = @($orderedManifests)
+if ($RecoveryReviewOnly.IsPresent) {
+    $displayManifests = @($orderedManifests | Where-Object { $_.RequiresRecoveryReview })
+}
+
 $totalEntries = 0
 $totalBytes = [long]0
 $recoveryReviewCount = 0
@@ -301,6 +310,9 @@ Write-Host ("Entry statuses: planned {0}, moving {1}, moved {2}, failed {3}, res
         (Get-StatusCount -Counts $entryStatusTotals -Status "RestoreFailed"))
 Write-Host "Manifests with undo work: $undoWorkCount"
 Write-Host "Manifests needing recovery review: $recoveryReviewCount"
+if ($RecoveryReviewOnly.IsPresent) {
+    Write-Host ("Display filter: recovery-review manifests only ({0} of {1})" -f $displayManifests.Count, $orderedManifests.Count)
+}
 
 if ($cleanupScopes.Count -gt 0) {
     Write-Host "Cleanup Scopes:"
@@ -314,9 +326,9 @@ else {
 
 Write-Host ""
 
-if ($orderedManifests.Count -gt 0) {
+if ($displayManifests.Count -gt 0) {
     Write-Host "Manifests:"
-    foreach ($summary in $orderedManifests) {
+    foreach ($summary in $displayManifests) {
         Write-Host ("- {0} | Status: {1} | Entries: {2} | Size: {3} | Moved {4} | Restored {5} | Failed {6} | Restore failed {7} | Undo work: {8} | Recovery review: {9}" -f `
                 $summary.ActionId, `
                 $summary.ActionStatus, `
@@ -351,6 +363,9 @@ if ($orderedManifests.Count -gt 0) {
         }
     }
 }
+elseif ($RecoveryReviewOnly.IsPresent) {
+    Write-Host "Manifests: none matched the recovery-review display filter."
+}
 
 if ($issues.Count -gt 0) {
     Write-Host ""
@@ -363,5 +378,11 @@ if ($issues.Count -gt 0) {
 if ($RequireAny.IsPresent -and $orderedManifests.Count -eq 0) {
     Write-Host ""
     Write-Host "Restore Manifest summary failed because -RequireAny was set and no valid manifests were found."
+    exit 1
+}
+
+if ($RequireNoRecoveryReview.IsPresent -and $recoveryReviewCount -gt 0) {
+    Write-Host ""
+    Write-Host "Restore Manifest summary failed because -RequireNoRecoveryReview was set and $recoveryReviewCount manifest(s) need recovery review."
     exit 1
 }

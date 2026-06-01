@@ -3405,6 +3405,7 @@ It can appear in WPF discovery output or in terminal-only local tooling that sum
 - Use `RestoreManifestSummary`.
 - Use `Summarize-RestoreManifests` for local terminal-only summary tooling.
 - Keep it read-only and derived from manifest metadata.
+- It may focus the displayed list to manifests that need recovery review or fail a terminal check when recovery-review manifests exist, but that remains evidence only.
 - The summary tool must not launch WPF, scan, move, restore, delete, write manifests, approve cleanup, or create cleanup history.
 
 ### Selected Restore Manifest Review
