@@ -188,11 +188,14 @@ What changed:
 - Later packet `2026-06-01-fixture-acceptance-evidence-header.md` added repository, Git branch/commit, preflight command, visible fixture command, and local evidence checkboxes to the notes header.
 - Later packet `2026-06-01-fixture-acceptance-build-context-header.md` added .NET SDK, WPF app project, WPF app target framework, and WPF enabled evidence to the notes header.
 - Later packet `2026-06-01-fixture-acceptance-current-commit-notes-preview.md` generated a current-commit checklist-only notes preview at `.local\fixture-review-acceptance\fixture-acceptance-20260601-112248.md`, stamped with commit `fd8e1d4` and the build-context fields.
+- Later packet `2026-06-01-fixture-acceptance-notes-summary-helper.md` added `.\tools\Summarize-FixtureAcceptanceNotes.cmd` to read ignored notes and print overall result, checklist totals, and issue/not-checked/not-recorded items without launching WPF, scanning, moving, restoring, deleting, or creating cleanup history.
 - Updated docs and handoff/progress notes.
 
 Files changed:
 
 - `tools/Start-MvpFixtureReview.ps1`
+- `tools/Summarize-FixtureAcceptanceNotes.ps1`
+- `tools/Summarize-FixtureAcceptanceNotes.cmd`
 - `README.md`
 - `docs/features/2026-05-28-mvp-fixture-review-launcher.md`
 - `docs/features/2026-05-29-fixture-review-checklist-output.md`
@@ -209,6 +212,7 @@ Tests run:
 - `cmd.exe /c tools\Start-MvpFixtureReview.cmd -WhatIf -SkipPreflight -SkipLaunch -WriteAcceptanceNotes`
 - `git diff --check`
 - Later current-commit notes-preview packet inspected `.local\fixture-review-acceptance\fixture-acceptance-20260601-112248.md` after `cmd.exe /c tools\Start-MvpFixtureReview.cmd -ChecklistOnly -WriteAcceptanceNotes`.
+- Later summary-helper packet ran `cmd.exe /c tools\Summarize-FixtureAcceptanceNotes.cmd` and `cmd.exe /c tools\Summarize-FixtureAcceptanceNotes.cmd -Path .local\fixture-review-acceptance\fixture-acceptance-20260601-112248.md`.
 
 Docs updated:
 
@@ -221,6 +225,7 @@ ADRs added or skipped:
 Follow-up work:
 
 - Run the visible fixture pass with `.\tools\Start-MvpFixtureReview.cmd -SkipPreflight -WriteAcceptanceNotes` after a successful preflight when the user is ready.
+- Run `.\tools\Summarize-FixtureAcceptanceNotes.cmd` after the pass to review open checklist items.
 - Copy relevant manual results from `.local` notes into `.codex/progress.md` after the pass.
 
 Open questions:

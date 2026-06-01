@@ -155,6 +155,7 @@ What changed:
 - Generated checklist-only fixture acceptance notes from current commit `fd8e1d4`.
 - Inspected the ignored notes header and confirmed repository, branch, commit, .NET SDK, WPF app project, target framework, WPF enabled flag, preflight command, visible fixture command, preflight/worktree checkboxes, and local-not-cleanup-history wording.
 - Updated docs to make the next step the visible fixture pass, not another checklist-only preparation step.
+- Later packet `2026-06-01-fixture-acceptance-notes-summary-helper.md` added a read-only helper that can summarize this ignored notes preview or the latest future notes file.
 
 Files changed:
 
@@ -181,6 +182,7 @@ ADRs added or skipped:
 Follow-up work:
 
 - Run the visible fixture pass with `.\tools\Start-MvpFixtureReview.cmd -SkipPreflight -WriteAcceptanceNotes` when the user is ready.
+- Run `.\tools\Summarize-FixtureAcceptanceNotes.cmd` after the visible pass to review open notes items.
 - Record manual results or issues from the visible pass in `.codex/progress.md`.
 
 Open questions:

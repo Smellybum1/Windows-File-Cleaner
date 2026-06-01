@@ -1,0 +1,241 @@
+[CmdletBinding()]
+param(
+    [string]$Path
+)
+
+Set-StrictMode -Version Latest
+$ErrorActionPreference = "Stop"
+
+$repoRoot = Split-Path -Parent $PSScriptRoot
+$notesRoot = Join-Path $repoRoot ".local\fixture-review-acceptance"
+
+function Resolve-FixtureAcceptanceNotesPath {
+    param(
+        [string]$RequestedPath
+    )
+
+    if (-not [string]::IsNullOrWhiteSpace($RequestedPath)) {
+        if ([System.IO.Path]::IsPathRooted($RequestedPath)) {
+            return [System.IO.Path]::GetFullPath($RequestedPath)
+        }
+
+        return [System.IO.Path]::GetFullPath((Join-Path $repoRoot $RequestedPath))
+    }
+
+    if (-not (Test-Path -LiteralPath $notesRoot)) {
+        throw "No fixture acceptance notes folder exists: $notesRoot"
+    }
+
+    $latest = Get-ChildItem -LiteralPath $notesRoot -Filter "fixture-acceptance-*.md" -File |
+        Sort-Object LastWriteTime -Descending |
+        Select-Object -First 1
+
+    if ($null -eq $latest) {
+        throw "No fixture acceptance notes files found in: $notesRoot"
+    }
+
+    return $latest.FullName
+}
+
+function Get-FirstMetadataValue {
+    param(
+        [string[]]$Lines,
+
+        [Parameter(Mandatory)]
+        [string]$Prefix
+    )
+
+    foreach ($line in $Lines) {
+        if ($line.StartsWith($Prefix, [System.StringComparison]::OrdinalIgnoreCase)) {
+            return $line.Substring($Prefix.Length).Trim()
+        }
+    }
+
+    return "unknown"
+}
+
+function Get-CheckedLabel {
+    param(
+        [string[]]$Lines,
+
+        [Parameter(Mandatory)]
+        [int]$StartIndex,
+
+        [Parameter(Mandatory)]
+        [string[]]$Labels
+    )
+
+    for ($index = $StartIndex; $index -lt $Lines.Count; $index++) {
+        $line = $Lines[$index]
+        if ($line.StartsWith("#")) {
+            break
+        }
+
+        foreach ($label in $Labels) {
+            $escapedLabel = [regex]::Escape($label)
+            if ($line -match "^- \[[xX]\] $escapedLabel$") {
+                return $label
+            }
+        }
+    }
+
+    return "Not recorded"
+}
+
+function Get-NotesSnippet {
+    param(
+        [string[]]$Lines,
+
+        [Parameter(Mandatory)]
+        [int]$StartIndex,
+
+        [Parameter(Mandatory)]
+        [int]$EndIndex
+    )
+
+    $snippets = [System.Collections.Generic.List[string]]::new()
+    $inNotes = $false
+
+    for ($index = $StartIndex; $index -le $EndIndex; $index++) {
+        $line = $Lines[$index]
+        if ($line -eq "Notes:") {
+            $inNotes = $true
+            continue
+        }
+
+        if (-not $inNotes) {
+            continue
+        }
+
+        if ($line.StartsWith("### ") -or $line.StartsWith("## ")) {
+            break
+        }
+
+        $trimmed = $line.Trim()
+        if ($trimmed -eq "-" -or $trimmed -eq "") {
+            continue
+        }
+
+        if ($trimmed.StartsWith("- ")) {
+            $trimmed = $trimmed.Substring(2).Trim()
+        }
+
+        if (-not [string]::IsNullOrWhiteSpace($trimmed)) {
+            $snippets.Add($trimmed)
+        }
+    }
+
+    if ($snippets.Count -eq 0) {
+        return ""
+    }
+
+    return ($snippets -join " ")
+}
+
+function Get-FixtureChecklistEntries {
+    param(
+        [string[]]$Lines
+    )
+
+    $entries = [System.Collections.Generic.List[object]]::new()
+    $currentSection = "Unknown"
+
+    for ($index = 0; $index -lt $Lines.Count; $index++) {
+        $line = $Lines[$index]
+        if ($line.StartsWith("## ") -and -not $line.StartsWith("### ")) {
+            $currentSection = $line.Substring(3).Trim()
+            continue
+        }
+
+        if ($line -notmatch "^### (?<number>\d+)\. Fixture check$") {
+            continue
+        }
+
+        $number = [int]$Matches["number"]
+        $endIndex = $Lines.Count - 1
+        for ($nextIndex = $index + 1; $nextIndex -lt $Lines.Count; $nextIndex++) {
+            if ($Lines[$nextIndex].StartsWith("### ")) {
+                $endIndex = $nextIndex - 1
+                break
+            }
+        }
+
+        $prompt = ""
+        for ($promptIndex = $index + 1; $promptIndex -le $endIndex; $promptIndex++) {
+            if ($Lines[$promptIndex].StartsWith("Prompt: ")) {
+                $prompt = $Lines[$promptIndex].Substring("Prompt: ".Length).Trim()
+                break
+            }
+        }
+
+        $status = Get-CheckedLabel -Lines $Lines -StartIndex ($index + 1) -Labels @("Pass", "Issue", "Not checked")
+        $notesSnippet = Get-NotesSnippet -Lines $Lines -StartIndex $index -EndIndex $endIndex
+
+        $entries.Add([pscustomobject]@{
+                Number = $number
+                Section = $currentSection
+                Status = $status
+                Prompt = $prompt
+                Notes = $notesSnippet
+            })
+    }
+
+    return $entries
+}
+
+$notesPath = Resolve-FixtureAcceptanceNotesPath -RequestedPath $Path
+if (-not (Test-Path -LiteralPath $notesPath)) {
+    throw "Fixture acceptance notes file does not exist: $notesPath"
+}
+
+$fullNotesPath = [System.IO.Path]::GetFullPath($notesPath)
+$repoFullPath = [System.IO.Path]::GetFullPath($repoRoot).TrimEnd([System.IO.Path]::DirectorySeparatorChar)
+if (-not ($fullNotesPath.StartsWith($repoFullPath + [System.IO.Path]::DirectorySeparatorChar, [System.StringComparison]::OrdinalIgnoreCase))) {
+    throw "Fixture acceptance notes path must stay inside the repository: $repoFullPath"
+}
+
+$lines = Get-Content -LiteralPath $fullNotesPath
+$overallIndex = [array]::IndexOf($lines, "Overall result:")
+$overallResult = "Not recorded"
+if ($overallIndex -ge 0) {
+    $overallResult = Get-CheckedLabel -Lines $lines -StartIndex $overallIndex -Labels @("Pass", "Pass with issues noted", "Blocked")
+}
+
+$entries = @(Get-FixtureChecklistEntries -Lines $lines)
+$passCount = @($entries | Where-Object { $_.Status -eq "Pass" }).Count
+$issueCount = @($entries | Where-Object { $_.Status -eq "Issue" }).Count
+$notCheckedCount = @($entries | Where-Object { $_.Status -eq "Not checked" }).Count
+$openCount = @($entries | Where-Object { $_.Status -eq "Not recorded" }).Count
+
+Write-Host "Fixture acceptance notes summary"
+Write-Host "Notes file: $fullNotesPath"
+Write-Host ("Created: {0}" -f (Get-FirstMetadataValue -Lines $lines -Prefix "Created:"))
+Write-Host ("Git branch: {0}" -f (Get-FirstMetadataValue -Lines $lines -Prefix "- Git branch:"))
+Write-Host ("Git commit: {0}" -f (Get-FirstMetadataValue -Lines $lines -Prefix "- Git commit:"))
+Write-Host ("WPF app: {0}; {1}; WPF enabled: {2}" -f
+    (Get-FirstMetadataValue -Lines $lines -Prefix "- WPF app project:"),
+    (Get-FirstMetadataValue -Lines $lines -Prefix "- WPF app target framework:"),
+    (Get-FirstMetadataValue -Lines $lines -Prefix "- WPF enabled:"))
+Write-Host ("Overall result: {0}" -f $overallResult)
+Write-Host ("Checklist totals: {0} pass, {1} issue, {2} not checked, {3} not recorded" -f $passCount, $issueCount, $notCheckedCount, $openCount)
+
+$attentionEntries = @($entries | Where-Object { $_.Status -in @("Issue", "Not checked", "Not recorded") })
+if ($attentionEntries.Count -gt 0) {
+    Write-Host ""
+    Write-Host "Items needing review:"
+    foreach ($entry in $attentionEntries) {
+        $line = ("- {0}. {1}: {2}" -f $entry.Number, $entry.Section, $entry.Status)
+        if (-not [string]::IsNullOrWhiteSpace($entry.Notes)) {
+            $line = "$line - $($entry.Notes)"
+        }
+
+        Write-Host $line
+    }
+}
+else {
+    Write-Host ""
+    Write-Host "All checklist items are marked Pass."
+}
+
+Write-Host ""
+Write-Host "This is a read-only summary of local ignored notes. It does not launch WPF, scan, move, restore, delete, or create cleanup history."

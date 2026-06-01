@@ -147,6 +147,15 @@ To also write a local, ignored markdown notes template for the manual pass:
 
 The template is written under `.local\fixture-review-acceptance`, stamps the repo path, Git branch/commit, .NET SDK, WPF app project/target framework/WPF flag, required preflight command, and local evidence checkboxes, then gives each grouped checklist item pass/issue/not-checked slots. Use `.\tools\Start-MvpFixtureReview.cmd -SkipPreflight -WriteAcceptanceNotes` after a successful preflight when you want the same notes template created before the visible fixture app launches.
 
+After a fixture pass, summarize the latest ignored notes or a specific notes file:
+
+```powershell
+.\tools\Summarize-FixtureAcceptanceNotes.cmd
+.\tools\Summarize-FixtureAcceptanceNotes.cmd -Path ".local\fixture-review-acceptance\fixture-acceptance-YYYYMMDD-HHMMSS.md"
+```
+
+The summary helper reads local notes only, reports the overall result, checklist totals, and issue/not-checked/not-recorded items, and does not launch WPF, scan, move, restore, delete, or create cleanup history.
+
 For focused troubleshooting, the individual fixture commands are:
 
 ```powershell
