@@ -2,6 +2,8 @@
 param(
     [string]$QuarantineRoot = "D:\WindowsFileCleanerQuarantine",
 
+    [string]$CleanupScope,
+
     [switch]$ShowEntries,
 
     [switch]$RecoveryReviewOnly,
@@ -42,11 +44,13 @@ function Format-ByteSize {
 function Resolve-FullPath {
     param(
         [Parameter(Mandatory)]
-        [string]$Path
+        [string]$Path,
+
+        [string]$Name = "Path"
     )
 
     if (-not [System.IO.Path]::IsPathRooted($Path)) {
-        throw "QuarantineRoot must be a fully qualified path: $Path"
+        throw "$Name must be a fully qualified path: $Path"
     }
 
     return [System.IO.Path]::GetFullPath($Path).TrimEnd([System.IO.Path]::DirectorySeparatorChar)
@@ -156,7 +160,11 @@ function Test-RequiresRecoveryReview {
         (Get-StatusCount -Counts $EntryStatusCounts -Status "RestoreFailed") -gt 0
 }
 
-$quarantineRootFullPath = Resolve-FullPath -Path $QuarantineRoot
+$quarantineRootFullPath = Resolve-FullPath -Path $QuarantineRoot -Name "QuarantineRoot"
+$cleanupScopeFullPath = $null
+if (-not [string]::IsNullOrWhiteSpace($CleanupScope)) {
+    $cleanupScopeFullPath = Resolve-FullPath -Path $CleanupScope -Name "CleanupScope"
+}
 $actionsRootPath = Join-Path $quarantineRootFullPath "actions"
 $issues = [System.Collections.Generic.List[object]]::new()
 $manifests = [System.Collections.Generic.List[object]]::new()
@@ -285,6 +293,11 @@ else {
 $orderedManifests = @($manifests | Sort-Object -Property UpdatedAtUtc -Descending)
 $displayManifests = @($orderedManifests)
 $displayFilterLabels = [System.Collections.Generic.List[string]]::new()
+if ($null -ne $cleanupScopeFullPath) {
+    $displayManifests = @($displayManifests | Where-Object { Test-SamePath -Left $_.CleanupScopePath -Right $cleanupScopeFullPath })
+    [void]$displayFilterLabels.Add("Cleanup Scope: $cleanupScopeFullPath")
+}
+
 if ($RecoveryReviewOnly.IsPresent) {
     $displayManifests = @($displayManifests | Where-Object { $_.RequiresRecoveryReview })
     [void]$displayFilterLabels.Add("recovery-review manifests only")

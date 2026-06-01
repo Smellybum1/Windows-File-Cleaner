@@ -12,6 +12,8 @@ Recent UI correction: the user reported `Discover manifests` was not visible in 
 
 Latest readiness tooling update: `.\tools\Invoke-RealProfileQuarantineReadiness.cmd` runs full MVP preflight by default, then daily local readiness plus focused Restore Manifest recovery-review and undo-work summaries before any future tiny exact real-profile Quarantine batch review. It is terminal evidence only and does not launch WPF, click `Scan`, scan `C:\Users\moxhe`, move, restore, delete, approve cleanup, or create cleanup history. It does not replace WPF readiness, exact `QUARANTINE`, Real-Profile Quarantine Approval Evidence, immediate Pre-Execution Revalidation, or explicit user approval for a specific tiny batch.
 
+Latest Restore Manifest evidence update: `.\tools\Summarize-RestoreManifests.cmd -CleanupScope "C:\Users\moxhe"` can focus the displayed manifest list to the exact real-profile Cleanup Scope while preserving full-root aggregate counts. The same display filter is forwarded through daily and real-profile readiness wrappers. This is read-only evidence only and does not launch WPF, scan, move, restore, delete, write manifests, approve cleanup, or create cleanup history.
+
 Latest WPF UI packet added a compact Main Grid Active Review Lens Summary above Storage Scan rows, mirroring the existing Filter Summary so default scan, Safety Summary shortcut, and stacked filter/search context remain visible after tab switches; it hides for current-session quarantined rows. User visual review on 2026-06-01 approved the compact wide-header layout with Review Shortlist totals before scan totals, and the user later ran the visible fixture review flow and reported that it looks good. The latest fixture-checklist wording packet clarified that the current-session review step's hoverable `?` cue and `Status state:` wording belong to Review Grid Mode Status, while Main Grid Active Review Lens Summary appears for Storage Scan rows and hides for current-session quarantined rows. Current handoff evidence is the current-evidence baseline: full `.cmd` MVP preflight passed after the Checklist-Only Visible Fixture Next Step packet at `71cf15a`, including restore, build, core tests, WPF app tests, fixture `-WhatIf`, sectioned checklist-only output with the exact visible fixture next step, whitespace diff, and the notes-enabled next manual fixture command; user-reported manual fixture visual acceptance is now recorded, while the formal latest notes checklist remains unfilled. The live-product readiness roadmap now separates visible fixture acceptance, fresh real-profile read-only retest, selected real-profile restore, first real-profile Quarantine execution, recovery confidence, packaging, and later deletion/history decisions, and its manual fixture acceptance row names user-reported visual acceptance plus the unfilled clean-worktree notes evidence. The fixture launcher can write an ignored `.local` fixture acceptance notes template from the same checklist item source with `-WriteAcceptanceNotes`; the notes are grouped by fixture review area and now include an acceptance evidence header with repo path, Git branch/commit, worktree status at notes creation, .NET SDK, WPF app project/target framework/WPF flag, preflight command, visible fixture command, preflight/worktree checkboxes, local-not-cleanup-history wording, and embedded exact summary/completion-check commands. The latest ignored notes file is `.local\fixture-review-acceptance\fixture-acceptance-20260601-132126.md` from clean `main` at `433064e` with `Worktree status at notes creation: clean`, but the acceptance evidence and checklist items remain not recorded. A read-only summary helper can summarize the latest or explicit ignored fixture acceptance notes, including metadata, worktree status at notes creation when present, acceptance-evidence checkbox states, overall result, checklist totals, and issue/not-checked/not-recorded items with compact notes or prompt previews, without launching WPF, scanning, moving, restoring, deleting, or creating cleanup history. The helper also supports `-RequireComplete`, which exits non-zero until local acceptance notes have recorded preflight/worktree evidence, an overall result, and no not-checked or not-recorded checklist items. The fixture launcher now also prints exact summary and completion-check commands for the notes file it writes, and MVP preflight success output points to that follow-up after `.\tools\Start-MvpFixtureReview.cmd -SkipPreflight -WriteAcceptanceNotes`. Checklist-only launcher output now also repeats the exact next visible fixture command and the no-preflight/no-fixture/no-WPF/no-scan/no-movement boundary before exiting. No real user files were scanned or modified.
 
 Fresh clean-worktree notes evidence: `cmd.exe /c tools\Start-MvpFixtureReview.cmd -ChecklistOnly -WriteAcceptanceNotes` generated `.local\fixture-review-acceptance\fixture-acceptance-20260601-131233.md` from `dd86566` with `Worktree status at notes creation: clean`. The read-only summary helper printed that clean stamp, and `-RequireComplete` returned exit code 1 as expected because the checklist-only notes are still unfilled. This did not run preflight, create fixture files, launch WPF, scan, move, restore, delete, or create cleanup history.
@@ -26,7 +28,7 @@ Current Evidence Wording Alignment clarified that the clean notes preview from `
 
 ## Next recommended work
 
-Use `.\tools\Invoke-RealProfileQuarantineReadiness.cmd` before considering another tiny exact real-profile Quarantine batch. The command is evidence-only; WPF readiness, exact `QUARANTINE`, Real-Profile Quarantine Approval Evidence, immediate Pre-Execution Revalidation, and explicit user approval for the specific click still remain required.
+Use `.\tools\Invoke-RealProfileQuarantineReadiness.cmd` before considering another tiny exact real-profile Quarantine batch. Use `.\tools\Summarize-RestoreManifests.cmd -CleanupScope "C:\Users\moxhe" -RecoveryReviewOnly -ShowEntries` and `.\tools\Summarize-RestoreManifests.cmd -CleanupScope "C:\Users\moxhe" -UndoWorkOnly` when exact real-profile manifest evidence should be separated from fixture manifests. These commands are evidence-only; WPF readiness, exact `QUARANTINE`, Real-Profile Quarantine Approval Evidence, immediate Pre-Execution Revalidation, and explicit user approval for the specific click still remain required.
 
 1. Next safest live-product step is to use `.\tools\Invoke-DailyLocalReadiness.cmd` or the README Daily Local Use section for accepted package and Restore Manifest evidence, use `.\tools\Summarize-RestoreManifests.cmd -RecoveryReviewOnly -ShowEntries` when recovery-review debt needs focus, use `.\tools\Summarize-RestoreManifests.cmd -UndoWorkOnly -ShowEntries` when outstanding moved entries need focus, complete formal fixture acceptance notes if desired, decide whether a shortcut/installer is worth a later explicit user-approved packaging packet, or guide only another tiny exact real-profile Quarantine batch after fresh full MVP preflight. The first-live selected restore recovery loop is complete by user report: rediscovery showed restored/already restored, rescan completed normally, and the restored `pip\cache\http\b\c` path appeared again. Keep future movement selected-batch-only, exact `C:\Users\moxhe`, exact confirmation, immediate revalidation, no broad/all-manifest Undo, no permanent deletion, and no cleanup history.
 2. Do not run or click real-profile Quarantine or restore execution from Codex; the user must explicitly approve each specific batch or selected Restore Manifest after reviewing the readiness output.
@@ -34,6 +36,59 @@ Use `.\tools\Invoke-RealProfileQuarantineReadiness.cmd` before considering anoth
 4. Revisit .NET 10, installer/shortcut automation, permanent deletion, persisted cleanup history, and broad restore only as separate future decisions.
 
 ## Completed packets
+
+### 2026-06-02: Restore Manifest Cleanup Scope Filter
+
+Status: completed
+
+Evidence:
+
+- The default Quarantine Root includes both exact real-profile manifests and fixture manifests.
+- Before any future exact real-profile batch, terminal evidence should be able to distinguish `C:\Users\moxhe` recovery-review or undo-work state from fixture undo-work.
+
+Implementation:
+
+- Added `-CleanupScope` to `tools\Summarize-RestoreManifests.ps1` as a display filter.
+- Forwarded `-CleanupScope` through `tools\Invoke-DailyLocalReadiness.ps1` and `tools\Invoke-RealProfileQuarantineReadiness.ps1`.
+- Kept full-root aggregate counts visible while filtering the displayed manifest list.
+- Updated README, domain docs, glossary, Restore Manifest Summary feature brief, live-product readiness roadmap, handoff, the new feature brief, and this progress log.
+- Did not launch WPF, click `Scan`, scan `C:\Users\moxhe`, move, restore, delete, write Restore Manifests, approve cleanup, create cleanup history, add broad/all-manifest restore, or change movement availability.
+
+Verification:
+
+- `cmd.exe /c tools\Summarize-RestoreManifests.cmd -CleanupScope "C:\Users\moxhe" -RecoveryReviewOnly -ShowEntries` passed; the display filter showed the two exact real-profile recovery-review manifests with failed DXCache entries.
+- `cmd.exe /c tools\Summarize-RestoreManifests.cmd -CleanupScope "C:\Users\moxhe" -UndoWorkOnly` passed; the display filter showed zero exact real-profile undo-work manifests while full-root aggregates still reported fixture undo-work.
+- `cmd.exe /c tools\Invoke-DailyLocalReadiness.cmd -CleanupScope "C:\Users\moxhe" -RecoveryReviewOnly` passed; accepted package evidence printed in read-only/print-only mode with the expected docs-only commit warning.
+- `cmd.exe /c tools\Invoke-RealProfileQuarantineReadiness.cmd -SkipMvpPreflight -CleanupScope "C:\Users\moxhe"` passed; no WPF launch, real-profile scan, movement, restore, deletion, or cleanup history occurred.
+- `cmd.exe /c tools\Start-MvpFixtureReview.cmd -ChecklistOnly` passed.
+- `git diff --check` passed with expected CRLF conversion warnings.
+
+Docs updated:
+
+- `README.md`
+- `docs/domain/context.md`
+- `docs/domain/glossary.md`
+- `docs/features/2026-06-01-restore-manifest-summary-tool.md`
+- `docs/features/2026-06-01-live-product-readiness-roadmap.md`
+- `docs/features/2026-06-02-restore-manifest-cleanup-scope-filter.md`
+- `docs/codex/thread-handoff.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No ADR added. This is read-only terminal evidence for existing Restore Manifest Summary behavior, with no architecture, persistence, cleanup execution, restore rule, data-model, deployment, or security change.
+
+Open questions:
+
+- Whether a later dedicated restore/history surface should group manifests by Cleanup Scope in WPF.
+
+Follow-up work:
+
+- Use the scope filter when exact real-profile Restore Manifest evidence should be separated from fixture evidence before future live cleanup review.
+
+Risky assumptions:
+
+- Full-root aggregate counts plus display-filter wording are enough to avoid treating filtered output as cleanup clearance.
 
 ### 2026-06-02: Real-Profile Quarantine Readiness Review
 

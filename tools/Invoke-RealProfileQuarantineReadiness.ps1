@@ -4,6 +4,8 @@ param(
 
     [string]$QuarantineRoot,
 
+    [string]$CleanupScope,
+
     [switch]$SkipMvpPreflight,
 
     [switch]$ShowRestoreEntries,
@@ -57,6 +59,9 @@ function New-RestoreManifestArguments {
     if (-not [string]::IsNullOrWhiteSpace($QuarantineRoot)) {
         $arguments += @("-QuarantineRoot", $QuarantineRoot)
     }
+    if (-not [string]::IsNullOrWhiteSpace($CleanupScope)) {
+        $arguments += @("-CleanupScope", $CleanupScope)
+    }
 
     if ($ShowRestoreEntries.IsPresent) {
         $arguments += "-ShowEntries"
@@ -100,6 +105,9 @@ if (-not [string]::IsNullOrWhiteSpace($AcceptanceNotesPath)) {
 }
 if (-not [string]::IsNullOrWhiteSpace($QuarantineRoot)) {
     $dailyArguments += @("-QuarantineRoot", $QuarantineRoot)
+}
+if (-not [string]::IsNullOrWhiteSpace($CleanupScope)) {
+    $dailyArguments += @("-CleanupScope", $CleanupScope)
 }
 if ($RequireAnyRestoreManifest.IsPresent) {
     $dailyArguments += "-RequireAnyRestoreManifest"

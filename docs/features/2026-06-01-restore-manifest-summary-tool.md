@@ -36,6 +36,7 @@ The first live exact real-profile Quarantine and selected restore recovery loop 
 - `-RequireAny` exits non-zero when no valid manifests are found.
 - Later packet `2026-06-02-restore-manifest-recovery-review-filter.md` added `-RecoveryReviewOnly` to focus displayed manifests that need manual recovery review and `-RequireNoRecoveryReview` to fail a read-only terminal evidence check when any valid manifest still needs recovery review.
 - Later packet `2026-06-02-restore-manifest-undo-work-filter.md` added `-UndoWorkOnly` to focus displayed manifests with moved entries still needing selected restore/undo review and `-RequireNoUndoWork` to fail a read-only terminal evidence check when any valid manifest still has undo work.
+- Later packet `2026-06-02-restore-manifest-cleanup-scope-filter.md` added `-CleanupScope` to focus the displayed manifest list by exact Cleanup Scope while preserving full-root aggregate counts.
 - The output repeats the selected-only/no-all-manifest restore boundary.
 
 ## Verification

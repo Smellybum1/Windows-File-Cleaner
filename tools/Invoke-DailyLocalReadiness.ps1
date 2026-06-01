@@ -4,6 +4,8 @@ param(
 
     [string]$QuarantineRoot,
 
+    [string]$CleanupScope,
+
     [switch]$ShowRestoreEntries,
 
     [switch]$RecoveryReviewOnly,
@@ -69,6 +71,9 @@ if (-not [string]::IsNullOrWhiteSpace($AcceptanceNotesPath)) {
 $restoreArguments = @()
 if (-not [string]::IsNullOrWhiteSpace($QuarantineRoot)) {
     $restoreArguments += @("-QuarantineRoot", $QuarantineRoot)
+}
+if (-not [string]::IsNullOrWhiteSpace($CleanupScope)) {
+    $restoreArguments += @("-CleanupScope", $CleanupScope)
 }
 
 if ($ShowRestoreEntries.IsPresent) {
