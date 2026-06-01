@@ -117,6 +117,23 @@ All WindowsFileCleaner.App.Tests checks passed.
 
 Pushes and pull requests to `main` run the same MVP preflight on GitHub Actions with a Windows runner and .NET 8. The CI job invokes `tools\Invoke-MvpPreflight.cmd`, then restores, builds, runs both test harnesses, runs the fixture generator in `-WhatIf` mode, prints the fixture review checklist in checklist-only mode, and runs `git diff --check`; any non-zero child command fails the job. It does not scan `C:\Users\moxhe`.
 
+## Portable v1 Release
+
+To create a local self-contained portable release folder and zip:
+
+```powershell
+.\tools\Publish-LocalRelease.cmd
+```
+
+The publisher runs MVP preflight by default, publishes the WPF app as `Release` / `win-x64` / self-contained, writes local release metadata, and creates:
+
+```txt
+.local\releases\windows-file-cleaner-vYYYYMMDD-HHMMSS\app\WindowsFileCleaner.App.exe
+.local\releases\windows-file-cleaner-vYYYYMMDD-HHMMSS.zip
+```
+
+The release artifacts stay under ignored `.local\releases`. The script prints the exact executable path plus normal and fixture launch commands. This is a portable package, not an installer: it does not create shortcuts, does not enable permanent deletion, does not add persisted cleanup history, and does not add broad/all-manifest restore. Portable v1 remains reversible-only: read-only Storage Scan, review, gated Quarantine, and selected restore.
+
 ## WPF Fixture Smoke
 
 Use the fixture review launcher for the manual fixture UI pass:
