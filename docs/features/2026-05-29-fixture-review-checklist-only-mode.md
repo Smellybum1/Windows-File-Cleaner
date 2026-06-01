@@ -73,6 +73,7 @@ What changed:
 - Later packet `2026-05-30-execution-policy-friendly-fixture-launcher.md` added `Start-MvpFixtureReview.cmd`, so checklist-only mode can be launched as `.\tools\Start-MvpFixtureReview.cmd -ChecklistOnly` when direct `.ps1` execution is blocked.
 - Later packet `2026-06-01-fixture-acceptance-notes-template.md` added `-WriteAcceptanceNotes`, so checklist-only mode can also write a local ignored markdown notes template before exiting without preflight, fixture creation, WPF launch, scan, movement, restore, delete, or cleanup history.
 - Later packet `2026-06-01-fixture-checklist-section-grouping.md` added section headers to checklist-only output while keeping the same numbered prompts and safety boundaries.
+- Later packet `2026-06-01-checklist-only-visible-fixture-next-step.md` made checklist-only output self-contained by printing the exact next visible fixture command, `.\tools\Start-MvpFixtureReview.cmd -SkipPreflight -WriteAcceptanceNotes`, and restating that the checklist-only run did not run preflight, create fixture files, launch WPF, scan, move, restore, delete, or create cleanup history.
 
 Tests run:
 
@@ -81,6 +82,7 @@ Tests run:
 - `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\Start-MvpFixtureReview.ps1 -WhatIf -SkipPreflight -SkipLaunch`
 - `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\Start-MvpFixtureReview.ps1 -WhatIf -SkipPreflight -SkipLaunch -SkipChecklist`
 - `git -c safe.directory='D:/Codex/Windows File Cleaner' diff --check`
+- Later packet `2026-06-01-checklist-only-visible-fixture-next-step.md` ran `cmd.exe /c tools\Start-MvpFixtureReview.cmd -ChecklistOnly`, `cmd.exe /c tools\Start-MvpFixtureReview.cmd -ChecklistOnly -WriteAcceptanceNotes`, `cmd.exe /c tools\Start-MvpFixtureReview.cmd -WhatIf -SkipPreflight -SkipLaunch -WriteAcceptanceNotes`, `cmd.exe /c tools\Invoke-MvpPreflight.cmd -SkipRestore`, and whitespace checks.
 
 Docs updated:
 

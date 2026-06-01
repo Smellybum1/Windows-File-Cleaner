@@ -88,7 +88,7 @@ Run the MVP preflight from the repository root before scanning real user files:
 
 The `.cmd` tool wrappers call the existing PowerShell scripts with process-scoped `-ExecutionPolicy Bypass`, so they work when direct `.ps1` execution is blocked without changing your machine or user execution policy. If your shell already allows scripts, the `.ps1` commands still work.
 
-The preflight restores, builds, runs both test harnesses, runs the fixture generator in `-WhatIf` mode, prints the fixture review checklist in checklist-only mode, and runs `git diff --check`. It fails if any child command exits non-zero. It does not scan `C:\Users\moxhe`. After it passes, the success output points to the notes-enabled fixture launcher command for the next visible fixture pass.
+The preflight restores, builds, runs both test harnesses, runs the fixture generator in `-WhatIf` mode, prints the fixture review checklist in checklist-only mode, and runs `git diff --check`. It fails if any child command exits non-zero. It does not scan `C:\Users\moxhe`. After it passes, the success output points to the notes-enabled fixture launcher command for the next visible fixture pass. Checklist-only output also repeats that exact visible fixture command while stating that checklist-only mode did not run preflight, create fixture files, launch WPF, scan, move, restore, delete, or create cleanup history.
 
 The individual commands are:
 
@@ -138,6 +138,8 @@ To print only that checklist without running preflight, creating fixture files, 
 ```powershell
 .\tools\Start-MvpFixtureReview.cmd -ChecklistOnly
 ```
+
+Checklist-only output ends with the exact post-preflight visible fixture command, `.\tools\Start-MvpFixtureReview.cmd -SkipPreflight -WriteAcceptanceNotes`, plus the no-preflight/no-fixture/no-WPF/no-scan/no-movement boundary for that checklist-only run.
 
 To also write a local, ignored markdown notes template for the manual pass:
 

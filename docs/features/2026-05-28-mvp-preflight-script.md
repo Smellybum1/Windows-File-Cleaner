@@ -148,6 +148,7 @@ What changed:
 - Later packet `2026-06-01-preflight-fixture-notes-next-step.md` changed the success output to suggest `.\tools\Start-MvpFixtureReview.cmd -SkipPreflight -WriteAcceptanceNotes`, aligning the next manual fixture step with the acceptance-notes workflow. Later packet `Fixture Acceptance Post-Pass Guidance` added a reminder that the notes-enabled launcher prints the exact post-pass summary and completion-check commands after it writes notes. Later packet `Fixture Acceptance Notes Embedded Commands` made the generated notes file include those commands too.
 - Later packet `Full Local MVP Preflight After Clean Notes Preview` reran `cmd.exe /c tools\Invoke-MvpPreflight.cmd` after `8529a91`; restore, build, core tests, WPF app tests, fixture `-WhatIf`, sectioned checklist-only output, and whitespace diff passed without launching WPF, scanning real-profile files, moving, restoring, deleting, or creating cleanup history.
 - Later packet `Full Local MVP Preflight After Current Evidence Wording Alignment` reran `cmd.exe /c tools\Invoke-MvpPreflight.cmd` after `466ad79`; restore, build, core tests, WPF app tests, fixture `-WhatIf`, sectioned checklist-only output, and whitespace diff passed without launching WPF, scanning real-profile files, moving, restoring, deleting, or creating cleanup history.
+- Later packet `Checklist-Only Visible Fixture Next Step` made the checklist-only output printed by preflight more self-contained by repeating the exact notes-enabled visible fixture command and the checklist-only no-preflight/no-fixture/no-WPF/no-scan/no-movement boundary.
 
 Files changed:
 
@@ -164,6 +165,7 @@ Tests run:
 - `git -c safe.directory='D:/Codex/Windows File Cleaner' diff --check`
 - Later full-preflight-after-clean-notes packet ran `cmd.exe /c tools\Invoke-MvpPreflight.cmd`.
 - Later full-preflight-after-current-evidence packet ran `cmd.exe /c tools\Invoke-MvpPreflight.cmd`.
+- Later checklist-only-next-step packet ran `cmd.exe /c tools\Start-MvpFixtureReview.cmd -ChecklistOnly`, `cmd.exe /c tools\Start-MvpFixtureReview.cmd -ChecklistOnly -WriteAcceptanceNotes`, `cmd.exe /c tools\Start-MvpFixtureReview.cmd -WhatIf -SkipPreflight -SkipLaunch -WriteAcceptanceNotes`, `cmd.exe /c tools\Invoke-MvpPreflight.cmd -SkipRestore`, and whitespace checks.
 
 Docs updated:
 

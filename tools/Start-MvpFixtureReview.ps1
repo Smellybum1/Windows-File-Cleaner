@@ -92,6 +92,21 @@ function Write-FixtureAcceptanceNotesNextSteps {
     Write-Host "These summary commands read ignored notes only; they do not launch WPF, scan, move, restore, delete, or create cleanup history."
 }
 
+function Write-FixtureReviewVisiblePassNextStep {
+    param(
+        [Parameter(Mandatory)]
+        [string]$FixturePath
+    )
+
+    Write-Host ""
+    Write-Host "Next visible fixture command after the full MVP preflight has passed:"
+    Write-Host ".\tools\Start-MvpFixtureReview.cmd -SkipPreflight -WriteAcceptanceNotes"
+    Write-Host "This creates the synthetic fixture, writes ignored acceptance notes, and launches WPF with this Cleanup Scope:"
+    Write-Host $FixturePath
+    Write-Host "When that command writes notes, use the printed Summarize-FixtureAcceptanceNotes commands after the visible pass to review open items and require completion."
+    Write-Host "This checklist-only run did not run preflight, create fixture files, launch WPF, scan, move, restore, delete, or create cleanup history."
+}
+
 function Get-FixtureReviewGitValue {
     param(
         [Parameter(Mandatory)]
@@ -314,6 +329,7 @@ if ($ChecklistOnly) {
     Write-Host "Fixture Cleanup Scope: $fixtureFullPath"
     Write-Host "Checklist-only mode. No preflight, fixture creation, or WPF launch will run."
     Write-FixtureReviewChecklist -FixturePath $fixtureFullPath
+    Write-FixtureReviewVisiblePassNextStep -FixturePath $fixtureFullPath
     if ($WriteAcceptanceNotes -and $PSCmdlet.ShouldProcess($fixtureFullPath, "Write fixture acceptance notes template")) {
         $notesPath = New-FixtureAcceptanceNotes -FixturePath $fixtureFullPath
         Write-Host ""
