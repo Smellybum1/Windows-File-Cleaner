@@ -55,6 +55,8 @@ Future work should follow this readiness sequence.
 
 Later packet note: `Fixture Acceptance Notes Recorder` added `Record-FixtureAcceptanceNotes.cmd -RecordManualAcceptance` so a completed all-pass manual fixture review can be recorded in ignored notes without hand-editing markdown. This remains local evidence only and does not replace the human visible pass.
 
+Later packet note: `Fixture Acceptance Summary Recorder Guidance` made incomplete `Summarize-FixtureAcceptanceNotes.cmd` output print the exact recorder command for the summarized notes file, while still requiring an actual all-pass visible fixture review before recording.
+
 Later packet note: `Restore Manifest Displayed Strictness` added displayed-only terminal checks to the real-profile recovery confidence path, so exact `C:\Users\moxhe` displayed evidence can prove "display exists and has no undo work" without changing full-root fixture-history strictness. This remains read-only terminal evidence and not cleanup approval.
 
 Later packet note: `Daily Readiness Fixture Acceptance Status` made `Invoke-DailyLocalReadiness.cmd` and `Invoke-RealProfileQuarantineReadiness.cmd` optionally include or require Fixture Acceptance Notes evidence. This is read-only local ignored-note evidence only and does not record notes, launch WPF, scan, move, restore, delete, approve cleanup, or create cleanup history.

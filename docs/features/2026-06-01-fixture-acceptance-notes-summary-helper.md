@@ -110,6 +110,7 @@ What changed:
 - Later packet `Fixture Acceptance Clean Worktree Notes Preview` summarized `.local\fixture-review-acceptance\fixture-acceptance-20260601-122940.md` and printed `Worktree at notes creation: clean`; `-RequireComplete` returned non-zero as expected for the unfilled template.
 - Later packet `Fixture Acceptance Current Baseline Notes Preview` summarized `.local\fixture-review-acceptance\fixture-acceptance-20260601-131233.md` from commit `dd86566` and printed `Worktree at notes creation: clean`; `-RequireComplete` returned non-zero as expected for the unfilled template.
 - Later packet `Fixture Acceptance Notes Recorder` added `.\tools\Record-FixtureAcceptanceNotes.cmd -RecordManualAcceptance` to update ignored notes after an all-pass human fixture review; this summary helper remains the read-only evidence check and `-RequireComplete` verifier.
+- Later packet `Fixture Acceptance Summary Recorder Guidance` made incomplete summary output and incomplete `-RequireComplete` output print the exact recorder command, while still saying to use it only after an actual all-pass visible fixture review.
 
 Files changed:
 

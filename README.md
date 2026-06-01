@@ -328,7 +328,7 @@ After a fixture pass, summarize the latest ignored notes or a specific notes fil
 .\tools\Summarize-FixtureAcceptanceNotes.cmd -RequireComplete
 ```
 
-The summary helper reads local notes only, reports the stamped worktree status at notes creation, acceptance-evidence checkbox states, the overall result, checklist totals, and issue/not-checked/not-recorded items with compact notes or prompt previews, and does not launch WPF, scan, move, restore, delete, or create cleanup history. `-RequireComplete` exits non-zero until the local notes have recorded preflight/worktree evidence, an overall pass result, and no not-checked or not-recorded checklist items.
+The summary helper reads local notes only, reports the stamped worktree status at notes creation, acceptance-evidence checkbox states, the overall result, checklist totals, and issue/not-checked/not-recorded items with compact notes or prompt previews, and does not launch WPF, scan, move, restore, delete, or create cleanup history. When notes are incomplete, it prints the exact recorder command to use only after an actual all-pass visible fixture review. `-RequireComplete` exits non-zero until the local notes have recorded preflight/worktree evidence, an overall pass result, and no not-checked or not-recorded checklist items.
 
 After you have actually completed an all-pass visible fixture acceptance pass, you can record the manual evidence in the latest ignored notes without hand-editing markdown:
 

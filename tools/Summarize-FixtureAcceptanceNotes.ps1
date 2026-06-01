@@ -230,6 +230,18 @@ function Get-FixtureChecklistEntries {
     return $entries
 }
 
+function Write-FixtureAcceptanceRecordingGuidance {
+    param(
+        [Parameter(Mandatory)]
+        [string]$FullNotesPath
+    )
+
+    Write-Host ""
+    Write-Host "After an actual all-pass visible fixture review, record these ignored notes with:"
+    Write-Host ".\tools\Record-FixtureAcceptanceNotes.cmd -Path `"$FullNotesPath`" -RecordManualAcceptance"
+    Write-Host "Fill notes manually instead when there were issues or not-checked items."
+}
+
 $notesPath = Resolve-FixtureAcceptanceNotesPath -RequestedPath $Path
 if (-not (Test-Path -LiteralPath $notesPath)) {
     throw "Fixture acceptance notes file does not exist: $notesPath"
@@ -255,6 +267,12 @@ $notCheckedCount = @($entries | Where-Object { $_.Status -eq "Not checked" }).Co
 $openCount = @($entries | Where-Object { $_.Status -eq "Not recorded" }).Count
 $preflightEvidenceState = Get-CheckboxEvidenceState -Lines $lines -Label "Preflight passed immediately before this visible fixture pass."
 $worktreeEvidenceState = Get-CheckboxEvidenceState -Lines $lines -Label "Worktree was clean or intentional changes were recorded before launch."
+$needsRecordingGuidance =
+    $preflightEvidenceState -ne "Recorded" -or
+    $worktreeEvidenceState -ne "Recorded" -or
+    $overallResult -notin @("Pass", "Pass with issues noted") -or
+    $notCheckedCount -gt 0 -or
+    $openCount -gt 0
 
 Write-Host "Fixture acceptance notes summary"
 Write-Host "Notes file: $fullNotesPath"
@@ -332,6 +350,10 @@ if ($RequireComplete) {
             Write-Host "- $blocker"
         }
 
+        Write-FixtureAcceptanceRecordingGuidance -FullNotesPath $fullNotesPath
         exit 1
     }
+}
+elseif ($needsRecordingGuidance) {
+    Write-FixtureAcceptanceRecordingGuidance -FullNotesPath $fullNotesPath
 }
