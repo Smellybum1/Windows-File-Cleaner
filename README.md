@@ -201,6 +201,15 @@ After you have actually completed the package acceptance pass, you can record th
 
 `Record-LocalReleaseAcceptanceNotes` updates ignored `.local` notes only. Use it only after README review, normal launch, fixture launch/read-only fixture Scan, portable-boundary review, and real-profile stop-boundary confirmation are complete.
 
+To print or start the latest accepted portable package from completed ignored acceptance notes:
+
+```powershell
+.\tools\Start-AcceptedLocalRelease.cmd -PrintOnly
+.\tools\Start-AcceptedLocalRelease.cmd -Fixture -PrintOnly
+```
+
+Remove `-PrintOnly` when you intentionally want to launch the accepted package. This command first checks that the latest or selected `.local\release-acceptance` notes are complete, then delegates to `Start-LocalRelease.cmd` for package verification and launch-command printing. It does not require the package commit to match newer docs-only commits; use `Start-LocalRelease.cmd -RequireCurrentCommit` only when you want a package cut from the exact current `HEAD`.
+
 ## WPF Fixture Smoke
 
 Use the fixture review launcher for the manual fixture UI pass:
