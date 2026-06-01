@@ -101,6 +101,58 @@ function Get-FixtureReviewGitValue {
     return "unknown"
 }
 
+function Get-FixtureReviewCommandValue {
+    param(
+        [Parameter(Mandatory)]
+        [string]$Command,
+
+        [Parameter(Mandatory)]
+        [string[]]$Arguments
+    )
+
+    try {
+        $output = & $Command @Arguments 2>$null
+        if ($LASTEXITCODE -eq 0) {
+            $value = $output | Select-Object -First 1
+            if (-not [string]::IsNullOrWhiteSpace([string]$value)) {
+                return ([string]$value).Trim()
+            }
+        }
+    }
+    catch {
+    }
+
+    return "unknown"
+}
+
+function Get-FixtureReviewProjectProperty {
+    param(
+        [Parameter(Mandatory)]
+        [string]$ProjectPath,
+
+        [Parameter(Mandatory)]
+        [string]$PropertyName
+    )
+
+    try {
+        if (-not (Test-Path -LiteralPath $ProjectPath)) {
+            return "unknown"
+        }
+
+        [xml]$projectXml = Get-Content -Raw -LiteralPath $ProjectPath
+        foreach ($propertyGroup in @($projectXml.Project.PropertyGroup)) {
+            $propertyValue = $propertyGroup.$PropertyName
+            if (-not [string]::IsNullOrWhiteSpace([string]$propertyValue)) {
+                return ([string]$propertyValue).Trim()
+            }
+        }
+    }
+    catch {
+    }
+
+    return "unknown"
+}
+
 function New-FixtureAcceptanceNotes {
     param(
         [Parameter(Mandatory)]
@@ -113,6 +165,14 @@ function New-FixtureAcceptanceNotes {
     $checklistItems = Get-FixtureReviewChecklistItems -FixturePath $FixturePath
     $gitBranch = Get-FixtureReviewGitValue -Arguments @("-C", $repoFullPath, "rev-parse", "--abbrev-ref", "HEAD")
     $gitCommit = Get-FixtureReviewGitValue -Arguments @("-C", $repoFullPath, "rev-parse", "--short", "HEAD")
+    $dotnetSdkVersion = Get-FixtureReviewCommandValue -Command "dotnet" -Arguments @("--version")
+    $appProjectRelativePath = "src\WindowsFileCleaner.App\WindowsFileCleaner.App.csproj"
+    $appProjectPath = Join-Path $repoRoot $appProjectRelativePath
+    $appTargetFramework = Get-FixtureReviewProjectProperty -ProjectPath $appProjectPath -PropertyName "TargetFramework"
+    if ($appTargetFramework -eq "unknown") {
+        $appTargetFramework = Get-FixtureReviewProjectProperty -ProjectPath $appProjectPath -PropertyName "TargetFrameworks"
+    }
+    $appUseWpf = Get-FixtureReviewProjectProperty -ProjectPath $appProjectPath -PropertyName "UseWPF"
 
     New-Item -ItemType Directory -Path $notesRoot -Force | Out-Null
 
@@ -127,6 +187,10 @@ function New-FixtureAcceptanceNotes {
     $lines.Add("- Repository: $repoFullPath")
     $lines.Add("- Git branch: $gitBranch")
     $lines.Add("- Git commit: $gitCommit")
+    $lines.Add("- .NET SDK: $dotnetSdkVersion")
+    $lines.Add("- WPF app project: $appProjectRelativePath")
+    $lines.Add("- WPF app target framework: $appTargetFramework")
+    $lines.Add("- WPF enabled: $appUseWpf")
     $lines.Add('- Required preflight: `.\tools\Invoke-MvpPreflight.cmd`')
     $lines.Add('- Visible fixture command after preflight: `.\tools\Start-MvpFixtureReview.cmd -SkipPreflight -WriteAcceptanceNotes`')
     $lines.Add("- [ ] Preflight passed immediately before this visible fixture pass.")

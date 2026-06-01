@@ -6,7 +6,7 @@ Owner: project-owner
 
 ## Goal
 
-Make the ignored fixture acceptance notes template capture the basic evidence needed for the next visible fixture pass: repository, branch, commit, preflight checkbox, and the post-preflight launcher command.
+Make the ignored fixture acceptance notes template capture the basic evidence needed for the next visible fixture pass: repository, branch, commit, .NET/WPF project context, preflight checkbox, and the post-preflight launcher command.
 
 ## Non-goals
 
@@ -34,13 +34,17 @@ Generated fixture acceptance notes should include an evidence header with:
 - repository path,
 - current Git branch,
 - current Git commit,
+- current .NET SDK version,
+- WPF app project path,
+- WPF app target framework,
+- WPF app `UseWPF` flag,
 - required preflight command,
 - recommended visible fixture command after preflight,
 - a checkbox for preflight passing immediately before the visible fixture pass,
 - a checkbox for clean or intentionally recorded worktree state,
 - a reminder that the `.local` note is not cleanup history.
 
-If Git evidence cannot be read, the template should still be written with `unknown` values.
+If Git or build-context evidence cannot be read, the template should still be written with `unknown` values.
 
 ## Domain Language Changes
 
@@ -58,7 +62,7 @@ Questions that must be answered before implementation:
 
 Questions that can be deferred:
 
-- After the visible pass, should the notes template capture WPF app version/build output as well, or is Git branch/commit enough?
+- After the visible pass, should the notes template capture a built executable version/file hash as well, or are Git plus .NET/project evidence enough?
 
 ## Grill Notes
 
@@ -179,6 +183,7 @@ What changed:
 
 - Added an acceptance evidence header to fixture acceptance notes.
 - The header records repository path, Git branch, Git commit, required preflight command, recommended visible fixture command, preflight/worktree checkboxes, and the local-not-cleanup-history boundary.
+- Later packet `2026-06-01-fixture-acceptance-build-context-header.md` added .NET SDK, WPF app project, WPF app target framework, and WPF enabled evidence to the same header.
 - Kept Storage Scan, fixture execution, restore behavior, real-profile/custom blockers, permanent deletion, and cleanup history unchanged.
 
 Files changed:
