@@ -108,6 +108,7 @@ What changed:
 - Later packet `Fixture Acceptance Notes Embedded Commands` made the generated notes file include the exact `-Path` summary and `-RequireComplete` commands too.
 - Later packet `Fixture Acceptance Notes Worktree Stamp` made generated notes record worktree status at notes creation and made this summary helper print that status. Older notes that lack the line show `unknown`.
 - Later packet `Fixture Acceptance Clean Worktree Notes Preview` summarized `.local\fixture-review-acceptance\fixture-acceptance-20260601-122940.md` and printed `Worktree at notes creation: clean`; `-RequireComplete` returned non-zero as expected for the unfilled template.
+- Later packet `Fixture Acceptance Current Baseline Notes Preview` summarized `.local\fixture-review-acceptance\fixture-acceptance-20260601-131233.md` from commit `dd86566` and printed `Worktree at notes creation: clean`; `-RequireComplete` returned non-zero as expected for the unfilled template.
 
 Files changed:
 
@@ -132,6 +133,7 @@ Tests run:
 - Later embedded-commands packet ran checklist-notes output, inspected the generated notes command block, summarized the newly written notes file by explicit `-Path`, verified explicit `-Path ... -RequireComplete` fails while the checklist-only notes are incomplete, and ran `git diff --check`.
 - Later worktree-stamp packet ran checklist-notes output, inspected the generated notes header, summarized the newly written notes file by explicit `-Path`, and ran whitespace checks.
 - Later clean-worktree notes-preview packet summarized `.local\fixture-review-acceptance\fixture-acceptance-20260601-122940.md` by explicit `-Path`, verified explicit `-Path ... -RequireComplete` fails while the checklist-only notes are incomplete, and ran whitespace checks.
+- Later current-baseline notes-preview packet summarized `.local\fixture-review-acceptance\fixture-acceptance-20260601-131233.md` by explicit `-Path`, verified explicit `-Path ... -RequireComplete` fails while the checklist-only notes are incomplete, and ran whitespace checks.
 
 Docs updated:
 

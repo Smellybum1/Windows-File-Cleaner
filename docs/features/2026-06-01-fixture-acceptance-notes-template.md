@@ -196,6 +196,7 @@ What changed:
 - Later packet `Fixture Acceptance Notes Embedded Commands` added those same exact summary and completion-check commands inside the generated notes file so the next terminal step travels with the notes.
 - Later packet `Fixture Acceptance Notes Worktree Stamp` added the worktree status at notes creation to the ignored notes header so a visible fixture pass records whether it started from a clean or intentionally dirty repository state.
 - Later packet `Fixture Acceptance Clean Worktree Notes Preview` generated `.local\fixture-review-acceptance\fixture-acceptance-20260601-122940.md` from clean `main` at `f181627` and confirmed the header stamped `Worktree status at notes creation: clean`.
+- Later packet `Fixture Acceptance Current Baseline Notes Preview` generated `.local\fixture-review-acceptance\fixture-acceptance-20260601-131233.md` from clean `main` at `dd86566` after the latest full preflight evidence and confirmed the header stamped `Worktree status at notes creation: clean`.
 - Updated docs and handoff/progress notes.
 
 Files changed:
@@ -224,6 +225,7 @@ Tests run:
 - Later embedded-commands packet ran checklist-notes output, inspected the generated notes command block, explicit `-Path` summary, expected explicit `-Path ... -RequireComplete` failure on a fresh incomplete notes file, and `git diff --check`.
 - Later worktree-stamp packet ran checklist-notes output, inspected the generated notes header for `Worktree status at notes creation`, ran an explicit `-Path` summary that printed the stamped status, and ran whitespace checks.
 - Later clean-worktree notes-preview packet ran checklist-notes output, inspected `.local\fixture-review-acceptance\fixture-acceptance-20260601-122940.md`, ran explicit `-Path` summary, and verified explicit `-Path ... -RequireComplete` fails while the notes are unfilled.
+- Later current-baseline notes-preview packet ran checklist-notes output, inspected `.local\fixture-review-acceptance\fixture-acceptance-20260601-131233.md`, ran explicit `-Path` summary, and verified explicit `-Path ... -RequireComplete` fails while the notes are unfilled.
 
 Docs updated:
 
