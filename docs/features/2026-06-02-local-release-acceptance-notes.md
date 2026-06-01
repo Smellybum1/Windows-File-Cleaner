@@ -26,6 +26,7 @@ Make portable package acceptance recordable in ignored local notes, with a read-
 - Notes stamp repo branch/commit, worktree status at notes creation, release metadata commit, publish worktree/preflight evidence, executable/readme/launch paths, exact normal/fixture launch commands, evidence checkboxes, safety boundary text, and exact post-pass summary commands.
 - Later packet `Local Release Acceptance Notes Evidence Prefill` made the notes pre-record verifier evidence after `Test-LocalRelease` passes and pre-record current-commit evidence when `-RequireCurrentCommit` was used; normal launch and fixture launch/scan evidence remain manual.
 - Later packet `Local Release Acceptance Notes Launch Commands` made the notes and read-only summary print the exact normal and fixture launch commands for the verified package.
+- Later packet `Local Release Acceptance Notes Recorder` added `tools\Record-LocalReleaseAcceptanceNotes.cmd` so completed manual package acceptance can be recorded in ignored notes without hand-editing markdown.
 - Added `tools\Summarize-LocalReleaseAcceptanceNotes.ps1` and `.cmd`.
 - The summary helper defaults to the latest ignored release acceptance notes file or accepts `-Path`.
 - `-RequireComplete` fails until verifier evidence, commit evidence, normal launch evidence, fixture launch/read-only-scan evidence, an acceptable overall result, and all checklist items are recorded.

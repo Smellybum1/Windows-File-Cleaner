@@ -190,6 +190,15 @@ The template is written under `.local\release-acceptance`, stamps the repo branc
 
 The summary helper prints the stamped launch commands from ignored notes and reads ignored notes only; it does not launch WPF, scan, move, restore, delete, approve cleanup, or create cleanup history.
 
+After you have actually completed the package acceptance pass, you can record the manual evidence in the latest ignored notes without hand-editing markdown:
+
+```powershell
+.\tools\Record-LocalReleaseAcceptanceNotes.cmd -RecordManualAcceptance
+.\tools\Summarize-LocalReleaseAcceptanceNotes.cmd -RequireComplete
+```
+
+`Record-LocalReleaseAcceptanceNotes` updates ignored `.local` notes only. Use it only after README review, normal launch, fixture launch/read-only fixture Scan, portable-boundary review, and real-profile stop-boundary confirmation are complete.
+
 ## WPF Fixture Smoke
 
 Use the fixture review launcher for the manual fixture UI pass:

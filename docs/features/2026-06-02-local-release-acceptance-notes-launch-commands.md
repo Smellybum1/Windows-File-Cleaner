@@ -52,6 +52,7 @@ No ADR added. This is local package acceptance-note ergonomics, with no installe
 
 - After committing this packet, cut a fresh ignored portable package so the latest package commit again matches current `HEAD`.
 - Generate a clean-worktree package acceptance notes file for the next manual acceptance pass.
+- Later packet `Local Release Acceptance Notes Recorder` added terminal recording for completed manual package acceptance without launching WPF or scanning.
 
 ## Risks And Assumptions
 
