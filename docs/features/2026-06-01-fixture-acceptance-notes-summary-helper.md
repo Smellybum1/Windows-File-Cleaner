@@ -56,7 +56,7 @@ Evidence gathered:
   - `README.md`
   - `.codex/progress.md`
   - `docs/codex/thread-handoff.md`
-- Current ignored preview notes file exists at `.local\fixture-review-acceptance\fixture-acceptance-20260601-112248.md`.
+- At implementation time, the ignored preview notes file existed at `.local\fixture-review-acceptance\fixture-acceptance-20260601-112248.md`; later packets generated newer ignored notes for the current handoff.
 
 Validation gate before implementation:
 
@@ -107,6 +107,7 @@ What changed:
 - Later packet `Fixture Acceptance Post-Pass Guidance` made the fixture launcher print the exact `-Path` summary and `-RequireComplete` commands for the notes file it writes.
 - Later packet `Fixture Acceptance Notes Embedded Commands` made the generated notes file include the exact `-Path` summary and `-RequireComplete` commands too.
 - Later packet `Fixture Acceptance Notes Worktree Stamp` made generated notes record worktree status at notes creation and made this summary helper print that status. Older notes that lack the line show `unknown`.
+- Later packet `Fixture Acceptance Clean Worktree Notes Preview` summarized `.local\fixture-review-acceptance\fixture-acceptance-20260601-122940.md` and printed `Worktree at notes creation: clean`; `-RequireComplete` returned non-zero as expected for the unfilled template.
 
 Files changed:
 
@@ -130,6 +131,7 @@ Tests run:
 - Later post-pass-guidance packet ran checklist-notes output, summarized the newly written notes file by explicit `-Path`, verified explicit `-Path ... -RequireComplete` fails while the checklist-only notes are incomplete, inspected the focused preflight success-output wording, and ran `git diff --check`.
 - Later embedded-commands packet ran checklist-notes output, inspected the generated notes command block, summarized the newly written notes file by explicit `-Path`, verified explicit `-Path ... -RequireComplete` fails while the checklist-only notes are incomplete, and ran `git diff --check`.
 - Later worktree-stamp packet ran checklist-notes output, inspected the generated notes header, summarized the newly written notes file by explicit `-Path`, and ran whitespace checks.
+- Later clean-worktree notes-preview packet summarized `.local\fixture-review-acceptance\fixture-acceptance-20260601-122940.md` by explicit `-Path`, verified explicit `-Path ... -RequireComplete` fails while the checklist-only notes are incomplete, and ran whitespace checks.
 
 Docs updated:
 

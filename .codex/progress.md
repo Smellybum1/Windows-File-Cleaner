@@ -10,6 +10,8 @@ Storage Scan MVP packet implemented and tested by the user against `C:\Users\mox
 
 Latest WPF UI packet added a compact Main Grid Active Review Lens Summary above Storage Scan rows, mirroring the existing Filter Summary so default scan, Safety Summary shortcut, and stacked filter/search context remain visible after tab switches; it hides for current-session quarantined rows. User visual review on 2026-06-01 approved the compact wide-header layout with Review Shortlist totals before scan totals. The latest fixture-checklist wording packet clarified that the current-session review step's hoverable `?` cue and `Status state:` wording belong to Review Grid Mode Status, while Main Grid Active Review Lens Summary appears for Storage Scan rows and hides for current-session quarantined rows. Current handoff evidence remains explicit: full `.cmd` MVP preflight passed after the Fixture Acceptance Notes Embedded Commands packet at `b9bd33d`, including restore, build, core tests, WPF app tests, fixture `-WhatIf`, sectioned checklist-only output, whitespace diff, and the notes-enabled next manual fixture command. The live-product readiness roadmap now separates visible fixture acceptance, fresh real-profile read-only retest, selected real-profile restore, first real-profile Quarantine execution, recovery confidence, packaging, and later deletion/history decisions, and its manual fixture acceptance row names the embedded-command notes workflow and current full-preflight-after-embedded-notes state. The fixture launcher can write an ignored `.local` fixture acceptance notes template from the same checklist item source with `-WriteAcceptanceNotes`; the notes are grouped by fixture review area and now include an acceptance evidence header with repo path, Git branch/commit, worktree status at notes creation, .NET SDK, WPF app project/target framework/WPF flag, preflight command, visible fixture command, preflight/worktree checkboxes, local-not-cleanup-history wording, and embedded exact summary/completion-check commands. A checklist-only notes preview was generated at `.local\fixture-review-acceptance\fixture-acceptance-20260601-112248.md` from `fd8e1d4` after earlier full preflight evidence, without preflight, fixture creation, WPF launch, scan, movement, restore, deletion, or cleanup history; the next visible pass should write fresh ignored notes for the current commit. A new read-only summary helper can summarize the latest or explicit ignored fixture acceptance notes, including metadata, worktree status at notes creation when present, acceptance-evidence checkbox states, overall result, checklist totals, and issue/not-checked/not-recorded items with compact notes or prompt previews, without launching WPF, scanning, moving, restoring, deleting, or creating cleanup history. The helper also supports `-RequireComplete`, which exits non-zero until local acceptance notes have recorded preflight/worktree evidence, an overall pass result, and no not-checked or not-recorded checklist items. The fixture launcher now also prints exact summary and completion-check commands for the notes file it writes, and MVP preflight success output points to that follow-up after `.\tools\Start-MvpFixtureReview.cmd -SkipPreflight -WriteAcceptanceNotes`. No real user files were scanned or modified.
 
+Fresh clean-worktree notes evidence: `cmd.exe /c tools\Start-MvpFixtureReview.cmd -ChecklistOnly -WriteAcceptanceNotes` generated `.local\fixture-review-acceptance\fixture-acceptance-20260601-122940.md` from `f181627` with `Worktree status at notes creation: clean`. The read-only summary helper printed that clean stamp, and `-RequireComplete` returned exit code 1 as expected because the checklist-only notes are still unfilled. This did not run preflight, create fixture files, launch WPF, scan, move, restore, delete, or create cleanup history.
+
 ## Next recommended work
 
 1. Run the visible fixture pass with `.\tools\Start-MvpFixtureReview.cmd -SkipPreflight -WriteAcceptanceNotes` after the latest successful full preflight, then use the embedded or printed `.\tools\Summarize-FixtureAcceptanceNotes.cmd -Path ...` command to review acceptance-evidence checkboxes and open notes items with compact notes/prompt previews before copying relevant results into progress. After filling the notes, use the embedded or printed `.\tools\Summarize-FixtureAcceptanceNotes.cmd -Path ... -RequireComplete` command when you want a non-zero completion check. Focus the visible pass on the full fixture flow: Quarantine Preview/readiness, fixture Quarantine execution, current-session quarantined review, undo, manifest discovery, selected restore gate, selected restore, and ADR 0017/0018/0019 blocker wording. The wide header layout is already visually approved; only revisit header spacing if a narrower-window pass shows crowding.
@@ -21,6 +23,45 @@ Latest WPF UI packet added a compact Main Grid Active Review Lens Summary above 
 7. Revisit .NET 10 before packaging or long-term distribution.
 
 ## Completed packets
+
+### 2026-06-01: Fixture Acceptance Clean Worktree Notes Preview
+
+Status: completed
+
+Evidence:
+
+- The worktree-stamp packet proved generated notes can record dirty worktree state while that packet was intentionally in progress.
+- The next manual fixture pass benefits from a fresh ignored notes artifact created from the current pushed commit while the repository is clean.
+
+Implementation:
+
+- Generated a checklist-only fixture acceptance notes template from clean `main` at commit `f181627`.
+- Confirmed the ignored notes header stamped `Worktree status at notes creation: clean`.
+- Summarized the notes with the read-only helper and confirmed the completion check remains incomplete until the visible fixture pass is filled.
+- Kept the packet free of preflight, fixture creation, WPF launch, real-profile scan, movement, restore, deletion, and cleanup history.
+
+Verification:
+
+- `cmd.exe /c tools\Start-MvpFixtureReview.cmd -ChecklistOnly -WriteAcceptanceNotes`
+- Inspected `.local\fixture-review-acceptance\fixture-acceptance-20260601-122940.md`; it stamped `Git commit: f181627` and `Worktree status at notes creation: clean`.
+- `cmd.exe /c tools\Summarize-FixtureAcceptanceNotes.cmd -Path ".local\fixture-review-acceptance\fixture-acceptance-20260601-122940.md"`
+- `cmd.exe /c tools\Summarize-FixtureAcceptanceNotes.cmd -Path ".local\fixture-review-acceptance\fixture-acceptance-20260601-122940.md" -RequireComplete` returned exit code 1 as expected for unfilled notes, with blockers for unrecorded preflight evidence, unrecorded worktree evidence, missing overall result, and 10 not-recorded checklist items.
+
+Docs updated:
+
+- `docs/features/2026-06-01-fixture-acceptance-notes-template.md`
+- `docs/features/2026-06-01-fixture-acceptance-notes-summary-helper.md`
+- `docs/features/2026-06-01-live-product-readiness-roadmap.md`
+- `docs/codex/thread-handoff.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No ADR added. This is ignored-notes evidence and handoff cleanup with no architecture, persistence, cleanup execution, restore behavior, data-model, or security change.
+
+Open questions:
+
+- Whether the next visible fixture pass records any Quarantine/readiness or selected-restore UI polish before the fresh real-profile read-only retest.
 
 ### 2026-06-01: Fixture Acceptance Notes Worktree Stamp
 
