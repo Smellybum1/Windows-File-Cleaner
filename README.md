@@ -152,6 +152,15 @@ To verify the latest local package without launching WPF or scanning anything:
 
 The verifier checks the ignored release folder, executable, zip, metadata, safety-boundary lines, and zip entries. By default it warns if the package commit is behind current `HEAD`; use `.\tools\Test-LocalRelease.cmd -RequireCurrentCommit` when you need the package to exactly match the current commit.
 
+To print or start the latest verified local package from the repo root:
+
+```powershell
+.\tools\Start-LocalRelease.cmd -PrintOnly -RequireCurrentCommit
+.\tools\Start-LocalRelease.cmd -Fixture -PrintOnly -RequireCurrentCommit
+```
+
+Remove `-PrintOnly` when you intentionally want to launch the packaged WPF app. The fixture mode only prefills the Cleanup Scope with the repo-local smoke fixture; it does not create fixture files or click `Scan`. The launcher verifies the package first unless `-SkipVerify` is used, and launching still does not move, restore, delete, or approve cleanup.
+
 ## WPF Fixture Smoke
 
 Use the fixture review launcher for the manual fixture UI pass:

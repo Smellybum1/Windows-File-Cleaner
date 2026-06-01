@@ -6,7 +6,7 @@ Use it to preserve what was completed, what was verified, what was rejected, and
 
 ## Current status
 
-Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. The app has a broad read-only review workflow, fixture WPF Quarantine execution, current-fixture undo, fixture selected restore, exact real-profile selected restore under ADR 0019 after selected readiness, exact `RESTORE`, and immediate revalidation, and first-phase exact real-profile Quarantine execution under ADR 0017/0018 after readiness, exact `QUARANTINE`, approval evidence, selected restore trust, and immediate pre-execution revalidation. The user completed the sacrificial selected real-profile restore trust test on 2026-06-01 and reported steps 1-9 all succeeded. The user later reported the first exact real-profile folder Quarantine attempt failed safely with `moved 0, failed 1` because Windows `Directory.Move` cannot move directories from `C:` to the preferred `D:` Quarantine Root; the next packet added a guarded cross-volume directory fallback and a taller WPF Quarantine Execution Gate details area. The user then retried and reported another safe `moved 0, failed 1` result because a descendant NVIDIA `.nvph` file was in use by another process; the next packet added in-use source checks to Pre-Execution Revalidation and expanded the WPF Quarantine Execution Gate details area again. The user then approved a different tiny exact real-profile batch and reported a successful first live Quarantine on 2026-06-01: one row moved from `C:\Users\moxhe\AppData\Local\pip\cache\http\b\c`, one Restore Manifest completed, `moved 1, failed 0`, zero readiness blockers, and no Codex-clicked movement. The user then attempted selected restore for that manifest and reported a safe failure, `Restored 0 | Failed 1 | Recovery review: yes`, because directory restore from `D:` back to `C:` hit the same cross-volume limitation. The cross-volume selected restore retry packet fixed directory selected restore with the guarded copy-then-delete fallback, treated still-present `RestoreFailed` selected entries as narrowly retryable when the original path is clear, and added highlighted key-status strips above dense Quarantine and Selected Restore gate text. The user then retried selected restore for that first-live manifest and reported success from the highlighted strip: `selected restore succeeded. Restored 1, failed 0`; follow-up rediscovery showed the manifest restored/already restored, rescan completed normally, and the restored `pip\cache\http\b\c` path appeared again. Portable v1 packaging now exists through `.\tools\Publish-LocalRelease.cmd`, producing ignored self-contained `.local\releases` folder/zip artifacts after MVP preflight; the user reran the publisher from clean `main`, launched the packaged app against the fixture scope, clicked fixture Scan, and confirmed the package, app launch, and read-only fixture scan all worked. The user later reported the remaining requested release verification steps 7 and 9 were all confirmed. New packages include release-local normal and fixture launch `.cmd` scripts, and `.\tools\Test-LocalRelease.cmd` now verifies the latest or explicit local package folder, executable, metadata, launch scripts, zip, safety-boundary lines, and commit evidence without launching WPF or scanning anything. The latest strict package evidence is `.local\releases\windows-file-cleaner-v20260601-233542`, created from clean `main` at `fcc54da` after full MVP preflight; `.\tools\Test-LocalRelease.cmd -RequireCurrentCommit` passed for it. `.\tools\Summarize-RestoreManifests.cmd` now provides a read-only terminal summary of action-scoped Restore Manifests under a selected Quarantine Root without launching WPF, scanning, moving, restoring, deleting, writing manifests, approving cleanup, creating cleanup history, or adding broad/all-manifest restore. Broad/all-manifest WPF Undo Quarantine, custom/non-exact real-profile Quarantine, custom selected restore, permanent deletion, and persisted cleanup history remain unavailable. Fresh-thread handoff notes and a startup prompt live in `docs/codex/thread-handoff.md`.
+Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. The app has a broad read-only review workflow, fixture WPF Quarantine execution, current-fixture undo, fixture selected restore, exact real-profile selected restore under ADR 0019 after selected readiness, exact `RESTORE`, and immediate revalidation, and first-phase exact real-profile Quarantine execution under ADR 0017/0018 after readiness, exact `QUARANTINE`, approval evidence, selected restore trust, and immediate pre-execution revalidation. The user completed the sacrificial selected real-profile restore trust test on 2026-06-01 and reported steps 1-9 all succeeded. The user later reported the first exact real-profile folder Quarantine attempt failed safely with `moved 0, failed 1` because Windows `Directory.Move` cannot move directories from `C:` to the preferred `D:` Quarantine Root; the next packet added a guarded cross-volume directory fallback and a taller WPF Quarantine Execution Gate details area. The user then retried and reported another safe `moved 0, failed 1` result because a descendant NVIDIA `.nvph` file was in use by another process; the next packet added in-use source checks to Pre-Execution Revalidation and expanded the WPF Quarantine Execution Gate details area again. The user then approved a different tiny exact real-profile batch and reported a successful first live Quarantine on 2026-06-01: one row moved from `C:\Users\moxhe\AppData\Local\pip\cache\http\b\c`, one Restore Manifest completed, `moved 1, failed 0`, zero readiness blockers, and no Codex-clicked movement. The user then attempted selected restore for that manifest and reported a safe failure, `Restored 0 | Failed 1 | Recovery review: yes`, because directory restore from `D:` back to `C:` hit the same cross-volume limitation. The cross-volume selected restore retry packet fixed directory selected restore with the guarded copy-then-delete fallback, treated still-present `RestoreFailed` selected entries as narrowly retryable when the original path is clear, and added highlighted key-status strips above dense Quarantine and Selected Restore gate text. The user then retried selected restore for that first-live manifest and reported success from the highlighted strip: `selected restore succeeded. Restored 1, failed 0`; follow-up rediscovery showed the manifest restored/already restored, rescan completed normally, and the restored `pip\cache\http\b\c` path appeared again. Portable v1 packaging now exists through `.\tools\Publish-LocalRelease.cmd`, producing ignored self-contained `.local\releases` folder/zip artifacts after MVP preflight; the user reran the publisher from clean `main`, launched the packaged app against the fixture scope, clicked fixture Scan, and confirmed the package, app launch, and read-only fixture scan all worked. The user later reported the remaining requested release verification steps 7 and 9 were all confirmed. New packages include release-local normal and fixture launch `.cmd` scripts; `.\tools\Test-LocalRelease.cmd` verifies the latest or explicit local package folder, executable, metadata, launch scripts, zip, safety-boundary lines, and commit evidence without launching WPF or scanning anything; and `.\tools\Start-LocalRelease.cmd` verifies by default, then prints or starts the latest package from the repo root. `.\tools\Summarize-RestoreManifests.cmd` provides a read-only terminal summary of action-scoped Restore Manifests under a selected Quarantine Root without launching WPF, scanning, moving, restoring, deleting, writing manifests, approving cleanup, creating cleanup history, or adding broad/all-manifest restore. Broad/all-manifest WPF Undo Quarantine, custom/non-exact real-profile Quarantine, custom selected restore, permanent deletion, and persisted cleanup history remain unavailable. Fresh-thread handoff notes and a startup prompt live in `docs/codex/thread-handoff.md`.
 
 Recent UI correction: the user reported `Discover manifests` was not visible in the Quarantine tab after selected restore recovery; it was still buried in the Main Grid detail pane. The follow-up packet moved Restore Manifest discovery, selected readiness, selected restore gate/result, and all-manifest readiness into a dedicated `Restore Manifest Review` panel under the Quarantine tab, and moved detailed Quarantine Preview output into the Quarantine tab.
 
@@ -24,12 +24,63 @@ Current Evidence Wording Alignment clarified that the clean notes preview from `
 
 ## Next recommended work
 
-1. Next safest live-product step is to use the latest strict portable package, summarize Restore Manifest state if recovery evidence is useful, complete formal fixture acceptance notes, or decide whether to do another tiny exact real-profile Quarantine batch after fresh full MVP preflight. The first-live selected restore recovery loop is complete by user report: rediscovery showed restored/already restored, rescan completed normally, and the restored `pip\cache\http\b\c` path appeared again. Keep future movement selected-batch-only, exact `C:\Users\moxhe`, exact confirmation, immediate revalidation, no broad/all-manifest Undo, no permanent deletion, and no cleanup history.
+1. Next safest live-product step is to use the latest strict portable package through `.\tools\Start-LocalRelease.cmd`, summarize Restore Manifest state if recovery evidence is useful, complete formal fixture acceptance notes, or decide whether to do another tiny exact real-profile Quarantine batch after fresh full MVP preflight. The first-live selected restore recovery loop is complete by user report: rediscovery showed restored/already restored, rescan completed normally, and the restored `pip\cache\http\b\c` path appeared again. Keep future movement selected-batch-only, exact `C:\Users\moxhe`, exact confirmation, immediate revalidation, no broad/all-manifest Undo, no permanent deletion, and no cleanup history.
 2. Do not run or click real-profile Quarantine or restore execution from Codex; the user must explicitly approve each specific batch or selected Restore Manifest after reviewing the readiness output.
 3. If formal fixture acceptance notes are useful before movement work, fill `.local\fixture-review-acceptance\fixture-acceptance-20260601-132126.md`, then run `.\tools\Summarize-FixtureAcceptanceNotes.cmd -Path ".local\fixture-review-acceptance\fixture-acceptance-20260601-132126.md"` and the same command with `-RequireComplete`. The user has already reported that the visible fixture pass looks good, but the local checklist remains unfilled.
 4. Revisit .NET 10, installer/shortcut automation, permanent deletion, persisted cleanup history, and broad restore only as separate future decisions.
 
 ## Completed packets
+
+### 2026-06-01: Local Release Launcher
+
+Status: completed
+
+Evidence:
+
+- Fresh strict portable packages can be verified from the terminal, but daily launch still required browsing into `.local\releases` or copying a package-specific command.
+- A repo-level launcher improves local use without creating an installer or shortcut.
+
+Implementation:
+
+- Added `tools\Start-LocalRelease.ps1` and `.cmd`.
+- The launcher resolves the latest or explicit ignored Portable Release Package, verifies it through `Test-LocalRelease.ps1` by default, then prints or starts the packaged WPF app.
+- `-PrintOnly` prints the normal or fixture launch command without launching WPF.
+- `-Fixture` passes the repo-local smoke fixture Cleanup Scope and states that fixture launch only prefills the Cleanup Scope; it does not create fixtures or click `Scan`.
+- `-RequireCurrentCommit`, `-AllowDirtyPublish`, and `-AllowSkippedPreflight` pass through to package verification.
+
+Verification:
+
+- Initial print-only test found and fixed the verifier argument-splat bug without launching WPF.
+- `cmd.exe /c tools\Start-LocalRelease.cmd -PrintOnly -RequireCurrentCommit`
+- `cmd.exe /c tools\Start-LocalRelease.cmd -PrintOnly -Fixture -RequireCurrentCommit`
+- `cmd.exe /c tools\Start-MvpFixtureReview.cmd -ChecklistOnly`
+- `git diff --check`
+
+Docs updated:
+
+- `README.md`
+- `docs/domain/context.md`
+- `docs/domain/glossary.md`
+- `docs/features/2026-06-01-local-release-launcher.md`
+- `docs/features/2026-06-01-live-product-readiness-roadmap.md`
+- `docs/codex/thread-handoff.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No ADR added. This is portable release ergonomics, with no installer, persistence, cleanup execution, restore scope, or security-boundary change.
+
+Open questions:
+
+- Whether installed shortcut or installer automation is desirable later.
+
+Follow-up work:
+
+- After committing this packet, cut a fresh ignored portable package so the latest package commit again matches current `HEAD`.
+
+Risky assumptions:
+
+- A repo-level launcher is useful despite release-local launch scripts already existing in each package.
 
 ### 2026-06-01: Restore Manifest Summary Tool
 
