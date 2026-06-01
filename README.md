@@ -36,6 +36,14 @@ Before considering another tiny exact real-profile Quarantine batch, run the ter
 
 That command runs full MVP preflight by default, then the daily local readiness check plus focused Restore Manifest recovery-review and undo-work summaries. The preset requires the exact real-profile Cleanup Scope `C:\Users\moxhe`, includes formal fixture acceptance-notes status, requires displayed Restore Manifest evidence, and requires zero displayed undo-work manifests. The base command's Restore Manifest display focus defaults to exact `C:\Users\moxhe`; use `-AllCleanupScopes` only when you intentionally want the older all-scope display outside the preset. It can also forward `-IncludeFixtureAcceptanceNotes` or `-RequireFixtureAcceptanceComplete` into the daily check when formal fixture notes should be visible or strict. It is evidence only: it does not launch WPF, click `Scan`, scan `C:\Users\moxhe`, move, restore, delete, approve cleanup, or create cleanup history, and it does not replace WPF readiness, exact `QUARANTINE`, Real-Profile Quarantine Approval Evidence, immediate Pre-Execution Revalidation, or explicit approval for a specific tiny batch.
 
+To print the post-preset manual WPF checklist without launching WPF:
+
+```powershell
+.\tools\Show-RealProfileNextBatchChecklist.cmd
+```
+
+The checklist repeats the exact scope, tiny-batch caps, hard blockers, Quarantine tab evidence, human-only click boundary, and rediscover/rescan follow-up. It is guidance only and does not approve cleanup.
+
 When building a custom evidence run outside the preset, displayed strictness flags such as `-RequireAnyDisplayedRestoreManifest -RequireNoDisplayedUndoWork` can still be supplied directly. Those flags check only the current displayed manifest focus; they are still terminal evidence only and do not approve cleanup.
 
 For ordinary local review, start from the latest accepted portable package rather than rebuilding from the current docs-only `HEAD`:
@@ -75,6 +83,7 @@ Stop before any real-profile Quarantine or selected restore execution unless the
 - Cross-volume selected restore for directories uses the same guarded copy-then-delete directory fallback as cross-volume Quarantine. The first live selected restore retry for the first real-profile Quarantine manifest succeeded by user report with `Restored 1, failed 0`; follow-up rediscovery showed the manifest restored/already restored, rescan completed normally, and the restored `pip\cache\http\b\c` path appeared again.
 - `.\tools\Summarize-RestoreManifests.cmd` can summarize action-scoped Restore Manifests under a selected Quarantine Root without launching WPF, scanning, moving, restoring, deleting, writing manifests, approving cleanup, or creating cleanup history.
 - `.\tools\Invoke-RealProfileQuarantineReadiness.cmd` can gather full MVP preflight, accepted-package, and focused Restore Manifest evidence before a future real-profile Quarantine review without launching WPF, scanning the real profile, moving, restoring, deleting, approving cleanup, or creating cleanup history. Its Restore Manifest display focus defaults to exact `C:\Users\moxhe`; use `-RequireNextBatchEvidence` for the stricter next tiny exact batch preset, and use `-AllCleanupScopes` only when fixture manifests also need to be displayed outside that preset. It is not cleanup approval and does not prove a future WPF batch is executable.
+- `.\tools\Show-RealProfileNextBatchChecklist.cmd` prints the manual WPF checklist for a future tiny exact real-profile batch without launching WPF, scanning, moving, restoring, deleting, approving cleanup, or creating cleanup history.
 - The visible WPF app keeps selected restore execution unavailable for custom non-fixture Restore Manifests and non-exact real-profile Restore Manifests.
 - Discovery, selected-manifest review, and restore-readiness panes live in the Quarantine tab's `Restore Manifest Review` panel and do not expose all-manifest restore actions; selected restore goes through selected manifest readiness and the selected restore gate.
 - The Restore Manifest review summary compactly names discovery, selected-manifest readiness, all-manifest readiness, selected restore gate, and selected restore result state with read-only/no-restore tooltip and automation help text.

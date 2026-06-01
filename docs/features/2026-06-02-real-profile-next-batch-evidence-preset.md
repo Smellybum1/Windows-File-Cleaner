@@ -81,6 +81,10 @@ ADR-worthy decisions:
 - `cmd.exe /c tools\Start-MvpFixtureReview.cmd -ChecklistOnly` passed.
 - `cmd.exe /c tools\Invoke-RealProfileQuarantineReadiness.cmd -RequireNextBatchEvidence` passed with full MVP preflight, accepted package verification, fixture notes status, exact-profile Restore Manifest display, recovery-review focus, and undo-work focus.
 
+## Follow-up packets
+
+- `Real-Profile Next-Batch WPF Checklist` added `tools\Show-RealProfileNextBatchChecklist.cmd` so the manual WPF review after this preset can be printed without launching WPF, scanning, movement, restore, deletion, approval, or cleanup history.
+
 ## Risks and assumptions
 
 Risks:
