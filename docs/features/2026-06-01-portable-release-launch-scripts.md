@@ -36,6 +36,8 @@ The publisher prints normal and fixture launch commands, but the user has to cop
 - `cmd.exe /c tools\Test-LocalRelease.cmd` failed as expected against the focused dirty/skipped-preflight package because normal verification requires clean publish metadata and preflight.
 - `cmd.exe /c tools\Start-MvpFixtureReview.cmd -ChecklistOnly`
 - `git diff --check`
+- After commit `fcc54da`, `cmd.exe /c tools\Publish-LocalRelease.cmd` passed full MVP preflight and created `.local\releases\windows-file-cleaner-v20260601-233542` from a clean worktree.
+- `cmd.exe /c tools\Test-LocalRelease.cmd -RequireCurrentCommit` passed against `.local\releases\windows-file-cleaner-v20260601-233542`.
 
 ## Docs
 
@@ -54,7 +56,7 @@ No ADR added. Release-local launch scripts are packaging ergonomics and do not c
 
 ## Follow-up Work
 
-- After this packet is committed, cut a clean package with full preflight and verify it with `tools\Test-LocalRelease.cmd -RequireCurrentCommit`.
+- Use `.local\releases\windows-file-cleaner-v20260601-233542` as the latest strict local package.
 - Consider desktop shortcut automation only as a later explicit packaging decision.
 
 ## Risks And Assumptions
