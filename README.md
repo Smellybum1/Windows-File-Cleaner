@@ -15,6 +15,7 @@ Fresh-thread handoff notes live in `docs/codex/thread-handoff.md`.
 - Storage Scan does not modify scanned files.
 - The visible WPF app can move files and narrow eligible folders when the Cleanup Scope is a recognized synthetic fixture and the exact Quarantine confirmation gate is open.
 - The visible WPF app can move files and narrow eligible folders from the exact real-profile Cleanup Scope `C:\Users\moxhe` only for the first ADR 0018 phase after all readiness evidence, exact `QUARANTINE`, Real-Profile Quarantine Approval Evidence, and immediate pre-execution revalidation pass. Cross-volume folder Quarantine uses a guarded copy-then-delete fallback because the preferred `D:` Quarantine Root is on a different drive than the real profile. Codex and automated tests do not click this real-profile movement path.
+- The first user-clicked exact real-profile Quarantine trust batch succeeded by user report on 2026-06-01 with one small `pip\cache\http\b\c` row moved, one completed Restore Manifest, `moved 1, failed 0`, and zero readiness blockers. This does not enable broader scopes, broad Undo Quarantine, permanent deletion, or cleanup history.
 - The visible WPF app can undo only the current synthetic fixture Quarantine execution; that current-fixture undo remains available after a rescan until undo is attempted.
 - The visible WPF app can discover action-scoped Restore Manifests under the selected Quarantine Root without restoring them.
 - The visible WPF app can select one discovered Restore Manifest and preview selected manifest readiness without restoring it.
@@ -293,4 +294,4 @@ The intended review flow is:
 - Permanent deletion.
 - Persisted cleanup history.
 
-Those workflows require separate Grill with Docs packets after the first exact real-profile Quarantine path is trusted.
+Those workflows require separate Grill with Docs packets after selected-restore recovery for the first exact real-profile Quarantine manifest is trusted.

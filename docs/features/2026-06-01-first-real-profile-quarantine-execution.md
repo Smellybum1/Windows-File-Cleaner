@@ -71,9 +71,9 @@ ADR-worthy decisions:
 
 ## Follow-up Work
 
-- Run full `.cmd` MVP preflight before the user performs a real-profile Quarantine batch.
-- Have the user review a very small exact real-profile batch, confirm the readiness output, type exact `QUARANTINE`, and click the WPF button only for that specific batch.
-- After the first real-profile Quarantine, use `Discover manifests` and selected restore readiness to prove recovery for the created Restore Manifest if needed.
+- The user completed the first live exact real-profile Quarantine batch on 2026-06-01 and reported `moved 1, failed 0` for `C:\Users\moxhe\AppData\Local\pip\cache\http\b\c`, with Restore Manifest `restore-manifest-20260601112432-a715565e` completed and zero readiness blockers.
+- After this first real-profile Quarantine, use `Discover manifests` and selected restore readiness to prove recovery for the created Restore Manifest if needed.
+- Run full `.cmd` MVP preflight before any future real-profile Quarantine batch after code or workflow changes.
 - Keep all-manifest restore, action-folder cleanup, permanent deletion, and persisted cleanup history as separate Grill with Docs decisions.
 
 ## Risks And Assumptions

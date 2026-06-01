@@ -6,7 +6,7 @@ Use it to preserve what was completed, what was verified, what was rejected, and
 
 ## Current status
 
-Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. The app has a broad read-only review workflow, fixture WPF Quarantine execution, current-fixture undo, fixture selected restore, exact real-profile selected restore under ADR 0019 after selected readiness, exact `RESTORE`, and immediate revalidation, and first-phase exact real-profile Quarantine execution under ADR 0017/0018 after readiness, exact `QUARANTINE`, approval evidence, selected restore trust, and immediate pre-execution revalidation. The user completed the sacrificial selected real-profile restore trust test on 2026-06-01 and reported steps 1-9 all succeeded. The user later reported the first exact real-profile folder Quarantine attempt failed safely with `moved 0, failed 1` because Windows `Directory.Move` cannot move directories from `C:` to the preferred `D:` Quarantine Root; the next packet added a guarded cross-volume directory fallback and a taller WPF Quarantine Execution Gate details area. The user then retried and reported another safe `moved 0, failed 1` result because a descendant NVIDIA `.nvph` file was in use by another process; the current packet adds in-use source checks to Pre-Execution Revalidation and expands the WPF Quarantine Execution Gate details area again. Broad/all-manifest WPF Undo Quarantine, custom/non-exact real-profile Quarantine, custom selected restore, permanent deletion, and persisted cleanup history remain unavailable. Fresh-thread handoff notes and a startup prompt live in `docs/codex/thread-handoff.md`.
+Storage Scan MVP packet implemented and tested by the user against `C:\Users\moxhe`. The app has a broad read-only review workflow, fixture WPF Quarantine execution, current-fixture undo, fixture selected restore, exact real-profile selected restore under ADR 0019 after selected readiness, exact `RESTORE`, and immediate revalidation, and first-phase exact real-profile Quarantine execution under ADR 0017/0018 after readiness, exact `QUARANTINE`, approval evidence, selected restore trust, and immediate pre-execution revalidation. The user completed the sacrificial selected real-profile restore trust test on 2026-06-01 and reported steps 1-9 all succeeded. The user later reported the first exact real-profile folder Quarantine attempt failed safely with `moved 0, failed 1` because Windows `Directory.Move` cannot move directories from `C:` to the preferred `D:` Quarantine Root; the next packet added a guarded cross-volume directory fallback and a taller WPF Quarantine Execution Gate details area. The user then retried and reported another safe `moved 0, failed 1` result because a descendant NVIDIA `.nvph` file was in use by another process; the next packet added in-use source checks to Pre-Execution Revalidation and expanded the WPF Quarantine Execution Gate details area again. The user then approved a different tiny exact real-profile batch and reported a successful first live Quarantine on 2026-06-01: one row moved from `C:\Users\moxhe\AppData\Local\pip\cache\http\b\c`, one Restore Manifest completed, `moved 1, failed 0`, zero readiness blockers, and no Codex-clicked movement. Broad/all-manifest WPF Undo Quarantine, custom/non-exact real-profile Quarantine, custom selected restore, permanent deletion, and persisted cleanup history remain unavailable. Fresh-thread handoff notes and a startup prompt live in `docs/codex/thread-handoff.md`.
 
 Latest WPF UI packet added a compact Main Grid Active Review Lens Summary above Storage Scan rows, mirroring the existing Filter Summary so default scan, Safety Summary shortcut, and stacked filter/search context remain visible after tab switches; it hides for current-session quarantined rows. User visual review on 2026-06-01 approved the compact wide-header layout with Review Shortlist totals before scan totals, and the user later ran the visible fixture review flow and reported that it looks good. The latest fixture-checklist wording packet clarified that the current-session review step's hoverable `?` cue and `Status state:` wording belong to Review Grid Mode Status, while Main Grid Active Review Lens Summary appears for Storage Scan rows and hides for current-session quarantined rows. Current handoff evidence is the current-evidence baseline: full `.cmd` MVP preflight passed after the Checklist-Only Visible Fixture Next Step packet at `71cf15a`, including restore, build, core tests, WPF app tests, fixture `-WhatIf`, sectioned checklist-only output with the exact visible fixture next step, whitespace diff, and the notes-enabled next manual fixture command; user-reported manual fixture visual acceptance is now recorded, while the formal latest notes checklist remains unfilled. The live-product readiness roadmap now separates visible fixture acceptance, fresh real-profile read-only retest, selected real-profile restore, first real-profile Quarantine execution, recovery confidence, packaging, and later deletion/history decisions, and its manual fixture acceptance row names user-reported visual acceptance plus the unfilled clean-worktree notes evidence. The fixture launcher can write an ignored `.local` fixture acceptance notes template from the same checklist item source with `-WriteAcceptanceNotes`; the notes are grouped by fixture review area and now include an acceptance evidence header with repo path, Git branch/commit, worktree status at notes creation, .NET SDK, WPF app project/target framework/WPF flag, preflight command, visible fixture command, preflight/worktree checkboxes, local-not-cleanup-history wording, and embedded exact summary/completion-check commands. The latest ignored notes file is `.local\fixture-review-acceptance\fixture-acceptance-20260601-132126.md` from clean `main` at `433064e` with `Worktree status at notes creation: clean`, but the acceptance evidence and checklist items remain not recorded. A read-only summary helper can summarize the latest or explicit ignored fixture acceptance notes, including metadata, worktree status at notes creation when present, acceptance-evidence checkbox states, overall result, checklist totals, and issue/not-checked/not-recorded items with compact notes or prompt previews, without launching WPF, scanning, moving, restoring, deleting, or creating cleanup history. The helper also supports `-RequireComplete`, which exits non-zero until local acceptance notes have recorded preflight/worktree evidence, an overall result, and no not-checked or not-recorded checklist items. The fixture launcher now also prints exact summary and completion-check commands for the notes file it writes, and MVP preflight success output points to that follow-up after `.\tools\Start-MvpFixtureReview.cmd -SkipPreflight -WriteAcceptanceNotes`. Checklist-only launcher output now also repeats the exact next visible fixture command and the no-preflight/no-fixture/no-WPF/no-scan/no-movement boundary before exiting. No real user files were scanned or modified.
 
@@ -22,12 +22,59 @@ Current Evidence Wording Alignment clarified that the clean notes preview from `
 
 ## Next recommended work
 
-1. Before any retry of a live real-profile Quarantine click, run full `.cmd` MVP preflight and guide the user through a tiny exact `C:\Users\moxhe` batch. Keep it exact `QUARANTINE`, capped at 10 rows / 1 GB, Likely safe + Quarantine candidate only, strict descendant checks, immediate pre-execution revalidation, Quarantine Root safety, Restore Manifest-only durable record, manual rescan guidance, no permanent deletion, no all-manifest restore, and no cleanup history.
-2. Do not run or click real-profile Quarantine execution from Codex; the user must explicitly approve the specific retry batch after reviewing the readiness output.
+1. Next safest live-product step is user-driven selected restore recovery proof for the specific Restore Manifest created by the successful first real-profile Quarantine, if the user wants to prove recovery before more cleanup. Keep it selected-manifest-only, exact `C:\Users\moxhe`, exact `RESTORE`, immediate selected-restore revalidation, no broad/all-manifest Undo, no permanent deletion, and no cleanup history.
+2. Do not run or click real-profile Quarantine or restore execution from Codex; the user must explicitly approve each specific batch or selected Restore Manifest after reviewing the readiness output.
 3. If formal fixture acceptance notes are useful before movement work, fill `.local\fixture-review-acceptance\fixture-acceptance-20260601-132126.md`, then run `.\tools\Summarize-FixtureAcceptanceNotes.cmd -Path ".local\fixture-review-acceptance\fixture-acceptance-20260601-132126.md"` and the same command with `-RequireComplete`. The user has already reported that the visible fixture pass looks good, but the local checklist remains unfilled.
 4. Revisit .NET 10 and packaging only after reversible real-profile restore/cleanup behavior is trusted.
 
 ## Completed packets
+
+### 2026-06-01: User-Reported First Real-Profile Quarantine Success
+
+Status: completed
+
+Evidence:
+
+- After the cross-volume directory fallback and in-use source revalidation packets, the user approved a different tiny exact real-profile batch and reported success from the WPF app.
+- The reported batch moved one row from `C:\Users\moxhe\AppData\Local\pip\cache\http\b\c` into `D:\WindowsFileCleanerQuarantine\actions\quarantine-action-draft-20260601112432-ab98a4a0\items\AppData\Local\pip\cache\http\b\c`.
+- The reported Restore Manifest was `restore-manifest-20260601112432-a715565e`, status `Completed`, entries `1`, bytes `13.97 MB`.
+- The reported execution result was `moved 1, failed 0, blockers 0, recovery review: no`, with zero readiness blockers.
+- Codex did not click the real-profile movement path or move/restore/delete real-profile files.
+
+Implementation:
+
+- Docs-only evidence capture. No code or app behavior changed.
+
+Verification:
+
+- User-reported WPF execution success for the specific approved first real-profile Quarantine batch.
+- `git diff --check`
+
+Docs updated:
+
+- `README.md`
+- `docs/features/2026-06-01-first-real-profile-quarantine-execution.md`
+- `docs/features/2026-06-01-live-product-readiness-roadmap.md`
+- `docs/features/2026-06-01-user-reported-first-real-profile-quarantine-success.md`
+- `docs/codex/thread-handoff.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- No ADR added. ADR 0017 and ADR 0018 already govern this exact first real-profile Quarantine path; this packet records manual trust evidence.
+
+Open questions:
+
+- Whether the user wants to immediately run selected restore recovery proof for the created Restore Manifest before any further real-profile Quarantine batches.
+
+Follow-up work:
+
+- Guide the user through selected-manifest restore proof for this specific Restore Manifest if requested.
+- Keep any future real-profile Quarantine batch tiny, exact, user-approved, readiness-gated, and preceded by relevant preflight after code/workflow changes.
+
+Risky assumptions:
+
+- The screenshot/output supplied by the user is accepted as the manual live-trust evidence for this first real-profile Quarantine action.
 
 ### 2026-06-01: In-Use Source Pre-Execution Revalidation
 
