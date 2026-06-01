@@ -165,6 +165,15 @@ Remove `-PrintOnly` when you intentionally want to launch the packaged WPF app. 
 
 The launcher output also prints the package-local `README-FIRST.txt` path and the matching release-local launch script path, so you can either run from the terminal or open the packaged folder and use the start-here note.
 
+To print the package-level acceptance checklist without launching WPF:
+
+```powershell
+.\tools\Start-LocalRelease.cmd -ChecklistOnly -RequireCurrentCommit
+.\tools\Start-LocalRelease.cmd -Fixture -ChecklistOnly -RequireCurrentCommit
+```
+
+Checklist-only mode verifies the package by default, prints normal and fixture launch review steps, and does not launch WPF, click `Scan`, move, restore, delete, approve cleanup, or create cleanup history.
+
 ## WPF Fixture Smoke
 
 Use the fixture review launcher for the manual fixture UI pass:

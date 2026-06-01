@@ -29,6 +29,7 @@ Portable v1 packages already include release-local launch scripts, but using the
 - `-Fixture` adds the repo-local smoke fixture Cleanup Scope and states that fixture launch only prefills the Cleanup Scope.
 - `-SkipVerify` exists for intentional focused local use but is not the default.
 - Later packet `Local Release Launcher Start-Here Output` made the launcher output also print the package-local `README-FIRST.txt` path and the matching release-local launch script path.
+- Later packet `Local Release Acceptance Checklist` added `-ChecklistOnly`, which verifies the package by default and prints package-level normal/fixture acceptance steps without launching WPF.
 
 ## Verification
 

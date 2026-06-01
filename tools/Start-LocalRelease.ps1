@@ -6,6 +6,8 @@ param(
 
     [switch]$Fixture,
 
+    [switch]$ChecklistOnly,
+
     [switch]$PrintOnly,
 
     [switch]$SkipVerify,
@@ -92,6 +94,53 @@ function Format-LaunchCommand {
     return ($parts -join " ")
 }
 
+function Write-PortableReleaseChecklist {
+    param(
+        [Parameter(Mandatory)]
+        [string]$ReleaseDirectory,
+
+        [Parameter(Mandatory)]
+        [string]$ReadmeFile,
+
+        [Parameter(Mandatory)]
+        [string]$NormalLaunchScript,
+
+        [Parameter(Mandatory)]
+        [string]$FixtureLaunchScript,
+
+        [Parameter(Mandatory)]
+        [string]$ExecutablePath,
+
+        [Parameter(Mandatory)]
+        [string]$FixtureScopePath,
+
+        [Parameter(Mandatory)]
+        [bool]$VerificationSkipped
+    )
+
+    Write-Host ""
+    Write-Host "Portable release acceptance checklist:"
+    if ($VerificationSkipped) {
+        Write-Host "  1. Verification was skipped by request; run tools\Test-LocalRelease.cmd -RequireCurrentCommit before trusting this package."
+    }
+    else {
+        Write-Host "  1. Confirm the verifier output above passed for this release folder."
+    }
+
+    Write-Host "  2. Open README-FIRST.txt and confirm it names portable v1, launch choices, fixture-launch boundaries, and reversible-only safety boundaries."
+    Write-Host "     README-FIRST.txt: $ReadmeFile"
+    Write-Host "  3. Normal launch path: use Launch-WindowsFileCleaner.cmd or the printed executable command; confirm the app opens without clicking Scan by itself."
+    Write-Host "     Launch script: $NormalLaunchScript"
+    Write-Host "     Executable: $ExecutablePath"
+    Write-Host "  4. Fixture launch path: use Launch-WindowsFileCleaner-Fixture.cmd or the printed fixture command; confirm the Cleanup Scope is prefilled with the fixture path, then click Scan manually and confirm the scan is read-only."
+    Write-Host "     Fixture launch script: $FixtureLaunchScript"
+    Write-Host "     Fixture Cleanup Scope: $FixtureScopePath"
+    Write-Host "  5. Confirm the package remains portable: no installer, shortcut, service, scheduled task, permanent deletion, broad/all-manifest restore, or cleanup history."
+    Write-Host "  6. Stop before real-profile movement unless a specific user-approved readiness gate and exact confirmation are in place."
+    Write-Host "Checklist-only mode did not launch WPF, click Scan, move, restore, delete, approve cleanup, or create cleanup history."
+    Write-Host "Release folder: $ReleaseDirectory"
+}
+
 $releaseRootFullPath = Resolve-UnderLocalPath -Path $ReleaseRoot -Description "Release root"
 $releaseDir = if ([string]::IsNullOrWhiteSpace($ReleasePath)) {
     Get-LatestReleasePath -RootPath $releaseRootFullPath
@@ -154,6 +203,18 @@ else {
 }
 Write-Host "Launch command:"
 Write-Host $launchCommand
+
+if ($ChecklistOnly.IsPresent) {
+    Write-PortableReleaseChecklist `
+        -ReleaseDirectory $releaseDir `
+        -ReadmeFile $readmePath `
+        -NormalLaunchScript $releaseLaunchScriptPath `
+        -FixtureLaunchScript $releaseFixtureLaunchScriptPath `
+        -ExecutablePath $appExePath `
+        -FixtureScopePath $fixtureScope `
+        -VerificationSkipped $SkipVerify.IsPresent
+    exit 0
+}
 
 if ($PrintOnly.IsPresent) {
     Write-Host "Print-only mode: WPF was not launched."
