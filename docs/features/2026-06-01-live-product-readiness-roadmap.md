@@ -63,6 +63,8 @@ Later packet note: `Real-Profile Next-Batch Evidence Preset` added `Invoke-RealP
 
 Later packet note: `Real-Profile Next-Batch WPF Checklist` added `Show-RealProfileNextBatchChecklist.cmd` to print the post-preset manual WPF checklist without launching WPF, scanning, moving, restoring, deleting, approving cleanup, or creating cleanup history.
 
+Later packet note: `Real-Profile Next-Batch Review Wrapper` added `Invoke-RealProfileNextBatchReview.cmd` to run the exact-profile next-batch evidence preset and then print the manual WPF checklist without launching WPF, scanning, moving, restoring, deleting, writing Restore Manifests, approving cleanup, or creating cleanup history.
+
 ## Domain Language Changes
 
 No new durable domain terms.
@@ -259,6 +261,7 @@ What changed:
 - Later packet `Daily Readiness Fixture Acceptance Status` added optional Fixture Acceptance Notes summary and strict completion forwarding to daily readiness and real-profile readiness without changing default daily output.
 - Later packet `Real-Profile Next-Batch Evidence Preset` added `tools\Invoke-RealProfileQuarantineReadiness.cmd -RequireNextBatchEvidence` as the exact-profile-only terminal preset before another tiny exact batch review.
 - Later packet `Real-Profile Next-Batch WPF Checklist` added `tools\Show-RealProfileNextBatchChecklist.cmd` as terminal-only guidance for the manual WPF review after the evidence preset.
+- Later packet `Real-Profile Next-Batch Review Wrapper` added `tools\Invoke-RealProfileNextBatchReview.cmd` as the terminal-only wrapper that runs the exact-profile preset and then prints the checklist without launching WPF or touching files.
 
 Files changed:
 
@@ -292,8 +295,8 @@ ADRs added or skipped:
 
 Follow-up work:
 
-- Run `tools\Invoke-RealProfileQuarantineReadiness.cmd -RequireNextBatchEvidence` before considering another tiny exact real-profile Quarantine batch, then still require WPF readiness, exact `QUARANTINE`, Real-Profile Quarantine Approval Evidence, immediate Pre-Execution Revalidation, and explicit user approval for the specific click.
-- Use `tools\Show-RealProfileNextBatchChecklist.cmd` to print the post-preset manual WPF checklist without launching WPF.
+- Run `tools\Invoke-RealProfileNextBatchReview.cmd` before considering another tiny exact real-profile Quarantine batch when both terminal evidence and the WPF checklist should be shown together, then still require WPF readiness, exact `QUARANTINE`, Real-Profile Quarantine Approval Evidence, immediate Pre-Execution Revalidation, and explicit user approval for the specific click.
+- Use `tools\Invoke-RealProfileQuarantineReadiness.cmd -RequireNextBatchEvidence` when only evidence is needed, or `tools\Show-RealProfileNextBatchChecklist.cmd` when only the post-preset manual WPF checklist is needed.
 - Keep real-profile restore selected-manifest-only, exact `C:\Users\moxhe`, exact `RESTORE`, immediate selected-restore revalidation, no original-path overwrite, Restore Manifest-only, no all-manifest restore, no cleanup history, no permanent deletion, and no action-folder cleanup.
 - Optionally fill `.local\fixture-review-acceptance\fixture-acceptance-20260601-132126.md` and run the summary helper with `-RequireComplete` if formal notes evidence is desired.
 

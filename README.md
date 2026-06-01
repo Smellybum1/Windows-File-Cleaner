@@ -28,7 +28,15 @@ To include formal fixture acceptance-notes status in the same read-only daily ou
 
 Use `-RequireFixtureAcceptanceComplete` only when incomplete fixture notes should fail the daily check. It is expected to fail while the latest ignored fixture notes remain unfilled.
 
-Before considering another tiny exact real-profile Quarantine batch, run the terminal-only readiness review with the next-batch evidence preset:
+Before considering another tiny exact real-profile Quarantine batch, run the terminal-only next-batch review wrapper:
+
+```powershell
+.\tools\Invoke-RealProfileNextBatchReview.cmd
+```
+
+That wrapper runs the exact-profile evidence preset, then prints the manual WPF checklist. It runs full MVP preflight by default through the preset; use `-SkipMvpPreflight` only for script smoke checks, not fresh movement evidence. It does not launch WPF, click `Scan`, scan `C:\Users\moxhe`, move, restore, delete, approve cleanup, write Restore Manifests, or create cleanup history.
+
+To run only the readiness evidence step, use the preset directly:
 
 ```powershell
 .\tools\Invoke-RealProfileQuarantineReadiness.cmd -RequireNextBatchEvidence
@@ -84,6 +92,7 @@ Stop before any real-profile Quarantine or selected restore execution unless the
 - `.\tools\Summarize-RestoreManifests.cmd` can summarize action-scoped Restore Manifests under a selected Quarantine Root without launching WPF, scanning, moving, restoring, deleting, writing manifests, approving cleanup, or creating cleanup history.
 - `.\tools\Invoke-RealProfileQuarantineReadiness.cmd` can gather full MVP preflight, accepted-package, and focused Restore Manifest evidence before a future real-profile Quarantine review without launching WPF, scanning the real profile, moving, restoring, deleting, approving cleanup, or creating cleanup history. Its Restore Manifest display focus defaults to exact `C:\Users\moxhe`; use `-RequireNextBatchEvidence` for the stricter next tiny exact batch preset, and use `-AllCleanupScopes` only when fixture manifests also need to be displayed outside that preset. It is not cleanup approval and does not prove a future WPF batch is executable.
 - `.\tools\Show-RealProfileNextBatchChecklist.cmd` prints the manual WPF checklist for a future tiny exact real-profile batch without launching WPF, scanning, moving, restoring, deleting, approving cleanup, or creating cleanup history.
+- `.\tools\Invoke-RealProfileNextBatchReview.cmd` runs that exact-profile evidence preset and then prints the checklist without launching WPF, scanning, moving, restoring, deleting, approving cleanup, writing Restore Manifests, or creating cleanup history.
 - The visible WPF app keeps selected restore execution unavailable for custom non-fixture Restore Manifests and non-exact real-profile Restore Manifests.
 - Discovery, selected-manifest review, and restore-readiness panes live in the Quarantine tab's `Restore Manifest Review` panel and do not expose all-manifest restore actions; selected restore goes through selected manifest readiness and the selected restore gate.
 - The Restore Manifest review summary compactly names discovery, selected-manifest readiness, all-manifest readiness, selected restore gate, and selected restore result state with read-only/no-restore tooltip and automation help text.
