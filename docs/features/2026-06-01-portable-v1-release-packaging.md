@@ -35,6 +35,7 @@ The app can run from the development output or `dotnet run`, and the current rec
 - Confirmed the published executable exists under `.local\releases\...\app`.
 - Confirmed the release zip exists under `.local\releases`.
 - Confirmed the packaged executable can start against the fixture Cleanup Scope without scanning or moving files automatically.
+- User reran the publisher from clean `main`, launched the packaged app with the printed fixture launch command, clicked fixture Scan, and confirmed the packaged app opened and the fixture scan completed normally.
 - `dotnet run --project tests\WindowsFileCleaner.Tests\WindowsFileCleaner.Tests.csproj`
 - `dotnet run --project tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj`
 - `cmd.exe /c tools\Start-MvpFixtureReview.cmd -ChecklistOnly`
