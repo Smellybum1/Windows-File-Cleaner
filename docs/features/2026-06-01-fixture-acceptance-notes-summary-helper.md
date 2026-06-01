@@ -34,6 +34,7 @@ The notes template is intentionally detailed. After a pass, the reviewer still n
 - read the latest `.local\fixture-review-acceptance\fixture-acceptance-*.md` file by default,
 - accept `-Path` for a specific notes file inside the repo,
 - print the notes file path, creation time, Git branch/commit, WPF build context, acceptance-evidence checkbox states, overall result, checklist totals, and items needing review with compact recorded notes or prompt previews,
+- support `-RequireComplete`, which exits non-zero until the notes have recorded preflight/worktree evidence, an overall pass result, and no not-checked or not-recorded checklist items,
 - stay read-only and avoid WPF launch, scan, movement, restore, delete, and cleanup history.
 
 ## Domain Language Changes
@@ -102,6 +103,7 @@ What changed:
 - The helper prints local acceptance metadata, overall result, checklist totals, and items needing review.
 - Later packet `Fixture Acceptance Summary Prompt Preview` made open checklist items show compact recorded notes or, when no notes exist, a trimmed prompt preview.
 - Later packet `Fixture Acceptance Evidence Checkbox Summary` made the summary output show whether the preflight-passed and worktree-clean/intentional evidence checkboxes were recorded.
+- Later packet `Fixture Acceptance Completion Check` added `-RequireComplete` so the command can fail fast when acceptance notes are still incomplete after a manual pass.
 
 Files changed:
 
@@ -121,6 +123,7 @@ Tests run:
 - `git diff --check`
 - Later prompt-preview packet reran the same two summary commands plus `git diff --check`.
 - Later evidence-checkbox packet reran the same two summary commands plus `git diff --check`.
+- Later completion-check packet reran the normal and explicit summary commands, verified `-RequireComplete` fails on the current checklist-only preview, and ran `git diff --check`.
 
 Docs updated:
 

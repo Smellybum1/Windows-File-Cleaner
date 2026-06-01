@@ -152,9 +152,10 @@ After a fixture pass, summarize the latest ignored notes or a specific notes fil
 ```powershell
 .\tools\Summarize-FixtureAcceptanceNotes.cmd
 .\tools\Summarize-FixtureAcceptanceNotes.cmd -Path ".local\fixture-review-acceptance\fixture-acceptance-YYYYMMDD-HHMMSS.md"
+.\tools\Summarize-FixtureAcceptanceNotes.cmd -RequireComplete
 ```
 
-The summary helper reads local notes only, reports acceptance-evidence checkbox states, the overall result, checklist totals, and issue/not-checked/not-recorded items with compact notes or prompt previews, and does not launch WPF, scan, move, restore, delete, or create cleanup history.
+The summary helper reads local notes only, reports acceptance-evidence checkbox states, the overall result, checklist totals, and issue/not-checked/not-recorded items with compact notes or prompt previews, and does not launch WPF, scan, move, restore, delete, or create cleanup history. `-RequireComplete` exits non-zero until the local notes have recorded preflight/worktree evidence, an overall pass result, and no not-checked or not-recorded checklist items.
 
 For focused troubleshooting, the individual fixture commands are:
 

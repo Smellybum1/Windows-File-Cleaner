@@ -191,6 +191,7 @@ What changed:
 - Later packet `2026-06-01-fixture-acceptance-notes-summary-helper.md` added `.\tools\Summarize-FixtureAcceptanceNotes.cmd` to read ignored notes and print overall result, checklist totals, and issue/not-checked/not-recorded items without launching WPF, scanning, moving, restoring, deleting, or creating cleanup history.
 - Later packet `Fixture Acceptance Summary Prompt Preview` made the summary output include compact notes or prompt previews for open checklist items.
 - Later packet `Fixture Acceptance Evidence Checkbox Summary` made the summary output include preflight-passed and worktree-clean/intentional evidence checkbox states.
+- Later packet `Fixture Acceptance Completion Check` added `.\tools\Summarize-FixtureAcceptanceNotes.cmd -RequireComplete` so incomplete acceptance notes can fail fast after a manual pass.
 - Updated docs and handoff/progress notes.
 
 Files changed:
@@ -228,6 +229,7 @@ Follow-up work:
 
 - Run the visible fixture pass with `.\tools\Start-MvpFixtureReview.cmd -SkipPreflight -WriteAcceptanceNotes` after a successful preflight when the user is ready.
 - Run `.\tools\Summarize-FixtureAcceptanceNotes.cmd` after the pass to review open checklist items.
+- Use `.\tools\Summarize-FixtureAcceptanceNotes.cmd -RequireComplete` when you want a non-zero exit for incomplete local notes before copying results into progress docs.
 - Copy relevant manual results from `.local` notes into `.codex/progress.md` after the pass.
 
 Open questions:

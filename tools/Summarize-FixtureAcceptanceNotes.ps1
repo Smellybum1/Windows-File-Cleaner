@@ -1,6 +1,8 @@
 [CmdletBinding()]
 param(
-    [string]$Path
+    [string]$Path,
+
+    [switch]$RequireComplete
 )
 
 Set-StrictMode -Version Latest
@@ -251,6 +253,8 @@ $passCount = @($entries | Where-Object { $_.Status -eq "Pass" }).Count
 $issueCount = @($entries | Where-Object { $_.Status -eq "Issue" }).Count
 $notCheckedCount = @($entries | Where-Object { $_.Status -eq "Not checked" }).Count
 $openCount = @($entries | Where-Object { $_.Status -eq "Not recorded" }).Count
+$preflightEvidenceState = Get-CheckboxEvidenceState -Lines $lines -Label "Preflight passed immediately before this visible fixture pass."
+$worktreeEvidenceState = Get-CheckboxEvidenceState -Lines $lines -Label "Worktree was clean or intentional changes were recorded before launch."
 
 Write-Host "Fixture acceptance notes summary"
 Write-Host "Notes file: $fullNotesPath"
@@ -262,8 +266,8 @@ Write-Host ("WPF app: {0}; {1}; WPF enabled: {2}" -f
     (Get-FirstMetadataValue -Lines $lines -Prefix "- WPF app target framework:"),
     (Get-FirstMetadataValue -Lines $lines -Prefix "- WPF enabled:"))
 Write-Host ("Acceptance evidence: preflight passed: {0}; worktree clean/intentional: {1}" -f
-    (Get-CheckboxEvidenceState -Lines $lines -Label "Preflight passed immediately before this visible fixture pass."),
-    (Get-CheckboxEvidenceState -Lines $lines -Label "Worktree was clean or intentional changes were recorded before launch."))
+    $preflightEvidenceState,
+    $worktreeEvidenceState)
 Write-Host ("Overall result: {0}" -f $overallResult)
 Write-Host ("Checklist totals: {0} pass, {1} issue, {2} not checked, {3} not recorded" -f $passCount, $issueCount, $notCheckedCount, $openCount)
 
@@ -290,3 +294,43 @@ else {
 
 Write-Host ""
 Write-Host "This is a read-only summary of local ignored notes. It does not launch WPF, scan, move, restore, delete, or create cleanup history."
+
+if ($RequireComplete) {
+    $completionBlockers = [System.Collections.Generic.List[string]]::new()
+    if ($preflightEvidenceState -ne "Recorded") {
+        $completionBlockers.Add("Preflight evidence checkbox is $preflightEvidenceState.")
+    }
+
+    if ($worktreeEvidenceState -ne "Recorded") {
+        $completionBlockers.Add("Worktree evidence checkbox is $worktreeEvidenceState.")
+    }
+
+    if ($overallResult -notin @("Pass", "Pass with issues noted")) {
+        $completionBlockers.Add("Overall result is $overallResult.")
+    }
+
+    if ($entries.Count -eq 0) {
+        $completionBlockers.Add("No fixture checklist items were found.")
+    }
+
+    if ($notCheckedCount -gt 0) {
+        $completionBlockers.Add("$notCheckedCount checklist item(s) are marked Not checked.")
+    }
+
+    if ($openCount -gt 0) {
+        $completionBlockers.Add("$openCount checklist item(s) are not recorded.")
+    }
+
+    Write-Host ""
+    if ($completionBlockers.Count -eq 0) {
+        Write-Host "Completion check: complete. Acceptance notes are ready to record."
+    }
+    else {
+        Write-Host "Completion check: incomplete."
+        foreach ($blocker in $completionBlockers) {
+            Write-Host "- $blocker"
+        }
+
+        exit 1
+    }
+}
