@@ -85,9 +85,10 @@ The first parallel app-test attempt failed because both test projects tried to r
 
 ## Follow-up Work
 
+- The user completed the sacrificial selected real-profile restore trust test on 2026-06-01 and reported steps 1-9 all succeeded.
 - Run a full `.cmd` MVP preflight before any manual real-profile restore attempt.
 - Have the user manually inspect the exact selected Restore Manifest and click restore only when they explicitly choose to test real-profile selected restore.
-- Keep real-profile Quarantine execution deferred until selected real-profile restore is manually trusted.
+- Keep real-profile Quarantine execution deferred until a separate ADR 0017/0018 first-movement Grill with Docs packet and explicit user approval for the specific batch.
 - Keep all-manifest restore, action-folder cleanup, permanent deletion, and cleanup history as later separate Grill with Docs decisions.
 
 ## Risks And Assumptions
