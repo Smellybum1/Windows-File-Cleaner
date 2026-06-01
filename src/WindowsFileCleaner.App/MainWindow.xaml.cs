@@ -1299,7 +1299,7 @@ public partial class MainWindow : Window
             _currentRestoreManifestDraft,
             DateTimeOffset.UtcNow,
             BuildDraftId("quarantine-confirmation-draft"),
-            IsFixtureQuarantineExecutionAvailable());
+            IsQuarantineExecutionImplementedForCurrentScope());
         _currentQuarantineActionDraft = _currentQuarantineConfirmationDraft.HasDataBlockers
             ? null
             : QuarantineActionDraftBuilder.Build(
@@ -2062,7 +2062,9 @@ public partial class MainWindow : Window
         var approvalEvidence = BuildRealProfileQuarantineApprovalEvidenceForDisplay(executionReadiness);
         var hasExecutedCurrentPreview = _currentQuarantineExecutionResult is not null;
         QuarantineConfirmationBox.IsEnabled = _currentQuarantineConfirmationDraft is not null && !hasExecutedCurrentPreview && ScanButton.IsEnabled;
-        ExecuteQuarantineButton.IsEnabled = _currentQuarantineExecutionGate.CanExecute && !hasExecutedCurrentPreview && ScanButton.IsEnabled;
+        ExecuteQuarantineButton.IsEnabled = CanExecuteQuarantineForCurrentGate(approvalEvidence)
+            && !hasExecutedCurrentPreview
+            && ScanButton.IsEnabled;
         UndoQuarantineButton.IsEnabled = CanUndoCurrentQuarantineExecution() && ScanButton.IsEnabled;
         QuarantineExecutionGateText.Text = FormatQuarantineExecutionGate(
             _currentQuarantineExecutionGate,
@@ -2101,7 +2103,8 @@ public partial class MainWindow : Window
             gate,
             executionReadiness,
             hasExecutedCurrentPreview,
-            _currentUndoQuarantineResult is not null);
+            _currentUndoQuarantineResult is not null,
+            _currentRestoreManifest is not null && IsDefaultRealProfileCleanupScope(_currentRestoreManifest.CleanupScopePath));
         QuarantineReadinessSummaryText.Text = text;
         QuarantineReadinessSummaryText.Tag = style.ToString();
         QuarantineReadinessSummaryText.Foreground = style switch
@@ -2122,16 +2125,19 @@ public partial class MainWindow : Window
         QuarantineExecutionGate gate,
         QuarantineExecutionReadiness? executionReadiness,
         bool hasExecutedCurrentPreview,
-        bool hasUndoResult)
+        bool hasUndoResult,
+        bool hasRealProfileExecution)
     {
         if (hasUndoResult)
         {
-            return ("Execution readiness summary: current fixture Undo Quarantine already ran; rescan before more cleanup review. Real-profile/custom execution remains unavailable.", QuarantineReadinessSummaryStyle.Success);
+            return ("Execution readiness summary: current fixture Undo Quarantine already ran; rescan before more cleanup review. Custom and non-exact real-profile execution remain unavailable.", QuarantineReadinessSummaryStyle.Success);
         }
 
         if (hasExecutedCurrentPreview)
         {
-            return ("Execution readiness summary: current fixture Quarantine already ran and Storage Scan rows may be stale; use Undo fixture quarantine or rescan before more review. Real-profile/custom execution remains unavailable.", QuarantineReadinessSummaryStyle.Warning);
+            return hasRealProfileExecution
+                ? ("Execution readiness summary: real-profile Quarantine already ran and Storage Scan rows may be stale; use Discover manifests for selected restore recovery if needed, then rescan before more review.", QuarantineReadinessSummaryStyle.Warning)
+                : ("Execution readiness summary: current fixture Quarantine already ran and Storage Scan rows may be stale; use Undo fixture quarantine or rescan before more review. Custom and non-exact real-profile execution remain unavailable.", QuarantineReadinessSummaryStyle.Warning);
         }
 
         if (executionReadiness is null)
@@ -2147,7 +2153,15 @@ public partial class MainWindow : Window
             var confirmationState = gate.CanExecute
                 ? "exact QUARANTINE is entered; fixture-only action can run"
                 : "type exact QUARANTINE to open the fixture-only action";
-            return ($"Execution readiness summary: {scopeKind} scope has 0 readiness blocker(s); {confirmationState}. Real-profile/custom execution remains unavailable.", QuarantineReadinessSummaryStyle.Success);
+            return ($"Execution readiness summary: {scopeKind} scope has 0 readiness blocker(s); {confirmationState}. Custom and non-exact real-profile execution remain unavailable.", QuarantineReadinessSummaryStyle.Success);
+        }
+
+        if (blockerCount == 0 && executionReadiness.ScopeKind == QuarantineExecutionReadinessScopeKind.RealProfile)
+        {
+            var confirmationState = gate.CanExecute
+                ? "exact QUARANTINE is entered; first real-profile action can run"
+                : "type exact QUARANTINE to open the first real-profile action";
+            return ($"Execution readiness summary: {scopeKind} scope has 0 readiness blocker(s); {confirmationState}. Custom and non-exact real-profile execution remain unavailable.", QuarantineReadinessSummaryStyle.Success);
         }
 
         var missingDimensions = FormatReadinessDimensionSummary(executionReadiness.Blockers);
@@ -2528,7 +2542,7 @@ public partial class MainWindow : Window
         UpdateQuarantinedViewControls();
         StatusText.Text = rows.Count == 0
             ? "No current-session quarantined items are available. Use Discover manifests for older Restore Manifest review. No files were modified."
-            : $"Showing {rows.Count:N0} current-session quarantined item(s) from the current fixture Restore Manifest. Use Back to scan rows to return. No files were modified.";
+            : $"Showing {rows.Count:N0} current-session quarantined item(s) from the current in-memory Restore Manifest. Use Back to scan rows to return. No files were modified.";
 
         if (rows.Count > 0)
         {
@@ -2719,7 +2733,7 @@ public partial class MainWindow : Window
             ? $" {currentQuarantinedCount:N0} current-session quarantined item(s) are available with Current quarantined."
             : " Current-session quarantined rows appear after fixture Quarantine execution.";
         var staleHint = _currentQuarantineExecutionResult is not null && _currentUndoQuarantineResult is null
-            ? " Scan rows may be stale after fixture Quarantine execution; rescan refreshes rows."
+            ? " Scan rows may be stale after Quarantine execution; rescan refreshes rows."
             : "";
 
         SetReviewGridModeStatus(
@@ -2800,7 +2814,7 @@ public partial class MainWindow : Window
         AutomationProperties.SetHelpText(ShowQuarantinedButton, showHelpText);
 
         var backHelpText = _isShowingQuarantinedRows
-            ? "Returns the main grid to completed Storage Scan rows without rescanning or modifying files. Current-session fixture undo remains separate."
+            ? "Returns the main grid to completed Storage Scan rows without rescanning or modifying files. Fixture undo and selected restore recovery remain separate."
             : "Back to scan rows becomes available only while the main grid is showing current-session quarantined items. No files are modified.";
         BackToScanRowsButton.ToolTip = backHelpText;
         AutomationProperties.SetHelpText(BackToScanRowsButton, backHelpText);
@@ -2825,7 +2839,7 @@ public partial class MainWindow : Window
             return $"Shows {currentQuarantinedCount:N0} current-session quarantined Restore Manifest item(s) in the main grid. This is read-only and does not restore, move, delete, discover older manifests, or create cleanup history.";
         }
 
-        return "Current-session quarantined items appear after fixture Quarantine execution records moved Restore Manifest entries. Use Discover manifests for older Restore Manifest review; no files are restored, moved, deleted, or added to cleanup history.";
+        return "Current-session quarantined items appear after fixture or approved exact real-profile Quarantine execution records moved Restore Manifest entries. Use Discover manifests for older Restore Manifest review; no files are restored, moved, deleted, or added to cleanup history.";
     }
 
     private IReadOnlyList<QuarantinedItemRow> BuildCurrentQuarantinedRows()
@@ -3685,6 +3699,39 @@ public partial class MainWindow : Window
         return CleanupScopeSafetyNoteBuilder.Build(_currentCleanupScopePath).IsFixtureScope;
     }
 
+    private bool IsRealProfileQuarantineExecutionAvailable()
+    {
+        return !string.IsNullOrWhiteSpace(_currentCleanupScopePath)
+            && IsDefaultRealProfileCleanupScope(_currentCleanupScopePath);
+    }
+
+    private bool IsQuarantineExecutionImplementedForCurrentScope()
+    {
+        return IsFixtureQuarantineExecutionAvailable()
+            || IsRealProfileQuarantineExecutionAvailable();
+    }
+
+    private bool IsRealProfileSelectedRestoreTrustedForForwardQuarantine()
+    {
+        return IsRealProfileQuarantineExecutionAvailable();
+    }
+
+    private bool CanExecuteQuarantineForCurrentGate(RealProfileQuarantineApprovalEvidence? approvalEvidence)
+    {
+        if (_currentQuarantineExecutionGate?.CanExecute != true)
+        {
+            return false;
+        }
+
+        if (IsFixtureQuarantineExecutionAvailable())
+        {
+            return true;
+        }
+
+        return IsRealProfileQuarantineExecutionAvailable()
+            && approvalEvidence?.CanApproveForRealProfileMovement == true;
+    }
+
     private bool CanUndoCurrentQuarantineExecution()
     {
         return _currentQuarantineExecutionResult is not null
@@ -3984,23 +4031,75 @@ public partial class MainWindow : Window
             return;
         }
 
+        var isRealProfileExecution = IsRealProfileQuarantineExecutionAvailable();
+        if (!IsFixtureQuarantineExecutionAvailable())
+        {
+            if (!isRealProfileExecution)
+            {
+                StatusText.Text = "Quarantine included shortlist is available only for fixture scopes or the exact real-profile Cleanup Scope. No files were modified.";
+                return;
+            }
+
+            if (!RefreshRealProfileQuarantineApprovalImmediatelyBeforeExecution())
+            {
+                return;
+            }
+        }
+
         _currentQuarantineExecutionResult = QuarantineExecutor.Execute(_currentRestoreManifest);
         _currentRestoreManifest = _currentQuarantineExecutionResult.RestoreManifest;
         _shortlist.Clear();
         RefreshResults();
         ExportQuarantinePreviewButton.IsEnabled = false;
         SetQuarantineConfirmationTextSilently("");
-        QuarantinePreviewText.Text = FormatQuarantineExecutionResult(_currentQuarantineExecutionResult);
+        QuarantinePreviewText.Text = FormatQuarantineExecutionResult(_currentQuarantineExecutionResult, isRealProfileExecution);
         UpdateShortlistControls();
         UpdateQuarantineExecutionGate();
         RefreshQuarantinedRowsIfVisible();
         UpdateQuarantinedViewControls();
 
         var result = _currentQuarantineExecutionResult;
-        StatusText.Text = result.Succeeded
-            ? $"Fixture Quarantine execution completed: {result.MovedCount:N0} included Review Shortlist row(s) moved, {result.RestoreManifest.TotalSizeDisplay} quarantined. Use Undo fixture quarantine to restore; rescan refreshes review rows."
-            : $"Fixture Quarantine execution needs recovery review: {result.MovedCount:N0} included Review Shortlist row(s) moved, {result.FailedCount:N0} failed. Use Undo fixture quarantine when available; rescan refreshes review rows.";
+        StatusText.Text = FormatQuarantineExecutionStatus(result, isRealProfileExecution);
         UpdateQuarantinePreviewStatus();
+    }
+
+    private bool RefreshRealProfileQuarantineApprovalImmediatelyBeforeExecution()
+    {
+        if (_currentQuarantinePreview is null
+            || _currentQuarantineConfirmationDraft is null
+            || _currentQuarantineActionDraft is null)
+        {
+            StatusText.Text = "Real-profile Quarantine approval evidence is stale. Recreate Quarantine Preview before execution. No files were modified.";
+            return false;
+        }
+
+        _currentQuarantineRootExecutionSafety = QuarantineRootExecutionSafetyBuilder.Build(
+            _currentQuarantineActionDraft,
+            nonPreferredQuarantineRootAcknowledged: IsNonPreferredQuarantineRootAcknowledged);
+        _currentPreExecutionRevalidation = PreExecutionRevalidationBuilder.Build(
+            _currentQuarantinePreview,
+            _currentQuarantineConfirmationDraft,
+            _currentQuarantineActionDraft,
+            _currentQuarantineRootExecutionSafety,
+            DateTimeOffset.UtcNow);
+
+        var immediateReadiness = BuildQuarantineExecutionReadinessForDisplay();
+        var immediateApprovalEvidence = RealProfileQuarantineApprovalEvidenceBuilder.Build(
+            immediateReadiness,
+            QuarantineConfirmationBox.Text,
+            DateTimeOffset.UtcNow,
+            isRealProfileQuarantineMovementAvailable: true);
+        UpdateQuarantineExecutionGate();
+
+        if (_currentPreExecutionRevalidation.CanProceed && immediateApprovalEvidence.CanApproveForRealProfileMovement)
+        {
+            return true;
+        }
+
+        StatusText.Text = _currentPreExecutionRevalidation.CanProceed
+            ? "Real-profile Quarantine approval evidence is blocked. No files were modified."
+            : "Real-profile Quarantine pre-execution revalidation is blocked. No files were modified.";
+        return false;
     }
 
     public void ExecuteSelectedRestoreForCurrentSelection()
@@ -4122,8 +4221,8 @@ public partial class MainWindow : Window
             $"Previewed size: {preview.IncludedSizeDisplay}",
             $"Restore Manifest Draft: {restoreManifestDraft.DraftId} | Entries: {restoreManifestDraft.EntryCount:N0} | Bytes: {restoreManifestDraft.TotalSizeDisplay} | Executed manifest: {FormatYesNo(restoreManifestDraft.IsExecutedManifest)}",
             $"Quarantine Confirmation Draft: {confirmationDraft.ConfirmationId} | Required confirmation text: {confirmationDraft.RequiredConfirmationText}",
-            $"Execution scope status: {FormatQuarantineExecutionScopeStatus(confirmationDraft.IsExecutionImplemented)}",
-            $"Approval boundary: {FormatQuarantineApprovalBoundary(confirmationDraft.IsExecutionImplemented)}",
+            $"Execution scope status: {FormatQuarantineExecutionScopeStatus(confirmationDraft.IsExecutionImplemented, executionReadiness)}",
+            $"Approval boundary: {FormatQuarantineApprovalBoundary(confirmationDraft.IsExecutionImplemented, executionReadiness)}",
             confirmationDraft.HasDataBlockers
                 ? $"Confirmation readiness blockers: {confirmationDraft.Blockers.Count:N0}"
                 : "Confirmation readiness blockers: 0",
@@ -4174,13 +4273,15 @@ public partial class MainWindow : Window
         QuarantineExecutionResult? executionResult,
         UndoQuarantineResult? undoResult)
     {
+        var canExecute = gate.CanExecute
+            && (approvalEvidence is null || approvalEvidence.CanApproveForRealProfileMovement);
         var lines = new List<string>
         {
             $"Required confirmation text: {gate.RequiredConfirmationText}",
             $"Entered confirmation matches: {FormatYesNo(gate.IsConfirmationTextMatched)}",
-            $"Execution scope status: {FormatQuarantineExecutionScopeStatus(gate.IsExecutionImplemented)}",
-            $"Approval boundary: {FormatQuarantineApprovalBoundary(gate.IsExecutionImplemented)}",
-            $"Can execute: {FormatYesNo(gate.CanExecute)}",
+            $"Execution scope status: {FormatQuarantineExecutionScopeStatus(gate.IsExecutionImplemented, executionReadiness)}",
+            $"Approval boundary: {FormatQuarantineApprovalBoundary(gate.IsExecutionImplemented, executionReadiness)}",
+            $"Can execute: {FormatYesNo(canExecute)}",
             undoResult is not null
                 ? "Fixture Undo Quarantine has restored synthetic files where possible. Current scan results are stale."
                 : executionResult is null
@@ -4273,7 +4374,9 @@ public partial class MainWindow : Window
             _currentQuarantineConfirmationDraft,
             quarantineRootExecutionSafety: _currentQuarantineRootExecutionSafety,
             preExecutionRevalidation: _currentPreExecutionRevalidation,
-            realProfileRestoreReadiness: _currentRealProfileRestoreReadiness);
+            realProfileRestoreReadiness: _currentRealProfileRestoreReadiness,
+            isRealProfileQuarantineMovementAvailable: IsRealProfileQuarantineExecutionAvailable(),
+            isRealProfileSelectedRestoreTrustedForForwardQuarantine: IsRealProfileSelectedRestoreTrustedForForwardQuarantine());
     }
 
     private RealProfileQuarantineApprovalEvidence? BuildRealProfileQuarantineApprovalEvidenceForDisplay(
@@ -4287,7 +4390,8 @@ public partial class MainWindow : Window
         return RealProfileQuarantineApprovalEvidenceBuilder.Build(
             executionReadiness,
             QuarantineConfirmationBox.Text,
-            DateTimeOffset.UtcNow);
+            DateTimeOffset.UtcNow,
+            isRealProfileQuarantineMovementAvailable: IsRealProfileQuarantineExecutionAvailable());
     }
 
     private static void AddQuarantineExecutionReadinessLines(
@@ -4306,7 +4410,9 @@ public partial class MainWindow : Window
         lines.Add(
             $"Readiness limits: included {executionReadiness.IncludedCount:N0} row(s), {executionReadiness.IncludedSizeDisplay}; " +
             $"first real-profile cap {executionReadiness.RealProfileIncludedRowLimit:N0} row(s), {executionReadiness.RealProfileIncludedByteLimitDisplay}.");
-        lines.Add("Readiness boundary: this is review context only; exact confirmation and fixture-only gate still control movement in this build.");
+        lines.Add(
+            $"Readiness boundary: this is review context only; exact confirmation, approval evidence, and immediate revalidation still control movement in this build. " +
+            $"Selected real-profile restore trusted for forward Quarantine: {FormatYesNo(executionReadiness.IsRealProfileSelectedRestoreTrustedForForwardQuarantine)}.");
 
         if (executionReadiness.Blockers.Count == 0)
         {
@@ -4395,7 +4501,7 @@ public partial class MainWindow : Window
             $"Readiness blockers: {FormatYesNo(approvalEvidence.ReadinessHasBlockers)} | " +
             $"Movement available in current build: {FormatYesNo(approvalEvidence.IsRealProfileQuarantineMovementAvailable)} | " +
             $"Can approve real-profile movement: {FormatYesNo(approvalEvidence.CanApproveForRealProfileMovement)}");
-        lines.Add($"Approval evidence boundary: exact {approvalEvidence.RequiredConfirmationText} is necessary but not sufficient; this read-only evidence does not create folders, move files, restore files, delete files, write manifests, persist approval, or approve cleanup.");
+        lines.Add($"Approval evidence boundary: exact {approvalEvidence.RequiredConfirmationText} is necessary but not sufficient; approval evidence by itself does not create folders, move files, restore files, delete files, write manifests, persist approval, or approve cleanup.");
 
         foreach (var blocker in approvalEvidence.Blockers.Take(6))
         {
@@ -4612,28 +4718,56 @@ public partial class MainWindow : Window
             : blocker;
     }
 
-    private static string FormatQuarantineExecutionScopeStatus(bool isExecutionImplemented)
+    private static string FormatQuarantineExecutionScopeStatus(
+        bool isExecutionImplemented,
+        QuarantineExecutionReadiness? executionReadiness)
     {
-        return isExecutionImplemented
-            ? "Fixture-only execution is available only after preview readiness and exact QUARANTINE confirmation."
-            : "Preview only for this Cleanup Scope; real-profile and custom execution remain unavailable.";
+        if (isExecutionImplemented && executionReadiness?.ScopeKind == QuarantineExecutionReadinessScopeKind.RealProfile)
+        {
+            return "First real-profile Quarantine execution is available only after all readiness evidence, exact QUARANTINE confirmation, and immediate revalidation pass.";
+        }
+
+        if (isExecutionImplemented)
+        {
+            return "Fixture-only execution is available only after preview readiness and exact QUARANTINE confirmation.";
+        }
+
+        return "Preview only for this Cleanup Scope; custom and non-exact real-profile execution remain unavailable.";
     }
 
-    private static string FormatQuarantineApprovalBoundary(bool isExecutionImplemented)
+    private static string FormatQuarantineApprovalBoundary(
+        bool isExecutionImplemented,
+        QuarantineExecutionReadiness? executionReadiness)
     {
-        return isExecutionImplemented
-            ? "Review Shortlist and Quarantine Preview are not cleanup approval; exact QUARANTINE can open only fixture execution in this build."
-            : "Review Shortlist and Quarantine Preview are not cleanup approval; real-profile and custom execution remain unavailable.";
+        if (isExecutionImplemented && executionReadiness?.ScopeKind == QuarantineExecutionReadinessScopeKind.RealProfile)
+        {
+            return "Review Shortlist and Quarantine Preview are not cleanup approval; exact QUARANTINE is necessary but every real-profile readiness dimension must pass before movement.";
+        }
+
+        if (isExecutionImplemented)
+        {
+            return "Review Shortlist and Quarantine Preview are not cleanup approval; exact QUARANTINE can open only fixture execution or the first exact real-profile phase in this build.";
+        }
+
+        return "Review Shortlist and Quarantine Preview are not cleanup approval; custom and non-exact real-profile execution remain unavailable.";
     }
 
-    private static string FormatQuarantineExecutionResult(QuarantineExecutionResult result)
+    private static string FormatQuarantineExecutionResult(
+        QuarantineExecutionResult result,
+        bool isRealProfileExecution = false)
     {
+        var executionLabel = isRealProfileExecution
+            ? "Real-profile Quarantine execution result"
+            : "Fixture Quarantine execution result";
+        var staleGuidance = isRealProfileExecution
+            ? "Current scan and review rows are stale after execution. Use Discover manifests for selected restore recovery if needed, then rescan before selecting more cleanup candidates."
+            : "Current scan and review rows are stale after execution. Rescan before selecting more cleanup candidates.";
         var lines = new List<string>
         {
-            $"Fixture Quarantine execution result: {FormatRestoreManifestActionStatus(result.RestoreManifest.ActionStatus)}",
+            $"{executionLabel}: {FormatRestoreManifestActionStatus(result.RestoreManifest.ActionStatus)}",
             $"Moved: {result.MovedCount:N0} | Failed: {result.FailedCount:N0} | Recovery review: {FormatYesNo(result.RequiresRecoveryReview)}",
             $"Restore manifest path: {result.RestoreManifest.ManifestPath}",
-            "Current scan and review rows are stale after execution. Rescan before selecting more cleanup candidates."
+            staleGuidance
         };
 
         foreach (var blocker in result.Blockers.Take(6))
@@ -4656,6 +4790,22 @@ public partial class MainWindow : Window
         }
 
         return string.Join(Environment.NewLine, lines);
+    }
+
+    private static string FormatQuarantineExecutionStatus(
+        QuarantineExecutionResult result,
+        bool isRealProfileExecution)
+    {
+        if (isRealProfileExecution)
+        {
+            return result.Succeeded
+                ? $"Real-profile Quarantine execution completed: {result.MovedCount:N0} included Review Shortlist row(s) moved, {result.RestoreManifest.TotalSizeDisplay} quarantined. Use Discover manifests and selected restore recovery if needed; rescan refreshes review rows."
+                : $"Real-profile Quarantine execution needs recovery review: {result.MovedCount:N0} included Review Shortlist row(s) moved, {result.FailedCount:N0} failed. Use Discover manifests and selected restore recovery when available; rescan refreshes review rows.";
+        }
+
+        return result.Succeeded
+            ? $"Fixture Quarantine execution completed: {result.MovedCount:N0} included Review Shortlist row(s) moved, {result.RestoreManifest.TotalSizeDisplay} quarantined. Use Undo fixture quarantine to restore; rescan refreshes review rows."
+            : $"Fixture Quarantine execution needs recovery review: {result.MovedCount:N0} included Review Shortlist row(s) moved, {result.FailedCount:N0} failed. Use Undo fixture quarantine when available; rescan refreshes review rows.";
     }
 
     private static string FormatUndoQuarantineResult(UndoQuarantineResult result)

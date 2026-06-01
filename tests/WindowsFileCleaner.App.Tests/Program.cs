@@ -806,24 +806,24 @@ internal sealed class MainWindowSmokeTests
             Assert(
                 window.QuarantineConfirmationToolTipValue.Contains("Type QUARANTINE once", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantineConfirmationToolTipValue.Contains("all included Review Shortlist rows", StringComparison.OrdinalIgnoreCase)
-                && window.QuarantineConfirmationToolTipValue.Contains("custom execution stay unavailable", StringComparison.OrdinalIgnoreCase),
+                && window.QuarantineConfirmationToolTipValue.Contains("custom and non-exact real-profile execution stay unavailable", StringComparison.OrdinalIgnoreCase),
                 "Quarantine confirmation tooltip should explain single confirmation, shortlist scope, and custom blockers.");
             Assert(
                 window.QuarantineConfirmationAutomationHelpTextValue.Contains("Type QUARANTINE once", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantineConfirmationAutomationHelpTextValue.Contains("all included Review Shortlist rows", StringComparison.OrdinalIgnoreCase)
-                && window.QuarantineConfirmationAutomationHelpTextValue.Contains("custom execution stay unavailable", StringComparison.OrdinalIgnoreCase),
+                && window.QuarantineConfirmationAutomationHelpTextValue.Contains("custom and non-exact real-profile execution stay unavailable", StringComparison.OrdinalIgnoreCase),
                 "Quarantine confirmation automation help text should explain single confirmation, shortlist scope, and custom blockers.");
             Assert(
                 window.ExecuteQuarantineButtonToolTipValue.Contains("all included rows", StringComparison.OrdinalIgnoreCase)
                 && window.ExecuteQuarantineButtonToolTipValue.Contains("Review Shortlist preview", StringComparison.OrdinalIgnoreCase)
                 && window.ExecuteQuarantineButtonToolTipValue.Contains("exact QUARANTINE", StringComparison.OrdinalIgnoreCase)
-                && window.ExecuteQuarantineButtonToolTipValue.Contains("real-profile/custom execution remains unavailable", StringComparison.OrdinalIgnoreCase),
+                && window.ExecuteQuarantineButtonToolTipValue.Contains("custom and non-exact real-profile execution remain unavailable", StringComparison.OrdinalIgnoreCase),
                 "Quarantine included shortlist tooltip should explain included-shortlist scope and real/custom blockers.");
             Assert(
                 window.ExecuteQuarantineButtonAutomationHelpTextValue.Contains("all included rows", StringComparison.OrdinalIgnoreCase)
                 && window.ExecuteQuarantineButtonAutomationHelpTextValue.Contains("Review Shortlist preview", StringComparison.OrdinalIgnoreCase)
                 && window.ExecuteQuarantineButtonAutomationHelpTextValue.Contains("exact QUARANTINE", StringComparison.OrdinalIgnoreCase)
-                && window.ExecuteQuarantineButtonAutomationHelpTextValue.Contains("real-profile/custom execution remains unavailable", StringComparison.OrdinalIgnoreCase),
+                && window.ExecuteQuarantineButtonAutomationHelpTextValue.Contains("custom and non-exact real-profile execution remain unavailable", StringComparison.OrdinalIgnoreCase),
                 "Quarantine included shortlist automation help text should explain included-shortlist scope and real/custom blockers.");
             Assert(
                 window.UndoQuarantineButtonToolTipValue.Contains("Current fixture execution only", StringComparison.OrdinalIgnoreCase)
@@ -915,7 +915,7 @@ internal sealed class MainWindowSmokeTests
             Assert(!window.CanUndoQuarantine, "Real-profile Undo Quarantine should be unavailable before any fixture execution.");
             Assert(
                 window.QuarantineExecutionGateTextValue.Contains("Use Preview shortlist quarantine before entering confirmation text", StringComparison.OrdinalIgnoreCase)
-                && window.QuarantineExecutionGateTextValue.Contains("real-profile and custom execution remain unavailable", StringComparison.OrdinalIgnoreCase),
+                && window.QuarantineExecutionGateTextValue.Contains("custom and non-exact real-profile execution remain unavailable", StringComparison.OrdinalIgnoreCase),
                 "Real-profile startup gate should require preview and keep cleanup execution unavailable.");
 
             window.SetQuarantineConfirmationText("QUARANTINE");
@@ -933,7 +933,7 @@ internal sealed class MainWindowSmokeTests
                 && window.ScanGateSummaryTextValue.Contains("cleanup execution remains unavailable", StringComparison.OrdinalIgnoreCase),
                 "Acknowledged real-profile scan gate should keep execution unavailable before any scan.");
             Assert(
-                window.ExecuteQuarantineButtonToolTipValue.Contains("real-profile/custom execution remains unavailable", StringComparison.OrdinalIgnoreCase),
+                window.ExecuteQuarantineButtonToolTipValue.Contains("custom and non-exact real-profile execution remain unavailable", StringComparison.OrdinalIgnoreCase),
                 "Real-profile Quarantine button tooltip should keep the execution blocker visible.");
 
             window.ExecuteQuarantineForCurrentPreview();
@@ -1680,7 +1680,7 @@ internal sealed class MainWindowSmokeTests
                 window.QuarantinePreviewTextValue.Contains("Execution readiness contract", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantinePreviewTextValue.Contains("fixture executable", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantinePreviewTextValue.Contains("Readiness blockers: 0", StringComparison.OrdinalIgnoreCase)
-                && window.QuarantinePreviewTextValue.Contains("exact confirmation and fixture-only gate still control movement", StringComparison.OrdinalIgnoreCase),
+                && window.QuarantinePreviewTextValue.Contains("exact confirmation, approval evidence, and immediate revalidation still control movement", StringComparison.OrdinalIgnoreCase),
                 "Fixture preview pane should show the read-only execution readiness contract without replacing exact confirmation.");
             Assert(
                 window.QuarantinePreviewTextValue.Contains("Quarantine Root Execution Safety: checked", StringComparison.OrdinalIgnoreCase)
@@ -1922,12 +1922,12 @@ internal sealed class MainWindowSmokeTests
                 "Current-session quarantined view button label should expose the current-session scope.");
             Assert(!window.CanShowQuarantinedRows, "Current quarantined view should be unavailable before fixture execution moves entries.");
             Assert(
-                window.ShowQuarantinedButtonToolTipValue.Contains("after fixture Quarantine execution", StringComparison.OrdinalIgnoreCase)
+                window.ShowQuarantinedButtonToolTipValue.Contains("after fixture or approved exact real-profile Quarantine execution", StringComparison.OrdinalIgnoreCase)
                 && window.ShowQuarantinedButtonToolTipValue.Contains("Discover manifests", StringComparison.OrdinalIgnoreCase)
                 && window.ShowQuarantinedButtonToolTipValue.Contains("cleanup history", StringComparison.OrdinalIgnoreCase),
                 "Disabled Current quarantined tooltip should explain when current-session rows appear and route older manifests to discovery.");
             Assert(
-                window.ShowQuarantinedButtonAutomationHelpTextValue.Contains("after fixture Quarantine execution", StringComparison.OrdinalIgnoreCase)
+                window.ShowQuarantinedButtonAutomationHelpTextValue.Contains("after fixture or approved exact real-profile Quarantine execution", StringComparison.OrdinalIgnoreCase)
                 && window.ShowQuarantinedButtonAutomationHelpTextValue.Contains("Discover manifests", StringComparison.OrdinalIgnoreCase),
                 "Disabled Current quarantined automation help text should explain current-session scope.");
             Assert(
@@ -1989,7 +1989,7 @@ internal sealed class MainWindowSmokeTests
                 window.QuarantineReadinessSummaryTextValue.Contains("fixture scope", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantineReadinessSummaryTextValue.Contains("0 readiness blocker", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantineReadinessSummaryTextValue.Contains("type exact QUARANTINE", StringComparison.OrdinalIgnoreCase)
-                && window.QuarantineReadinessSummaryTextValue.Contains("Real-profile/custom execution remains unavailable", StringComparison.OrdinalIgnoreCase),
+                && window.QuarantineReadinessSummaryTextValue.Contains("Custom and non-exact real-profile execution remain unavailable", StringComparison.OrdinalIgnoreCase),
                 "Compact readiness summary should expose fixture readiness before exact confirmation.");
             Assert(window.QuarantineReadinessSummaryStyleValue == "Success", "Fixture readiness summary should use success styling after clean preview.");
             AssertQuarantineReadinessSummaryHelpText(window, "Compact readiness summary help text should mirror clean fixture preview state.");
@@ -2147,7 +2147,7 @@ internal sealed class MainWindowSmokeTests
             Assert(
                 window.BackToScanRowsButtonToolTipValue.Contains("Returns the main grid", StringComparison.OrdinalIgnoreCase)
                 && window.BackToScanRowsButtonToolTipValue.Contains("without rescanning", StringComparison.OrdinalIgnoreCase)
-                && window.BackToScanRowsButtonToolTipValue.Contains("fixture undo remains separate", StringComparison.OrdinalIgnoreCase),
+                && window.BackToScanRowsButtonToolTipValue.Contains("Fixture undo and selected restore recovery remain separate", StringComparison.OrdinalIgnoreCase),
                 "Back to scan rows tooltip should explain return behavior and separate undo.");
             Assert(
                 window.BackToScanRowsButtonAutomationHelpTextValue.Contains("Returns the main grid", StringComparison.OrdinalIgnoreCase)
@@ -2595,12 +2595,12 @@ internal sealed class MainWindowSmokeTests
             Assert(
                 window.QuarantinePreviewTextValue.Contains("Execution scope status", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantinePreviewTextValue.Contains("Preview only for this Cleanup Scope", StringComparison.OrdinalIgnoreCase)
-                && window.QuarantinePreviewTextValue.Contains("real-profile and custom execution remain unavailable", StringComparison.OrdinalIgnoreCase),
+                && window.QuarantinePreviewTextValue.Contains("custom and non-exact real-profile execution remain unavailable", StringComparison.OrdinalIgnoreCase),
                 "Custom-scope preview should clearly state preview-only scope status.");
             Assert(
                 window.QuarantinePreviewTextValue.Contains("Approval boundary", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantinePreviewTextValue.Contains("not cleanup approval", StringComparison.OrdinalIgnoreCase)
-                && window.QuarantinePreviewTextValue.Contains("real-profile and custom execution remain unavailable", StringComparison.OrdinalIgnoreCase),
+                && window.QuarantinePreviewTextValue.Contains("custom and non-exact real-profile execution remain unavailable", StringComparison.OrdinalIgnoreCase),
                 "Custom-scope preview should keep shortlist/preview separate from cleanup approval.");
             Assert(
                 window.QuarantinePreviewTextValue.Contains("Execution readiness contract", StringComparison.OrdinalIgnoreCase)
@@ -2616,7 +2616,7 @@ internal sealed class MainWindowSmokeTests
             Assert(
                 window.QuarantineExecutionGateTextValue.Contains("Approval boundary", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantineExecutionGateTextValue.Contains("not cleanup approval", StringComparison.OrdinalIgnoreCase)
-                && window.QuarantineExecutionGateTextValue.Contains("real-profile and custom execution remain unavailable", StringComparison.OrdinalIgnoreCase),
+                && window.QuarantineExecutionGateTextValue.Contains("custom and non-exact real-profile execution remain unavailable", StringComparison.OrdinalIgnoreCase),
                 "Custom-scope gate should keep preview-only scopes blocked even after exact confirmation text.");
             Assert(
                 window.QuarantineExecutionGateTextValue.Contains("Entered confirmation matches: yes", StringComparison.OrdinalIgnoreCase)
@@ -2714,8 +2714,8 @@ internal sealed class MainWindowSmokeTests
                 && window.QuarantinePreviewTextValue.Contains("Pre-Execution Revalidation: checked", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantinePreviewTextValue.Contains("Can proceed: no", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantinePreviewTextValue.Contains("Included source no longer exists", StringComparison.OrdinalIgnoreCase)
-                && window.QuarantinePreviewTextValue.Contains("Readiness blocker | Real-Profile Restore Readiness", StringComparison.OrdinalIgnoreCase),
-                "Synthetic real-profile preview should consume root safety and revalidation evidence while keeping restore readiness blocked.");
+                && window.QuarantinePreviewTextValue.Contains("Selected real-profile restore trusted for forward Quarantine: yes", StringComparison.OrdinalIgnoreCase),
+                "Synthetic real-profile preview should consume root safety and revalidation evidence while recording selected restore trust.");
             Assert(
                 window.QuarantineExecutionGateTextValue.Contains("Entered confirmation matches: yes", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantineExecutionGateTextValue.Contains("Can execute: no", StringComparison.OrdinalIgnoreCase),
@@ -2733,31 +2733,35 @@ internal sealed class MainWindowSmokeTests
                 && window.QuarantineExecutionGateTextValue.Contains("Pre-Execution Revalidation: checked", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantineExecutionGateTextValue.Contains("Can proceed: no", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantineExecutionGateTextValue.Contains("Included source no longer exists", StringComparison.OrdinalIgnoreCase)
-                && window.QuarantineExecutionGateTextValue.Contains("Readiness blocker | Real-Profile Restore Readiness", StringComparison.OrdinalIgnoreCase),
-                "Synthetic real-profile gate should keep root safety and revalidation evidence while restore readiness remains blocked.");
+                && window.QuarantineExecutionGateTextValue.Contains("Selected real-profile restore trusted for forward Quarantine: yes", StringComparison.OrdinalIgnoreCase),
+                "Synthetic real-profile gate should keep root safety and revalidation evidence while selected restore trust is recorded.");
             Assert(
                 window.QuarantineExecutionGateTextValue.Contains("Real-Profile Quarantine Approval Evidence: checked", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantineExecutionGateTextValue.Contains("Exact QUARANTINE entered: yes", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantineExecutionGateTextValue.Contains("Exact real-profile scope: yes", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantineExecutionGateTextValue.Contains("Readiness blockers: yes", StringComparison.OrdinalIgnoreCase)
-                && window.QuarantineExecutionGateTextValue.Contains("Movement available in current build: no", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantineExecutionGateTextValue.Contains("Movement available in current build: yes", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantineExecutionGateTextValue.Contains("Can approve real-profile movement: no", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantineExecutionGateTextValue.Contains("Approval evidence blocker | Readiness:", StringComparison.OrdinalIgnoreCase)
-                && window.QuarantineExecutionGateTextValue.Contains("Real-profile Quarantine movement remains unavailable", StringComparison.OrdinalIgnoreCase),
-                "Synthetic real-profile gate should show read-only approval evidence that exact QUARANTINE is still insufficient.");
+                && window.QuarantineExecutionGateTextValue.Contains("Included source no longer exists", StringComparison.OrdinalIgnoreCase),
+                "Synthetic real-profile gate should show approval evidence that exact QUARANTINE is still insufficient while revalidation is blocked.");
             Assert(
                 window.QuarantineReadinessSummaryTextValue.Contains("real-profile candidate", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantineReadinessSummaryTextValue.Contains("real profile", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantineReadinessSummaryTextValue.Contains("Pre-Execution Revalidation", StringComparison.OrdinalIgnoreCase)
-                && window.QuarantineReadinessSummaryTextValue.Contains("Real-Profile Restore Readiness", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantineReadinessSummaryTextValue.Contains("Key blockers:", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantineReadinessSummaryTextValue.Contains("pre-execution revalidation", StringComparison.OrdinalIgnoreCase)
-                && window.QuarantineReadinessSummaryTextValue.Contains("restore readiness", StringComparison.OrdinalIgnoreCase)
-                && window.QuarantineReadinessSummaryTextValue.Contains("current build unavailable", StringComparison.OrdinalIgnoreCase)
                 && window.QuarantineReadinessSummaryTextValue.Contains("movement unavailable", StringComparison.OrdinalIgnoreCase),
-                "Compact readiness summary should name missing real-profile readiness dimensions and key blockers without enabling execution.");
+                "Compact readiness summary should name missing real-profile revalidation without enabling execution.");
             Assert(window.QuarantineReadinessSummaryStyleValue == "Warning", "Real-profile readiness summary should use warning styling while execution is blocked.");
             AssertQuarantineReadinessSummaryHelpText(window, "Compact readiness summary help text should mirror real-profile preview-only state.");
+
+            window.ExecuteQuarantineForCurrentPreview();
+            Assert(
+                window.CurrentStatusText.Contains("pre-execution revalidation is blocked", StringComparison.OrdinalIgnoreCase)
+                && window.CurrentStatusText.Contains("No files were modified", StringComparison.OrdinalIgnoreCase),
+                "Synthetic real-profile execution attempt should rerun immediate revalidation and report no movement.");
+            Assert(!Directory.Exists(quarantineRoot), "Blocked synthetic real-profile execution should not create the Quarantine Root.");
         }
         finally
         {
@@ -3236,9 +3240,9 @@ internal sealed class MainWindowSmokeTests
     {
         Assert(
             window.QuarantineConfirmationToolTipValue.Contains("Type QUARANTINE", StringComparison.OrdinalIgnoreCase)
-            && window.QuarantineConfirmationToolTipValue.Contains("fixture-only quarantine", StringComparison.OrdinalIgnoreCase)
-            && window.QuarantineConfirmationToolTipValue.Contains("real-profile", StringComparison.OrdinalIgnoreCase),
-            message + " Confirmation tooltip should expose fixture-only exact-confirmation boundaries.");
+            && window.QuarantineConfirmationToolTipValue.Contains("first exact real-profile Quarantine", StringComparison.OrdinalIgnoreCase)
+            && window.QuarantineConfirmationToolTipValue.Contains("custom and non-exact real-profile", StringComparison.OrdinalIgnoreCase),
+            message + " Confirmation tooltip should expose exact-confirmation boundaries.");
         Assert(
             string.Equals(window.QuarantineConfirmationAutomationHelpTextValue, window.QuarantineConfirmationToolTipValue, StringComparison.Ordinal),
             message + " Confirmation automation help text should mirror the tooltip.");

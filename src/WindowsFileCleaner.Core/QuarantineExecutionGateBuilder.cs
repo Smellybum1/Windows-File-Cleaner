@@ -44,7 +44,7 @@ public static class QuarantineExecutionGateBuilder
             [
                 "No files were modified by this execution gate.",
                 confirmationDraft.IsExecutionImplemented
-                    ? "Fixture-only execution must pass this gate before moving files."
+                    ? "Implemented Quarantine execution must pass this gate before moving files."
                     : "A future execution flow must pass this gate before moving files."
             ]);
     }

@@ -10,6 +10,8 @@ public sealed record QuarantineExecutionReadiness(
     long IncludedBytes,
     int RealProfileIncludedRowLimit,
     long RealProfileIncludedByteLimit,
+    bool IsRealProfileQuarantineMovementAvailable,
+    bool IsRealProfileSelectedRestoreTrustedForForwardQuarantine,
     bool IsPreferredQuarantineRoot,
     bool IsNonPreferredQuarantineRootAcknowledged,
     bool AllowsNarrowFolders,
@@ -23,7 +25,10 @@ public sealed record QuarantineExecutionReadiness(
     public const long DefaultRealProfileIncludedByteLimit = 1024L * 1024L * 1024L;
 
     public bool HasBlockers => Blockers.Count > 0;
-    public bool CanExecuteInCurrentBuild => Disposition == QuarantineExecutionReadinessDisposition.FixtureExecutable && !HasBlockers;
+    public bool CanExecuteInCurrentBuild => !HasBlockers
+        && (Disposition == QuarantineExecutionReadinessDisposition.FixtureExecutable
+            || (Disposition == QuarantineExecutionReadinessDisposition.RealProfileCandidate
+                && IsRealProfileQuarantineMovementAvailable));
     public string IncludedSizeDisplay => ByteSizeFormatter.Format(IncludedBytes);
     public string RealProfileIncludedByteLimitDisplay => ByteSizeFormatter.Format(RealProfileIncludedByteLimit);
 }

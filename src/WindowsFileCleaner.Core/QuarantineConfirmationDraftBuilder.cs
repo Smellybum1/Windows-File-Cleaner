@@ -86,7 +86,7 @@ public static class QuarantineConfirmationDraftBuilder
     private static IReadOnlyList<string> BuildReviewNotes(bool isExecutionImplemented)
     {
         var executionNote = isExecutionImplemented
-            ? "Fixture-only Quarantine execution is available after readiness blockers clear and the exact confirmation text is entered."
+            ? "Quarantine execution is available for an implemented Cleanup Scope after readiness blockers clear and the exact confirmation text is entered."
             : "Quarantine execution is not available for this Cleanup Scope in this build.";
 
         return

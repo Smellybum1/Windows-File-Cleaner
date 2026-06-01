@@ -322,7 +322,7 @@ For real-profile scopes under `C:\Users\moxhe`, the gate requires explicit ackno
 - Continue to enforce the gate in the scan-start method, not only through button state.
 - Keep the gate discoverable through visible summary text, the scan-gate summary `?` help cue plus tooltip/help text, the acknowledgement `?` help cue plus tooltip/help text, the `Scan` button tooltip, and `Scan` button automation help text, especially when controls are disabled.
 - Acknowledgement tooltip and automation help text should say checking it only records local acknowledgement that MVP preflight and fixture review were already run; it does not run preflight, create fixtures, start scanning by itself, persist approval, or approve cleanup.
-- Keep ready-state wording scope-specific: fixture scopes may later use fixture-only gated cleanup actions, while real-profile and custom scopes remain preview-only.
+- Keep ready-state wording scope-specific: fixture scopes can use fixture cleanup actions, exact real-profile scopes require later Quarantine readiness gates, and custom scopes remain preview-only.
 
 ### Cleanup Candidate
 
@@ -2588,7 +2588,7 @@ It lists data blockers, records the exact preview counts and bytes to review, ex
 
 - Use `QuarantineConfirmationDraft` and `QuarantineConfirmationDraftBuilder`.
 - Use `HasDataBlockers` only as readiness evidence, not as permission to execute.
-- Keep `IsExecutionImplemented` true only for recognized fixture Cleanup Scopes in the current build.
+- Keep `IsExecutionImplemented` true only for recognized fixture Cleanup Scopes or the exact first-phase real-profile Cleanup Scope in the current build.
 - Surface `IsExecutionImplemented` as plain-language Quarantine Execution Scope Status in WPF instead of exposing the technical implementation flag.
 - Do not create folders, move files, delete files, write manifests, or persist cleanup jobs from confirmation draft code.
 
@@ -2601,18 +2601,19 @@ Last reviewed: 2026-05-30
 
 Quarantine Execution Gate is the decision that combines Quarantine Confirmation Draft blockers, exact confirmation text, and implementation availability before WPF Quarantine execution can run.
 
-In the current build the gate can open only for recognized fixture Cleanup Scopes. It remains closed for real-profile and custom non-fixture Cleanup Scopes.
+In the current build the gate can open for recognized fixture Cleanup Scopes and for the exact first-phase real-profile Cleanup Scope only when the richer ADR 0018 readiness and approval evidence also pass. It remains closed for custom non-fixture and non-exact real-profile Cleanup Scopes.
 
 #### Examples
 
 - Before Quarantine Preview exists, show that preview must be created first.
 - After a clean Quarantine Confirmation Draft exists, require the exact text `QUARANTINE`.
-- After `QUARANTINE` is typed for a clean fixture preview, allow fixture-only WPF execution.
-- After `QUARANTINE` is typed for a real-profile or custom non-fixture scope, keep the gate closed.
+- After `QUARANTINE` is typed for a clean fixture preview, allow fixture WPF execution.
+- After `QUARANTINE` is typed for the exact real-profile Cleanup Scope, allow execution only when ADR 0018 readiness, Real-Profile Quarantine Approval Evidence, and immediate Pre-Execution Revalidation pass.
+- After `QUARANTINE` is typed for a custom non-fixture or non-exact real-profile scope, keep the gate closed.
 - Carry forward blocked preview row or manifest mismatch blockers from Quarantine Confirmation Draft.
 - Show Quarantine Execution Scope Status before `Can execute` so the scope boundary is plain even when exact confirmation text matches.
-- Show disabled-state tooltips and automation help text on confirmation and execution controls so fixture-only and real-profile/custom blockers remain visible before gates open.
-- Show a visible hoverable `?` help cue beside the WPF gate readout so the current gate state and fixture-only/not-cleanup-approval boundary are discoverable without relying only on disabled-control hover.
+- Show disabled-state tooltips and automation help text on confirmation and execution controls so fixture, exact real-profile, and custom/non-exact blockers remain visible before gates open.
+- Show a visible hoverable `?` help cue beside the WPF gate readout so the current gate state and not-cleanup-approval boundary are discoverable without relying only on disabled-control hover.
 
 #### Non-examples
 
@@ -2638,7 +2639,7 @@ In the current build the gate can open only for recognized fixture Cleanup Scope
 
 - Use `QuarantineExecutionGate` and `QuarantineExecutionGateBuilder`.
 - `CanExecute` must require no blockers, exact confirmation text, and implemented execution support.
-- Keep `CanExecute` false for real-profile and custom non-fixture Cleanup Scopes.
+- Keep final WPF execution disabled for custom non-fixture and non-exact real-profile Cleanup Scopes, and require Real-Profile Quarantine Approval Evidence for exact real-profile movement.
 - Keep Quarantine Execution Scope Status, Approval boundary, and `Can execute` visible in the gate readout instead of asking users to infer fixture-only versus preview-only behavior from technical implementation fields.
 - In WPF, keep verbose gate details height-constrained when shown in the Quarantine shortlist area so the main review grid remains usable.
 - In WPF, keep the Quarantine shortlist area collapsible so the user can recover grid height after reviewing the gate.
@@ -2650,9 +2651,9 @@ In the current build the gate can open only for recognized fixture Cleanup Scope
 - Keep inline preview readiness styling semantic and lightweight: neutral for waiting, success for ready/completed fixture evidence, warning for blockers or stale preview state, and error for preview creation failures; styling must not imply cleanup approval.
 - Keep inline preview readiness tooltip and automation help text synchronized with the dynamic status and explicit no-create/no-move/no-restore/no-delete/not-cleanup-approval boundaries.
 - In WPF, show a compact Quarantine Readiness Summary near the confirmation controls so fixture-ready, preview-only, stale-executed, and undo-completed readiness states are visible without reading the full gate details.
-- Keep confirmation and execution control tooltips and automation help text aligned with fixture-only execution and real-profile/custom blockers.
+- Keep confirmation and execution control tooltips and automation help text aligned with fixture execution, exact real-profile readiness, and custom/non-exact blockers.
 - In WPF, show a visible non-clickable `?` help cue beside the shortlist confirmation field that mirrors the exact `QUARANTINE` tooltip/help text without making the field look like cleanup approval.
-- In WPF, mirror concise Quarantine Execution Gate tooltip/help text onto both the gate readout and visible non-clickable `?` help cue, including current gate state, exact `QUARANTINE`, fixture-only execution, real-profile/custom blockers, and not-cleanup-approval wording.
+- In WPF, mirror concise Quarantine Execution Gate tooltip/help text onto both the gate readout and visible non-clickable `?` help cue, including current gate state, exact `QUARANTINE`, fixture execution, exact real-profile readiness, custom/non-exact blockers, and not-cleanup-approval wording.
 - Do not create folders, move files, delete files, write manifests, or persist cleanup jobs from gate builder code.
 
 ### Quarantine Readiness Summary
@@ -2709,26 +2710,27 @@ Last reviewed: 2026-05-30
 
 #### Definition
 
-Quarantine Execution Scope Status is read-only WPF wording that explains whether the current Cleanup Scope has fixture-only execution available or is preview-only.
+Quarantine Execution Scope Status is read-only WPF wording that explains whether the current Cleanup Scope has fixture execution, exact first-phase real-profile execution, or preview-only behavior.
 
-It is shown in Quarantine Preview and Quarantine Execution Gate output so real-profile and custom Cleanup Scopes stay visibly blocked even if the preview is clean and the confirmation text matches.
+It is shown in Quarantine Preview and Quarantine Execution Gate output so custom and non-exact real-profile Cleanup Scopes stay visibly blocked even if the preview is clean and the confirmation text matches.
 
 #### Examples
 
 - Fixture Cleanup Scope: state that fixture-only execution is available only after preview readiness and exact `QUARANTINE` confirmation.
-- Real-profile or custom Cleanup Scope: state that the workflow is preview-only and real-profile/custom execution remains unavailable.
-- Disabled Quarantine confirmation/execution controls repeat the same fixture-only and real/custom boundary in tooltips and automation help text.
+- Exact real-profile Cleanup Scope: state that first real-profile Quarantine execution is available only after all readiness evidence, exact `QUARANTINE`, approval evidence, and immediate revalidation pass.
+- Custom or non-exact real-profile Cleanup Scope: state that the workflow is preview-only and custom/non-exact real-profile execution remains unavailable.
+- Disabled Quarantine confirmation/execution controls repeat the same fixture/exact-real/custom boundary in tooltips and automation help text.
 
 #### Non-examples
 
 - Cleanup approval.
 - A Cleanup Action.
 - A replacement for Quarantine Preview blockers.
-- A reason to enable real-profile execution.
+- A reason to bypass real-profile readiness evidence.
 
 #### Lifecycle
 
-- Generated from the current execution-availability flag when Quarantine Preview or Quarantine Execution Gate text is formatted.
+- Generated from the current execution-availability flag and readiness result when Quarantine Preview or Quarantine Execution Gate text is formatted.
 - Updates when a new preview is created for a different Cleanup Scope.
 - Does not persist state or modify files.
 
@@ -2795,15 +2797,15 @@ Last reviewed: 2026-05-31
 
 #### Definition
 
-Real-Profile Quarantine Execution Readiness is the future composite readiness result that must pass before WPF Quarantine execution can move files from a recognized real-profile Cleanup Scope.
+Real-Profile Quarantine Execution Readiness is the composite readiness result that must pass before WPF Quarantine execution can move files from the exact recognized real-profile Cleanup Scope.
 
 It is stricter than Quarantine Confirmation Draft and Quarantine Execution Gate. It combines scope eligibility, review readiness, Quarantine Root Execution Safety, Pre-Execution Revalidation, recovery readiness, and explicit real-profile approval semantics.
 
-The current core model can name fixture-executable, real-profile-candidate, and custom-preview-only states without enabling real-profile movement. It can also consume Quarantine Root Execution Safety, Pre-Execution Revalidation, and Real-Profile Restore Readiness when those evidence models are supplied. The current WPF app shows this readiness contract in the existing Quarantine Preview and Quarantine Execution Gate panes as read-only output, with a compact Quarantine Readiness Summary for the current high-level state.
+The current core model can name fixture-executable, real-profile-candidate, and custom-preview-only states. It can consume Quarantine Root Execution Safety, Pre-Execution Revalidation, selected real-profile restore trust, and explicit real-profile movement availability. The current WPF app shows this readiness contract in the existing Quarantine Preview and Quarantine Execution Gate panes, with a compact Quarantine Readiness Summary for the current high-level state.
 
 #### Examples
 
-- Report that a clean Quarantine Preview is not enough because real-profile restore readiness is still unavailable.
+- Report that a clean Quarantine Preview is not enough because immediate Pre-Execution Revalidation is blocked.
 - Report that the Quarantine Root is usable for preview but blocked for execution because it is not on the preferred `D:` drive or is inside the Cleanup Scope.
 - Report that a source file changed after preview and must be re-previewed before movement.
 - Report that exact `C:\Users\moxhe` is a real-profile candidate, while child scopes and custom scopes remain preview-only.
@@ -2820,7 +2822,7 @@ The current core model can name fixture-executable, real-profile-candidate, and 
 #### Lifecycle
 
 - Built after Quarantine Preview, Restore Manifest Draft, Quarantine Confirmation Draft, and Quarantine Action Draft have no data blockers.
-- Rebuilt immediately before any future real-profile move attempt.
+- Rebuilt immediately before any real-profile move attempt.
 - Remains closed when any readiness dimension has blockers.
 - Does not move files, write manifests, or approve cleanup by itself.
 - For the first real-profile phase, uses exact `QUARANTINE` as the confirmation phrase, limits execution candidates to 10 included rows and 1 GB, allows files and narrow folders only when strict descendant checks pass, requires selected-manifest real-profile Undo readiness before forward movement, asks for manual rescan after execution, and uses Restore Manifest as the only durable cleanup record.
@@ -2835,7 +2837,7 @@ The current core model can name fixture-executable, real-profile-candidate, and 
 #### Code implications
 
 - Use `QuarantineExecutionReadiness`, `QuarantineExecutionReadinessBuilder`, `QuarantineExecutionReadinessScopeKind`, and `QuarantineExecutionReadinessDisposition`.
-- Use a named readiness result, not the current fixture-only `IsExecutionImplemented` flag or a standalone selected-restore availability boolean, for future real-profile execution availability.
+- Use a named readiness result, not the old fixture-only `IsExecutionImplemented` flag or a standalone selected-restore availability boolean, for real-profile execution availability.
 - Keep custom non-fixture Cleanup Scopes preview-only until a later design explicitly includes them.
 - Make blockers visible by readiness dimension so disabled execution controls explain why real-profile movement is unavailable.
 - In WPF, keep detailed readiness output in preview/gate text and mirror the high-level state in Quarantine Readiness Summary until a later packet proves a richer real-profile readiness surface is needed.
@@ -2847,22 +2849,22 @@ Last reviewed: 2026-05-31
 
 #### Definition
 
-Real-Profile Quarantine Approval Evidence is the read-only result that combines Real-Profile Quarantine Execution Readiness, the typed `QUARANTINE` phrase, and explicit current-build movement availability evidence before any future real-profile movement can be considered approved.
+Real-Profile Quarantine Approval Evidence is the result that combines Real-Profile Quarantine Execution Readiness, the typed `QUARANTINE` phrase, and explicit current-build movement availability evidence before exact real-profile movement can be considered approved.
 
 It exists to make the ADR 0018 rule testable: exact `QUARANTINE` is necessary but not sufficient.
 
-The current WPF app shows this evidence in the Quarantine Execution Gate for real-profile, real-profile-child, and custom preview-only scopes after a Quarantine Preview exists. Fixture scopes do not show this extra real-profile evidence so the fixture execution path stays focused.
+The current WPF app shows this evidence in the Quarantine Execution Gate for real-profile, real-profile-child, and custom scopes after a Quarantine Preview exists. Fixture scopes do not show this extra real-profile evidence so the fixture execution path stays focused.
 
 #### Examples
 
-- Record that exact `QUARANTINE` was typed while real-profile movement still remains unavailable in the current build.
+- Record that exact `QUARANTINE` was typed while real-profile movement is still blocked by readiness evidence.
 - Carry readiness blockers forward so approval evidence cannot hide missing Quarantine Root safety, Pre-Execution Revalidation, or restore readiness.
 - Prove that custom and real-profile-child scopes cannot count as exact real-profile movement approval evidence.
 
 #### Non-examples
 
 - A Cleanup Action.
-- WPF real-profile Quarantine execution.
+- A replacement for immediate Pre-Execution Revalidation.
 - A persisted approval record.
 - A replacement for Quarantine Execution Gate or Real-Profile Quarantine Execution Readiness.
 
@@ -2877,15 +2879,15 @@ The current WPF app shows this evidence in the Quarantine Execution Gate for rea
 
 - Depends on Real-Profile Quarantine Execution Readiness.
 - Refines the explicit confirmation and approval dimension accepted by ADR 0018.
-- Precedes any later user-approved packet that can wire real-profile movement.
+- Feeds the WPF exact real-profile execution guard.
 
 #### Code implications
 
 - Use `RealProfileQuarantineApprovalEvidence` and `RealProfileQuarantineApprovalEvidenceBuilder`.
 - Keep the builder read-only and covered by the readiness-builder source guard.
-- Default current-build movement availability to unavailable.
+- Default current-build movement availability to unavailable unless the caller explicitly supplies exact real-profile movement availability.
 - Keep `CanApproveForRealProfileMovement` false unless exact real-profile scope, clean readiness, exact `QUARANTINE`, and explicit movement availability evidence are all present.
-- In WPF, display this as read-only gate evidence only for non-fixture scopes and keep `Quarantine included shortlist` disabled.
+- In WPF, display this as gate evidence for non-fixture scopes. It can enable `Quarantine included shortlist` only for the exact real-profile scope when readiness is clean, exact `QUARANTINE` is entered, and immediate revalidation passes.
 
 ### Quarantine Root Execution Safety
 
@@ -3063,7 +3065,7 @@ It is the first real-profile restore execution shape, not all-manifest restore, 
 - Fixture-only Selected Restore Execution.
 - All-manifest real-profile restore.
 - WPF Current Fixture Undo Quarantine.
-- Real-profile WPF Quarantine execution.
+- Broad/all-manifest real-profile Undo Quarantine.
 - Permanent deletion.
 - Persisted cleanup history.
 - Empty action-folder cleanup.
@@ -3151,7 +3153,7 @@ Last reviewed: 2026-05-29
 
 Fixture-only WPF Quarantine Execution is the visible-app cleanup execution path that is available only when the scanned Cleanup Scope is a recognized synthetic fixture.
 
-It lets the WPF app call the core Quarantine Executor after Quarantine Preview readiness and exact `QUARANTINE` confirmation, while keeping real-profile cleanup execution unavailable.
+It lets the WPF app call the core Quarantine Executor after Quarantine Preview readiness and exact `QUARANTINE` confirmation for fixture scopes. Exact real-profile execution is governed by Real-Profile Quarantine Execution Readiness instead.
 
 #### Examples
 
@@ -3162,7 +3164,7 @@ It lets the WPF app call the core Quarantine Executor after Quarantine Preview r
 
 #### Non-examples
 
-- Real-profile WPF Quarantine execution.
+- Real-Profile Quarantine Execution Readiness.
 - WPF Undo Quarantine, except current-fixture undo.
 - Permanent deletion.
 - Cleanup history.
@@ -3184,13 +3186,13 @@ It lets the WPF app call the core Quarantine Executor after Quarantine Preview r
 - Depends on Quarantine Execution Gate.
 - Depends on Quarantine Executor and Restore Manifest File Store.
 - Implements ADR 0009.
-- Precedes any real-profile WPF Quarantine execution.
+- Complements exact real-profile WPF Quarantine execution, which uses a stricter readiness path.
 
 #### Code implications
 
 - Use `CleanupScopeSafetyNoteBuilder` to distinguish fixture scopes from real/custom scopes.
 - Use `QuarantineExecutor.Execute`; do not implement file movement in WPF code.
-- Keep real-profile and custom non-fixture execution blocked in WPF.
+- Keep custom non-fixture and non-exact real-profile execution blocked in WPF.
 - Label the WPF action around included Review Shortlist rows so it is not mistaken for selected-row execution.
 - After execution, disable re-execution for the current preview and mark scan state stale.
 - Preserve current-fixture undo state if a post-execution rescan clears stale preview state before undo is attempted.

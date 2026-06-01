@@ -84,7 +84,7 @@ tests.ByteSizeFormatterUsesReadableUnits();
 tests.ProductionCodeDoesNotContainCleanupExecutionCalls();
 tests.ReadOnlyReadinessBuildersDoNotCallExecutionComponents();
 tests.WpfExecutionBridgeKeepsExecutorCallsInGatedMethods();
-tests.WpfRealProfileApprovalEvidenceStaysDisplayOnly();
+tests.WpfRealProfileQuarantineExecutionUsesApprovalEvidenceAndImmediateRevalidation();
 tests.MvpPreflightScriptChecksNativeCommandExitCodes();
 
 Console.WriteLine("All WindowsFileCleaner.Tests checks passed.");
@@ -3640,12 +3640,21 @@ internal sealed class StorageScanTests
             "WPF current-fixture undo should remain behind the current fixture undo guard.");
 
         var fixtureAvailabilityMethod = ExtractMethodText(sourceLines, "private bool IsFixtureQuarantineExecutionAvailable()");
+        var realProfileAvailabilityMethod = ExtractMethodText(sourceLines, "private bool IsRealProfileQuarantineExecutionAvailable()");
+        var implementedAvailabilityMethod = ExtractMethodText(sourceLines, "private bool IsQuarantineExecutionImplementedForCurrentScope()");
         var undoAvailabilityMethod = ExtractMethodText(sourceLines, "private bool CanUndoCurrentQuarantineExecution()");
         var selectedRestoreAvailabilityMethod = ExtractMethodText(sourceLines, "private bool IsSelectedRestoreExecutionAvailable()");
 
         Assert(
             fixtureAvailabilityMethod.Contains(".IsFixtureScope", StringComparison.Ordinal),
-            "WPF Quarantine execution availability should remain fixture-scope based.");
+            "WPF fixture Quarantine availability should remain fixture-scope based.");
+        Assert(
+            realProfileAvailabilityMethod.Contains("IsDefaultRealProfileCleanupScope(_currentCleanupScopePath)", StringComparison.Ordinal),
+            "WPF real-profile Quarantine availability should be limited to the exact default real-profile Cleanup Scope.");
+        Assert(
+            implementedAvailabilityMethod.Contains("IsFixtureQuarantineExecutionAvailable()", StringComparison.Ordinal)
+            && implementedAvailabilityMethod.Contains("IsRealProfileQuarantineExecutionAvailable()", StringComparison.Ordinal),
+            "WPF Quarantine implementation availability should be fixture or exact real-profile only.");
         Assert(
             undoAvailabilityMethod.Contains("IsFixtureQuarantineExecutionAvailable()", StringComparison.Ordinal),
             "WPF current-fixture undo availability should depend on fixture Quarantine execution availability.");
@@ -3655,12 +3664,15 @@ internal sealed class StorageScanTests
             "WPF selected restore execution availability should remain limited to fixture scope or the exact real-profile cleanup scope.");
     }
 
-    public void WpfRealProfileApprovalEvidenceStaysDisplayOnly()
+    public void WpfRealProfileQuarantineExecutionUsesApprovalEvidenceAndImmediateRevalidation()
     {
         var repositoryRoot = FindRepositoryRoot();
         var mainWindowPath = Path.Combine(repositoryRoot, "src", "WindowsFileCleaner.App", "MainWindow.xaml.cs");
         var sourceLines = File.ReadAllLines(mainWindowPath);
         var updateGateMethod = ExtractMethodText(sourceLines, "private void UpdateQuarantineExecutionGate()");
+        var executeMethod = ExtractMethodText(sourceLines, "public void ExecuteQuarantineForCurrentPreview()");
+        var canExecuteMethod = ExtractMethodText(sourceLines, "private bool CanExecuteQuarantineForCurrentGate(");
+        var immediateRevalidationMethod = ExtractMethodText(sourceLines, "private bool RefreshRealProfileQuarantineApprovalImmediatelyBeforeExecution()");
         var approvalEvidenceMethod = ExtractMethodText(sourceLines, "private RealProfileQuarantineApprovalEvidence? BuildRealProfileQuarantineApprovalEvidenceForDisplay(");
         var approvalEvidenceDisplayMethod = ExtractMethodText(sourceLines, "private static void AddRealProfileQuarantineApprovalEvidenceLines(");
         var executeButtonEnableLines = sourceLines
@@ -3679,35 +3691,57 @@ internal sealed class StorageScanTests
             updateGateMethod.Contains("var approvalEvidence = BuildRealProfileQuarantineApprovalEvidenceForDisplay(executionReadiness);", StringComparison.Ordinal)
             && updateGateMethod.Contains("FormatQuarantineExecutionGate(", StringComparison.Ordinal)
             && updateGateMethod.Contains("approvalEvidence,", StringComparison.Ordinal),
-            "WPF should build approval evidence only for display in the Quarantine Execution Gate.");
+            "WPF should build approval evidence before formatting and button enablement.");
         Assert(
             executeButtonEnableLines.Length == 1
-            && executeButtonEnableLines[0].Text.Contains("_currentQuarantineExecutionGate.CanExecute", StringComparison.Ordinal)
-            && !executeButtonEnableLines[0].Text.Contains("approvalEvidence", StringComparison.Ordinal)
-            && !executeButtonEnableLines[0].Text.Contains("CanApproveForRealProfileMovement", StringComparison.Ordinal),
-            "WPF Quarantine button enablement must remain based on the existing execution gate, not approval evidence: "
+            && executeButtonEnableLines[0].Text.Contains("CanExecuteQuarantineForCurrentGate(approvalEvidence)", StringComparison.Ordinal),
+            "WPF Quarantine button enablement should route through the scope-aware execution guard: "
             + FormatSourceLines(executeButtonEnableLines));
         Assert(
             !updateGateMethod.Contains("CanApproveForRealProfileMovement", StringComparison.Ordinal),
-            "UpdateQuarantineExecutionGate should not use approval evidence as an execution gate.");
+            "UpdateQuarantineExecutionGate should delegate approval evidence interpretation to the scope-aware execution guard.");
+        Assert(
+            canExecuteMethod.Contains("_currentQuarantineExecutionGate?.CanExecute != true", StringComparison.Ordinal)
+            && canExecuteMethod.Contains("IsFixtureQuarantineExecutionAvailable()", StringComparison.Ordinal)
+            && canExecuteMethod.Contains("IsRealProfileQuarantineExecutionAvailable()", StringComparison.Ordinal)
+            && canExecuteMethod.Contains("approvalEvidence?.CanApproveForRealProfileMovement == true", StringComparison.Ordinal),
+            "WPF real-profile Quarantine enablement should require the normal gate plus approval evidence, while fixture execution stays supported.");
+        Assert(
+            executeMethod.Contains("RefreshRealProfileQuarantineApprovalImmediatelyBeforeExecution()", StringComparison.Ordinal)
+            && executeMethod.IndexOf("RefreshRealProfileQuarantineApprovalImmediatelyBeforeExecution()", StringComparison.Ordinal)
+                < executeMethod.IndexOf("QuarantineExecutor.Execute(", StringComparison.Ordinal),
+            "WPF real-profile Quarantine execution should rerun approval/revalidation before calling the movement executor.");
+        Assert(
+            immediateRevalidationMethod.Contains("QuarantineRootExecutionSafetyBuilder.Build", StringComparison.Ordinal)
+            && immediateRevalidationMethod.Contains("PreExecutionRevalidationBuilder.Build", StringComparison.Ordinal)
+            && immediateRevalidationMethod.Contains("RealProfileQuarantineApprovalEvidenceBuilder.Build", StringComparison.Ordinal)
+            && immediateRevalidationMethod.Contains("immediateApprovalEvidence.CanApproveForRealProfileMovement", StringComparison.Ordinal)
+            && immediateRevalidationMethod.Contains("_currentPreExecutionRevalidation.CanProceed", StringComparison.Ordinal),
+            "Immediate real-profile Quarantine approval should rebuild root safety, pre-execution revalidation, and approval evidence before movement.");
         Assert(
             approvalEvidenceMethod.Contains("ScopeKind == QuarantineExecutionReadinessScopeKind.Fixture", StringComparison.Ordinal)
             && approvalEvidenceMethod.Contains("return null;", StringComparison.Ordinal),
             "WPF should skip real-profile approval evidence for fixture scopes.");
         Assert(
             approvalEvidenceMethod.Contains("RealProfileQuarantineApprovalEvidenceBuilder.Build(", StringComparison.Ordinal)
-            && !approvalEvidenceMethod.Contains("isRealProfileQuarantineMovementAvailable", StringComparison.Ordinal),
-            "WPF should build approval evidence with current-build movement availability left at the default unavailable value.");
+            && approvalEvidenceMethod.Contains("isRealProfileQuarantineMovementAvailable: IsRealProfileQuarantineExecutionAvailable()", StringComparison.Ordinal),
+            "WPF should build approval evidence with explicit exact real-profile movement availability.");
         Assert(
-            canApproveUses.Length == 1
-            && FindEnclosingMethodName(sourceLines, canApproveUses[0].LineNumber - 1) == "AddRealProfileQuarantineApprovalEvidenceLines",
-            "CanApproveForRealProfileMovement should appear only in display formatting, not execution wiring: "
+            canApproveUses.All(use =>
+            {
+                var methodName = FindEnclosingMethodName(sourceLines, use.LineNumber - 1);
+                return methodName is "CanExecuteQuarantineForCurrentGate"
+                    or "RefreshRealProfileQuarantineApprovalImmediatelyBeforeExecution"
+                    or "FormatQuarantineExecutionGate"
+                    or "AddRealProfileQuarantineApprovalEvidenceLines";
+            }),
+            "CanApproveForRealProfileMovement should appear only in the real-profile execution guard, immediate revalidation, or display formatting: "
             + FormatSourceLines(canApproveUses));
         Assert(
             approvalEvidenceDisplayMethod.Contains("does not create folders", StringComparison.Ordinal)
             && approvalEvidenceDisplayMethod.Contains("move files", StringComparison.Ordinal)
             && approvalEvidenceDisplayMethod.Contains("approve cleanup", StringComparison.Ordinal),
-            "Approval evidence display should keep the no-movement and no-approval boundary visible.");
+            "Approval evidence display should keep the no-cleanup-approval boundary visible.");
     }
 
     public void MvpPreflightScriptChecksNativeCommandExitCodes()
@@ -4206,7 +4240,8 @@ internal sealed class StorageScanTests
             if (trimmed.StartsWith("public void ", StringComparison.Ordinal)
                 || trimmed.StartsWith("private void ", StringComparison.Ordinal)
                 || trimmed.StartsWith("private static void ", StringComparison.Ordinal)
-                || trimmed.StartsWith("private bool ", StringComparison.Ordinal))
+                || trimmed.StartsWith("private bool ", StringComparison.Ordinal)
+                || trimmed.StartsWith("private static string ", StringComparison.Ordinal))
             {
                 var secondSpace = trimmed.IndexOf(' ', trimmed.IndexOf(' ') + 1);
                 var nameStart = trimmed.StartsWith("private static ", StringComparison.Ordinal)

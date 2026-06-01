@@ -8,7 +8,9 @@ public static class QuarantineExecutionReadinessBuilder
         bool nonPreferredQuarantineRootAcknowledged = false,
         QuarantineRootExecutionSafety? quarantineRootExecutionSafety = null,
         PreExecutionRevalidation? preExecutionRevalidation = null,
-        RealProfileRestoreReadiness? realProfileRestoreReadiness = null)
+        RealProfileRestoreReadiness? realProfileRestoreReadiness = null,
+        bool isRealProfileQuarantineMovementAvailable = false,
+        bool isRealProfileSelectedRestoreTrustedForForwardQuarantine = false)
     {
         if (preview is null)
         {
@@ -22,6 +24,8 @@ public static class QuarantineExecutionReadinessBuilder
                 IncludedBytes: 0,
                 QuarantineExecutionReadiness.DefaultRealProfileIncludedRowLimit,
                 QuarantineExecutionReadiness.DefaultRealProfileIncludedByteLimit,
+                IsRealProfileQuarantineMovementAvailable: false,
+                IsRealProfileSelectedRestoreTrustedForForwardQuarantine: false,
                 IsPreferredQuarantineRoot: false,
                 IsNonPreferredQuarantineRootAcknowledged: nonPreferredQuarantineRootAcknowledged,
                 AllowsNarrowFolders: true,
@@ -70,6 +74,8 @@ public static class QuarantineExecutionReadinessBuilder
                     nonPreferredQuarantineRootAcknowledged,
                     preExecutionRevalidation,
                     realProfileRestoreReadiness,
+                    isRealProfileQuarantineMovementAvailable,
+                    isRealProfileSelectedRestoreTrustedForForwardQuarantine,
                     blockers);
                 break;
             case QuarantineExecutionReadinessScopeKind.RealProfileChild:
@@ -93,6 +99,8 @@ public static class QuarantineExecutionReadinessBuilder
             preview.IncludedBytes,
             QuarantineExecutionReadiness.DefaultRealProfileIncludedRowLimit,
             QuarantineExecutionReadiness.DefaultRealProfileIncludedByteLimit,
+            isRealProfileQuarantineMovementAvailable,
+            isRealProfileSelectedRestoreTrustedForForwardQuarantine,
             isPreferredRoot,
             nonPreferredQuarantineRootAcknowledged,
             AllowsNarrowFolders: true,
@@ -125,12 +133,22 @@ public static class QuarantineExecutionReadinessBuilder
         bool nonPreferredQuarantineRootAcknowledged,
         PreExecutionRevalidation? preExecutionRevalidation,
         RealProfileRestoreReadiness? realProfileRestoreReadiness,
+        bool isRealProfileQuarantineMovementAvailable,
+        bool isRealProfileSelectedRestoreTrustedForForwardQuarantine,
         List<string> blockers)
     {
-        blockers.Add("Real-profile WPF Quarantine execution remains unavailable in this build.");
+        if (!isRealProfileQuarantineMovementAvailable)
+        {
+            blockers.Add("Real-profile WPF Quarantine execution remains unavailable in this build.");
+        }
+
         AddRootSafetyBlockers(preview, quarantineRootExecutionSafety, blockers);
         AddPreExecutionRevalidationBlockers(preview, preExecutionRevalidation, blockers);
-        AddRealProfileRestoreReadinessBlockers(preview, realProfileRestoreReadiness, blockers);
+        AddRealProfileRestoreReadinessBlockers(
+            preview,
+            realProfileRestoreReadiness,
+            isRealProfileSelectedRestoreTrustedForForwardQuarantine,
+            blockers);
 
         if (preview.IncludedCount > QuarantineExecutionReadiness.DefaultRealProfileIncludedRowLimit)
         {
@@ -156,8 +174,14 @@ public static class QuarantineExecutionReadinessBuilder
     private static void AddRealProfileRestoreReadinessBlockers(
         QuarantinePreview preview,
         RealProfileRestoreReadiness? realProfileRestoreReadiness,
+        bool isRealProfileSelectedRestoreTrustedForForwardQuarantine,
         List<string> blockers)
     {
+        if (isRealProfileSelectedRestoreTrustedForForwardQuarantine)
+        {
+            return;
+        }
+
         if (realProfileRestoreReadiness is null)
         {
             blockers.Add("Real-Profile Restore Readiness has not been checked for selected-manifest Undo Quarantine yet.");

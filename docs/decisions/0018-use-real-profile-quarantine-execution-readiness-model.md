@@ -10,7 +10,7 @@ ADR 0017 keeps real-profile WPF Quarantine execution unavailable until the app h
 
 That shape is good proof for fixture movement, but it is too coarse for real-profile movement from `C:\Users\moxhe`. A real-profile cleanup action needs to prove more than "the preview looked clean when it was generated." It must re-check the live filesystem immediately before moving files, prove the Quarantine Root is safe for execution, preserve recovery evidence, and make Undo Quarantine trustworthy enough before the first forward action is exposed.
 
-This ADR does not enable real-profile movement. It records the accepted model future implementation must build before any real-profile Quarantine execution can be considered.
+This ADR originally did not enable real-profile movement. As of the 2026-06-01 first-execution packet, the exact `C:\Users\moxhe` first phase is implemented behind this model; custom, child, `ProgramData`, `Program Files`, deletion, history, and all-manifest restore remain outside this decision.
 
 ## Decision
 
@@ -29,7 +29,7 @@ Future real-profile `CanExecute` must not be unlocked by flipping the current fi
 - Post-execution scan behavior: after a future real-profile Quarantine action, the app should show stale-scan guidance and ask the user to rescan manually rather than auto-rescanning.
 - Durable record: Restore Manifest remains the only durable cleanup record for the first real-profile phase. Persisted cleanup history remains unavailable.
 
-The first implementation packets should build this model and its tests while keeping the WPF real-profile button disabled. Only a later explicit user-approved packet may wire real-profile file movement.
+The first implementation packets built this model and its tests while keeping the WPF real-profile button disabled. A later explicit user-approved packet wired exact `C:\Users\moxhe` first-phase file movement through readiness, Real-Profile Quarantine Approval Evidence, and immediate pre-execution revalidation.
 
 Permanent deletion, persisted cleanup history, real-profile all-manifest restore, `ProgramData` execution, `Program Files` execution, and custom non-fixture execution stay outside this decision.
 
