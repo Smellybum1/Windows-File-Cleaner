@@ -66,6 +66,7 @@ ADR-worthy decisions:
 
 - Added `tools\Invoke-RealProfileNextBatchReview.ps1` and `.cmd`.
 - The wrapper runs the preset first and stops if it fails, then prints the checklist.
+- Follow-up polish made the standalone checklist point back to this wrapper as the recommended combined evidence-plus-checklist command.
 - Updated README, domain context, glossary, live-product roadmap, handoff, and progress docs.
 
 ## Verification
@@ -74,6 +75,7 @@ ADR-worthy decisions:
 - `cmd.exe /c tools\Invoke-RealProfileNextBatchReview.cmd -SkipMvpPreflight` passed. It ran the next-batch evidence preset with skipped-preflight warning, verified accepted package evidence, printed optional Fixture Acceptance Notes status, showed exact-profile Restore Manifest display with zero displayed undo-work manifests, printed recovery-review and undo-work focus, then printed the WPF checklist. No WPF app was launched, no scan was started, and no files were moved, restored, deleted, approved, or added to cleanup history.
 - `cmd.exe /c tools\Start-MvpFixtureReview.cmd -ChecklistOnly` passed.
 - `git diff --check` passed with expected line-ending normalization warnings only.
+- Follow-up wrapper-hint smoke: `cmd.exe /c tools\Invoke-RealProfileNextBatchReview.cmd -SkipMvpPreflight` passed after the checklist began printing the recommended combined wrapper command. No WPF app was launched, no scan was started, and no files were moved, restored, deleted, approved, written to Restore Manifests, or added to cleanup history.
 
 ## Risks and assumptions
 

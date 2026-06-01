@@ -25,13 +25,14 @@ As the local app owner, I want the post-preset WPF review steps printed from the
 `tools\Show-RealProfileNextBatchChecklist.cmd` should print:
 
 1. The terminal-only boundary.
-2. The required next-batch evidence preset command.
-3. The accepted package launch-command printer.
-4. The exact `C:\Users\moxhe` scope boundary.
-5. The scan, Review Shortlist, tiny-batch caps, and hard blockers.
-6. The Quarantine tab readiness evidence to inspect.
-7. The human-only exact `QUARANTINE` click boundary.
-8. The post-attempt rediscover/rescan follow-up.
+2. The recommended combined next-batch review wrapper command.
+3. The required next-batch evidence preset command when evidence is run separately.
+4. The accepted package launch-command printer.
+5. The exact `C:\Users\moxhe` scope boundary.
+6. The scan, Review Shortlist, tiny-batch caps, and hard blockers.
+7. The Quarantine tab readiness evidence to inspect.
+8. The human-only exact `QUARANTINE` click boundary.
+9. The post-attempt rediscover/rescan follow-up.
 
 ## Domain language changes
 
@@ -69,6 +70,7 @@ ADR-worthy decisions:
 
 - Added `tools\Show-RealProfileNextBatchChecklist.ps1` and `.cmd`.
 - The helper prints prerequisite evidence, accepted-package launch guidance, scan/shortlist checks, hard blockers, Quarantine tab evidence checks, execution boundary, and rediscover/rescan follow-up.
+- Follow-up polish surfaced `tools\Invoke-RealProfileNextBatchReview.cmd` at the top of the checklist output so standalone checklist runs still advertise the safer combined evidence-plus-checklist path.
 - Updated README, domain context, glossary, roadmap, handoff, and progress docs.
 
 ## Verification
@@ -77,6 +79,7 @@ ADR-worthy decisions:
 - `cmd.exe /c tools\Invoke-RealProfileQuarantineReadiness.cmd -SkipMvpPreflight -RequireNextBatchEvidence` passed and preserved the terminal evidence preset path without launching WPF, scanning, movement, restore, deletion, approval, or cleanup history.
 - `cmd.exe /c tools\Start-MvpFixtureReview.cmd -ChecklistOnly` passed.
 - `git diff --check` passed with expected CRLF conversion warnings only.
+- Follow-up wrapper-hint check: `cmd.exe /c tools\Show-RealProfileNextBatchChecklist.cmd` passed and printed the recommended combined wrapper command plus the separate evidence preset without launching WPF, scanning, movement, restore, deletion, approval, manifest writes, or cleanup history.
 
 ## Risks and assumptions
 
