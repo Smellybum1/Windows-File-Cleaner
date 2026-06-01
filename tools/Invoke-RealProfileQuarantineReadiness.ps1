@@ -6,6 +6,8 @@ param(
 
     [string]$CleanupScope,
 
+    [switch]$AllCleanupScopes,
+
     [switch]$SkipMvpPreflight,
 
     [switch]$ShowRestoreEntries,
@@ -25,6 +27,35 @@ $repoFullPath = [System.IO.Path]::GetFullPath($repoRoot).TrimEnd([System.IO.Path
 $mvpPreflight = Join-Path $PSScriptRoot "Invoke-MvpPreflight.cmd"
 $dailyReadiness = Join-Path $PSScriptRoot "Invoke-DailyLocalReadiness.cmd"
 $restoreManifestSummary = Join-Path $PSScriptRoot "Summarize-RestoreManifests.cmd"
+$defaultRealProfileCleanupScope = "C:\Users\moxhe"
+$cleanupScopeWasProvided = $PSBoundParameters.ContainsKey("CleanupScope")
+
+if ($AllCleanupScopes.IsPresent -and $cleanupScopeWasProvided) {
+    Write-Host "Choose either -CleanupScope or -AllCleanupScopes, not both."
+    exit 1
+}
+
+$effectiveCleanupScope = $null
+if (-not $AllCleanupScopes.IsPresent) {
+    if ($cleanupScopeWasProvided) {
+        if ([string]::IsNullOrWhiteSpace($CleanupScope)) {
+            Write-Host "CleanupScope must not be blank. Use -AllCleanupScopes to disable the default exact real-profile display focus."
+            exit 1
+        }
+
+        $effectiveCleanupScope = $CleanupScope
+    }
+    else {
+        $effectiveCleanupScope = $defaultRealProfileCleanupScope
+    }
+
+    if (-not [System.IO.Path]::IsPathRooted($effectiveCleanupScope)) {
+        Write-Host "CleanupScope must be a fully qualified path: $effectiveCleanupScope"
+        exit 1
+    }
+
+    $effectiveCleanupScope = [System.IO.Path]::GetFullPath($effectiveCleanupScope).TrimEnd([System.IO.Path]::DirectorySeparatorChar)
+}
 
 function Invoke-RealProfileReadinessStep {
     param(
@@ -59,8 +90,8 @@ function New-RestoreManifestArguments {
     if (-not [string]::IsNullOrWhiteSpace($QuarantineRoot)) {
         $arguments += @("-QuarantineRoot", $QuarantineRoot)
     }
-    if (-not [string]::IsNullOrWhiteSpace($CleanupScope)) {
-        $arguments += @("-CleanupScope", $CleanupScope)
+    if ($null -ne $effectiveCleanupScope) {
+        $arguments += @("-CleanupScope", $effectiveCleanupScope)
     }
 
     if ($ShowRestoreEntries.IsPresent) {
@@ -90,6 +121,12 @@ Write-Host "Repository: $repoFullPath"
 Write-Host "Boundary: terminal evidence only; this does not launch WPF, click Scan, scan C:\Users\moxhe, move, restore, delete, approve cleanup, or create cleanup history."
 Write-Host "Purpose: gather preflight, accepted-package, and Restore Manifest evidence before a future user-clicked exact C:\Users\moxhe Quarantine batch."
 Write-Host "Stop boundary: Codex must not click real-profile movement. The user must explicitly approve a specific tiny batch after reviewing WPF readiness, exact QUARANTINE, approval evidence, and immediate revalidation."
+if ($null -ne $effectiveCleanupScope) {
+    Write-Host "Restore Manifest display focus: $effectiveCleanupScope"
+}
+else {
+    Write-Host "Restore Manifest display focus: all Cleanup Scopes."
+}
 
 if ($SkipMvpPreflight.IsPresent) {
     Write-Host ""
@@ -106,8 +143,8 @@ if (-not [string]::IsNullOrWhiteSpace($AcceptanceNotesPath)) {
 if (-not [string]::IsNullOrWhiteSpace($QuarantineRoot)) {
     $dailyArguments += @("-QuarantineRoot", $QuarantineRoot)
 }
-if (-not [string]::IsNullOrWhiteSpace($CleanupScope)) {
-    $dailyArguments += @("-CleanupScope", $CleanupScope)
+if ($null -ne $effectiveCleanupScope) {
+    $dailyArguments += @("-CleanupScope", $effectiveCleanupScope)
 }
 if ($RequireAnyRestoreManifest.IsPresent) {
     $dailyArguments += "-RequireAnyRestoreManifest"

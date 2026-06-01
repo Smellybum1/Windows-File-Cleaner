@@ -43,6 +43,8 @@ That keeps the pieces safe, but makes the next tiny live-batch checklist easier 
 
 The command may skip MVP preflight only with `-SkipMvpPreflight`, and skipped output must say it is not fresh movement evidence. Restore Manifest root, entry display, and strict evidence flags should forward to the summary steps.
 
+A later scope-focus packet made the default Restore Manifest display focus exact `C:\Users\moxhe`; use `-AllCleanupScopes` when fixture manifests should also be displayed.
+
 ## Domain language changes
 
 New durable local tooling term.
@@ -233,6 +235,7 @@ Follow-up work:
 
 - Before any next real-profile Quarantine batch, run the default readiness review, then have the user review WPF readiness for a tiny exact batch and explicitly approve the specific click.
 - Keep shortcut/installer automation as a later explicit user-approved packaging packet.
+- Later packet `Real-Profile Readiness Default Scope Focus` made default readiness output focus exact `C:\Users\moxhe` Restore Manifest display rows and added `-AllCleanupScopes` for the old fixture-inclusive view.
 
 Open questions:
 
