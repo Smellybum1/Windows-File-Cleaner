@@ -76,6 +76,7 @@ ADR-worthy decisions:
 - `cmd.exe /c tools\Start-MvpFixtureReview.cmd -ChecklistOnly` passed.
 - `git diff --check` passed with expected line-ending normalization warnings only.
 - Follow-up wrapper-hint smoke: `cmd.exe /c tools\Invoke-RealProfileNextBatchReview.cmd -SkipMvpPreflight` passed after the checklist began printing the recommended combined wrapper command. No WPF app was launched, no scan was started, and no files were moved, restored, deleted, approved, written to Restore Manifests, or added to cleanup history.
+- Follow-up fixture-notes guidance smoke: `cmd.exe /c tools\Invoke-RealProfileNextBatchReview.cmd -SkipMvpPreflight` passed after the checklist began printing the Fixture Acceptance Notes status reminder. Skipped preflight remains smoke evidence only; no WPF app was launched, no scan was started, and no files were moved, restored, deleted, approved, written to Restore Manifests, or added to cleanup history.
 
 ## Risks and assumptions
 

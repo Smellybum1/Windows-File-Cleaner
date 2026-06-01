@@ -51,6 +51,7 @@ To print the post-preset manual WPF checklist without launching WPF:
 ```
 
 The checklist also points back to the combined next-batch review wrapper when evidence and checklist should stay together. Use the standalone checklist only when the evidence preset was already reviewed and only the manual WPF steps are needed. It repeats the exact scope, tiny-batch caps, hard blockers, Quarantine tab evidence, human-only click boundary, and rediscover/rescan follow-up. It is guidance only and does not approve cleanup.
+It also reminds the reviewer to confirm Fixture Acceptance Notes status from the evidence preset and to use the printed recorder command only after an actual all-pass visible fixture review, or fill notes manually for issues/not-checked items.
 
 When building a custom evidence run outside the preset, displayed strictness flags such as `-RequireAnyDisplayedRestoreManifest -RequireNoDisplayedUndoWork` can still be supplied directly. Those flags check only the current displayed manifest focus; they are still terminal evidence only and do not approve cleanup.
 

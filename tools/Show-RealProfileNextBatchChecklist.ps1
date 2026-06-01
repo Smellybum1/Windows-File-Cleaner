@@ -45,6 +45,7 @@ Write-Host "Manual WPF checklist:"
 Write-ChecklistSection -Title "Before launch" -Items @(
     "Confirm the next-batch evidence preset passed on the current worktree, including full MVP preflight unless it was intentionally skipped only for a smoke check.",
     "Confirm the accepted package evidence is complete; a package/current-HEAD warning is expected when newer commits are docs/tooling-only.",
+    "Confirm Fixture Acceptance Notes status from the evidence preset; if formal notes are incomplete, review the printed summary guidance and record notes only after an actual all-pass visible fixture review, or fill notes manually for issues/not-checked items.",
     "Do not continue if exact-profile Restore Manifest display is missing or displayed undo-work manifests are present."
 )
 
