@@ -233,6 +233,7 @@ What changed:
 - Later packet `Portable Release Checksum Evidence` made each new package include executable SHA-256 metadata and a sibling zip `.sha256` sidecar, and extended verification to recompute both without launching WPF or scanning.
 - Later packet `Local Release Acceptance Checklist` added `tools\Start-LocalRelease.cmd -ChecklistOnly`, which verifies by default and prints package-level acceptance steps without launching WPF.
 - Later packet `Local Release Acceptance Notes` added `tools\Start-LocalRelease.cmd -ChecklistOnly -WriteAcceptanceNotes` and `tools\Summarize-LocalReleaseAcceptanceNotes.cmd` for ignored local package acceptance evidence without launching WPF.
+- Later packet `Local Release Acceptance Notes Evidence Prefill` made generated notes pre-record verifier/current-commit evidence when the launcher has actually proven those facts, while keeping launch and fixture scan evidence manual.
 
 Files changed:
 

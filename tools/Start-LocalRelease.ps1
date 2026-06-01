@@ -280,7 +280,10 @@ function New-PortableReleaseAcceptanceNotes {
         [string]$FixtureScopePath,
 
         [Parameter(Mandatory)]
-        [bool]$VerificationSkipped
+        [bool]$VerificationSkipped,
+
+        [Parameter(Mandatory)]
+        [bool]$RequireCurrentCommitEvidence
     )
 
     $notesRoot = Join-Path $repoRoot ".local\release-acceptance"
@@ -303,6 +306,15 @@ function New-PortableReleaseAcceptanceNotes {
     $gitBranch = Get-LocalReleaseGitValue -Arguments @("-C", $repoFullPath, "rev-parse", "--abbrev-ref", "HEAD")
     $gitCommit = Get-LocalReleaseGitValue -Arguments @("-C", $repoFullPath, "rev-parse", "--short", "HEAD")
     $worktreeStatus = Get-LocalReleaseWorktreeStatus -RepositoryPath $repoFullPath
+    $verifierCheckbox = if ($VerificationSkipped) { " " } else { "x" }
+    $commitCheckbox = if ((-not $VerificationSkipped) -and $RequireCurrentCommitEvidence) { "x" } else { " " }
+    $verifierItemStatus = if ($VerificationSkipped) { " " } else { "x" }
+    $verifierItemNotes = if ($VerificationSkipped) {
+        "Verification was skipped when this notes template was created."
+    }
+    else {
+        "Recorded automatically because Start-LocalRelease completed Test-LocalRelease successfully before writing these notes."
+    }
 
     New-Item -ItemType Directory -Path $notesRoot -Force | Out-Null
 
@@ -329,8 +341,8 @@ function New-PortableReleaseAcceptanceNotes {
     $lines.Add('- Required verifier: `.\tools\Test-LocalRelease.cmd -RequireCurrentCommit`')
     $lines.Add('- Checklist command: `.\tools\Start-LocalRelease.cmd -ChecklistOnly -RequireCurrentCommit`')
     $lines.Add('- Fixture checklist command: `.\tools\Start-LocalRelease.cmd -Fixture -ChecklistOnly -RequireCurrentCommit`')
-    $lines.Add("- [ ] Verifier passed for this release package.")
-    $lines.Add("- [ ] Package commit matched current HEAD or mismatch was intentionally recorded.")
+    $lines.Add("- [$verifierCheckbox] Verifier passed for this release package.")
+    $lines.Add("- [$commitCheckbox] Package commit matched current HEAD or mismatch was intentionally recorded.")
     $lines.Add("- [ ] Package was launched normally or normal launch was intentionally deferred.")
     $lines.Add("- [ ] Fixture launch and read-only fixture Scan were completed or intentionally deferred.")
     $lines.Add('- Notes file is local/ignored under `.local` and is not app persistence or cleanup history.')
@@ -374,13 +386,23 @@ function New-PortableReleaseAcceptanceNotes {
         $lines.Add("")
         $lines.Add("Prompt: $($checklistItems[$index])")
         $lines.Add("")
-        $lines.Add("- [ ] Pass")
+        if ($index -eq 0) {
+            $lines.Add("- [$verifierItemStatus] Pass")
+        }
+        else {
+            $lines.Add("- [ ] Pass")
+        }
         $lines.Add("- [ ] Issue")
         $lines.Add("- [ ] Not checked")
         $lines.Add("")
         $lines.Add("Notes:")
         $lines.Add("")
-        $lines.Add("- ")
+        if ($index -eq 0) {
+            $lines.Add("- $verifierItemNotes")
+        }
+        else {
+            $lines.Add("- ")
+        }
     }
 
     $utf8NoBom = [System.Text.UTF8Encoding]::new($false)
@@ -469,7 +491,8 @@ if ($ChecklistOnly.IsPresent) {
             -FixtureLaunchScript $releaseFixtureLaunchScriptPath `
             -ExecutablePath $appExePath `
             -FixtureScopePath $fixtureScope `
-            -VerificationSkipped $SkipVerify.IsPresent
+            -VerificationSkipped $SkipVerify.IsPresent `
+            -RequireCurrentCommitEvidence $RequireCurrentCommit.IsPresent
         Write-Host ""
         Write-Host "Portable release acceptance notes template: $notesPath"
         Write-PortableReleaseAcceptanceNotesNextSteps -NotesPath $notesPath
