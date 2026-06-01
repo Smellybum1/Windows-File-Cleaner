@@ -196,7 +196,7 @@ public static class QuarantineExecutor
 
             if (entry.IsDirectory)
             {
-                Directory.Move(entry.OriginalPath, entry.QuarantinePath);
+                QuarantineDirectoryMove.Move(entry.OriginalPath, entry.QuarantinePath);
             }
             else
             {

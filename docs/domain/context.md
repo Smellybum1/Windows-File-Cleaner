@@ -511,7 +511,7 @@ It must be treated as high-risk even when it appears small, duplicated, hidden, 
 ### Storage Review Filter
 
 Status: draft  
-Last reviewed: 2026-05-29
+Last reviewed: 2026-06-01
 
 #### Definition
 
@@ -2441,17 +2441,18 @@ It writes `restore-manifest.json` under the Quarantine Action root by first writ
 ### Quarantine Executor
 
 Status: draft
-Last reviewed: 2026-05-29
+Last reviewed: 2026-06-01
 
 #### Definition
 
 Quarantine Executor is the narrow core component that moves Restore Manifest entries from their original paths to action-scoped quarantine paths.
 
-It is fixture-tested and wired to the WPF app for fixture Cleanup Scopes only.
+It is fixture-tested and wired to the WPF app for fixture Cleanup Scopes and the exact first real-profile phase only.
 
 #### Examples
 
 - Move a fixture file from `...\Downloads\old-installer.msi` to `...\actions\quarantine-action-...\items\Downloads\old-installer.msi`.
+- Move an exact real-profile narrow cache folder from `C:` to the preferred `D:` Quarantine Root through the guarded cross-volume directory fallback.
 - Record a destination collision as a failed Restore Manifest entry without overwriting the destination.
 - Stop before any move when the planned Restore Manifest cannot be written.
 
@@ -2478,15 +2479,16 @@ It is fixture-tested and wired to the WPF app for fixture Cleanup Scopes only.
 
 - Depends on Restore Manifest and Restore Manifest File Store.
 - Uses the action-scoped layout from Quarantine Action Draft.
-- Implements the fixture-first boundary accepted in ADR 0007.
+- Implements the fixture-first boundary accepted in ADR 0007 and the exact first real-profile execution boundary accepted in ADR 0018.
 - Pairs with fixture-first Undo Quarantine Executor.
-- Precedes real-profile WPF execution wiring.
+- Leaves custom and non-exact real-profile WPF execution unavailable.
 
 #### Code implications
 
 - Use `QuarantineExecutor`, `QuarantineExecutionResult`, and `QuarantineExecutionEntryResult`.
-- Keep filesystem move APIs allowlisted only in this component.
-- Keep the visible WPF `Quarantine included shortlist` action disabled for real-profile and custom non-fixture Cleanup Scopes.
+- Keep filesystem move/copy/delete APIs allowlisted only in `QuarantineExecutor`, `QuarantineDirectoryMove`, Restore Manifest writing, Undo Quarantine, and user-selected report export seams.
+- Keep the visible WPF `Quarantine included shortlist` action disabled for custom and non-exact real-profile Cleanup Scopes.
+- Keep cross-volume directory movement in `QuarantineDirectoryMove`; do not perform directory copy/delete from WPF or readiness builders.
 - Do not overwrite existing destination paths.
 - Do not implement rollback or Undo Quarantine inside the executor.
 
@@ -2641,7 +2643,7 @@ In the current build the gate can open for recognized fixture Cleanup Scopes and
 - `CanExecute` must require no blockers, exact confirmation text, and implemented execution support.
 - Keep final WPF execution disabled for custom non-fixture and non-exact real-profile Cleanup Scopes, and require Real-Profile Quarantine Approval Evidence for exact real-profile movement.
 - Keep Quarantine Execution Scope Status, Approval boundary, and `Can execute` visible in the gate readout instead of asking users to infer fixture-only versus preview-only behavior from technical implementation fields.
-- In WPF, keep verbose gate details height-constrained when shown in the Quarantine shortlist area so the main review grid remains usable.
+- In WPF, keep verbose gate details height-constrained but tall enough to read real-profile evidence when shown in the Quarantine shortlist area.
 - In WPF, keep the Quarantine shortlist area collapsible so the user can recover grid height after reviewing the gate.
 - In WPF, keep the collapsed Quarantine Shortlist header useful with a panel-name prefix, shortlist, preview, current quarantined, and undo state, and mirror that header summary plus current header state into tooltip and automation help text on both the header text and visible non-clickable `?` help cue with read-only/not-cleanup-approval wording.
 - In WPF, lightweight Quarantine shortlist header styling may distinguish neutral, success, information, and warning states, but must not imply cleanup approval or change preview/execution gates.
@@ -2659,7 +2661,7 @@ In the current build the gate can open for recognized fixture Cleanup Scopes and
 ### Quarantine Readiness Summary
 
 Status: draft
-Last reviewed: 2026-05-31
+Last reviewed: 2026-06-01
 
 #### Definition
 
@@ -2900,7 +2902,7 @@ Quarantine Root Execution Safety is the validation that decides whether the curr
 
 It is separate from Quarantine Root Safety Note, which is preview-only. Execution safety checks containment, drive policy, capacity, action-root collisions, and destination collisions before any real-profile movement can be considered.
 
-The current core model is read-only. WPF shows its evidence in Quarantine Preview and Quarantine Execution Gate output when a Quarantine Action Draft exists, and passes local non-`D:` root acknowledgement when present, but does not use it to enable real-profile execution.
+The model does not create folders or approve cleanup by itself. WPF shows its evidence in Quarantine Preview and Quarantine Execution Gate output when a Quarantine Action Draft exists, passes local non-`D:` root acknowledgement when present, and requires it as one input before exact first-phase real-profile execution can open.
 
 #### Examples
 
@@ -2921,7 +2923,7 @@ The current core model is read-only. WPF shows its evidence in Quarantine Previe
 
 #### Lifecycle
 
-- Evaluated before future execution readiness can open.
+- Evaluated before exact first-phase real-profile execution readiness can open.
 - Re-evaluated during Pre-Execution Revalidation.
 - WPF preview/gate evidence is rebuilt after the non-`D:` acknowledgement changes and the user previews again.
 - Does not create folders or write manifests until execution has actually started.
@@ -2939,21 +2941,21 @@ The current core model is read-only. WPF shows its evidence in Quarantine Previe
 - Build from `QuarantineActionDraft` for normal action-scoped checks.
 - Check that the root and Cleanup Scope are not inside each other.
 - Check capacity and collision evidence before movement.
-- In WPF, show root execution safety as read-only evidence; do not treat it as approval or a substitute for Pre-Execution Revalidation, Real-Profile Restore Readiness, exact confirmation, or future explicit execution approval.
-- For the first real-profile phase, prefer `D:` roots and require an extra acknowledgement for non-`D:` roots after all other safety checks pass. In the current WPF app, this acknowledgement is readiness evidence only and does not enable execution.
+- In WPF, show root execution safety as evidence; do not treat it as approval or a substitute for Pre-Execution Revalidation, Real-Profile Restore Readiness, exact confirmation, or explicit execution approval.
+- For the first real-profile phase, prefer `D:` roots and require an extra acknowledgement for non-`D:` roots after all other safety checks pass. In the current WPF app, this acknowledgement is readiness evidence only and does not approve cleanup by itself.
 
 ### Pre-Execution Revalidation
 
 Status: draft
-Last reviewed: 2026-05-31
+Last reviewed: 2026-06-01
 
 #### Definition
 
-Pre-Execution Revalidation is the immediate live-filesystem check that reruns after explicit approval and before any future real-profile Quarantine move.
+Pre-Execution Revalidation is the immediate live-filesystem check that reruns after explicit approval and before exact first-phase real-profile Quarantine movement.
 
 It proves that the files and destinations about to be touched still match the Review Shortlist, Quarantine Preview, Restore Manifest Draft, and Quarantine Action Draft that the user reviewed.
 
-The current core model is read-only. WPF shows its evidence in Quarantine Preview and Quarantine Execution Gate output when a Quarantine Action Draft and Quarantine Root Execution Safety exist, but does not use it to enable real-profile execution.
+The model does not create folders or approve cleanup by itself. WPF shows its evidence in Quarantine Preview and Quarantine Execution Gate output when a Quarantine Action Draft and Quarantine Root Execution Safety exist, and requires it as one input before exact first-phase real-profile execution can open.
 
 #### Examples
 

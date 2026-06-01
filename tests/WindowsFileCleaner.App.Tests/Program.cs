@@ -868,7 +868,8 @@ internal sealed class MainWindowSmokeTests
                 window,
                 "Startup Quarantine Execution Gate cue should expose the visible preview-button guidance.",
                 "Use Preview shortlist quarantine",
-                "Real-profile/custom execution remains unavailable");
+                "exact real-profile rows only after every readiness gate passes",
+                "Custom and non-exact real-profile execution remain unavailable");
             Assert(
                 window.QuarantinePreviewTextValue.Contains("Preview shortlist quarantine", StringComparison.OrdinalIgnoreCase)
                 && !window.QuarantinePreviewTextValue.Contains("Preview quarantine.", StringComparison.OrdinalIgnoreCase),
@@ -1759,7 +1760,8 @@ internal sealed class MainWindowSmokeTests
                 "Open Quarantine Execution Gate cue should expose fixture-only execution state.",
                 "Gate is open",
                 "fixture execution",
-                "Real-profile/custom execution remains unavailable");
+                "exact real-profile rows only after every readiness gate passes",
+                "Custom and non-exact real-profile execution remain unavailable");
             Assert(window.CanExecuteQuarantine, "Fixture-only execution should enable after exact confirmation text.");
             Assert(
                 window.QuarantinePreviewTextValue.Contains(Path.Combine(customQuarantineRoot, "preview", "Downloads", "old-installer.msi"), StringComparison.OrdinalIgnoreCase),
@@ -2008,8 +2010,9 @@ internal sealed class MainWindowSmokeTests
                 !window.QuarantineExecutionGateTextValue.Contains("Real-Profile Quarantine Approval Evidence", StringComparison.OrdinalIgnoreCase),
                 "Fixture execution gate should not show real-profile approval evidence noise.");
             Assert(
-                window.QuarantineExecutionGateViewportMaxHeight <= 120,
-                "Quarantine shortlist gate details should stay height-constrained so the main grid remains usable.");
+                window.QuarantineExecutionGateViewportMaxHeight >= 220
+                && window.QuarantineExecutionGateViewportMaxHeight <= 320,
+                "Quarantine shortlist gate details should have enough room for real-profile evidence while staying height-constrained.");
             Assert(window.IsQuarantineShortlistExpanded, "Quarantine shortlist area should start expanded on its dedicated tab page.");
             window.SetQuarantineShortlistExpanded(false);
             Assert(!window.IsQuarantineShortlistExpanded, "Quarantine shortlist area should still collapse on demand without losing gate state.");

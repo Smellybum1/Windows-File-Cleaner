@@ -61,6 +61,7 @@ tests.SelectedRestorePreExecutionRevalidationPassesFreshRealProfileManifestWitho
 tests.SelectedRestorePreExecutionRevalidationBlocksStaleSelectedRestoreEvidence();
 tests.SelectedRestorePreExecutionRevalidationBlocksUnavailableAndNonRealProfileScope();
 tests.QuarantineExecutorMovesFixtureFilesWithWriteAheadManifest();
+tests.QuarantineDirectoryMoveUsesCopyDeleteFallbackForDirectories();
 tests.QuarantineExecutorRecordsPartialFailureWithoutOverwritingDestination();
 tests.QuarantineExecutorFailsMissingSourceWithoutCreatingDestination();
 tests.QuarantineExecutorStopsBeforeMovesWhenInitialManifestWriteFails();
@@ -2643,6 +2644,37 @@ internal sealed class StorageScanTests
         Assert(manifestJson.Contains("\"status\": \"Moved\"", StringComparison.Ordinal), "Persisted manifest should record moved entry status.");
     }
 
+    public void QuarantineDirectoryMoveUsesCopyDeleteFallbackForDirectories()
+    {
+        using var fixture = TestFixture.Create();
+
+        fixture.WriteText(
+            @"AppData\Local\NVIDIA\DXCache\shader.bin",
+            "shader-cache",
+            DateTimeOffset.UtcNow.AddDays(-5));
+        fixture.WriteText(
+            @"AppData\Local\NVIDIA\DXCache\nested\shader.bin",
+            "nested-shader-cache",
+            DateTimeOffset.UtcNow.AddDays(-4));
+        var sourcePath = Path.Combine(fixture.RootPath, @"AppData\Local\NVIDIA\DXCache");
+        var destinationPath = Path.Combine(
+            fixture.RootPath,
+            @"quarantine-root\actions\copy-delete-fallback\items\AppData\Local\NVIDIA\DXCache");
+
+        QuarantineDirectoryMove.Move(sourcePath, destinationPath, forceCopyDeleteFallback: true);
+
+        Assert(!Directory.Exists(sourcePath), "Copy-delete fallback should remove the original directory after a completed quarantine copy.");
+        Assert(File.Exists(Path.Combine(destinationPath, "shader.bin")), "Copy-delete fallback should keep the top-level file at the quarantine destination.");
+        Assert(File.Exists(Path.Combine(destinationPath, "nested", "shader.bin")), "Copy-delete fallback should keep nested files at the quarantine destination.");
+        Assert(
+            File.ReadAllText(Path.Combine(destinationPath, "nested", "shader.bin")) == "nested-shader-cache",
+            "Copy-delete fallback should preserve nested file contents.");
+        Assert(
+            !Directory.EnumerateDirectories(Path.GetDirectoryName(destinationPath)!)
+                .Any(path => Path.GetFileName(path).Contains(".copying-", StringComparison.OrdinalIgnoreCase)),
+            "Copy-delete fallback should remove temporary staging folders after success.");
+    }
+
     public void QuarantineExecutorRecordsPartialFailureWithoutOverwritingDestination()
     {
         using var fixture = TestFixture.Create();
@@ -3528,9 +3560,16 @@ internal sealed class StorageScanTests
         var executorWriteMatches = sourceFiles
             .SelectMany(file => File.ReadLines(file)
                 .Select((line, index) => new SourceLine(file, index + 1, line))
-                .Where(sourceLine => new[] { "Directory.CreateDirectory(", "Directory.Move(", "File.Move(" }
+                .Where(sourceLine => new[] { "Directory.CreateDirectory(", "File.Move(" }
                     .Any(token => sourceLine.Text.Contains(token, StringComparison.Ordinal)
                         && IsAllowedQuarantineExecutorWrite(sourceLine, token))))
+            .ToArray();
+        var quarantineDirectoryMoveMatches = sourceFiles
+            .SelectMany(file => File.ReadLines(file)
+                .Select((line, index) => new SourceLine(file, index + 1, line))
+                .Where(sourceLine => new[] { "Directory.CreateDirectory(", "Directory.Delete(", "Directory.Move(", "File.Copy(" }
+                    .Any(token => sourceLine.Text.Contains(token, StringComparison.Ordinal)
+                        && IsAllowedQuarantineDirectoryMoveWrite(sourceLine, token))))
             .ToArray();
         var undoExecutorWriteMatches = sourceFiles
             .SelectMany(file => File.ReadLines(file)
@@ -3545,7 +3584,8 @@ internal sealed class StorageScanTests
             reportWriteMatches.All(match => match.Text.Contains("dialog.FileName", StringComparison.Ordinal)),
             "File.WriteAllText should only write user-selected report exports.");
         Assert(manifestWriteMatches.Length == 1, "Only RestoreManifestFileStore should write Restore Manifest JSON.");
-        Assert(executorWriteMatches.Length == 3, "Only QuarantineExecutor should create destination parents and move files or folders.");
+        Assert(executorWriteMatches.Length == 2, "Only QuarantineExecutor should create destination parents and move files.");
+        Assert(quarantineDirectoryMoveMatches.Length == 7, "Only QuarantineDirectoryMove should move or copy-delete quarantined directories.");
         Assert(undoExecutorWriteMatches.Length == 3, "Only UndoQuarantineExecutor should create original parents and move files or folders back.");
         Assert(writeTextMatches.Length == reportWriteMatches.Length + manifestWriteMatches.Length, "Every File.WriteAllText production use should be explicitly allowlisted.");
     }
@@ -3761,6 +3801,7 @@ internal sealed class StorageScanTests
         return IsAllowedReportExportWrite(sourceLine, token)
             || IsAllowedRestoreManifestFileStoreWrite(sourceLine, token)
             || IsAllowedQuarantineExecutorWrite(sourceLine, token)
+            || IsAllowedQuarantineDirectoryMoveWrite(sourceLine, token)
             || IsAllowedUndoQuarantineExecutorWrite(sourceLine, token);
     }
 
@@ -3791,11 +3832,24 @@ internal sealed class StorageScanTests
         var allowedTokens = new[]
         {
             "Directory.CreateDirectory(",
-            "Directory.Move(",
             "File.Move("
         };
 
         return sourceLine.FilePath.EndsWith(@"src\WindowsFileCleaner.Core\QuarantineExecutor.cs", StringComparison.OrdinalIgnoreCase)
+            && allowedTokens.Contains(token);
+    }
+
+    private static bool IsAllowedQuarantineDirectoryMoveWrite(SourceLine sourceLine, string token)
+    {
+        var allowedTokens = new[]
+        {
+            "Directory.CreateDirectory(",
+            "Directory.Delete(",
+            "Directory.Move(",
+            "File.Copy("
+        };
+
+        return sourceLine.FilePath.EndsWith(@"src\WindowsFileCleaner.Core\QuarantineDirectoryMove.cs", StringComparison.OrdinalIgnoreCase)
             && allowedTokens.Contains(token);
     }
 

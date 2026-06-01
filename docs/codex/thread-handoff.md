@@ -9,7 +9,7 @@ Use this when starting a fresh Codex thread for this repository.
 - Repo: `D:\Codex\Windows File Cleaner`
 - GitHub: `Smellybum1/Windows-File-Cleaner`
 - Branch: `main`
-- Latest completed packet: First Real-Profile Quarantine Execution
+- Latest completed packet: Cross-Volume Directory Quarantine Fallback
 - Current app stack: C# / WPF / .NET 8
 - Desktop shortcut target: `D:\Codex\Windows File Cleaner\src\WindowsFileCleaner.App\bin\Debug\net8.0-windows\WindowsFileCleaner.App.exe`
 
@@ -31,7 +31,7 @@ User-reported fresh real-profile read-only retest now exists: on 2026-06-01 the 
 
 The manual selected-restore trust helper exists: `.\tools\New-RealProfileSelectedRestoreTrustManifest.cmd` creates one sacrificial exact real-profile Restore Manifest under `D:\WindowsFileCleanerQuarantine` by default and targets `C:\Users\moxhe\WindowsFileCleanerRestoreTrustTest\restore-target.txt`. It refuses to run if the restore target already exists and does not quarantine existing personal files. Use it only after full preflight and explicit user intent to click the restore test in WPF.
 
-First real-profile Quarantine implementation evidence now exists: core tests and WPF app tests pass; synthetic exact real-profile missing-source execution attempts rerun immediate pre-execution revalidation and report no movement; custom and real-profile-child scopes remain preview-only. The user still needs to run full `.cmd` MVP preflight and explicitly approve/click any specific real-profile batch.
+First real-profile Quarantine implementation evidence now exists: core tests and WPF app tests pass; synthetic exact real-profile missing-source execution attempts rerun immediate pre-execution revalidation and report no movement; custom and real-profile-child scopes remain preview-only. The user attempted a first exact real-profile folder Quarantine on 2026-06-01 and reported the app failed safely with `moved 0, failed 1` because `Directory.Move` cannot move directories from `C:` to the preferred `D:` Quarantine Root. The latest packet adds a guarded cross-volume directory copy-then-delete fallback under `QuarantineExecutor` and expands the WPF Quarantine Execution Gate details area. Before any retry, run full `.cmd` MVP preflight and have the user explicitly approve/click only the specific reviewed batch.
 
 ## Safety boundary
 
@@ -47,6 +47,7 @@ First real-profile Quarantine implementation evidence now exists: core tests and
 - Do not treat the Restore Manifest review summary as restore approval; it is a compact read-only orientation line for discovery/readiness/gate state and does not replace the detailed panes.
 - Do not let read-only readiness/revalidation builders call `QuarantineExecutor.Execute`, `UndoQuarantineExecutor.Undo`, or `RestoreManifestFileStore.Write`; the core source guard now checks this boundary.
 - Do not add WPF movement executor calls outside the known gated execution bridge methods unless a later explicit user-approved real-profile execution packet updates the source guard, tests, and ADR-backed safety contract.
+- Keep cross-volume folder movement inside `QuarantineDirectoryMove` and `QuarantineExecutor`; do not copy/delete folders from WPF, readiness builders, or docs/testing helpers.
 - Do not expand ADR 0019 selected restore into all-manifest restore. It restores one selected exact real-profile Restore Manifest only after selected readiness, exact `RESTORE`, and immediate revalidation.
 - Do not implement permanent deletion as the next step.
 - Keep Storage Scan read-only.

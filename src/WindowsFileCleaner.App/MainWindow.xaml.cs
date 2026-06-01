@@ -4705,7 +4705,7 @@ public partial class MainWindow : Window
             ? $"Gate is closed: {FormatQuarantineExecutionGateBlocker(gate.Blockers[0])}"
             : "Gate is closed until exact QUARANTINE confirmation.";
 
-        return $"Quarantine Execution Gate: {state} The gate text is review context; only the separate fixture action button can move files after exact QUARANTINE. Real-profile/custom execution remains unavailable. This cue does not create folders, move files, restore files, delete files, write manifests, or approve cleanup.";
+        return $"Quarantine Execution Gate: {state} The gate text is review context; the separate action button can move fixture rows after exact QUARANTINE, and exact real-profile rows only after every readiness gate passes. Custom and non-exact real-profile execution remain unavailable. This cue does not create folders, move files, restore files, delete files, write manifests, or approve cleanup.";
     }
 
     private static string FormatQuarantineExecutionGateBlocker(string blocker)
