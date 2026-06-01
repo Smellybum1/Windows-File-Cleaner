@@ -185,6 +185,7 @@ What changed:
 - Refactored terminal checklist output to reuse a single checklist item source.
 - Added timestamped markdown notes templates under `.local\fixture-review-acceptance`.
 - Later packet `2026-06-01-fixture-checklist-section-grouping.md` added matching section headings to the notes template while preserving the same numbered prompts.
+- Later packet `2026-06-01-fixture-acceptance-evidence-header.md` added repository, Git branch/commit, preflight command, visible fixture command, and local evidence checkboxes to the notes header.
 - Updated docs and handoff/progress notes.
 
 Files changed:

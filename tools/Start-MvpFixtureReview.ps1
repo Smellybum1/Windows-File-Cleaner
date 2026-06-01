@@ -80,6 +80,27 @@ function Write-FixtureReviewChecklist {
     }
 }
 
+function Get-FixtureReviewGitValue {
+    param(
+        [Parameter(Mandatory)]
+        [string[]]$Arguments
+    )
+
+    try {
+        $output = & git @Arguments 2>$null
+        if ($LASTEXITCODE -eq 0) {
+            $value = $output | Select-Object -First 1
+            if (-not [string]::IsNullOrWhiteSpace([string]$value)) {
+                return ([string]$value).Trim()
+            }
+        }
+    }
+    catch {
+    }
+
+    return "unknown"
+}
+
 function New-FixtureAcceptanceNotes {
     param(
         [Parameter(Mandatory)]
@@ -90,6 +111,8 @@ function New-FixtureAcceptanceNotes {
     $timestamp = Get-Date -Format "yyyyMMdd-HHmmss"
     $notesPath = Join-Path $notesRoot ("fixture-acceptance-{0}.md" -f $timestamp)
     $checklistItems = Get-FixtureReviewChecklistItems -FixturePath $FixturePath
+    $gitBranch = Get-FixtureReviewGitValue -Arguments @("-C", $repoFullPath, "rev-parse", "--abbrev-ref", "HEAD")
+    $gitCommit = Get-FixtureReviewGitValue -Arguments @("-C", $repoFullPath, "rev-parse", "--short", "HEAD")
 
     New-Item -ItemType Directory -Path $notesRoot -Force | Out-Null
 
@@ -98,6 +121,17 @@ function New-FixtureAcceptanceNotes {
     $lines.Add("")
     $lines.Add("Created: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')")
     $lines.Add("Fixture Cleanup Scope: $FixturePath")
+    $lines.Add("")
+    $lines.Add("Acceptance evidence:")
+    $lines.Add("")
+    $lines.Add("- Repository: $repoFullPath")
+    $lines.Add("- Git branch: $gitBranch")
+    $lines.Add("- Git commit: $gitCommit")
+    $lines.Add('- Required preflight: `.\tools\Invoke-MvpPreflight.cmd`')
+    $lines.Add('- Visible fixture command after preflight: `.\tools\Start-MvpFixtureReview.cmd -SkipPreflight -WriteAcceptanceNotes`')
+    $lines.Add("- [ ] Preflight passed immediately before this visible fixture pass.")
+    $lines.Add("- [ ] Worktree was clean or intentional changes were recorded before launch.")
+    $lines.Add('- Notes file is local/ignored under `.local` and is not cleanup history.')
     $lines.Add("")
     $lines.Add("Safety boundary:")
     $lines.Add("")
