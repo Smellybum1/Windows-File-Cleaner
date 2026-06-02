@@ -18,7 +18,7 @@ For a read-only daily readiness check that verifies accepted package evidence, v
 .\tools\Invoke-DailyLocalReadiness.cmd
 ```
 
-This command is intentionally not a shortcut or installer. It does not create shortcuts, install anything, launch WPF, click `Scan`, scan, move, restore, delete, approve cleanup, or create cleanup history. It runs the accepted package verifier once before printing the normal launch command, then skips duplicate package verification for the fixture print-only command in the same readiness run.
+This command is intentionally not a shortcut or installer. It does not create shortcuts, install anything, launch WPF, click `Scan`, scan, move, restore, delete, approve cleanup, or create cleanup history. It runs the accepted package verifier once before printing the normal launch command, then skips duplicate package verification for the fixture print-only command in the same readiness run. ADR 0020 keeps accepted package launch commands as the daily path for v1 and defers installed shortcut or installer automation to a later explicit user-approved packaging packet.
 
 To include formal fixture acceptance-notes status in the same read-only daily output, opt in explicitly:
 
@@ -64,7 +64,7 @@ For ordinary local review, start from the latest accepted portable package rathe
 
 Remove `-PrintOnly` only when you intentionally want to launch the accepted package. `-Fixture` only prefills the repo-local smoke fixture Cleanup Scope; it does not create fixture files or click `Scan`. A verifier warning that the accepted package commit differs from newer docs-only commits is expected.
 
-If a local desktop shortcut still points at the debug build under `src\WindowsFileCleaner.App\bin\Debug`, treat it as a development convenience only. It is not accepted-package evidence, not an installer, and not the recommended daily launch path.
+If a local desktop shortcut still points at the debug build under `src\WindowsFileCleaner.App\bin\Debug`, treat it as a development convenience only. It is not accepted-package evidence, not an installer, and not the recommended daily launch path. Do not create or repair installed shortcuts from this repo unless a later ADR 0020 follow-up packet explicitly designs the shortcut target, stale-target handling, removal behavior, and read-only verification.
 
 The accepted launcher output repeats this boundary when it prints launch commands.
 
@@ -210,7 +210,7 @@ The publisher runs MVP preflight by default, publishes the WPF app as `Release` 
 .local\releases\windows-file-cleaner-vYYYYMMDD-HHMMSS.zip.sha256
 ```
 
-The release artifacts stay under ignored `.local\releases`. The script prints the exact executable path plus normal and fixture launch commands. `README-FIRST.txt` travels with the folder and zip as the package-local start-here note, including launch options and the reversible-only safety boundary. The publisher records the packaged executable SHA-256 in `release-metadata.txt` and writes a sibling zip checksum sidecar. This is a portable package, not an installer: it does not create shortcuts, does not enable permanent deletion, does not add persisted cleanup history, and does not add broad/all-manifest restore. Portable v1 remains reversible-only: read-only Storage Scan, review, gated Quarantine, and selected restore.
+The release artifacts stay under ignored `.local\releases`. The script prints the exact executable path plus normal and fixture launch commands. `README-FIRST.txt` travels with the folder and zip as the package-local start-here note, including launch options and the reversible-only safety boundary. The publisher records the packaged executable SHA-256 in `release-metadata.txt` and writes a sibling zip checksum sidecar. This is a portable package, not an installer: it does not create shortcuts, does not enable permanent deletion, does not add persisted cleanup history, and does not add broad/all-manifest restore. Portable v1 remains reversible-only: read-only Storage Scan, review, gated Quarantine, and selected restore. ADR 0020 keeps installed shortcut and installer support deferred until a later explicit user-approved packaging packet.
 
 Current accepted local package baseline: `.local\releases\windows-file-cleaner-v20260602-011556` at commit `bc9b869`, with completed ignored acceptance notes at `.local\release-acceptance\release-acceptance-20260602-011743.md`. The notes summary reports verifier/current-commit/normal-launch/fixture-launch evidence recorded, overall result `Pass`, and `6 pass, 0 issue, 0 not checked, 0 not recorded`; those notes are local evidence only and are not app persistence or cleanup history.
 

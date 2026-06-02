@@ -45,6 +45,8 @@ The handoff still listed a desktop shortcut target under `src\WindowsFileCleaner
 
 No ADR added. This is launch-path documentation clarity for existing portable package tooling and does not change architecture, persistence, cleanup execution, restore scope, deployment model, data model, or security policy.
 
+Later ADR 0020 records the durable deployment decision: accepted package launch commands remain the v1 daily path, while installed shortcut or installer automation is deferred to a later explicit user-approved packaging packet.
+
 ## Follow-up Work
 
 - Consider installed shortcut or installer automation only as a later explicit user-approved packaging packet.
