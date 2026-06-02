@@ -77,6 +77,7 @@ ADR-worthy decisions:
 - `git diff --check` passed with expected line-ending normalization warnings only.
 - Follow-up wrapper-hint smoke: `cmd.exe /c tools\Invoke-RealProfileNextBatchReview.cmd -SkipMvpPreflight` passed after the checklist began printing the recommended combined wrapper command. No WPF app was launched, no scan was started, and no files were moved, restored, deleted, approved, written to Restore Manifests, or added to cleanup history.
 - Follow-up fixture-notes guidance smoke: `cmd.exe /c tools\Invoke-RealProfileNextBatchReview.cmd -SkipMvpPreflight` passed after the checklist began printing the Fixture Acceptance Notes status reminder. Skipped preflight remains smoke evidence only; no WPF app was launched, no scan was started, and no files were moved, restored, deleted, approved, written to Restore Manifests, or added to cleanup history.
+- Follow-up current-head next-batch evidence: `cmd.exe /c tools\Invoke-RealProfileNextBatchReview.cmd` passed on `c7cb545`. Full MVP preflight passed, accepted package verification passed with the expected accepted-package/current-HEAD warning, Fixture Acceptance Notes stayed visibly incomplete, exact-profile display showed 4 manifests, displayed undo work stayed 0, displayed recovery review stayed 2, focused recovery-review showed the two older NVIDIA `DXCache` attempts, focused undo-work showed zero exact-profile matches, and the manual WPF checklist printed without WPF launch, scan, movement, restore, deletion, approval, manifest writes, or cleanup history.
 
 ## Risks and assumptions
 
