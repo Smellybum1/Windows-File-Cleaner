@@ -8,16 +8,20 @@ This repo uses a compact "Grill with Docs" workflow: clarify risky product/domai
 
 Before non-trivial implementation, read:
 
+- `docs/codex/current-state.md`
 - `docs/domain/context.md`
 - `docs/domain/glossary.md`
 - relevant ADRs in `docs/decisions/`
 - relevant feature briefs in `docs/features/`
 - `.codex/progress.md`
+- `docs/codex/safety-profiles.md`
 - `docs/codex/grill-with-docs.md`
 - `docs/codex/skillopt-inspired-workflow.md`
 - this file
 
 Read `docs/domain/context-map.md` only if it exists and is relevant.
+
+Read archived evidence under `.codex/archive/` or `docs/codex/archive/` only when the current task needs historical packet detail.
 
 ## Commands
 
@@ -66,8 +70,10 @@ This is a local Windows cleanup app for reviewing storage under `C:\Users\moxhe`
 - `docs/domain/glossary.md`: preferred terms, forbidden synonyms, and naming rules.
 - `docs/decisions/`: ADRs.
 - `docs/features/`: feature briefs, plans, and completion notes.
+- `docs/operations/`: operational runbooks and command detail.
 - `docs/codex/`: reusable Codex workflow templates.
-- `.codex/progress.md`: running evidence log, checks, known risks, and next recommended work.
+- `.codex/progress.md`: compact current evidence log, checks, known risks, and next recommended work.
+- `.codex/archive/`: historical evidence logs.
 
 ## Naming Rules
 

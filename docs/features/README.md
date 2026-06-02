@@ -6,6 +6,8 @@ Use a feature brief for any non-trivial feature, refactor, migration, or product
 
 Feature briefs are temporary-to-semi-durable working documents. They capture the plan, open questions, decisions made during grilling, implementation notes, and completion notes.
 
+Use `docs/features/index.md` as the current feature-brief map. Historical briefs may remain in this folder for link stability, but new threads should start from the index and only open relevant briefs.
+
 ## File naming
 
 Use this format:
@@ -60,3 +62,9 @@ Completion notes should include:
 - Open questions
 - Risky assumptions
 
+## Archive policy
+
+- Keep current roadmap, active feature, and recent evidence briefs easy to find through `docs/features/index.md`.
+- Do not bulk-read every feature brief in a fresh thread.
+- Preserve old feature-brief paths unless a link-preserving archive move has been planned.
+- Prefer monthly archive indexes before physically moving historical briefs.

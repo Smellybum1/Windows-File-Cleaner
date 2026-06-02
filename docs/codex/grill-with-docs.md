@@ -13,12 +13,16 @@ Do not rush to implementation. First create shared understanding.
 Read:
 
 - `AGENTS.md`
+- `docs/codex/current-state.md`
 - `docs/domain/context.md`
 - `docs/domain/glossary.md`
 - `docs/domain/context-map.md`
 - Relevant ADRs in `docs/decisions/`
 - Relevant feature briefs in `docs/features/`
 - `.codex/progress.md`
+- `docs/codex/safety-profiles.md`
+
+Read archived evidence only when the task needs historical packet detail.
 
 ## Step 2: Restate the request using project language
 
@@ -164,4 +168,3 @@ Avoid:
 - Leaving feature briefs unfinished after implementation.
 - Saying a task is complete without listing tests and assumptions.
 - Rewriting workflow docs broadly after a single anecdote.
-
