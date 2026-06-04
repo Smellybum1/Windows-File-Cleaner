@@ -18,8 +18,9 @@ Use this index before opening individual feature briefs. The folder contains man
 - `2026-06-04-fixture-summary-ignored-path-guard.md`: fixture acceptance summaries now reject explicit notes paths outside ignored `.local`.
 - `2026-06-04-fixture-completion-summary-wording.md`: completed fixture acceptance summaries now say evidence is complete and no recorder action is pending.
 - `2026-06-04-package-completion-summary-wording.md`: completed package acceptance summaries now say evidence is complete and no recorder action is pending.
+- `2026-06-04-ci-evidence-refresh-after-trust-helper-preflight.md`: CI runbook and compact handoff docs now record #385 proof for the normal push preflight path after the trust-helper path guard joined default MVP preflight.
 - `2026-06-04-ci-evidence-wording-stabilization.md`: CI evidence docs now use representative current-path wording instead of self-staling latest-run wording.
-- `2026-06-04-ci-evidence-refresh.md`: CI runbook and compact handoff docs now record #365 proof for the current normal push preflight path.
+- `2026-06-04-ci-evidence-refresh.md`: CI runbook and compact handoff docs recorded the earlier #365 proof for the active feature-index documentation consistency preflight path.
 - `2026-06-04-feature-index-entry-regression.md`: documentation consistency now verifies bare active feature-index entries resolve to existing feature briefs.
 - `2026-06-04-documentation-consistency-regression.md`: MVP preflight now verifies active docs links and latest packet breadcrumb alignment.
 - `2026-06-04-ci-windows-image-canary.md`: MVP Preflight now has a manual runner-image canary for intentionally testing `windows-2025-vs2026` while push/PR runs remain on `windows-2022`.

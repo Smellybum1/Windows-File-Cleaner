@@ -25,7 +25,7 @@ Keep committed CI and handoff documentation aligned with representative normal p
 
 Small feature-level decisions:
 
-- Record #365 as representative current-path evidence, while preserving #360 as the first proof of the no-input `windows-2022` fallback.
+- Record #365 as the representative evidence for that packet's active feature-index documentation consistency path, while preserving #360 as the first proof of the no-input `windows-2022` fallback.
 - Keep this as a docs-only evidence refresh.
 
 ADR-worthy decisions:
@@ -42,6 +42,7 @@ What changed:
 - Updated compact current-state, progress, and thread-handoff docs to name this packet and current CI evidence.
 - Updated the feature-index regression brief to record #365 as external CI proof.
 - Later packet `CI Evidence Wording Stabilization` changed "latest" wording to representative current-path evidence, so the runbook does not become stale after every green docs-only push.
+- Later packet `CI Evidence Refresh After Trust Helper Preflight` superseded #365 as the representative current-path evidence after default MVP preflight coverage changed.
 
 Tests run:
 

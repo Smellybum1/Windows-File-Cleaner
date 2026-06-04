@@ -19,7 +19,9 @@ Push and pull-request runs use:
 runs-on: "${{ inputs.runner_image || 'windows-2022' }}"
 ```
 
-The no-input push fallback was first validated by GitHub Actions MVP Preflight [#360](https://github.com/Smellybum1/Windows-File-Cleaner/actions/runs/26938525187) on commit `3e2e2ae`. Representative current-path evidence: [#365](https://github.com/Smellybum1/Windows-File-Cleaner/actions/runs/26940183876) passed on commit `98d3412` in `1m 33s`, after the documentation consistency regression started checking active feature-index entries. Do not update this line for every green docs-only push; refresh it only when the CI path, runner baseline, or preflight coverage meaningfully changes.
+The no-input push fallback was first validated by GitHub Actions MVP Preflight [#360](https://github.com/Smellybum1/Windows-File-Cleaner/actions/runs/26938525187) on commit `3e2e2ae`.
+
+Representative current-path evidence: [#385](https://github.com/Smellybum1/Windows-File-Cleaner/actions/runs/26947457429) passed on commit `7baf70d` in `1m 34s`, after the real-profile selected restore trust-helper path guard regression joined default MVP preflight. Earlier [#365](https://github.com/Smellybum1/Windows-File-Cleaner/actions/runs/26940183876) passed on commit `98d3412` after the documentation consistency regression started checking active feature-index entries. Do not update this line for every green docs-only push; refresh it only when the CI path, runner baseline, or preflight coverage meaningfully changes.
 
 Safety profile: `terminal-readonly` from `docs/codex/safety-profiles.md`. CI restores, builds, runs tests, runs fixture and synthetic regression checks, checks active documentation consistency including active feature-index entries, and checks whitespace. It must not launch WPF, scan `C:\Users\moxhe`, move, restore, delete, approve cleanup, write real Restore Manifests, create shortcuts, install anything, promote a package, or create cleanup history.
 

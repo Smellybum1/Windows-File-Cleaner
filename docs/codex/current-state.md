@@ -12,7 +12,7 @@ Use this as the first compact orientation file for new Codex threads. Historical
 - Latest working app packet: real-profile Quarantine inline status wording fix.
 - Latest package candidate: `.local\releases\windows-file-cleaner-v20260604-121922` at `e6ac3eb`, verified but not human-accepted.
 - Latest tooling/evidence packet: real profile selected restore trust helper preflight regression.
-- Latest docs/workflow packet: pending notes HEAD wording stabilization.
+- Latest docs/workflow packet: ci evidence refresh after trust helper preflight.
 - Previous docs/workflow baseline: `1ea1b76 Reduce workflow markdown bloat`
 - App stack: C# / WPF / .NET 8
 - Product: local Windows cleanup reviewer for `C:\Users\moxhe`
@@ -73,7 +73,7 @@ Use this as the first compact orientation file for new Codex threads. Historical
 - Package acceptance summaries now print `Current repository HEAD`, `Notes/current HEAD status`, and `Package/current HEAD status`, so pending candidate review can see whether notes and package metadata were created at the current commit, differ from current `HEAD`, or have unavailable commit evidence.
 - GitHub Actions MVP Preflight now uses `actions/checkout@v6`, `actions/setup-dotnet@v5`, and `windows-2022` to stay on Node 24-capable official actions while preserving the current Windows runner baseline before the `windows-latest` Windows 2025 / Visual Studio 2026 migration.
 - GitHub Actions MVP Preflight also has a manual `workflow_dispatch` runner-image choice so `windows-2025-vs2026` can be tested intentionally without changing the push or pull-request baseline.
-- Push CI run #365 for commit `98d3412` passed, validating the current normal push path after active feature-index entries were added to the documentation consistency regression. Earlier #360 validated the normal push fallback for `inputs.runner_image || 'windows-2022'`.
+- Push CI run #385 for commit `7baf70d` passed, validating the current normal push path after the real-profile selected restore trust-helper path guard regression joined default MVP preflight. Earlier #365 validated active feature-index documentation consistency coverage, and earlier #360 validated the normal push fallback for `inputs.runner_image || 'windows-2022'`.
 - `docs/operations/ci.md` captures normal push/PR CI behavior, the manual `windows-2025-vs2026` canary procedure, baseline-change rule, and safety boundary.
 - `tools\Test-DocumentationConsistency.cmd` verifies active markdown references, bare active feature-index entries, and latest packet breadcrumbs across README, feature index, current state, progress, and thread handoff. MVP preflight runs it by default before the whitespace diff check; use `-SkipDocumentationConsistencyCheck` only for focused local loops.
 - MVP preflight now runs the local release acceptance summary regression check by default before the local release acceptance recorder regression; use `-SkipLocalReleaseAcceptanceSummaryCheck` only for focused local loops.

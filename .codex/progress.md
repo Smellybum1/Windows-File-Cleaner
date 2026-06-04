@@ -13,7 +13,7 @@ Read archived evidence only when the current task needs old packet detail.
 
 Read first: `docs/codex/current-state.md`.
 
-Latest docs/workflow packet: `2026-06-04-pending-notes-head-wording-stabilization`. It rewords pending package acceptance notes docs so refresh commits are generation-time provenance and live notes/current-HEAD context comes from the summary helper. No app behavior changed.
+Latest docs/workflow packet: `2026-06-04-ci-evidence-refresh-after-trust-helper-preflight`. It refreshes representative normal push CI evidence to MVP Preflight #385 on `7baf70d` after the real-profile selected restore trust-helper path guard joined default MVP preflight. No app behavior changed.
 
 Latest tooling/evidence packet: `2026-06-04-real-profile-selected-restore-trust-helper-preflight-regression`. MVP preflight now runs the sacrificial real-profile selected restore trust helper path guard regression by default, with a `-WhatIf`-only non-`moxhe` override and escaped-path case derived from the helper's safe preview for clean-runner portability.
 
@@ -42,6 +42,33 @@ Post-action evidence:
 6. Use `docs/operations/*.md` for command detail.
 
 ## Recent Packet Summaries
+
+### 2026-06-04: CI Evidence Refresh After Trust Helper Preflight
+
+Status: completed
+
+Goal:
+
+- Refresh representative normal push CI evidence after the real-profile selected restore trust-helper path guard regression joined default MVP preflight.
+
+Safety profile:
+
+- `docs-only`. This updates committed documentation only. It does not launch WPF, scan real-profile files, move, restore, delete, approve cleanup, promote a package, create shortcuts, install anything, write acceptance notes, write Restore Manifests, or create cleanup history.
+
+Changes:
+
+- `docs\operations\ci.md` now records GitHub Actions MVP Preflight #385 evidence for commit `7baf70d`.
+- Compact current-state, progress, and thread-handoff docs name this packet and current CI evidence.
+- The feature index and prior CI wording brief now frame #365 as historical active feature-index evidence after preflight coverage changed.
+
+Verification:
+
+- `cmd.exe /c tools\Test-DocumentationConsistency.cmd`
+- `git diff --check`
+
+ADRs:
+
+- Skipped; this records CI evidence in committed documentation and does not change product behavior, cleanup execution, restore execution, persistence, security, data model, deployment packaging, or core UX flow.
 
 ### 2026-06-04: Real-Profile Selected Restore Trust Helper Preflight Regression
 
@@ -1430,6 +1457,7 @@ ADRs:
 ### Current Live Product And Package Packets
 
 - `2026-06-04-real-profile-selected-restore-trust-helper-preflight-regression`: MVP preflight now runs the sacrificial real-profile selected restore trust helper path guard regression by default, with a `-WhatIf`-only non-`moxhe` override and escaped-path case derived from the helper's safe preview for clean-runner portability.
+- `2026-06-04-ci-evidence-refresh-after-trust-helper-preflight`: CI runbook and compact handoff docs now record #385 proof for the normal push preflight path after the trust-helper path guard joined default MVP preflight.
 - `2026-06-04-real-profile-selected-restore-trust-helper-path-guard`: the sacrificial real-profile selected restore trust helper now rejects explicit roots outside the default `D:\WindowsFileCleanerQuarantine` root or ignored `.local`, and generated quarantine source paths outside the action `items` root, with a local `-WhatIf` regression.
 - `2026-06-04-fixture-root-path-guard-regression`: synthetic fixture creation and fixture review launch roots now have MVP preflight coverage that explicit roots outside ignored `.local` fail before fixture writes, checklist output, or WPF launch.
 - `2026-06-04-local-release-path-guard-regression`: portable release publisher, verifier, and launcher now have MVP preflight coverage that explicit release roots and release paths outside ignored `.local` fail before publisher, verifier, or launch-command output.
@@ -1442,7 +1470,7 @@ ADRs:
 - `2026-06-04-fixture-completion-summary-wording`: completed fixture acceptance summaries now say evidence is complete and no recorder action is pending.
 - `2026-06-04-package-completion-summary-wording`: completed package acceptance summaries now say evidence is complete and no recorder action is pending.
 - `2026-06-04-ci-evidence-wording-stabilization`: CI evidence docs now use representative current-path wording instead of self-staling latest-run wording.
-- `2026-06-04-ci-evidence-refresh`: CI runbook and compact handoff docs now record #365 proof for the current normal push preflight path.
+- `2026-06-04-ci-evidence-refresh`: CI runbook and compact handoff docs recorded the earlier #365 proof for the active feature-index documentation consistency preflight path.
 - `2026-06-04-feature-index-entry-regression`: documentation consistency now verifies bare active feature-index entries resolve to existing feature briefs.
 - `2026-06-04-documentation-consistency-regression`: MVP preflight now verifies active documentation links and latest packet breadcrumb alignment before the whitespace diff check.
 - `2026-06-04-ci-windows-image-canary`: MVP Preflight now has a manual runner-image canary for intentionally testing `windows-2025-vs2026` while push/PR runs remain on `windows-2022`.

@@ -18,7 +18,7 @@ Prevent CI evidence docs from becoming stale after every successful docs-only pu
 
 ## Desired behavior
 
-- CI docs describe #365 as representative current-path evidence, not the evergreen latest run.
+- CI docs describe a representative current-path run, not the evergreen latest run.
 - The CI runbook says not to update the evidence line for every green docs-only push.
 - Latest docs/workflow breadcrumbs stay aligned across current state, progress, and thread handoff.
 
@@ -26,7 +26,7 @@ Prevent CI evidence docs from becoming stale after every successful docs-only pu
 
 Small feature-level decisions:
 
-- Keep #365 as the representative evidence for the active feature-index documentation consistency check.
+- Keep representative CI evidence stable until the CI path, runner baseline, or preflight coverage changes.
 - Update future CI evidence only when the CI path, runner baseline, or preflight coverage meaningfully changes.
 
 ADR-worthy decisions:
@@ -42,6 +42,7 @@ What changed:
 - Reworded the CI runbook to use representative current-path evidence.
 - Reworded the CI evidence refresh brief to avoid self-staling latest-run language.
 - Updated compact handoff docs to name this docs/workflow packet.
+- Later packet `CI Evidence Refresh After Trust Helper Preflight` refreshed the representative evidence after preflight coverage changed.
 
 Tests run:
 
@@ -68,8 +69,8 @@ Open questions:
 
 Follow-up work:
 
-- Refresh the representative CI evidence only after meaningful CI path, runner baseline, or preflight coverage changes.
+- Refresh the representative CI evidence only after meaningful CI path, runner baseline, or preflight coverage changes. This happened next when the trust-helper path guard joined default MVP preflight.
 
 Risky assumptions:
 
-- #365 remains the right representative evidence for active feature-index documentation consistency until CI coverage or runner behavior changes.
+- #365 remains historical evidence for active feature-index documentation consistency, but is no longer the current representative normal push evidence after trust-helper preflight coverage changed.
