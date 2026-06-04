@@ -6,6 +6,7 @@ Use this index before opening individual feature briefs. The folder contains man
 
 ## Active Or Current
 
+- `2026-06-04-package-acceptance-current-head-summary.md`: package acceptance summaries now show current repository `HEAD` and notes/current-HEAD status.
 - `2026-06-04-startup-context-compaction.md`: current docs/context reduction packet for faster Codex threads.
 - `2026-06-04-daily-readiness-latest-package-notes-regression.md`: daily readiness latest package notes informational behavior, now included in MVP preflight.
 - `2026-06-04-daily-readiness-fixture-acceptance-regression.md`: daily readiness fixture acceptance notes forwarding, now included in MVP preflight.

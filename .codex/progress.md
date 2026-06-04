@@ -15,7 +15,7 @@ Read first: `docs/codex/current-state.md`.
 
 Latest docs/workflow packet: `2026-06-04-startup-context-compaction`. It moved oversized read-first docs into reference/archive files and replaced them with compact active docs to reduce Codex thread lag. No app behavior changed.
 
-Latest tooling/evidence packet: `2026-06-04-package-summary-ignored-path-guard-regression`. MVP preflight now covers explicit package acceptance summary path rejection outside ignored `.local`.
+Latest tooling/evidence packet: `2026-06-04-package-acceptance-current-head-summary`. Package acceptance summaries now show current repository `HEAD` and notes/current-HEAD status while remaining read-only.
 
 Latest package candidate: `.local\releases\windows-file-cleaner-v20260604-121922` at app commit `e6ac3eb`, verified but not human-accepted. Current pending acceptance notes: `.local\release-acceptance\release-acceptance-20260604-164509.md`.
 
@@ -40,6 +40,35 @@ Post-action evidence:
 6. Use `docs/operations/*.md` for command detail.
 
 ## Recent Packet Summaries
+
+### 2026-06-04: Package Acceptance Current-HEAD Summary
+
+Status: completed
+
+Goal:
+
+- Make package acceptance summaries show whether the notes creation commit matches the current repository `HEAD`, so pending human acceptance can see package/current-HEAD mismatch context without inferring it from separate commands.
+
+Safety profile:
+
+- `terminal-readonly`. The change adds read-only Git metadata to package acceptance summaries and extends the existing temporary-note regression. It does not launch WPF, scan real-profile files, move, restore, delete, approve cleanup, promote a package, create shortcuts, install anything, write acceptance notes, or create cleanup history.
+
+Changes:
+
+- `tools\Summarize-LocalReleaseAcceptanceNotes.ps1` now prints `Current repository HEAD`.
+- It also prints `Notes/current HEAD status` as `Matches current HEAD`, `Differs from current HEAD`, `Notes commit unavailable`, or `Current HEAD unavailable`.
+- Short and full Git commit text are treated as matching when one is a prefix of the other.
+- `tools\Test-LocalReleaseAcceptanceSummary.cmd` / `.ps1` now covers matching, differing, and missing notes commit cases.
+
+Verification:
+
+- `cmd.exe /c tools\Test-LocalReleaseAcceptanceSummary.cmd`
+- `cmd.exe /c tools\Summarize-LocalReleaseAcceptanceNotes.cmd -Path ".local\release-acceptance\release-acceptance-20260604-164509.md"`
+- `cmd.exe /c tools\Summarize-LocalReleaseAcceptanceNotes.cmd -RequireComplete`
+
+ADRs:
+
+- Skipped; this adds terminal-only evidence wording for existing package acceptance tooling under ADR 0020 and does not change product behavior, cleanup execution, restore execution, persistence, deployment, package acceptance policy, or real readiness behavior.
 
 ### 2026-06-04: Package Summary Ignored-Path Guard Regression
 

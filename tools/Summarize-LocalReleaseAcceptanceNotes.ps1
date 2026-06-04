@@ -221,6 +221,67 @@ function Format-LocalReleaseToolCommand {
     return ($parts -join " ")
 }
 
+function Get-CurrentRepositoryHead {
+    try {
+        $commit = & git -C $repoRoot rev-parse HEAD 2>$null
+        if ($LASTEXITCODE -eq 0 -and -not [string]::IsNullOrWhiteSpace($commit)) {
+            return $commit.Trim()
+        }
+    }
+    catch {
+        return "unknown"
+    }
+
+    return "unknown"
+}
+
+function Test-GitCommitTextMatches {
+    param(
+        [Parameter(Mandatory)]
+        [string]$ExpectedCommit,
+
+        [Parameter(Mandatory)]
+        [string]$ActualCommit
+    )
+
+    if ([string]::IsNullOrWhiteSpace($ExpectedCommit) -or
+        [string]::IsNullOrWhiteSpace($ActualCommit) -or
+        $ExpectedCommit.Equals("unknown", [System.StringComparison]::OrdinalIgnoreCase) -or
+        $ActualCommit.Equals("unknown", [System.StringComparison]::OrdinalIgnoreCase)) {
+        return $false
+    }
+
+    return $ExpectedCommit.Equals($ActualCommit, [System.StringComparison]::OrdinalIgnoreCase) -or
+        $ExpectedCommit.StartsWith($ActualCommit, [System.StringComparison]::OrdinalIgnoreCase) -or
+        $ActualCommit.StartsWith($ExpectedCommit, [System.StringComparison]::OrdinalIgnoreCase)
+}
+
+function Get-NotesCurrentHeadStatus {
+    param(
+        [Parameter(Mandatory)]
+        [string]$NotesGitCommit,
+
+        [Parameter(Mandatory)]
+        [string]$CurrentGitCommit
+    )
+
+    if ([string]::IsNullOrWhiteSpace($NotesGitCommit) -or
+        $NotesGitCommit.Equals("unknown", [System.StringComparison]::OrdinalIgnoreCase)) {
+        return "Notes commit unavailable"
+    }
+
+    if ([string]::IsNullOrWhiteSpace($CurrentGitCommit) -or
+        $CurrentGitCommit.Equals("unknown", [System.StringComparison]::OrdinalIgnoreCase)) {
+        return "Current HEAD unavailable"
+    }
+
+    if (Test-GitCommitTextMatches -ExpectedCommit $NotesGitCommit -ActualCommit $CurrentGitCommit) {
+        return "Matches current HEAD"
+    }
+
+    return "Differs from current HEAD"
+}
+
 function Write-PortableReleaseAcceptanceNextSteps {
     param(
         [Parameter(Mandatory)]
@@ -372,6 +433,8 @@ if (-not (Test-Path -LiteralPath $notesPath)) {
 }
 
 $lines = Get-Content -LiteralPath $fullNotesPath
+$notesGitCommit = Get-FirstMetadataValue -Lines $lines -Prefix "- Git commit:"
+$currentGitCommit = Get-CurrentRepositoryHead
 $overallIndex = [array]::IndexOf($lines, "Overall result:")
 $overallResult = "Not recorded"
 if ($overallIndex -ge 0) {
@@ -394,7 +457,9 @@ Write-Host "Notes file: $fullNotesPath"
 Write-Host ("Created: {0}" -f (Get-FirstMetadataValue -Lines $lines -Prefix "Created:"))
 Write-Host ("Release folder: {0}" -f (Get-FirstMetadataValue -Lines $lines -Prefix "Release folder:"))
 Write-Host ("Git branch: {0}" -f (Get-FirstMetadataValue -Lines $lines -Prefix "- Git branch:"))
-Write-Host ("Git commit: {0}" -f (Get-FirstMetadataValue -Lines $lines -Prefix "- Git commit:"))
+Write-Host ("Git commit: {0}" -f $notesGitCommit)
+Write-Host ("Current repository HEAD: {0}" -f $currentGitCommit)
+Write-Host ("Notes/current HEAD status: {0}" -f (Get-NotesCurrentHeadStatus -NotesGitCommit $notesGitCommit -CurrentGitCommit $currentGitCommit))
 Write-Host ("Worktree at notes creation: {0}" -f (Get-FirstMetadataValue -Lines $lines -Prefix "- Worktree status at notes creation:"))
 Write-Host ("Release metadata commit: {0}" -f (Get-FirstMetadataValue -Lines $lines -Prefix "- Release metadata commit:"))
 Write-Host ("Release metadata preflight skipped: {0}" -f (Get-FirstMetadataValue -Lines $lines -Prefix "- Release metadata preflight skipped:"))

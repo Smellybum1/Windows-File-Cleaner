@@ -72,6 +72,15 @@ function Get-CompactOutputText {
     return [regex]::Replace($Text, "\s+", " ").Trim()
 }
 
+function Get-CurrentTestGitCommit {
+    $commit = & git -C $repoRoot rev-parse --short HEAD
+    if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace($commit)) {
+        throw "Test could not read current git commit."
+    }
+
+    return $commit.Trim()
+}
+
 function New-TestAcceptanceNotes {
     param(
         [Parameter(Mandatory)]
@@ -81,7 +90,9 @@ function New-TestAcceptanceNotes {
         [bool]$Complete,
 
         [Parameter(Mandatory)]
-        [bool]$CommitEvidenceRecorded
+        [bool]$CommitEvidenceRecorded,
+
+        [string]$GitCommit = "summary-test"
     )
 
     Assert-UnderLocalPath -Path $Path
@@ -104,7 +115,7 @@ function New-TestAcceptanceNotes {
     $lines.Add("")
     $lines.Add("- Repository: $repoFullPath")
     $lines.Add("- Git branch: main")
-    $lines.Add("- Git commit: summary-test")
+    $lines.Add("- Git commit: $GitCommit")
     $lines.Add("- Worktree status at notes creation: clean")
     $lines.Add("- Release metadata commit: summary-test-release")
     $lines.Add("- Release metadata worktree status at publish: clean")
@@ -219,6 +230,7 @@ $defaultIncompletePath = Join-Path $notesRoot "release-acceptance-summary-defaul
 $defaultCompletePath = Join-Path $notesRoot "release-acceptance-summary-default-test-complete.md"
 $defaultMalformedPath = Join-Path $notesRoot "release-acceptance-summary-default-test-malformed.md"
 $outsideLocalPath = Join-Path $repoRoot "README.md"
+$currentGitCommit = Get-CurrentTestGitCommit
 $testFiles = @(
     $incompletePath,
     $completePath,
@@ -238,7 +250,7 @@ try {
     New-Item -ItemType Directory -Path $testRoot -Force | Out-Null
     New-Item -ItemType Directory -Path $notesRoot -Force | Out-Null
     New-TestAcceptanceNotes -Path $incompletePath -Complete:$false -CommitEvidenceRecorded:$false
-    New-TestAcceptanceNotes -Path $completePath -Complete:$true -CommitEvidenceRecorded:$true
+    New-TestAcceptanceNotes -Path $completePath -Complete:$true -CommitEvidenceRecorded:$true -GitCommit $currentGitCommit
     New-TestMalformedAcceptanceNotes -Path $malformedPath
 
     $incompleteResult = Invoke-Summary -Path $incompletePath
@@ -265,6 +277,8 @@ try {
     }
 
     Assert-ContainsText -Lines $malformedResult.Output -ExpectedText "Release folder: unknown"
+    Assert-ContainsText -Lines $malformedResult.Output -ExpectedText "Current repository HEAD: "
+    Assert-ContainsText -Lines $malformedResult.Output -ExpectedText "Notes/current HEAD status: Notes commit unavailable"
     Assert-ContainsText -Lines $malformedResult.Output -ExpectedText "Acceptance evidence: verifier: Missing; commit: Missing; normal launch: Missing; fixture launch: Missing"
     Assert-ContainsText -Lines $malformedResult.Output -ExpectedText "Overall result: Not recorded"
     Assert-ContainsText -Lines $malformedResult.Output -ExpectedText "Checklist totals: 0 pass, 0 issue, 0 not checked, 0 not recorded"
@@ -321,8 +335,17 @@ try {
         throw "Complete notes -RequireComplete should exit 0. Exit code: $($completeResult.ExitCode)"
     }
 
+    Assert-ContainsText -Lines $completeResult.Output -ExpectedText "Current repository HEAD: "
+    Assert-ContainsText -Lines $completeResult.Output -ExpectedText "Notes/current HEAD status: Matches current HEAD"
     Assert-ContainsText -Lines $completeResult.Output -ExpectedText "Completion check: complete. Portable release acceptance notes are ready to record."
     Assert-DoesNotContainText -Lines $completeResult.Output -UnexpectedText "Pending acceptance next steps:"
+
+    $differingCommitResult = Invoke-Summary -Path $incompletePath
+    if ($differingCommitResult.ExitCode -ne 0) {
+        throw "Differing notes commit summary should exit 0 without -RequireComplete. Exit code: $($differingCommitResult.ExitCode)"
+    }
+
+    Assert-ContainsText -Lines $differingCommitResult.Output -ExpectedText "Notes/current HEAD status: Differs from current HEAD"
 
     Write-Host "Local release acceptance summary regression passed."
     Write-Host "Boundary: test notes were written under ignored .local only; this did not launch WPF, scan, move, restore, delete, approve cleanup, or create cleanup history."

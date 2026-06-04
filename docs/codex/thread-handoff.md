@@ -20,7 +20,7 @@ Load detailed reference docs or archived evidence only when the task needs histo
 - Repo: `D:\Codex\Windows File Cleaner`
 - Branch: `main`
 - Latest package/evidence packet: `2026-06-04-pending-package-acceptance-notes-refresh-after-tooling-hardening`
-- Latest tooling/evidence packet: `2026-06-04-package-summary-ignored-path-guard-regression`
+- Latest tooling/evidence packet: `2026-06-04-package-acceptance-current-head-summary`
 - Latest docs/workflow packet: `2026-06-04-startup-context-compaction`
 - Latest live-product evidence: `2026-06-04-second-real-profile-quarantine-batch`
 - Latest working app packet: `2026-06-04-real-profile-quarantine-inline-status-wording`
@@ -35,6 +35,7 @@ Load detailed reference docs or archived evidence only when the task needs histo
 - Daily readiness ends with an exact-profile undo-work stop-state spotlight after the broad Restore Manifest summary.
 - `tools\Test-DailyReadinessExactProfileUndoSpotlight.cmd` covers that spotlight with ignored synthetic Restore Manifests, and MVP preflight now runs it by default before the whitespace diff check. The regression uses the focused `-SyntheticRestoreManifestOnly` daily readiness mode so CI and clean runners do not need ignored accepted-package evidence for this check. It also asserts the synthetic mode rejects missing/outside-`.local` roots and acceptance-note parameters.
 - Incomplete package acceptance summaries print guarded recorder and recheck commands; the current candidate recorder command includes `-RecordCommitMismatch` and remains human-pass-only.
+- Package acceptance summaries print current repository `HEAD` and notes/current-HEAD status, so pending candidate notes visibly show whether package/current-HEAD mismatch context is present.
 - `tools\Test-FixtureAcceptanceNotes.cmd` covers fixture acceptance summary and recorder behavior with temporary ignored notes, and MVP preflight now runs it by default after the fixture checklist. It asserts incomplete summaries show recording guidance, `-RequireComplete` reports blockers, recorder calls require `-RecordManualAcceptance`, `-WhatIf` does not write, and synthetic explicit recording can complete notes.
 - `tools\Test-DailyReadinessFixtureAcceptanceNotes.cmd` covers optional and strict daily readiness fixture-note forwarding with temporary ignored package files, acceptance notes, fixture notes, and an empty Restore Manifest root. MVP preflight now runs it by default after the standalone fixture notes regression. It asserts required incomplete fixture notes fail before launch-command printing, optional incomplete notes show recording guidance and continue, and complete required notes pass the normal print-only daily flow.
 - `tools\Test-DailyReadinessLatestPackageNotes.cmd` covers daily readiness latest package notes visibility with temporary ignored package notes and fixture notes. MVP preflight now runs it by default after the daily readiness fixture acceptance notes regression. It asserts accepted evidence stays on completed notes while a newer incomplete candidate is shown as informational context with guarded `-RecordCommitMismatch` next steps, and a newer malformed-looking notes file reports missing evidence without blocking accepted-package readiness.
