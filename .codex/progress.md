@@ -15,7 +15,7 @@ Read first: `docs/codex/current-state.md`.
 
 Latest docs/workflow packet: `2026-06-04-startup-context-compaction`. It moved oversized read-first docs into reference/archive files and replaced them with compact active docs to reduce Codex thread lag. No app behavior changed.
 
-Latest tooling/evidence packet: `2026-06-04-package-acceptance-current-head-summary`. Package acceptance summaries now show current repository `HEAD`, notes/current-HEAD status, and package/current-HEAD status while remaining read-only.
+Latest tooling/evidence packet: `2026-06-04-ci-actions-runtime-maintenance`. GitHub Actions MVP Preflight now uses Node 24-capable official actions and pins the hosted runner to `windows-2022` while remaining read-only.
 
 Latest package candidate: `.local\releases\windows-file-cleaner-v20260604-121922` at app commit `e6ac3eb`, verified but not human-accepted. Current pending acceptance notes: `.local\release-acceptance\release-acceptance-20260604-164509.md`.
 
@@ -40,6 +40,33 @@ Post-action evidence:
 6. Use `docs/operations/*.md` for command detail.
 
 ## Recent Packet Summaries
+
+### 2026-06-04: CI Actions Runtime Maintenance
+
+Status: completed
+
+Goal:
+
+- Remove upcoming GitHub Actions Node 20 runtime warnings and avoid silently accepting the June 2026 `windows-latest` Windows 2025 / Visual Studio 2026 image migration.
+
+Safety profile:
+
+- `terminal-readonly`. The change updates CI YAML and docs only. It does not launch WPF, scan real-profile files, move, restore, delete, approve cleanup, promote a package, create shortcuts, install anything, write acceptance notes, write Restore Manifests, or create cleanup history.
+
+Changes:
+
+- `.github\workflows\mvp-preflight.yml` now uses `actions/checkout@v6`.
+- `.github\workflows\mvp-preflight.yml` now uses `actions/setup-dotnet@v5`.
+- `.github\workflows\mvp-preflight.yml` now runs on `windows-2022` instead of floating `windows-latest`.
+- Added `docs\features\2026-06-04-ci-actions-runtime-maintenance.md`.
+
+Verification:
+
+- `cmd.exe /c tools\Invoke-MvpPreflight.cmd`
+
+ADRs:
+
+- Skipped; this is reversible CI runtime maintenance and does not change product behavior, cleanup execution, restore execution, persistence, security, data model, deployment packaging, or core UX flow.
 
 ### 2026-06-04: Package Acceptance Current-HEAD Summary
 
@@ -825,6 +852,7 @@ ADRs:
 
 ### Current Live Product And Package Packets
 
+- `2026-06-04-ci-actions-runtime-maintenance`: GitHub Actions MVP Preflight now uses Node 24-capable official actions and pins CI to `windows-2022` before the `windows-latest` Windows 2025 / Visual Studio 2026 migration.
 - `2026-06-04-package-summary-ignored-path-guard-regression`: package acceptance summaries now reject explicit notes paths outside ignored `.local`, covered by MVP preflight summary regression.
 - `2026-06-04-pending-package-acceptance-notes-refresh-after-tooling-hardening`: current pending candidate notes refreshed to `.local\release-acceptance\release-acceptance-20260604-164509.md` after package/readiness tooling commits advanced `HEAD` beyond package commit `e6ac3eb`.
 - `2026-06-04-local-release-acceptance-command-stamping-regression`: MVP preflight now covers generated package acceptance notes command stamping for actual release paths, current-commit evidence, and guarded commit-mismatch recorder guidance.

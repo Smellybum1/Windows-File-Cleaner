@@ -6,6 +6,7 @@ Use this index before opening individual feature briefs. The folder contains man
 
 ## Active Or Current
 
+- `2026-06-04-ci-actions-runtime-maintenance.md`: GitHub Actions MVP Preflight now uses Node 24-capable official actions and pins CI to `windows-2022` before the `windows-latest` VS 2026 image migration.
 - `2026-06-04-package-acceptance-current-head-summary.md`: package acceptance summaries now show current repository `HEAD`, notes/current-HEAD status, and package/current-HEAD status.
 - `2026-06-04-startup-context-compaction.md`: current docs/context reduction packet for faster Codex threads.
 - `2026-06-04-daily-readiness-latest-package-notes-regression.md`: daily readiness latest package notes informational behavior, now included in MVP preflight.

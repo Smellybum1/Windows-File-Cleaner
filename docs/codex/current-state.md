@@ -11,7 +11,7 @@ Use this as the first compact orientation file for new Codex threads. Historical
 - Latest live evidence: 2026-06-04 second tiny exact real-profile Quarantine batch.
 - Latest working app packet: real-profile Quarantine inline status wording fix.
 - Latest package candidate: `.local\releases\windows-file-cleaner-v20260604-121922` at `e6ac3eb`, verified but not human-accepted.
-- Latest tooling/evidence packet: package acceptance current-HEAD summary.
+- Latest tooling/evidence packet: CI Actions runtime maintenance.
 - Latest docs/workflow packet: startup context compaction.
 - Previous docs/workflow baseline: `1ea1b76 Reduce workflow markdown bloat`
 - App stack: C# / WPF / .NET 8
@@ -66,6 +66,7 @@ Use this as the first compact orientation file for new Codex threads. Historical
 - MVP preflight now runs the accepted local release selection regression by default before the package acceptance summary regression; use `-SkipAcceptedLocalReleaseSelectionCheck` only for focused local loops.
 - `tools\Test-LocalReleaseAcceptanceSummary.cmd` verifies accepted, incomplete, and malformed-looking package acceptance summary behavior with temporary ignored `.local` notes and cleans up after itself. Malformed-looking notes now report missing checklist structure instead of implying all checklist items passed. The regression also verifies default `Summarize-LocalReleaseAcceptanceNotes.cmd -RequireComplete` skips newer incomplete and malformed-looking notes in `.local\release-acceptance`, selects the latest complete notes, and rejects explicit summary paths outside ignored `.local`; its output assertions compact-normalize captured child PowerShell output so long runner-style paths can wrap without false failures.
 - Package acceptance summaries now print `Current repository HEAD`, `Notes/current HEAD status`, and `Package/current HEAD status`, so pending candidate review can see whether notes and package metadata were created at the current commit, differ from current `HEAD`, or have unavailable commit evidence.
+- GitHub Actions MVP Preflight now uses `actions/checkout@v6`, `actions/setup-dotnet@v5`, and `windows-2022` to stay on Node 24-capable official actions while preserving the current Windows runner baseline before the `windows-latest` Windows 2025 / Visual Studio 2026 migration.
 - MVP preflight now runs the local release acceptance summary regression check by default before the local release acceptance recorder regression; use `-SkipLocalReleaseAcceptanceSummaryCheck` only for focused local loops.
 - `tools\Test-LocalReleaseAcceptanceRecorder.cmd` verifies the package acceptance recorder rejects missing manual intent, missing verifier evidence, and missing commit evidence without explicit mismatch acceptance; it also verifies `-WhatIf` does not write and explicit `-RecordCommitMismatch` can complete synthetic ignored notes.
 - MVP preflight now runs the local release acceptance recorder regression check by default after the package summary regression; use `-SkipLocalReleaseAcceptanceRecorderCheck` only for focused local loops.
