@@ -39,6 +39,32 @@ Focused documentation consistency check:
 .\tools\Test-DocumentationConsistency.cmd
 ```
 
+## Focused Local Skip Switches
+
+Use skip switches only for narrow local loops where the skipped step is outside the current change. Do not use skipped preflight output as real-profile scan or movement evidence.
+
+Current `Invoke-MvpPreflight.cmd` skip switches:
+
+- `-SkipRestore`: skip NuGet restore when dependencies are already restored.
+- `-SkipFixtureRootPathGuardCheck`: skip the fixture root path guard regression.
+- `-SkipFixtureWhatIf`: skip fixture dry-run output.
+- `-SkipFixtureChecklist`: skip fixture checklist-only output.
+- `-SkipFixtureAcceptanceNotesCheck`: skip fixture acceptance notes regression.
+- `-SkipDailyReadinessFixtureAcceptanceCheck`: skip daily readiness fixture acceptance notes regression.
+- `-SkipDailyReadinessLatestPackageNotesCheck`: skip daily readiness latest package notes regression.
+- `-SkipLocalReleasePathGuardCheck`: skip local release path guard regression.
+- `-SkipLocalReleaseAcceptanceCommandStampingCheck`: skip local release acceptance command stamping regression.
+- `-SkipAcceptedLocalReleaseSelectionCheck`: skip accepted local release selection regression.
+- `-SkipLocalReleaseAcceptanceSummaryCheck`: skip local release acceptance summary regression.
+- `-SkipLocalReleaseAcceptanceRecorderCheck`: skip local release acceptance recorder regression.
+- `-SkipRealProfileSelectedRestoreTrustHelperPathGuardCheck`: skip real-profile selected restore trust helper path guard regression.
+- `-SkipRealProfileNextBatchStopGuardCheck`: skip real-profile next-batch stop guard regression.
+- `-SkipDailyReadinessUndoSpotlightCheck`: skip daily readiness exact-profile undo spotlight regression.
+- `-SkipDocumentationConsistencyCheck`: skip documentation consistency regression.
+- `-SkipDiffCheck`: skip whitespace diff check.
+
+`tools\Test-DocumentationConsistency.cmd` verifies this runbook lists every current `Invoke-MvpPreflight.cmd` skip switch.
+
 ## Manual Windows Image Canary
 
 Use this only when intentionally evaluating Windows 2025 / Visual Studio 2026 hosted runner readiness.

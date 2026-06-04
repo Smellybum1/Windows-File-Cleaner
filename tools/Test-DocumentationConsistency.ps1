@@ -10,6 +10,8 @@ $featureIndexPath = Join-Path $repoRoot "docs\features\index.md"
 $currentStatePath = Join-Path $repoRoot "docs\codex\current-state.md"
 $progressPath = Join-Path $repoRoot ".codex\progress.md"
 $threadHandoffPath = Join-Path $repoRoot "docs\codex\thread-handoff.md"
+$ciRunbookPath = Join-Path $repoRoot "docs\operations\ci.md"
+$mvpPreflightPath = Join-Path $repoRoot "tools\Invoke-MvpPreflight.ps1"
 
 function Get-Text {
     param(
@@ -231,11 +233,49 @@ function Assert-PacketBreadcrumbAligned {
     }
 }
 
+function Get-MvpPreflightSkipSwitches {
+    param(
+        [Parameter(Mandatory)]
+        [string]$PreflightScriptText
+    )
+
+    $matches = [regex]::Matches($PreflightScriptText, '\[switch\]\$(?<name>Skip[A-Za-z0-9]+)')
+    $switches = [System.Collections.Generic.SortedSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
+    foreach ($match in $matches) {
+        [void]$switches.Add($match.Groups["name"].Value)
+    }
+
+    if ($switches.Count -eq 0) {
+        throw "MVP preflight script does not expose any skip switches."
+    }
+
+    return @($switches)
+}
+
+function Assert-MvpPreflightSkipSwitchesDocumented {
+    param(
+        [Parameter(Mandatory)]
+        [string]$CiRunbookText,
+
+        [Parameter(Mandatory)]
+        [string]$PreflightScriptText
+    )
+
+    foreach ($switchName in Get-MvpPreflightSkipSwitches -PreflightScriptText $PreflightScriptText) {
+        Assert-ContainsText `
+            -Text $CiRunbookText `
+            -ExpectedText "-$switchName" `
+            -Description "CI runbook focused local skip switches"
+    }
+}
+
 $readmeText = Get-Text -Path $readmePath
 $featureIndexText = Get-Text -Path $featureIndexPath
 $currentStateText = Get-Text -Path $currentStatePath
 $progressText = Get-Text -Path $progressPath
 $threadHandoffText = Get-Text -Path $threadHandoffPath
+$ciRunbookText = Get-Text -Path $ciRunbookPath
+$mvpPreflightText = Get-Text -Path $mvpPreflightPath
 
 foreach ($entry in @(
         @{ Text = $readmeText; Description = "README" },
@@ -277,5 +317,9 @@ Assert-ContainsText `
     -ExpectedText "docs/operations/ci.md" `
     -Description "Thread handoff startup context"
 
+Assert-MvpPreflightSkipSwitchesDocumented `
+    -CiRunbookText $ciRunbookText `
+    -PreflightScriptText $mvpPreflightText
+
 Write-Host "Documentation consistency regression passed."
-Write-Host "Boundary: checked committed documentation links, active feature-index entries, and packet breadcrumbs only; this did not launch WPF, scan, move, restore, delete, approve cleanup, write manifests, install anything, or create cleanup history."
+Write-Host "Boundary: checked committed documentation links, active feature-index entries, packet breadcrumbs, and MVP preflight skip-switch docs only; this did not launch WPF, scan, move, restore, delete, approve cleanup, write manifests, install anything, or create cleanup history."
