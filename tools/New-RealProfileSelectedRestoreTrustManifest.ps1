@@ -1,7 +1,8 @@
 [CmdletBinding(SupportsShouldProcess)]
 param(
     [string]$QuarantineRoot = "D:\WindowsFileCleanerQuarantine",
-    [string]$RelativePath = "WindowsFileCleanerRestoreTrustTest\restore-target.txt"
+    [string]$RelativePath = "WindowsFileCleanerRestoreTrustTest\restore-target.txt",
+    [switch]$AllowNonMoxheProfileForWhatIfRegression
 )
 
 Set-StrictMode -Version Latest
@@ -16,7 +17,12 @@ if ([System.IO.Path]::IsPathRooted($RelativePath)) {
 }
 
 $cleanupScope = [System.IO.Path]::GetFullPath([Environment]::GetFolderPath("UserProfile")).TrimEnd([System.IO.Path]::DirectorySeparatorChar)
-if (-not $cleanupScope.EndsWith("\moxhe", [System.StringComparison]::OrdinalIgnoreCase)) {
+if ($AllowNonMoxheProfileForWhatIfRegression.IsPresent -and -not $WhatIfPreference) {
+    throw "AllowNonMoxheProfileForWhatIfRegression requires -WhatIf and cannot create Restore Manifests."
+}
+
+if (-not $cleanupScope.EndsWith("\moxhe", [System.StringComparison]::OrdinalIgnoreCase) -and
+    -not ($AllowNonMoxheProfileForWhatIfRegression.IsPresent -and $WhatIfPreference)) {
     throw "This trust helper is only intended for the moxhe real-profile scope. Current profile: $cleanupScope"
 }
 

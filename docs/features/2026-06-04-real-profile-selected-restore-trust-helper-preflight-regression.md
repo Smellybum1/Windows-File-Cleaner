@@ -18,7 +18,7 @@ Run the sacrificial real-profile selected restore trust helper path guard regres
 
 ## Safety Profile
 
-`terminal-readonly`. The regression runs the helper only with `-WhatIf`, an ignored `.local` Quarantine Root for safe preview, and committed `README.md` as a non-`.local` rejection target. It does not launch WPF, scan, move, restore, delete, approve cleanup, write Restore Manifests, modify real-profile files, install anything, or create cleanup history.
+`terminal-readonly`. The regression runs the helper with `-WhatIf` for preview paths and once without `-WhatIf` only to prove the regression override is rejected before output or writes. It uses an ignored `.local` Quarantine Root for safe preview and committed `README.md` as a non-`.local` rejection target. It does not launch WPF, scan, move, restore, delete, approve cleanup, write Restore Manifests, modify real-profile files, install anything, or create cleanup history.
 
 ## Problem
 
@@ -26,7 +26,9 @@ The trust-helper path guard was useful as a local targeted check, but it was not
 
 ## Changes
 
+- `New-RealProfileSelectedRestoreTrustManifest.cmd` now has an explicit `-AllowNonMoxheProfileForWhatIfRegression` switch that works only with `-WhatIf`.
 - `tools\Test-RealProfileSelectedRestoreTrustManifestPathGuard.cmd` now derives the escaped path's profile segment from the helper's safe preview output.
+- The regression verifies the non-`moxhe` override fails without `-WhatIf` before preview, manifest, or app-command output.
 - `tools\Invoke-MvpPreflight.cmd` now runs the trust-helper path guard regression by default.
 - Added `-SkipRealProfileSelectedRestoreTrustHelperPathGuardCheck` for focused local preflight loops.
 - Compact docs and runbooks now list the trust-helper path guard as default MVP preflight coverage.

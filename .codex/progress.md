@@ -15,7 +15,7 @@ Read first: `docs/codex/current-state.md`.
 
 Latest docs/workflow packet: `2026-06-04-pending-notes-head-wording-stabilization`. It rewords pending package acceptance notes docs so refresh commits are generation-time provenance and live notes/current-HEAD context comes from the summary helper. No app behavior changed.
 
-Latest tooling/evidence packet: `2026-06-04-real-profile-selected-restore-trust-helper-preflight-regression`. MVP preflight now runs the sacrificial real-profile selected restore trust helper path guard regression by default, and the escaped-path case derives its profile segment from the helper's safe preview for clean-runner portability.
+Latest tooling/evidence packet: `2026-06-04-real-profile-selected-restore-trust-helper-preflight-regression`. MVP preflight now runs the sacrificial real-profile selected restore trust helper path guard regression by default, with a `-WhatIf`-only non-`moxhe` override and escaped-path case derived from the helper's safe preview for clean-runner portability.
 
 Latest package candidate: `.local\releases\windows-file-cleaner-v20260604-121922` at app commit `e6ac3eb`, verified but not human-accepted. Current pending acceptance notes: `.local\release-acceptance\release-acceptance-20260604-164509.md`.
 
@@ -53,11 +53,13 @@ Goal:
 
 Safety profile:
 
-- `terminal-readonly`. The regression runs the helper only with `-WhatIf`, an ignored `.local` Quarantine Root for safe preview, and committed `README.md` as a non-`.local` rejection target. It does not launch WPF, scan, move, restore, delete, approve cleanup, write Restore Manifests, modify real-profile files, install anything, or create cleanup history.
+- `terminal-readonly`. The regression runs the helper with `-WhatIf` for preview paths and once without `-WhatIf` only to prove the regression override is rejected before output or writes. It uses an ignored `.local` Quarantine Root for safe preview and committed `README.md` as a non-`.local` rejection target. It does not launch WPF, scan, move, restore, delete, approve cleanup, write Restore Manifests, modify real-profile files, install anything, or create cleanup history.
 
 Changes:
 
+- `New-RealProfileSelectedRestoreTrustManifest.cmd` now has an explicit `-AllowNonMoxheProfileForWhatIfRegression` switch that works only with `-WhatIf`.
 - `tools\Test-RealProfileSelectedRestoreTrustManifestPathGuard.cmd` now derives the escaped path's profile segment from the helper's safe preview output.
+- The regression verifies the non-`moxhe` override fails without `-WhatIf` before preview, manifest, or app-command output.
 - `tools\Invoke-MvpPreflight.cmd` now runs the trust-helper path guard regression by default.
 - Added `-SkipRealProfileSelectedRestoreTrustHelperPathGuardCheck` for focused local preflight loops.
 - Compact docs and runbooks now list the trust-helper path guard as default MVP preflight coverage.
@@ -1427,7 +1429,7 @@ ADRs:
 
 ### Current Live Product And Package Packets
 
-- `2026-06-04-real-profile-selected-restore-trust-helper-preflight-regression`: MVP preflight now runs the sacrificial real-profile selected restore trust helper path guard regression by default, with an escaped-path case that derives its profile segment from the helper's safe preview for clean-runner portability.
+- `2026-06-04-real-profile-selected-restore-trust-helper-preflight-regression`: MVP preflight now runs the sacrificial real-profile selected restore trust helper path guard regression by default, with a `-WhatIf`-only non-`moxhe` override and escaped-path case derived from the helper's safe preview for clean-runner portability.
 - `2026-06-04-real-profile-selected-restore-trust-helper-path-guard`: the sacrificial real-profile selected restore trust helper now rejects explicit roots outside the default `D:\WindowsFileCleanerQuarantine` root or ignored `.local`, and generated quarantine source paths outside the action `items` root, with a local `-WhatIf` regression.
 - `2026-06-04-fixture-root-path-guard-regression`: synthetic fixture creation and fixture review launch roots now have MVP preflight coverage that explicit roots outside ignored `.local` fail before fixture writes, checklist output, or WPF launch.
 - `2026-06-04-local-release-path-guard-regression`: portable release publisher, verifier, and launcher now have MVP preflight coverage that explicit release roots and release paths outside ignored `.local` fail before publisher, verifier, or launch-command output.

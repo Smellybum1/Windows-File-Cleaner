@@ -126,6 +126,7 @@ try {
         $testQuarantineRoot,
         "-RelativePath",
         $safeRelativePath,
+        "-AllowNonMoxheProfileForWhatIfRegression",
         "-WhatIf"
     )
     if ($safeResult.ExitCode -ne 0) {
@@ -148,6 +149,7 @@ try {
         $outsideLocalQuarantineRoot,
         "-RelativePath",
         $safeRelativePath,
+        "-AllowNonMoxheProfileForWhatIfRegression",
         "-WhatIf"
     )
     if ($outsideLocalResult.ExitCode -ne 1) {
@@ -164,6 +166,7 @@ try {
         $testQuarantineRoot,
         "-RelativePath",
         $escapedRelativePath,
+        "-AllowNonMoxheProfileForWhatIfRegression",
         "-WhatIf"
     )
     if ($escapedResult.ExitCode -ne 1) {
@@ -174,6 +177,22 @@ try {
     Assert-DoesNotContainText -Lines $escapedResult.Output -UnexpectedText "Selected real-profile restore trust manifest preview:"
     Assert-DoesNotContainText -Lines $escapedResult.Output -UnexpectedText "Restore Manifest:"
     Assert-DoesNotContainText -Lines $escapedResult.Output -UnexpectedText "Next app command:"
+
+    $overrideWithoutWhatIfResult = Invoke-TrustManifestTool -Arguments @(
+        "-QuarantineRoot",
+        $testQuarantineRoot,
+        "-RelativePath",
+        $safeRelativePath,
+        "-AllowNonMoxheProfileForWhatIfRegression"
+    )
+    if ($overrideWithoutWhatIfResult.ExitCode -ne 1) {
+        throw "Trust helper non-moxhe regression override without WhatIf should fail before preview output. Exit code: $($overrideWithoutWhatIfResult.ExitCode). Output: $(Format-OutputForError -Lines $overrideWithoutWhatIfResult.Output)"
+    }
+
+    Assert-ContainsText -Lines $overrideWithoutWhatIfResult.Output -ExpectedText "AllowNonMoxheProfileForWhatIfRegression requires -WhatIf and cannot create Restore Manifests."
+    Assert-DoesNotContainText -Lines $overrideWithoutWhatIfResult.Output -UnexpectedText "Selected real-profile restore trust manifest preview:"
+    Assert-DoesNotContainText -Lines $overrideWithoutWhatIfResult.Output -UnexpectedText "Restore Manifest:"
+    Assert-DoesNotContainText -Lines $overrideWithoutWhatIfResult.Output -UnexpectedText "Next app command:"
 
     if (Test-Path -LiteralPath $testQuarantineRoot) {
         throw "Trust helper path guard regression should not create test quarantine files in WhatIf mode: $testQuarantineRoot"
@@ -186,5 +205,5 @@ finally {
 }
 
 Write-Host "Real-profile selected restore trust manifest path guard regression passed."
-Write-Host "Boundary: the helper was run only with -WhatIf, using an ignored .local Quarantine Root for safe preview and committed README.md only as a non-.local rejection target; this did not launch WPF, scan, move, restore, delete, approve cleanup, write Restore Manifests, modify real-profile files, install anything, or create cleanup history."
+Write-Host "Boundary: the helper was run with -WhatIf for preview paths and once without -WhatIf only to prove the regression override is rejected before output or writes; it used an ignored .local Quarantine Root for safe preview and committed README.md only as a non-.local rejection target; this did not launch WPF, scan, move, restore, delete, approve cleanup, write Restore Manifests, modify real-profile files, install anything, or create cleanup history."
 exit 0
