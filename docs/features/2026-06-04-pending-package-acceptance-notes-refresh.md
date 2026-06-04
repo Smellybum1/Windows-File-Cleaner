@@ -21,7 +21,7 @@ The first candidate acceptance notes were generated when package commit `e6ac3eb
 - Generated refreshed pending notes at `.local\release-acceptance\release-acceptance-20260604-134337.md`.
 - The refreshed notes stamp exact `-ReleasePath` verifier, checklist, and fixture checklist commands for `.local\releases\windows-file-cleaner-v20260604-121922`.
 - The refreshed notes record verifier evidence and intentionally leave commit evidence unrecorded until the human accepts the expected `e6ac3eb` package versus `bb82b29` docs-only `HEAD` mismatch with `-RecordCommitMismatch`.
-- Follow-up refresh after package/readiness tooling hardening generated current pending notes at `.local\release-acceptance\release-acceptance-20260604-164509.md`; those notes record verifier evidence at `HEAD` `1aa5cf1` and preserve the expected `e6ac3eb` package/current-`HEAD` mismatch for human acceptance.
+- Follow-up refresh after package/readiness tooling hardening generated current pending notes at `.local\release-acceptance\release-acceptance-20260604-164509.md`; those notes record verifier evidence at then-current `HEAD` `1aa5cf1` and preserve the expected `e6ac3eb` package/current-`HEAD` mismatch for human acceptance. Later docs/tooling commits can advance `HEAD` again; use summary status lines for live notes/current-HEAD context.
 - The accepted package baseline remains `.local\releases\windows-file-cleaner-v20260602-011556` at `bc9b869`.
 
 ## Verification

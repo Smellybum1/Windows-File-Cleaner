@@ -12,7 +12,7 @@ Use this as the first compact orientation file for new Codex threads. Historical
 - Latest working app packet: real-profile Quarantine inline status wording fix.
 - Latest package candidate: `.local\releases\windows-file-cleaner-v20260604-121922` at `e6ac3eb`, verified but not human-accepted.
 - Latest tooling/evidence packet: daily readiness latest notes isolation.
-- Latest docs/workflow packet: CI evidence wording stabilization.
+- Latest docs/workflow packet: pending notes HEAD wording stabilization.
 - Previous docs/workflow baseline: `1ea1b76 Reduce workflow markdown bloat`
 - App stack: C# / WPF / .NET 8
 - Product: local Windows cleanup reviewer for `C:\Users\moxhe`
@@ -51,7 +51,7 @@ Use this as the first compact orientation file for new Codex threads. Historical
 - New manifest: `D:\WindowsFileCleanerQuarantine\actions\quarantine-action-draft-20260604014901-b7b402a2\restore-manifest.json`.
 - Latest working app packet fixed WPF inline post-execution status so exact real-profile Quarantine results are no longer described as fixture Quarantine results.
 - Portable package candidate `.local\releases\windows-file-cleaner-v20260604-121922` was cut from `e6ac3eb` after that app wording fix. Publish ran MVP preflight; `Test-LocalRelease.cmd -RequireCurrentCommit` passed; initial checklist-only acceptance notes were written to `.local\release-acceptance\release-acceptance-20260604-122009.md` but remain incomplete pending human package acceptance.
-- Current refreshed candidate acceptance notes were generated at `.local\release-acceptance\release-acceptance-20260604-164509.md` after package/readiness tooling commits advanced `HEAD` to `1aa5cf1`. These refreshed notes stamp exact `-ReleasePath` verifier/checklist commands, record verifier evidence, leave commit evidence unrecorded until the human intentionally accepts the expected `e6ac3eb` package/current-`HEAD` mismatch, and remain incomplete pending human package acceptance.
+- Current refreshed candidate acceptance notes were generated at `.local\release-acceptance\release-acceptance-20260604-164509.md` after package/readiness tooling commits had advanced beyond the packaged app commit. These refreshed notes stamp exact `-ReleasePath` verifier/checklist commands, record verifier evidence from their generation time, leave commit evidence unrecorded until the human intentionally accepts the expected `e6ac3eb` package/current-`HEAD` mismatch, and remain incomplete pending human package acceptance. Later docs/tooling commits can make those notes differ from current `HEAD`; use the summary helper's notes/current-HEAD and package/current-HEAD status lines for the live comparison.
 - Daily readiness now shows the latest package acceptance notes as informational context after verifying the completed accepted notes; incomplete or malformed-looking candidate notes still do not replace the accepted `bc9b869` baseline. `-LatestPackageAcceptanceNotesPath` can point that informational block at an explicit ignored notes file for focused checks or pending-note inspection.
 - Incomplete package acceptance summaries now print guarded next-step recorder and recheck commands; for the current candidate they include `-RecordCommitMismatch` and still say the human package acceptance pass must be completed first.
 - Completed package acceptance summaries now say portable release acceptance evidence is complete and no recorder action is pending.

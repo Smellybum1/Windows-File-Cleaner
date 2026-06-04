@@ -13,11 +13,13 @@ Read archived evidence only when the current task needs old packet detail.
 
 Read first: `docs/codex/current-state.md`.
 
-Latest docs/workflow packet: `2026-06-04-ci-evidence-wording-stabilization`. It rewords CI evidence docs so #365 is representative current-path proof instead of self-staling latest-run proof. No app behavior changed.
+Latest docs/workflow packet: `2026-06-04-pending-notes-head-wording-stabilization`. It rewords pending package acceptance notes docs so refresh commits are generation-time provenance and live notes/current-HEAD context comes from the summary helper. No app behavior changed.
 
 Latest tooling/evidence packet: `2026-06-04-daily-readiness-latest-notes-isolation`. Daily readiness latest package notes regression now uses explicit synthetic latest-notes paths under its private ignored test folder.
 
 Latest package candidate: `.local\releases\windows-file-cleaner-v20260604-121922` at app commit `e6ac3eb`, verified but not human-accepted. Current pending acceptance notes: `.local\release-acceptance\release-acceptance-20260604-164509.md`.
+
+Pending candidate notes record verifier evidence from their generation time. Later docs/tooling commits can make notes/current-HEAD status differ again, so use package acceptance summary status lines for live mismatch context.
 
 Accepted package baseline: `.local\releases\windows-file-cleaner-v20260602-011556` at commit `bc9b869`, with completed ignored notes `.local\release-acceptance\release-acceptance-20260602-011743.md`.
 
@@ -40,6 +42,34 @@ Post-action evidence:
 6. Use `docs/operations/*.md` for command detail.
 
 ## Recent Packet Summaries
+
+### 2026-06-04: Pending Notes HEAD Wording Stabilization
+
+Status: completed
+
+Goal:
+
+- Keep pending package acceptance notes documentation accurate after later docs/tooling commits advance `HEAD` beyond the commit recorded in the ignored notes file.
+
+Safety profile:
+
+- `docs-only`. This updates committed documentation only. It does not launch WPF, scan real-profile files, move, restore, delete, approve cleanup, promote a package, create shortcuts, install anything, write acceptance notes, write Restore Manifests, or create cleanup history.
+
+Changes:
+
+- Compact current-state and handoff docs now describe refreshed pending notes as generation-time provenance.
+- The portable release runbook and package feature briefs now say to use package acceptance summary status lines for live notes/current-HEAD and package/current-HEAD context.
+- The historical pending-notes refresh brief now says `1aa5cf1` was the then-current `HEAD` at the follow-up refresh.
+- The docs/workflow packet breadcrumb now points to this wording stabilization packet.
+
+Verification:
+
+- `cmd.exe /c tools\Test-DocumentationConsistency.cmd`
+- `git diff --check`
+
+ADRs:
+
+- Skipped; this is documentation wording for existing package acceptance evidence under ADR 0020 and does not change package creation, package acceptance, cleanup, restore, persistence, deployment, or app behavior.
 
 ### 2026-06-04: Daily Readiness Latest Notes Isolation
 
@@ -531,7 +561,7 @@ Safety profile:
 Changes:
 
 - Generated refreshed pending notes at `.local\release-acceptance\release-acceptance-20260604-164509.md`.
-- The refreshed notes record verifier evidence at current `HEAD` `1aa5cf1`.
+- The refreshed notes record verifier evidence at then-current `HEAD` `1aa5cf1`.
 - They intentionally leave commit evidence unrecorded because package commit `e6ac3eb` differs from current `HEAD`; human package acceptance must explicitly record `-RecordCommitMismatch` after accepting that mismatch.
 - Updated current package handoff docs and runbooks to point at the refreshed notes path while keeping the accepted package baseline on `bc9b869`.
 
@@ -1237,6 +1267,7 @@ ADRs:
 
 ### Current Live Product And Package Packets
 
+- `2026-06-04-pending-notes-head-wording-stabilization`: pending package acceptance notes docs now describe refresh commits as generation-time provenance and rely on summary status lines for live current-HEAD context.
 - `2026-06-04-daily-readiness-latest-notes-isolation`: daily readiness latest package notes regression now uses explicit synthetic latest-notes paths under its private ignored test folder.
 - `2026-06-04-daily-readiness-package-notes-path-guard`: daily readiness now has composed regression coverage that explicit package acceptance notes paths outside ignored `.local` fail before latest-notes or launch-command printing.
 - `2026-06-04-daily-readiness-fixture-notes-path-guard`: daily readiness now has composed regression coverage that explicit fixture notes paths outside ignored `.local` fail before accepted launch-command printing.

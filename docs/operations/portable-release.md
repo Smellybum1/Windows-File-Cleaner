@@ -20,7 +20,7 @@ Portable v1 is the local self-contained WPF app package. It is not an installer 
 
 This candidate includes app behavior through the real-profile Quarantine inline status wording fix. Its initial ignored acceptance notes record verifier and commit evidence from the package cut time, but normal launch, fixture launch, overall result, and the remaining checklist items are not recorded.
 
-The current pending acceptance notes were refreshed after package/readiness tooling commits advanced `HEAD` beyond the packaged app commit. They record verifier evidence, intentionally leave commit evidence unrecorded until the human accepts the expected package/current-HEAD mismatch, and stamp exact `-ReleasePath` commands. Keep using the accepted baseline until the human package acceptance pass is completed and recorded.
+The current pending acceptance notes were refreshed after package/readiness tooling commits advanced `HEAD` beyond the packaged app commit. They record verifier evidence from their generation time, intentionally leave commit evidence unrecorded until the human accepts the expected package/current-HEAD mismatch, and stamp exact `-ReleasePath` commands. Later docs/tooling commits can make notes/current-HEAD status differ again, so use the summary status lines for live mismatch context. Keep using the accepted baseline until the human package acceptance pass is completed and recorded.
 
 ## Verify Accepted Notes
 
