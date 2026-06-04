@@ -30,7 +30,9 @@ param(
 
     [switch]$RequireNoDisplayedRecoveryReview,
 
-    [switch]$RequireNoDisplayedUndoWork
+    [switch]$RequireNoDisplayedUndoWork,
+
+    [switch]$SyntheticRestoreManifestOnly
 )
 
 Set-StrictMode -Version Latest
@@ -38,6 +40,7 @@ $ErrorActionPreference = "Stop"
 
 $repoRoot = Split-Path -Parent $PSScriptRoot
 $repoFullPath = [System.IO.Path]::GetFullPath($repoRoot).TrimEnd([System.IO.Path]::DirectorySeparatorChar)
+$localRoot = [System.IO.Path]::GetFullPath((Join-Path $repoRoot ".local")).TrimEnd([System.IO.Path]::DirectorySeparatorChar)
 $mvpPreflight = Join-Path $PSScriptRoot "Invoke-MvpPreflight.cmd"
 $dailyReadiness = Join-Path $PSScriptRoot "Invoke-DailyLocalReadiness.cmd"
 $restoreManifestSummary = Join-Path $PSScriptRoot "Summarize-RestoreManifests.cmd"
@@ -53,6 +56,42 @@ if ($AllCleanupScopes.IsPresent -and $cleanupScopeWasProvided) {
 if ($RequireNextBatchEvidence.IsPresent -and $AllCleanupScopes.IsPresent) {
     Write-Host "-RequireNextBatchEvidence is only for the exact real-profile Cleanup Scope $defaultRealProfileCleanupScope. Do not combine it with -AllCleanupScopes."
     exit 1
+}
+
+function Test-UnderLocalPath {
+    param(
+        [Parameter(Mandatory)]
+        [string]$Path
+    )
+
+    $resolved = [System.IO.Path]::GetFullPath($Path).TrimEnd([System.IO.Path]::DirectorySeparatorChar)
+    return $resolved.Equals($localRoot, [System.StringComparison]::OrdinalIgnoreCase) -or
+        $resolved.StartsWith($localRoot + [System.IO.Path]::DirectorySeparatorChar, [System.StringComparison]::OrdinalIgnoreCase)
+}
+
+if ($SyntheticRestoreManifestOnly.IsPresent) {
+    if (-not $SkipMvpPreflight.IsPresent) {
+        Write-Host "-SyntheticRestoreManifestOnly is only for focused synthetic regression loops and requires -SkipMvpPreflight."
+        exit 1
+    }
+
+    if ([string]::IsNullOrWhiteSpace($QuarantineRoot)) {
+        Write-Host "-SyntheticRestoreManifestOnly requires an explicit -QuarantineRoot under ignored .local."
+        exit 1
+    }
+
+    if (-not (Test-UnderLocalPath -Path $QuarantineRoot)) {
+        Write-Host "-SyntheticRestoreManifestOnly requires -QuarantineRoot to stay under ignored .local: $localRoot"
+        exit 1
+    }
+
+    if (-not [string]::IsNullOrWhiteSpace($AcceptanceNotesPath) -or
+        -not [string]::IsNullOrWhiteSpace($FixtureAcceptanceNotesPath) -or
+        $IncludeFixtureAcceptanceNotes.IsPresent -or
+        $RequireFixtureAcceptanceComplete.IsPresent) {
+        Write-Host "-SyntheticRestoreManifestOnly cannot be combined with package or fixture acceptance notes parameters."
+        exit 1
+    }
 }
 
 $effectiveCleanupScope = $null
@@ -82,7 +121,7 @@ if (-not $AllCleanupScopes.IsPresent) {
     }
 }
 
-$shouldIncludeFixtureAcceptanceNotes = $IncludeFixtureAcceptanceNotes.IsPresent -or $RequireNextBatchEvidence.IsPresent
+$shouldIncludeFixtureAcceptanceNotes = (-not $SyntheticRestoreManifestOnly.IsPresent) -and ($IncludeFixtureAcceptanceNotes.IsPresent -or $RequireNextBatchEvidence.IsPresent)
 $shouldRequireAnyDisplayedRestoreManifest = $RequireAnyDisplayedRestoreManifest.IsPresent -or $RequireNextBatchEvidence.IsPresent
 $shouldRequireNoDisplayedUndoWork = $RequireNoDisplayedUndoWork.IsPresent -or $RequireNextBatchEvidence.IsPresent
 
@@ -158,7 +197,16 @@ Write-Host "Purpose: gather preflight, accepted-package, and Restore Manifest ev
 Write-Host "Stop boundary: Codex must not click real-profile movement. The user must explicitly approve a specific tiny batch after reviewing WPF readiness, exact QUARANTINE, approval evidence, and immediate revalidation."
 Write-Host "Fixture acceptance notes: optional daily-readiness evidence only; require completion only when formal fixture notes should be a strict gate."
 if ($RequireNextBatchEvidence.IsPresent) {
-    Write-Host "Next-batch evidence preset: exact C:\Users\moxhe display focus, Fixture Acceptance Notes status, required displayed Restore Manifest evidence, and zero displayed undo-work manifests."
+    if ($SyntheticRestoreManifestOnly.IsPresent) {
+        Write-Host "Next-batch evidence preset: exact C:\Users\moxhe display focus, required displayed Restore Manifest evidence, and zero displayed undo-work manifests."
+    }
+    else {
+        Write-Host "Next-batch evidence preset: exact C:\Users\moxhe display focus, Fixture Acceptance Notes status, required displayed Restore Manifest evidence, and zero displayed undo-work manifests."
+    }
+}
+if ($SyntheticRestoreManifestOnly.IsPresent) {
+    Write-Host "Synthetic Restore Manifest-only mode: accepted package evidence, accepted launch commands, and fixture acceptance notes are skipped for focused regression coverage."
+    Write-Host "Synthetic Restore Manifest-only mode must not be used as fresh real-profile movement evidence."
 }
 if ($null -ne $effectiveCleanupScope) {
     Write-Host "Restore Manifest display focus: $effectiveCleanupScope"
@@ -219,6 +267,9 @@ if ($RequireNoDisplayedRecoveryReview.IsPresent) {
 }
 if ($shouldRequireNoDisplayedUndoWork) {
     $dailyArguments += "-RequireNoDisplayedUndoWork"
+}
+if ($SyntheticRestoreManifestOnly.IsPresent) {
+    $dailyArguments += "-SyntheticRestoreManifestOnly"
 }
 
 Invoke-RealProfileReadinessStep -Title "Daily local readiness" -CommandPath $dailyReadiness -Arguments $dailyArguments

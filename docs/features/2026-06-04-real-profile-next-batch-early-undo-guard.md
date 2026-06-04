@@ -25,6 +25,7 @@ After the 2026-06-04 second exact-profile Quarantine batch, exact-profile displa
 - The regression synthesizes a clear root with a `Restored` exact-profile entry and proves the preset can continue when displayed undo work is absent.
 - MVP preflight now runs this regression by default before the whitespace diff check.
 - `Invoke-MvpPreflight.cmd -SkipRealProfileNextBatchStopGuardCheck` can skip only this regression for focused local loops.
+- The regression's clear synthetic path uses `Invoke-RealProfileQuarantineReadiness.cmd -SyntheticRestoreManifestOnly`, which requires `-SkipMvpPreflight` and an explicit ignored `.local` Quarantine Root, so CI and clean runners do not need accepted-package evidence for this focused check.
 
 ## Verification
 
@@ -33,6 +34,8 @@ After the 2026-06-04 second exact-profile Quarantine batch, exact-profile displa
 - `git diff --check` passed with expected CRLF warnings only.
 
 The real current next-batch review was not rerun as movement evidence because exact-profile displayed undo work is present.
+
+The synthetic regression remains independent from ignored accepted-package notes and local package folders; normal next-batch readiness still uses daily accepted-package evidence and Fixture Acceptance Notes status.
 
 ## ADRs
 

@@ -133,6 +133,7 @@ function Invoke-ReadinessPreset {
         "-File",
         $readinessScript,
         "-SkipMvpPreflight",
+        "-SyntheticRestoreManifestOnly",
         "-QuarantineRoot",
         $QuarantineRoot,
         "-RequireNextBatchEvidence"
@@ -179,6 +180,8 @@ try {
     Assert-ContainsText -Lines $clearResult.Output -ExpectedText "== Early displayed undo-work stop check =="
     Assert-ContainsText -Lines $clearResult.Output -ExpectedText "MVP preflight: skipped by request. Do not use skipped preflight output as fresh real-profile movement evidence."
     Assert-ContainsText -Lines $clearResult.Output -ExpectedText "== Daily local readiness =="
+    Assert-ContainsText -Lines $clearResult.Output -ExpectedText "Synthetic Restore Manifest-only mode: accepted package evidence, accepted launch commands, and fixture acceptance notes are skipped for focused regression coverage."
+    Assert-DoesNotContainText -Lines $clearResult.Output -UnexpectedText "== Accepted package evidence =="
     Assert-ContainsText -Lines $clearResult.Output -ExpectedText "Real-profile Quarantine readiness review passed."
 
     Write-Host "Real-profile next-batch stop guard regression passed."

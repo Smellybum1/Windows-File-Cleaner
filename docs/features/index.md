@@ -8,7 +8,7 @@ Use this index before opening individual feature briefs. The folder contains man
 
 - `2026-06-04-startup-context-compaction.md`: current docs/context reduction packet for faster Codex threads.
 - `2026-06-04-daily-readiness-exact-profile-undo-spotlight.md`: default daily readiness now spotlights exact-profile undo-work stop state, covered by MVP preflight regression.
-- `2026-06-04-real-profile-next-batch-early-undo-guard.md`: next-batch evidence preset stops before MVP preflight when displayed undo work exists, now covered by MVP preflight regression.
+- `2026-06-04-real-profile-next-batch-early-undo-guard.md`: next-batch evidence preset stops before MVP preflight when displayed undo work exists, now covered by clean-runner MVP preflight regression.
 - `2026-06-04-local-release-acceptance-summary-regression-check.md`: targeted regression command for package acceptance summary next-step output, now included in MVP preflight.
 - `2026-06-04-package-acceptance-summary-next-steps.md`: incomplete package acceptance summaries print guarded recorder and recheck commands.
 - `2026-06-04-daily-readiness-latest-package-notes.md`: daily readiness now surfaces latest package acceptance notes without promoting incomplete candidates.
