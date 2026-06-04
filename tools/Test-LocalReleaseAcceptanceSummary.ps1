@@ -327,7 +327,7 @@ try {
     }
 
     Assert-ContainsText -Lines $defaultCompletionResult.Output -ExpectedText "Notes file: $defaultCompletePath"
-    Assert-ContainsText -Lines $defaultCompletionResult.Output -ExpectedText "Completion check: complete. Portable release acceptance notes are ready to record."
+    Assert-ContainsText -Lines $defaultCompletionResult.Output -ExpectedText "Completion check: complete. Portable release acceptance evidence is complete; no recorder action is pending."
     Assert-ContainsText -Lines $defaultCompletionResult.Output -ExpectedText "All checklist items are marked Pass."
     Assert-DoesNotContainText -Lines $defaultCompletionResult.Output -UnexpectedText "Notes file: $defaultIncompletePath"
     Assert-DoesNotContainText -Lines $defaultCompletionResult.Output -UnexpectedText "Notes file: $defaultMalformedPath"
@@ -341,7 +341,7 @@ try {
     Assert-ContainsText -Lines $completeResult.Output -ExpectedText "Current repository HEAD: "
     Assert-ContainsText -Lines $completeResult.Output -ExpectedText "Notes/current HEAD status: Matches current HEAD"
     Assert-ContainsText -Lines $completeResult.Output -ExpectedText "Package/current HEAD status: Matches current HEAD"
-    Assert-ContainsText -Lines $completeResult.Output -ExpectedText "Completion check: complete. Portable release acceptance notes are ready to record."
+    Assert-ContainsText -Lines $completeResult.Output -ExpectedText "Completion check: complete. Portable release acceptance evidence is complete; no recorder action is pending."
     Assert-DoesNotContainText -Lines $completeResult.Output -UnexpectedText "Pending acceptance next steps:"
 
     $differingCommitResult = Invoke-Summary -Path $incompletePath

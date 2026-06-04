@@ -15,7 +15,7 @@ Read first: `docs/codex/current-state.md`.
 
 Latest docs/workflow packet: `2026-06-04-ci-evidence-wording-stabilization`. It rewords CI evidence docs so #365 is representative current-path proof instead of self-staling latest-run proof. No app behavior changed.
 
-Latest tooling/evidence packet: `2026-06-04-feature-index-entry-regression`. MVP preflight now verifies active feature-index entries, active documentation links, and latest packet breadcrumb alignment before the whitespace diff check.
+Latest tooling/evidence packet: `2026-06-04-package-completion-summary-wording`. Completed package acceptance summaries now say evidence is complete and no recorder action is pending, instead of implying completed notes still need to be recorded.
 
 Latest package candidate: `.local\releases\windows-file-cleaner-v20260604-121922` at app commit `e6ac3eb`, verified but not human-accepted. Current pending acceptance notes: `.local\release-acceptance\release-acceptance-20260604-164509.md`.
 
@@ -40,6 +40,39 @@ Post-action evidence:
 6. Use `docs/operations/*.md` for command detail.
 
 ## Recent Packet Summaries
+
+### 2026-06-04: Package Completion Summary Wording
+
+Status: completed
+
+Goal:
+
+- Make completed portable release acceptance summaries say that evidence is already complete instead of implying the notes still need to be recorded.
+
+Safety profile:
+
+- `terminal-readonly`. The change updates terminal summary wording, synthetic-note regression assertions, and committed documentation only. It does not launch WPF, scan real-profile files, move, restore, delete, approve cleanup, promote a package, create shortcuts, install anything, write acceptance notes, write Restore Manifests, or create cleanup history.
+
+Changes:
+
+- `tools\Summarize-LocalReleaseAcceptanceNotes.ps1` now reports completed package acceptance evidence as complete with no recorder action pending.
+- `tools\Test-LocalReleaseAcceptanceSummary.ps1`, `tools\Test-DailyReadinessLatestPackageNotes.ps1`, and `tools\Test-LocalReleaseAcceptanceRecorder.ps1` now assert the completed package wording.
+- `docs\operations\portable-release.md`, `docs\operations\daily-use.md`, compact handoff docs, and the feature index record the wording change.
+
+Verification:
+
+- `cmd.exe /c tools\Test-LocalReleaseAcceptanceSummary.cmd`
+- `cmd.exe /c tools\Test-DailyReadinessLatestPackageNotes.cmd`
+- `cmd.exe /c tools\Test-LocalReleaseAcceptanceRecorder.cmd`
+- `cmd.exe /c tools\Summarize-LocalReleaseAcceptanceNotes.cmd -RequireComplete`
+- `cmd.exe /c tools\Invoke-DailyLocalReadiness.cmd`
+- `cmd.exe /c tools\Test-DocumentationConsistency.cmd`
+- `cmd.exe /c tools\Invoke-MvpPreflight.cmd`
+- `git diff --check`
+
+ADRs:
+
+- Skipped; this is terminal wording and regression coverage for existing portable package acceptance tooling under ADR 0020 and does not change product behavior, cleanup execution, restore execution, persistence, deployment, package acceptance policy, or real readiness behavior.
 
 ### 2026-06-04: CI Evidence Wording Stabilization
 
@@ -1045,6 +1078,7 @@ ADRs:
 
 ### Current Live Product And Package Packets
 
+- `2026-06-04-package-completion-summary-wording`: completed package acceptance summaries now say evidence is complete and no recorder action is pending.
 - `2026-06-04-ci-evidence-wording-stabilization`: CI evidence docs now use representative current-path wording instead of self-staling latest-run wording.
 - `2026-06-04-ci-evidence-refresh`: CI runbook and compact handoff docs now record #365 proof for the current normal push preflight path.
 - `2026-06-04-feature-index-entry-regression`: documentation consistency now verifies bare active feature-index entries resolve to existing feature briefs.

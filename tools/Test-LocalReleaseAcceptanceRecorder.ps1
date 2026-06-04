@@ -293,7 +293,7 @@ try {
         throw "Recorded notes should pass completion summary. Exit code: $($completionResult.ExitCode)"
     }
 
-    Assert-ContainsText -Lines $completionResult.Output -ExpectedText "Completion check: complete. Portable release acceptance notes are ready to record."
+    Assert-ContainsText -Lines $completionResult.Output -ExpectedText "Completion check: complete. Portable release acceptance evidence is complete; no recorder action is pending."
 
     Write-Host "Local release acceptance recorder regression passed."
     Write-Host "Boundary: test notes were written under ignored .local only; this did not launch WPF, scan, move, restore, delete, approve cleanup, promote a package, or create cleanup history."

@@ -6,6 +6,7 @@ Use this index before opening individual feature briefs. The folder contains man
 
 ## Active Or Current
 
+- `2026-06-04-package-completion-summary-wording.md`: completed package acceptance summaries now say evidence is complete and no recorder action is pending.
 - `2026-06-04-ci-evidence-wording-stabilization.md`: CI evidence docs now use representative current-path wording instead of self-staling latest-run wording.
 - `2026-06-04-ci-evidence-refresh.md`: CI runbook and compact handoff docs now record #365 proof for the current normal push preflight path.
 - `2026-06-04-feature-index-entry-regression.md`: documentation consistency now verifies bare active feature-index entries resolve to existing feature briefs.

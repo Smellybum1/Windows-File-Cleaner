@@ -32,6 +32,8 @@ Without `-Path`, `-RequireComplete` selects the latest completed acceptance note
 
 Summaries print the notes `Git commit`, release metadata commit, current repository `HEAD`, `Notes/current HEAD status`, and `Package/current HEAD status`. Treat `Differs from current HEAD` as package/current-HEAD mismatch context to review before recording acceptance, not as automatic acceptance or rejection.
 
+When `-RequireComplete` passes, the summary reports that portable release acceptance evidence is complete and that no recorder action is pending.
+
 Incomplete notes summaries print guarded next-step commands. For a behind-current-`HEAD` candidate, the recorder command includes `-RecordCommitMismatch` and should be used only after the human package acceptance pass and intentional package/current-HEAD mismatch acceptance.
 
 ## Print Accepted Launch Commands

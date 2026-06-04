@@ -301,7 +301,7 @@ try {
 
     Assert-ContainsText -Lines $result.Output -ExpectedText "== Accepted package evidence =="
     Assert-ContainsText -Lines $result.Output -ExpectedText "Notes file: $completeNotesPath"
-    Assert-ContainsText -Lines $result.Output -ExpectedText "Completion check: complete. Portable release acceptance notes are ready to record."
+    Assert-ContainsText -Lines $result.Output -ExpectedText "Completion check: complete. Portable release acceptance evidence is complete; no recorder action is pending."
     Assert-ContainsText -Lines $result.Output -ExpectedText "== Latest package acceptance notes (informational) =="
     Assert-ContainsText -Lines $result.Output -ExpectedText "Notes file: $incompleteNotesPath"
     Assert-ContainsText -Lines $result.Output -ExpectedText "Pending acceptance next steps:"
