@@ -17,7 +17,7 @@ Use this index before opening individual feature briefs. The folder contains man
 - `2026-06-04-local-release-recorder-commit-evidence-guard.md`: package acceptance recorder guardrails for verifier/commit evidence, now included in MVP preflight.
 - `2026-06-04-package-acceptance-summary-next-steps.md`: incomplete package acceptance summaries print guarded recorder and recheck commands.
 - `2026-06-04-daily-readiness-latest-package-notes.md`: daily readiness now surfaces latest package acceptance notes without promoting incomplete candidates.
-- `2026-06-04-local-release-acceptance-command-stamping.md`: latest release tooling packet; generated package acceptance notes stamp actual release-path/current-commit commands.
+- `2026-06-04-local-release-acceptance-command-stamping.md`: generated package acceptance notes stamp actual release-path/current-commit commands, now covered by MVP preflight regression.
 - `2026-06-04-pending-package-acceptance-notes-refresh.md`: refreshed pending candidate acceptance notes after docs-only `HEAD` advanced beyond the app package commit.
 - `2026-06-04-verified-portable-package-candidate.md`: verified current app-code portable package candidate, pending human package acceptance.
 - `2026-06-04-second-real-profile-quarantine-batch.md`: latest user-clicked exact-profile Quarantine evidence and current stop state.

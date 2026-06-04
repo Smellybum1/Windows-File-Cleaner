@@ -10,7 +10,7 @@ Make generated portable release acceptance notes stamp the actual verifier, chec
 
 ## Safety Profile
 
-`terminal-readonly`. This packet changes release tooling and writes only ignored test notes under `.local\release-acceptance`, then removes those generated test notes after validation. It does not launch WPF, click `Scan`, scan real-profile files, move, restore, delete, approve cleanup, create shortcuts, install anything, or create cleanup history.
+`terminal-readonly`. This packet changes release tooling and writes only ignored test notes under `.local\release-acceptance`, then removes those generated test notes after validation. A follow-up regression writes temporary synthetic release folders under `.local\release-acceptance-command-stamping-test` and generated ignored notes under `.local\release-acceptance`, then removes them. It does not launch WPF, click `Scan`, scan real-profile files, move, restore, delete, approve cleanup, promote a package, create shortcuts, install anything, or create cleanup history.
 
 ## Problem
 
@@ -25,6 +25,8 @@ That wording made the correct behind-HEAD candidate workflow harder to follow, e
 - Generated notes include `-RequireCurrentCommit` only when the notes were created with that switch.
 - Behind-current-HEAD notes now include a package/current-HEAD mismatch note plus the exact `-RecordCommitMismatch` recorder command.
 - The printed post-pass next steps now show the exact recorder, mismatch recorder, summary, and completion-check commands for the generated notes path.
+- Added `tools\Test-LocalReleaseAcceptanceCommandStamping.cmd` / `.ps1` for clean-runner regression coverage with synthetic release folders.
+- MVP preflight now runs this regression by default before the accepted local release selection regression; use `-SkipLocalReleaseAcceptanceCommandStampingCheck` only for focused local loops.
 
 ## Verification
 
@@ -37,6 +39,8 @@ That wording made the correct behind-HEAD candidate workflow harder to follow, e
 - `git diff --check`
 - `cmd.exe /c tools\Summarize-LocalReleaseAcceptanceNotes.cmd -RequireComplete`
 - `cmd.exe /c tools\Start-AcceptedLocalRelease.cmd -PrintOnly`
+- Follow-up regression: `cmd.exe /c tools\Test-LocalReleaseAcceptanceCommandStamping.cmd`
+- Follow-up full preflight: `cmd.exe /c tools\Invoke-MvpPreflight.cmd`
 
 ## ADRs
 

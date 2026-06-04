@@ -6,6 +6,7 @@ param(
     [switch]$SkipFixtureAcceptanceNotesCheck,
     [switch]$SkipDailyReadinessFixtureAcceptanceCheck,
     [switch]$SkipDailyReadinessLatestPackageNotesCheck,
+    [switch]$SkipLocalReleaseAcceptanceCommandStampingCheck,
     [switch]$SkipAcceptedLocalReleaseSelectionCheck,
     [switch]$SkipLocalReleaseAcceptanceSummaryCheck,
     [switch]$SkipLocalReleaseAcceptanceRecorderCheck,
@@ -23,6 +24,7 @@ $fixtureReviewScript = Join-Path $PSScriptRoot "Start-MvpFixtureReview.ps1"
 $fixtureAcceptanceNotesTestScript = Join-Path $PSScriptRoot "Test-FixtureAcceptanceNotes.ps1"
 $dailyReadinessFixtureAcceptanceTestScript = Join-Path $PSScriptRoot "Test-DailyReadinessFixtureAcceptanceNotes.ps1"
 $dailyReadinessLatestPackageNotesTestScript = Join-Path $PSScriptRoot "Test-DailyReadinessLatestPackageNotes.ps1"
+$localReleaseAcceptanceCommandStampingTestScript = Join-Path $PSScriptRoot "Test-LocalReleaseAcceptanceCommandStamping.ps1"
 $acceptedLocalReleaseSelectionTestScript = Join-Path $PSScriptRoot "Test-AcceptedLocalReleaseSelection.ps1"
 $localReleaseAcceptanceSummaryTestScript = Join-Path $PSScriptRoot "Test-LocalReleaseAcceptanceSummary.ps1"
 $localReleaseAcceptanceRecorderTestScript = Join-Path $PSScriptRoot "Test-LocalReleaseAcceptanceRecorder.ps1"
@@ -96,6 +98,12 @@ try {
     if (-not $SkipDailyReadinessLatestPackageNotesCheck) {
         Invoke-PreflightStep -Name "Daily readiness latest package notes regression" -Command {
             & powershell.exe -NoProfile -ExecutionPolicy Bypass -File $dailyReadinessLatestPackageNotesTestScript
+        }
+    }
+
+    if (-not $SkipLocalReleaseAcceptanceCommandStampingCheck) {
+        Invoke-PreflightStep -Name "Local release acceptance command stamping regression" -Command {
+            & powershell.exe -NoProfile -ExecutionPolicy Bypass -File $localReleaseAcceptanceCommandStampingTestScript
         }
     }
 

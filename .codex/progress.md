@@ -15,7 +15,7 @@ Read first: `docs/codex/current-state.md`.
 
 Latest docs/workflow packet: `2026-06-04-startup-context-compaction`. It moved oversized read-first docs into reference/archive files and replaced them with compact active docs to reduce Codex thread lag. No app behavior changed.
 
-Latest tooling/evidence packet: `2026-06-04-package-summary-default-selection-regression`. MVP preflight now covers default package acceptance summary selection when newer incomplete or malformed-looking notes exist.
+Latest tooling/evidence packet: `2026-06-04-local-release-acceptance-command-stamping-regression`. MVP preflight now covers generated package acceptance notes command stamping for release-path, current-commit, and commit-mismatch recorder guidance.
 
 Latest package candidate: `.local\releases\windows-file-cleaner-v20260604-121922` at app commit `e6ac3eb`, verified but not human-accepted. Current pending acceptance notes: `.local\release-acceptance\release-acceptance-20260604-134337.md`.
 
@@ -40,6 +40,39 @@ Post-action evidence:
 6. Use `docs/operations/*.md` for command detail.
 
 ## Recent Packet Summaries
+
+### 2026-06-04: Local Release Acceptance Command Stamping Regression
+
+Status: completed
+
+Goal:
+
+- Convert prior manual command-stamping evidence for generated portable release acceptance notes into a clean-runner regression that runs in MVP preflight.
+
+Safety profile:
+
+- `terminal-readonly`. The regression writes temporary synthetic release folders under `.local\release-acceptance-command-stamping-test`, generates ignored package acceptance notes under `.local\release-acceptance`, invokes `Start-LocalRelease.cmd` in checklist-only skipped-verifier mode, inspects the generated notes, and removes the temporary folders and notes. It does not launch WPF, scan real-profile files, move, restore, delete, approve cleanup, promote a package, create shortcuts, install anything, or create cleanup history.
+
+Changes:
+
+- Added `tools\Test-LocalReleaseAcceptanceCommandStamping.cmd` / `.ps1`.
+- The regression verifies generated notes stamp actual `-ReleasePath` verifier, checklist, and fixture checklist commands.
+- It verifies behind-current-`HEAD` notes omit `-RequireCurrentCommit` from stamped verifier/checklist command lines and include the guarded `-RecordCommitMismatch` recorder guidance.
+- It verifies current-commit notes include `-RequireCurrentCommit` in stamped verifier/checklist command lines and do not include mismatch guidance.
+- `tools\Invoke-MvpPreflight.cmd` now runs this regression by default before the accepted local release selection regression, with `-SkipLocalReleaseAcceptanceCommandStampingCheck` for focused loops.
+
+Verification:
+
+- `cmd.exe /c tools\Test-LocalReleaseAcceptanceCommandStamping.cmd`
+- `cmd.exe /c tools\Invoke-MvpPreflight.cmd`
+- `cmd.exe /c tools\Summarize-LocalReleaseAcceptanceNotes.cmd -RequireComplete`
+- `git diff --check`
+- Confirmed `.local\release-acceptance-command-stamping-test` was absent after cleanup.
+- Confirmed no generated package acceptance notes from the regression remained under `.local\release-acceptance`.
+
+ADRs:
+
+- Skipped; this adds terminal-only regression coverage for existing package acceptance notes generation under ADR 0020 and does not change product behavior, cleanup execution, restore execution, persistence, deployment, package acceptance policy, or real readiness behavior.
 
 ### 2026-06-04: Package Summary Default Selection Regression
 
@@ -696,6 +729,7 @@ ADRs:
 
 ### Current Live Product And Package Packets
 
+- `2026-06-04-local-release-acceptance-command-stamping-regression`: MVP preflight now covers generated package acceptance notes command stamping for actual release paths, current-commit evidence, and guarded commit-mismatch recorder guidance.
 - `2026-06-04-package-summary-default-selection-regression`: MVP preflight now covers default package acceptance summary selection with newer incomplete and malformed-looking notes under ignored `.local\release-acceptance`.
 - `2026-06-04-package-summary-malformed-notes-regression`: MVP preflight now covers malformed-looking package acceptance summaries with temporary ignored notes and accurate missing-checklist wording.
 - `2026-06-04-accepted-launcher-malformed-notes-regression`: MVP preflight now covers accepted-package launcher default selection and explicit malformed-looking-notes rejection with temporary ignored notes and synthetic print-only package files.
