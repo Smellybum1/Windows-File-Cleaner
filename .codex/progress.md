@@ -13,7 +13,7 @@ Read archived evidence only when the current task needs old packet detail.
 
 Read first: `docs/codex/current-state.md`.
 
-Latest docs/workflow packet: `2026-06-04-ci-evidence-refresh-after-trust-helper-preflight`. It refreshes representative normal push CI evidence to MVP Preflight #385 on `7baf70d` after the real-profile selected restore trust-helper path guard joined default MVP preflight. No app behavior changed.
+Latest docs/workflow packet: `2026-06-04-ci-evidence-refresh-after-skip-switch-docs-regression`. It refreshes representative normal push CI evidence to MVP Preflight #387 on `1adce0a` after documentation consistency started checking that the CI runbook lists every current preflight skip switch. No app behavior changed.
 
 Latest tooling/evidence packet: `2026-06-04-mvp-preflight-skip-switch-documentation-regression`. Documentation consistency now parses `tools\Invoke-MvpPreflight.ps1` and verifies `docs/operations/ci.md` lists every current preflight skip switch.
 
@@ -42,6 +42,33 @@ Post-action evidence:
 6. Use `docs/operations/*.md` for command detail.
 
 ## Recent Packet Summaries
+
+### 2026-06-04: CI Evidence Refresh After Skip Switch Docs Regression
+
+Status: completed
+
+Goal:
+
+- Refresh representative normal push CI evidence after documentation consistency started checking that `docs/operations/ci.md` lists every current `Invoke-MvpPreflight.cmd` skip switch.
+
+Safety profile:
+
+- `docs-only`. This updates committed documentation only. It does not launch WPF, scan real-profile files, move, restore, delete, approve cleanup, promote a package, create shortcuts, install anything, write acceptance notes, write Restore Manifests, or create cleanup history.
+
+Changes:
+
+- `docs\operations\ci.md` now records GitHub Actions MVP Preflight #387 evidence for commit `1adce0a`.
+- Compact current-state, progress, and thread-handoff docs name this packet and current CI evidence.
+- The feature index and prior CI evidence brief now frame #385 as historical trust-helper preflight coverage evidence after skip-switch documentation coverage changed.
+
+Verification:
+
+- `cmd.exe /c tools\Test-DocumentationConsistency.cmd`
+- `git diff --check`
+
+ADRs:
+
+- Skipped; this records CI evidence in committed documentation and does not change product behavior, cleanup execution, restore execution, persistence, security, data model, deployment packaging, or core UX flow.
 
 ### 2026-06-04: MVP Preflight Skip Switch Documentation Regression
 
@@ -1487,7 +1514,8 @@ ADRs:
 
 - `2026-06-04-real-profile-selected-restore-trust-helper-preflight-regression`: MVP preflight now runs the sacrificial real-profile selected restore trust helper path guard regression by default, with a `-WhatIf`-only non-`moxhe` override and escaped-path case derived from the helper's safe preview for clean-runner portability.
 - `2026-06-04-mvp-preflight-skip-switch-documentation-regression`: documentation consistency now verifies the CI runbook lists every current `Invoke-MvpPreflight.cmd` skip switch.
-- `2026-06-04-ci-evidence-refresh-after-trust-helper-preflight`: CI runbook and compact handoff docs now record #385 proof for the normal push preflight path after the trust-helper path guard joined default MVP preflight.
+- `2026-06-04-ci-evidence-refresh-after-skip-switch-docs-regression`: CI runbook and compact handoff docs now record #387 proof for the normal push preflight path after skip-switch documentation coverage joined documentation consistency.
+- `2026-06-04-ci-evidence-refresh-after-trust-helper-preflight`: CI runbook and compact handoff docs recorded earlier #385 proof for the normal push preflight path after the trust-helper path guard joined default MVP preflight.
 - `2026-06-04-real-profile-selected-restore-trust-helper-path-guard`: the sacrificial real-profile selected restore trust helper now rejects explicit roots outside the default `D:\WindowsFileCleanerQuarantine` root or ignored `.local`, and generated quarantine source paths outside the action `items` root, with a local `-WhatIf` regression.
 - `2026-06-04-fixture-root-path-guard-regression`: synthetic fixture creation and fixture review launch roots now have MVP preflight coverage that explicit roots outside ignored `.local` fail before fixture writes, checklist output, or WPF launch.
 - `2026-06-04-local-release-path-guard-regression`: portable release publisher, verifier, and launcher now have MVP preflight coverage that explicit release roots and release paths outside ignored `.local` fail before publisher, verifier, or launch-command output.

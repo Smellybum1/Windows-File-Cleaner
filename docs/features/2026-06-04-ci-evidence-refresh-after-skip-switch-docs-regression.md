@@ -1,4 +1,4 @@
-# Feature: CI Evidence Refresh After Trust Helper Preflight
+# Feature: CI Evidence Refresh After Skip Switch Docs Regression
 
 Date started: 2026-06-04
 Status: completed
@@ -6,28 +6,29 @@ Owner: project-owner
 
 ## Goal
 
-Refresh representative normal push CI evidence after the real-profile selected restore trust-helper path guard regression joined default MVP preflight.
+Refresh representative normal push CI evidence after documentation consistency started checking that `docs/operations/ci.md` lists every current `Invoke-MvpPreflight.cmd` skip switch.
 
 ## Non-goals
 
 - Do not change CI workflow behavior.
+- Do not change MVP preflight behavior.
 - Do not launch WPF.
 - Do not scan `C:\Users\moxhe`.
 - Do not move, restore, delete, quarantine, approve cleanup, write Restore Manifests, promote a package, create shortcuts, install anything, or create cleanup history.
 
 ## Desired behavior
 
-- `docs/operations/ci.md` records representative normal push MVP Preflight #385 evidence.
-- Compact current-state and handoff docs mention #385 on `7baf70d` as the current representative preflight proof.
-- Earlier #360 and #365 evidence remains available as historical fallback and documentation-consistency proof.
+- `docs/operations/ci.md` records representative normal push MVP Preflight #387 evidence.
+- Compact current-state and handoff docs mention #387 on `1adce0a` as the current representative preflight proof.
+- Earlier #360, #365, and #385 evidence remains available as historical runner fallback, feature-index, and trust-helper preflight proof.
 - The latest docs/workflow packet breadcrumb stays aligned across current state, progress, and thread handoff.
 
 ## Decisions made
 
 Small feature-level decisions:
 
-- Refresh the representative evidence because default MVP preflight coverage meaningfully changed.
-- Keep #360 as the first no-input `windows-2022` fallback proof and #365 as historical active feature-index proof.
+- Refresh the representative evidence because default MVP preflight coverage meaningfully changed through documentation consistency.
+- Keep #385 as historical trust-helper preflight coverage proof.
 - Keep this as a docs-only evidence refresh.
 
 ADR-worthy decisions:
@@ -40,10 +41,9 @@ Completed on: 2026-06-04
 
 What changed:
 
-- Updated the CI runbook with GitHub Actions MVP Preflight #385 evidence for commit `7baf70d`.
+- Updated the CI runbook with GitHub Actions MVP Preflight #387 evidence for commit `1adce0a`.
 - Updated compact current-state, progress, and thread-handoff docs to name this packet and current CI evidence.
-- Updated the feature index and prior CI wording brief so #365 is framed as historical evidence after preflight coverage changed.
-- Later packet `CI Evidence Refresh After Skip Switch Docs Regression` superseded #385 as representative current-path evidence after default documentation consistency coverage changed.
+- Updated the feature index and prior CI evidence brief so #385 is framed as historical trust-helper preflight coverage evidence after skip-switch documentation coverage changed.
 
 Tests run:
 
@@ -54,7 +54,7 @@ Docs updated:
 
 - This feature brief.
 - `docs/features/index.md`
-- `docs/features/2026-06-04-ci-evidence-wording-stabilization.md`
+- `docs/features/2026-06-04-ci-evidence-refresh-after-trust-helper-preflight.md`
 - `docs/operations/ci.md`
 - `docs/codex/current-state.md`
 - `.codex/progress.md`
@@ -74,4 +74,4 @@ Follow-up work:
 
 Risky assumptions:
 
-- The GitHub Actions API run metadata for #385 is sufficient evidence for run number, commit, duration, and success status.
+- The GitHub Actions API run metadata for #387 is sufficient evidence for run number, commit, duration, and success status.
