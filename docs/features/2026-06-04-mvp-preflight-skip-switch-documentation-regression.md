@@ -19,7 +19,7 @@ Keep focused `Invoke-MvpPreflight.cmd` skip-switch documentation aligned with th
 ## Desired behavior
 
 - `docs/operations/ci.md` is the authoritative runbook for current `Invoke-MvpPreflight.cmd` skip switches.
-- `tools\Test-DocumentationConsistency.cmd` parses `tools\Invoke-MvpPreflight.ps1` and fails if the CI runbook omits any current skip switch.
+- `tools\Test-DocumentationConsistency.cmd` parses `tools\Invoke-MvpPreflight.ps1` and fails if the CI runbook omits any current skip switch. Later exact-set coverage also fails stale runbook switch entries.
 - Daily-use guidance points to the CI runbook instead of carrying a partial skip-switch list.
 - MVP preflight keeps running documentation consistency by default.
 
@@ -42,9 +42,10 @@ Completed on: 2026-06-04
 What changed:
 
 - `docs/operations/ci.md` now lists every current `Invoke-MvpPreflight.cmd` skip switch.
-- `tools\Test-DocumentationConsistency.cmd` now verifies the CI runbook contains every current preflight skip switch.
+- `tools\Test-DocumentationConsistency.cmd` initially verified the CI runbook contains every current preflight skip switch; the later exact documentation regression tightened this to an exact set.
 - `docs/operations/daily-use.md` now points to the CI runbook for the full skip-switch list instead of keeping a partial list.
 - Compact current-state, progress, and thread-handoff docs name this packet and the new documentation consistency coverage.
+- Later packet `MVP Preflight Skip Switch Exact Documentation Regression` made the check exact, so stale documented skip switches fail too.
 
 Tests run:
 

@@ -22,7 +22,7 @@ Catch active documentation drift before handoff and CI evidence goes stale, espe
 - The check verifies bare active feature-index entries point at existing files under `docs/features`.
 - The check verifies required operational runbooks are listed in both the feature index and thread handoff.
 - The check verifies latest docs/workflow and tooling/evidence packet breadcrumbs align between current state, progress, and thread handoff.
-- The check verifies the CI runbook lists every current `Invoke-MvpPreflight.cmd` skip switch.
+- The check verifies the CI runbook focused skip-switch section exactly matches current `Invoke-MvpPreflight.cmd` skip switches.
 - MVP preflight runs the check by default, with a skip switch for focused local loops.
 
 ## Decisions made
@@ -48,6 +48,7 @@ What changed:
 - The regression checks active operational runbook references and latest packet breadcrumb alignment.
 - Later packet `Feature Index Entry Regression` added coverage for bare `Active Or Current` feature-index filenames.
 - Later packet `MVP Preflight Skip Switch Documentation Regression` added coverage that the CI runbook lists every current `Invoke-MvpPreflight.cmd` skip switch.
+- Later packet `MVP Preflight Skip Switch Exact Documentation Regression` made that skip-switch coverage exact, so stale extra runbook entries also fail.
 
 Tests run:
 

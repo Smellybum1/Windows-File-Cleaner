@@ -22,6 +22,7 @@ Use this index before opening individual feature briefs. The folder contains man
 - `2026-06-04-ci-evidence-refresh-after-trust-helper-preflight.md`: CI runbook and compact handoff docs recorded earlier #385 proof for the normal push preflight path after the trust-helper path guard joined default MVP preflight.
 - `2026-06-04-ci-evidence-wording-stabilization.md`: CI evidence docs now use representative current-path wording instead of self-staling latest-run wording.
 - `2026-06-04-ci-evidence-refresh.md`: CI runbook and compact handoff docs recorded the earlier #365 proof for the active feature-index documentation consistency preflight path.
+- `2026-06-04-mvp-preflight-skip-switch-exact-documentation-regression.md`: documentation consistency now verifies the CI runbook skip-switch section exactly matches current `Invoke-MvpPreflight.cmd` skip switches, catching missing and stale entries.
 - `2026-06-04-mvp-preflight-skip-switch-documentation-regression.md`: documentation consistency now verifies the CI runbook lists every current `Invoke-MvpPreflight.cmd` skip switch.
 - `2026-06-04-feature-index-entry-regression.md`: documentation consistency now verifies bare active feature-index entries resolve to existing feature briefs.
 - `2026-06-04-documentation-consistency-regression.md`: MVP preflight now verifies active docs links and latest packet breadcrumb alignment.

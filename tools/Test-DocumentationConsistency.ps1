@@ -89,7 +89,7 @@ function Get-MarkdownSection {
     $pattern = "(?ms)^##\s+$([regex]::Escape($Header))\s*\r?\n(?<body>.*?)(?=^##\s+|\z)"
     $match = [regex]::Match($Text, $pattern)
     if (-not $match.Success) {
-        throw "Feature index is missing the '$Header' section."
+        throw "Markdown text is missing the '$Header' section."
     }
 
     return $match.Groups["body"].Value
@@ -252,7 +252,27 @@ function Get-MvpPreflightSkipSwitches {
     return @($switches)
 }
 
-function Assert-MvpPreflightSkipSwitchesDocumented {
+function Get-CiRunbookSkipSwitches {
+    param(
+        [Parameter(Mandatory)]
+        [string]$CiRunbookText
+    )
+
+    $skipSwitchSection = Get-MarkdownSection -Text $CiRunbookText -Header "Focused Local Skip Switches"
+    $matches = [regex]::Matches($skipSwitchSection, '(?m)^\s*-\s+`-(?<name>Skip[A-Za-z0-9]+)`\s*:')
+    $switches = [System.Collections.Generic.SortedSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
+    foreach ($match in $matches) {
+        [void]$switches.Add($match.Groups["name"].Value)
+    }
+
+    if ($switches.Count -eq 0) {
+        throw "CI runbook Focused Local Skip Switches section does not list any skip switches."
+    }
+
+    return @($switches)
+}
+
+function Assert-MvpPreflightSkipSwitchesExactlyDocumented {
     param(
         [Parameter(Mandatory)]
         [string]$CiRunbookText,
@@ -261,11 +281,26 @@ function Assert-MvpPreflightSkipSwitchesDocumented {
         [string]$PreflightScriptText
     )
 
+    $scriptSwitches = [System.Collections.Generic.SortedSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
     foreach ($switchName in Get-MvpPreflightSkipSwitches -PreflightScriptText $PreflightScriptText) {
-        Assert-ContainsText `
-            -Text $CiRunbookText `
-            -ExpectedText "-$switchName" `
-            -Description "CI runbook focused local skip switches"
+        [void]$scriptSwitches.Add($switchName)
+    }
+
+    $documentedSwitches = [System.Collections.Generic.SortedSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
+    foreach ($switchName in Get-CiRunbookSkipSwitches -CiRunbookText $CiRunbookText) {
+        [void]$documentedSwitches.Add($switchName)
+    }
+
+    foreach ($switchName in $scriptSwitches) {
+        if (-not $documentedSwitches.Contains($switchName)) {
+            throw "CI runbook Focused Local Skip Switches section is missing current MVP preflight skip switch: -$switchName"
+        }
+    }
+
+    foreach ($switchName in $documentedSwitches) {
+        if (-not $scriptSwitches.Contains($switchName)) {
+            throw "CI runbook Focused Local Skip Switches section lists a stale MVP preflight skip switch: -$switchName"
+        }
     }
 }
 
@@ -317,9 +352,9 @@ Assert-ContainsText `
     -ExpectedText "docs/operations/ci.md" `
     -Description "Thread handoff startup context"
 
-Assert-MvpPreflightSkipSwitchesDocumented `
+Assert-MvpPreflightSkipSwitchesExactlyDocumented `
     -CiRunbookText $ciRunbookText `
     -PreflightScriptText $mvpPreflightText
 
 Write-Host "Documentation consistency regression passed."
-Write-Host "Boundary: checked committed documentation links, active feature-index entries, packet breadcrumbs, and MVP preflight skip-switch docs only; this did not launch WPF, scan, move, restore, delete, approve cleanup, write manifests, install anything, or create cleanup history."
+Write-Host "Boundary: checked committed documentation links, active feature-index entries, packet breadcrumbs, and exact MVP preflight skip-switch docs only; this did not launch WPF, scan, move, restore, delete, approve cleanup, write manifests, install anything, or create cleanup history."

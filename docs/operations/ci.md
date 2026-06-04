@@ -63,7 +63,7 @@ Current `Invoke-MvpPreflight.cmd` skip switches:
 - `-SkipDocumentationConsistencyCheck`: skip documentation consistency regression.
 - `-SkipDiffCheck`: skip whitespace diff check.
 
-`tools\Test-DocumentationConsistency.cmd` verifies this runbook lists every current `Invoke-MvpPreflight.cmd` skip switch.
+`tools\Test-DocumentationConsistency.cmd` verifies this section exactly matches the current `Invoke-MvpPreflight.cmd` skip switches, so missing or stale switch entries fail before preflight can pass.
 
 ## Manual Windows Image Canary
 

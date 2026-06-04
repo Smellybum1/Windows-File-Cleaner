@@ -11,7 +11,7 @@ Use this as the first compact orientation file for new Codex threads. Historical
 - Latest live evidence: 2026-06-04 second tiny exact real-profile Quarantine batch.
 - Latest working app packet: real-profile Quarantine inline status wording fix.
 - Latest package candidate: `.local\releases\windows-file-cleaner-v20260604-121922` at `e6ac3eb`, verified but not human-accepted.
-- Latest tooling/evidence packet: mvp preflight skip switch documentation regression.
+- Latest tooling/evidence packet: mvp preflight skip switch exact documentation regression.
 - Latest docs/workflow packet: ci evidence refresh after skip switch docs regression.
 - Previous docs/workflow baseline: `1ea1b76 Reduce workflow markdown bloat`
 - App stack: C# / WPF / .NET 8
@@ -75,7 +75,7 @@ Use this as the first compact orientation file for new Codex threads. Historical
 - GitHub Actions MVP Preflight also has a manual `workflow_dispatch` runner-image choice so `windows-2025-vs2026` can be tested intentionally without changing the push or pull-request baseline.
 - Push CI run #387 for commit `1adce0a` passed, validating the current normal push path after documentation consistency started checking that the CI runbook lists every current `Invoke-MvpPreflight.cmd` skip switch. Earlier #385 validated trust-helper path guard preflight coverage, earlier #365 validated active feature-index documentation consistency coverage, and earlier #360 validated the normal push fallback for `inputs.runner_image || 'windows-2022'`.
 - `docs/operations/ci.md` captures normal push/PR CI behavior, the manual `windows-2025-vs2026` canary procedure, baseline-change rule, and safety boundary.
-- `tools\Test-DocumentationConsistency.cmd` verifies active markdown references, bare active feature-index entries, latest packet breadcrumbs across README, feature index, current state, progress, and thread handoff, and that `docs/operations/ci.md` lists every current `Invoke-MvpPreflight.cmd` skip switch. MVP preflight runs it by default before the whitespace diff check; use `-SkipDocumentationConsistencyCheck` only for focused local loops.
+- `tools\Test-DocumentationConsistency.cmd` verifies active markdown references, bare active feature-index entries, latest packet breadcrumbs across README, feature index, current state, progress, and thread handoff, and that the focused skip-switch section in `docs/operations/ci.md` exactly matches current `Invoke-MvpPreflight.cmd` skip switches. MVP preflight runs it by default before the whitespace diff check; use `-SkipDocumentationConsistencyCheck` only for focused local loops.
 - MVP preflight now runs the local release acceptance summary regression check by default before the local release acceptance recorder regression; use `-SkipLocalReleaseAcceptanceSummaryCheck` only for focused local loops.
 - `tools\Test-LocalReleaseAcceptanceRecorder.cmd` verifies the package acceptance recorder rejects missing manual intent, missing verifier evidence, and missing commit evidence without explicit mismatch acceptance; it also verifies `-WhatIf` does not write and explicit `-RecordCommitMismatch` can complete synthetic ignored notes.
 - MVP preflight now runs the local release acceptance recorder regression check by default after the package summary regression; use `-SkipLocalReleaseAcceptanceRecorderCheck` only for focused local loops.
