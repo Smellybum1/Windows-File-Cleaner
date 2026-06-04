@@ -14,15 +14,21 @@ Read:
 
 - `AGENTS.md`
 - `docs/codex/current-state.md`
-- `docs/domain/context.md`
-- `docs/domain/glossary.md`
 - `docs/domain/context-map.md` if it exists and is relevant
-- Relevant ADRs in `docs/decisions/`
-- Relevant active feature briefs via `docs/features/index.md`
 - `.codex/progress.md`
 - `docs/codex/safety-profiles.md`
+- `docs/domain/context.md` and `docs/domain/glossary.md` when domain terms, UI wording, cleanup rules, restore rules, or product behavior are involved
+- Relevant ADRs in `docs/decisions/`
+- Relevant active feature briefs via `docs/features/index.md`
+- Relevant runbooks in `docs/operations/`
 
-Read archived evidence only when the task needs historical packet detail.
+Read detailed reference or archived evidence only when the task needs historical packet detail:
+
+- `docs/domain/context-reference.md`
+- `docs/domain/glossary-reference.md`
+- `.codex/archive/`
+- `docs/codex/archive/`
+- `docs/features/archive/`
 
 ## Step 2: Restate the request using project language
 

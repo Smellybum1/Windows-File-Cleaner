@@ -6,19 +6,11 @@ Use this index before opening individual feature briefs. The folder contains man
 
 ## Active Or Current
 
-- `2026-06-04-local-release-acceptance-command-stamping.md`: generated package acceptance notes stamp actual release-path/current-commit commands.
-- `2026-06-04-local-release-recorder-commit-evidence-guard.md`: release acceptance recorder now blocks missing verifier evidence and requires explicit commit-mismatch recording.
-- `2026-06-04-accepted-package-complete-notes-selection.md`: accepted-package commands select latest complete notes while pending candidate notes require explicit paths.
+- `2026-06-04-startup-context-compaction.md`: current docs/context reduction packet for faster Codex threads.
+- `2026-06-04-local-release-acceptance-command-stamping.md`: latest release tooling packet; generated package acceptance notes stamp actual release-path/current-commit commands.
 - `2026-06-04-verified-portable-package-candidate.md`: verified current app-code portable package candidate, pending human package acceptance.
-- `2026-06-04-real-profile-quarantine-inline-status-wording.md`: WPF wording fix for real-profile post-execution inline status.
 - `2026-06-04-second-real-profile-quarantine-batch.md`: latest user-clicked exact-profile Quarantine evidence and current stop state.
-- `2026-06-03-workflow-markdown-bloat-reduction.md`: latest docs/workflow cleanup baseline.
 - `2026-06-01-live-product-readiness-roadmap.md`: current readiness tracks and next live-product gates.
-- `2026-06-02-current-head-next-batch-review-evidence.md`: terminal evidence that preceded the 2026-06-04 manual WPF next-batch review.
-- `2026-06-02-real-profile-next-batch-review-wrapper.md`: combined terminal evidence plus checklist wrapper.
-- `2026-06-02-real-profile-next-batch-evidence-preset.md`: exact-profile evidence preset.
-- `2026-06-02-real-profile-next-batch-wpf-checklist.md`: manual WPF checklist printer.
-- `2026-06-02-shortcut-installer-deferral-decision.md`: ADR 0020 packaging decision note.
 
 ## Operational References
 
@@ -32,6 +24,8 @@ Command detail now belongs in:
 ## Historical Briefs
 
 Historical briefs from 2026-05-28 through 2026-06-02 remain in `docs/features/` for link stability. Treat them as an archive unless a task specifically touches that feature.
+
+Completed 2026-06-04 packet briefs that are not listed above are also historical unless the task specifically touches their surface. Search by filename or term instead of opening every brief.
 
 Use filename/date searches instead of broad reads, for example:
 

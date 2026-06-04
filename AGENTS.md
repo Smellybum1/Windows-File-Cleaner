@@ -9,19 +9,28 @@ This repo uses a compact "Grill with Docs" workflow: clarify risky product/domai
 Before non-trivial implementation, read:
 
 - `docs/codex/current-state.md`
-- `docs/domain/context.md`
-- `docs/domain/glossary.md`
-- relevant ADRs in `docs/decisions/`
-- relevant active feature briefs via `docs/features/index.md`
 - `.codex/progress.md`
 - `docs/codex/safety-profiles.md`
-- `docs/codex/grill-with-docs.md`
-- `docs/codex/skillopt-inspired-workflow.md`
 - this file
+
+Then read only the relevant supporting docs for the task:
+
+- `docs/domain/context.md` and `docs/domain/glossary.md` for domain, UI wording, naming, cleanup behavior, restore behavior, or product-rule changes.
+- Relevant ADRs in `docs/decisions/` when touching an accepted decision or considering a durable decision.
+- Relevant active feature briefs via `docs/features/index.md`.
+- Relevant command runbooks in `docs/operations/`.
+- `docs/codex/grill-with-docs.md` for non-trivial product, domain, persistence, security, cleanup, restore, or irreversible behavior.
+- `docs/codex/skillopt-inspired-workflow.md` only when improving Codex workflow docs from evidence.
 
 Read `docs/domain/context-map.md` only if it exists and is relevant.
 
-Read archived evidence under `.codex/archive/` or `docs/codex/archive/` only when the current task needs historical packet detail.
+Read detailed reference or archived evidence only when the current task needs it:
+
+- `docs/domain/context-reference.md`
+- `docs/domain/glossary-reference.md`
+- `.codex/archive/`
+- `docs/codex/archive/`
+- `docs/features/archive/`
 
 ## Commands
 
@@ -66,8 +75,9 @@ This is a local Windows cleanup app for reviewing storage under `C:\Users\moxhe`
 
 ## Documentation Map
 
-- `docs/domain/context.md`: stable product/domain concepts.
-- `docs/domain/glossary.md`: preferred terms, forbidden synonyms, and naming rules.
+- `docs/domain/context.md`: compact stable product/domain concepts.
+- `docs/domain/glossary.md`: compact preferred terms, forbidden synonyms, and naming rules.
+- `docs/domain/context-reference.md` and `docs/domain/glossary-reference.md`: detailed historical/reference domain notes; open only when relevant.
 - `docs/decisions/`: ADRs.
 - `docs/features/`: feature briefs, plans, and completion notes.
 - `docs/operations/`: operational runbooks and command detail.

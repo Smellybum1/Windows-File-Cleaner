@@ -2,7 +2,7 @@
 
 Last updated: 2026-06-04
 
-Use this as the first compact orientation file for new Codex threads. Historical packet evidence lives in `.codex/archive/progress-2026-05-2026-06.md`; do not load that archive unless the current task needs old packet detail.
+Use this as the first compact orientation file for new Codex threads. Historical packet evidence and detailed reference docs are archived or referenced separately; do not load them unless the current task needs old packet detail.
 
 ## Snapshot
 
@@ -12,7 +12,8 @@ Use this as the first compact orientation file for new Codex threads. Historical
 - Latest working app packet: real-profile Quarantine inline status wording fix.
 - Latest package candidate: `.local\releases\windows-file-cleaner-v20260604-121922` at `e6ac3eb`, verified but not human-accepted.
 - Latest tooling packet: release acceptance command stamping.
-- Latest docs/workflow baseline before these packets: `1ea1b76 Reduce workflow markdown bloat`
+- Latest docs/workflow packet: startup context compaction.
+- Previous docs/workflow baseline: `1ea1b76 Reduce workflow markdown bloat`
 - App stack: C# / WPF / .NET 8
 - Product: local Windows cleanup reviewer for `C:\Users\moxhe`
 - Storage Scan: read-only
@@ -53,6 +54,7 @@ Use this as the first compact orientation file for new Codex threads. Historical
 - Accepted-package tooling now selects the latest complete acceptance notes by default, so incomplete candidate notes do not replace the accepted `bc9b869` baseline unless an explicit notes path is used.
 - Release acceptance recording now refuses missing verifier evidence and requires explicit `-RecordCommitMismatch` before commit mismatch evidence is marked recorded.
 - Generated package acceptance notes now stamp the actual `-ReleasePath` verifier/checklist commands, include `-RequireCurrentCommit` only when that switch created the notes, and print the exact commit-mismatch recorder command when current-commit evidence is intentionally not required.
+- Startup docs were compacted so `docs/domain/context.md`, `docs/domain/glossary.md`, `README.md`, the active roadmap, and `.codex/progress.md` are short read-first summaries. Detailed prior versions live at `docs/domain/context-reference.md`, `docs/domain/glossary-reference.md`, `docs/operations/readme-full-reference.md`, `docs/features/archive/2026-06-01-live-product-readiness-roadmap-history.md`, and `.codex/archive/progress-2026-06-04-pre-context-compaction.md`.
 
 ## Still Unavailable
 
