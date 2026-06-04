@@ -3,6 +3,7 @@ param(
     [switch]$SkipRestore,
     [switch]$SkipFixtureWhatIf,
     [switch]$SkipFixtureChecklist,
+    [switch]$SkipLocalReleaseAcceptanceSummaryCheck,
     [switch]$SkipDiffCheck
 )
 
@@ -12,6 +13,7 @@ $ErrorActionPreference = "Stop"
 $repoRoot = Split-Path -Parent $PSScriptRoot
 $fixtureScript = Join-Path $PSScriptRoot "New-StorageScanSmokeFixture.ps1"
 $fixtureReviewScript = Join-Path $PSScriptRoot "Start-MvpFixtureReview.ps1"
+$localReleaseAcceptanceSummaryTestScript = Join-Path $PSScriptRoot "Test-LocalReleaseAcceptanceSummary.ps1"
 $fixtureRoot = [System.IO.Path]::GetFullPath((Join-Path $repoRoot ".local\storage-scan-smoke-fixture")).TrimEnd([System.IO.Path]::DirectorySeparatorChar)
 
 function Invoke-PreflightStep {
@@ -62,6 +64,12 @@ try {
     if (-not $SkipFixtureChecklist) {
         Invoke-PreflightStep -Name "Fixture checklist" -Command {
             & powershell.exe -NoProfile -ExecutionPolicy Bypass -File $fixtureReviewScript -ChecklistOnly
+        }
+    }
+
+    if (-not $SkipLocalReleaseAcceptanceSummaryCheck) {
+        Invoke-PreflightStep -Name "Local release acceptance summary regression" -Command {
+            & powershell.exe -NoProfile -ExecutionPolicy Bypass -File $localReleaseAcceptanceSummaryTestScript
         }
     }
 

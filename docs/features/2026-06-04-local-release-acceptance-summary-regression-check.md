@@ -24,10 +24,14 @@ The summary helper now prints guarded next-step commands for incomplete package 
 - It verifies incomplete notes print `Pending acceptance next steps`, `-RecordCommitMismatch`, and the no-launch/no-scan/no-cleanup-history boundary.
 - It verifies complete notes pass `-RequireComplete` and do not print pending next steps.
 - The test removes its generated notes and test folder when complete.
+- MVP preflight now runs this regression by default before the whitespace diff check.
+- `Invoke-MvpPreflight.cmd -SkipLocalReleaseAcceptanceSummaryCheck` can skip only this regression for focused local loops.
 
 ## Verification
 
 - `cmd.exe /c tools\Test-LocalReleaseAcceptanceSummary.cmd`
+- `cmd.exe /c tools\Invoke-MvpPreflight.cmd -SkipRestore`
+- `cmd.exe /c tools\Invoke-MvpPreflight.cmd`
 - `cmd.exe /c tools\Summarize-LocalReleaseAcceptanceNotes.cmd -RequireComplete`
 - Confirmed `.local\release-acceptance-summary-test` was absent after cleanup.
 - `git diff --check` passed with expected CRLF warnings only.
@@ -39,3 +43,4 @@ No ADR added. This adds regression coverage for existing terminal tooling and do
 ## Follow-Up
 
 - Keep using this targeted check after changes to `Summarize-LocalReleaseAcceptanceNotes.ps1` or package acceptance note structure.
+- The normal MVP preflight path now covers the same regression before real-profile scan review evidence.

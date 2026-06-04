@@ -54,6 +54,8 @@ Use this before asking the user to do another tiny exact `C:\Users\moxhe` WPF ba
 
 That wrapper runs full MVP preflight by default, then exact-profile readiness evidence, then prints the manual WPF checklist. It is not cleanup approval and does not prove a future WPF batch is executable.
 
+Full MVP preflight includes restore/build/test coverage, fixture dry-run/checklist output, the local release acceptance summary regression check, and the whitespace diff check.
+
 Current stop state: after the 2026-06-04 second exact-profile Quarantine batch, exact-profile displayed undo work is expected to be `1`. Do not run or treat another next-batch review as movement evidence while that selected-manifest undo work is present unless a new Grill with Docs pass decides that outstanding undo work is acceptable for another tiny batch.
 
 Evidence-only preset:

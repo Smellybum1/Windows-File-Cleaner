@@ -15,7 +15,7 @@ Read first: `docs/codex/current-state.md`.
 
 Latest docs/workflow packet: `2026-06-04-startup-context-compaction`. It moved oversized read-first docs into reference/archive files and replaced them with compact active docs to reduce Codex thread lag. No app behavior changed.
 
-Latest tooling/evidence packet: `2026-06-04-local-release-acceptance-summary-regression-check`. The package acceptance summary helper now has a targeted terminal-only regression command that uses temporary ignored `.local` notes and cleans up after itself.
+Latest tooling/evidence packet: `2026-06-04-mvp-preflight-release-summary-regression`. MVP preflight now runs the local release acceptance summary regression check by default before the whitespace diff check, with `-SkipLocalReleaseAcceptanceSummaryCheck` for focused local loops.
 
 Latest package candidate: `.local\releases\windows-file-cleaner-v20260604-121922` at app commit `e6ac3eb`, verified but not human-accepted. Current pending acceptance notes: `.local\release-acceptance\release-acceptance-20260604-134337.md`.
 
@@ -40,6 +40,36 @@ Post-action evidence:
 6. Use `docs/operations/*.md` for command detail.
 
 ## Recent Packet Summaries
+
+### 2026-06-04: MVP Preflight Release Acceptance Summary Regression
+
+Status: completed
+
+Goal:
+
+- Fold the local release acceptance summary regression check into the normal MVP preflight path so package-acceptance next-step output is covered before future real-profile scan review evidence.
+
+Safety profile:
+
+- `terminal-readonly`. The preflight step writes temporary ignored notes under `.local\release-acceptance-summary-test`, removes them after the regression, and does not launch WPF, scan real-profile files, move, restore, delete, approve cleanup, promote a package, create shortcuts, install anything, or create cleanup history.
+
+Changes:
+
+- `Invoke-MvpPreflight.cmd` now runs `Test-LocalReleaseAcceptanceSummary.ps1` by default after fixture checklist output and before `git diff --check`.
+- Added `-SkipLocalReleaseAcceptanceSummaryCheck` for focused preflight loops.
+- Updated compact runbooks, handoff docs, and active feature notes to show the new default preflight coverage.
+
+Verification:
+
+- `cmd.exe /c tools\Test-LocalReleaseAcceptanceSummary.cmd`
+- `cmd.exe /c tools\Invoke-MvpPreflight.cmd -SkipRestore`
+- `cmd.exe /c tools\Invoke-MvpPreflight.cmd`
+- `cmd.exe /c tools\Summarize-LocalReleaseAcceptanceNotes.cmd -RequireComplete`
+- `git diff --check` passed with expected CRLF warnings only.
+
+ADRs:
+
+- Skipped; this extends terminal-only verification coverage for existing portable-package acceptance tooling and does not change product behavior, cleanup execution, restore execution, persistence, deployment, or package acceptance policy.
 
 ### 2026-06-04: Local Release Acceptance Summary Regression Check
 
@@ -201,6 +231,7 @@ ADRs:
 ### Current Live Product And Package Packets
 
 - `2026-06-04-local-release-acceptance-command-stamping`: completed and pushed at `5a4115e`.
+- `2026-06-04-mvp-preflight-release-summary-regression`: MVP preflight now runs the package acceptance summary regression check by default.
 - `2026-06-04-local-release-acceptance-summary-regression-check`: added targeted temporary-note regression coverage for summary next-step behavior.
 - `2026-06-04-package-acceptance-summary-next-steps`: incomplete package acceptance summaries print guarded recorder and recheck commands.
 - `2026-06-04-daily-readiness-latest-package-notes`: daily readiness surfaces the latest package acceptance notes as informational context.
