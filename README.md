@@ -172,6 +172,8 @@ Current accepted local package baseline: `.local\releases\windows-file-cleaner-v
 
 Verified package candidate pending human acceptance: `.local\releases\windows-file-cleaner-v20260604-121922` at commit `e6ac3eb`, with ignored acceptance notes at `.local\release-acceptance\release-acceptance-20260604-122009.md`. The notes summary records verifier and commit evidence, but normal launch, fixture launch, overall result, and the remaining checklist items are not recorded. Use the current accepted package baseline until the candidate has a completed human acceptance pass.
 
+Accepted-package helpers choose the latest completed acceptance notes by default. Use an explicit notes path when inspecting the pending candidate notes.
+
 Each release folder also contains ignored local launch scripts:
 
 ```txt

@@ -6,6 +6,7 @@ Use this index before opening individual feature briefs. The folder contains man
 
 ## Active Or Current
 
+- `2026-06-04-accepted-package-complete-notes-selection.md`: accepted-package commands select latest complete notes while pending candidate notes require explicit paths.
 - `2026-06-04-verified-portable-package-candidate.md`: verified current app-code portable package candidate, pending human package acceptance.
 - `2026-06-04-real-profile-quarantine-inline-status-wording.md`: WPF wording fix for real-profile post-execution inline status.
 - `2026-06-04-second-real-profile-quarantine-batch.md`: latest user-clicked exact-profile Quarantine evidence and current stop state.

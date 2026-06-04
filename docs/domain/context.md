@@ -3829,6 +3829,7 @@ Implementation implications:
 - Release, acceptance, daily readiness, next-batch review, and Restore Manifest summary commands are operational tooling; command details belong in `docs/operations/`.
 - Operational tooling may read or write ignored local evidence only when its runbook says so, and it must preserve the matching safety profile in `docs/codex/safety-profiles.md`.
 - Accepted-package launch commands remain the v1 daily path; they are not app persistence, cleanup history, shortcut installation, installer behavior, or current-HEAD package proof.
+- Accepted-package tooling must select completed acceptance notes by default; pending or incomplete package-candidate notes require an explicit path and must not replace the accepted baseline.
 - Real-profile readiness and next-batch review commands remain evidence or guidance only; they are not substitutes for WPF readiness, exact `QUARANTINE`, Real-Profile Quarantine Approval Evidence, immediate Pre-Execution Revalidation, and explicit user approval for a specific tiny batch.
 - ADR 0020 keeps accepted package launch commands as the v1 daily path and defers installed shortcut or installer automation until a later explicit user-approved packaging packet defines target selection, stale-target handling, created artifacts, removal behavior, and read-only verification.
 - Portable v1 does not create shortcuts, install services, add permanent deletion, add persisted cleanup history, add broad/all-manifest restore, or widen custom/non-exact real-profile movement.

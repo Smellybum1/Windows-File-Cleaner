@@ -13,7 +13,9 @@ $notesRoot = Join-Path $repoRoot ".local\release-acceptance"
 
 function Resolve-PortableReleaseAcceptanceNotesPath {
     param(
-        [string]$RequestedPath
+        [string]$RequestedPath,
+
+        [bool]$RequireCompleteDefault
     )
 
     if (-not [string]::IsNullOrWhiteSpace($RequestedPath)) {
@@ -28,15 +30,25 @@ function Resolve-PortableReleaseAcceptanceNotesPath {
         throw "No portable release acceptance notes folder exists: $notesRoot"
     }
 
-    $latest = Get-ChildItem -LiteralPath $notesRoot -Filter "release-acceptance-*.md" -File |
-        Sort-Object LastWriteTime -Descending |
-        Select-Object -First 1
+    $candidateNotes = @(Get-ChildItem -LiteralPath $notesRoot -Filter "release-acceptance-*.md" -File |
+            Sort-Object LastWriteTime -Descending)
 
-    if ($null -eq $latest) {
+    if ($candidateNotes.Count -eq 0) {
         throw "No portable release acceptance notes files found in: $notesRoot"
     }
 
-    return $latest.FullName
+    if (-not $RequireCompleteDefault) {
+        return $candidateNotes[0].FullName
+    }
+
+    foreach ($candidate in $candidateNotes) {
+        $candidateLines = @(Get-Content -LiteralPath $candidate.FullName)
+        if (Test-PortableReleaseAcceptanceComplete -Lines $candidateLines) {
+            return $candidate.FullName
+        }
+    }
+
+    throw "No complete portable release acceptance notes files found in: $notesRoot. Pass -Path to inspect an incomplete notes file."
 }
 
 function Get-FirstMetadataValue {
@@ -223,7 +235,46 @@ function Get-PortableReleaseChecklistEntries {
     return $entries
 }
 
-$notesPath = Resolve-PortableReleaseAcceptanceNotesPath -RequestedPath $Path
+function Test-PortableReleaseAcceptanceComplete {
+    param(
+        [string[]]$Lines
+    )
+
+    $overallIndex = [array]::IndexOf($Lines, "Overall result:")
+    if ($overallIndex -lt 0) {
+        return $false
+    }
+
+    $overallResult = Get-CheckedLabel -Lines $Lines -StartIndex $overallIndex -Labels @("Pass", "Pass with issues noted", "Blocked")
+    if ($overallResult -notin @("Pass", "Pass with issues noted")) {
+        return $false
+    }
+
+    foreach ($label in @(
+            "Verifier passed for this release package.",
+            "Package commit matched current HEAD or mismatch was intentionally recorded.",
+            "Package was launched normally or normal launch was intentionally deferred.",
+            "Fixture launch and read-only fixture Scan were completed or intentionally deferred.")) {
+        if ((Get-CheckboxEvidenceState -Lines $Lines -Label $label) -ne "Recorded") {
+            return $false
+        }
+    }
+
+    $entries = @(Get-PortableReleaseChecklistEntries -Lines $Lines)
+    if ($entries.Count -eq 0) {
+        return $false
+    }
+
+    foreach ($entry in $entries) {
+        if ($entry.Status -ne "Pass") {
+            return $false
+        }
+    }
+
+    return $true
+}
+
+$notesPath = Resolve-PortableReleaseAcceptanceNotesPath -RequestedPath $Path -RequireCompleteDefault:$RequireComplete.IsPresent
 if (-not (Test-Path -LiteralPath $notesPath)) {
     throw "Portable release acceptance notes file does not exist: $notesPath"
 }

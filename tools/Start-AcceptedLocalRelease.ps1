@@ -53,15 +53,21 @@ function Get-LatestAcceptanceNotesPath {
         throw "No portable release acceptance notes folder exists: $notesRoot"
     }
 
-    $latest = Get-ChildItem -LiteralPath $notesRoot -Filter "release-acceptance-*.md" -File |
-        Sort-Object LastWriteTime -Descending |
-        Select-Object -First 1
+    $candidateNotes = @(Get-ChildItem -LiteralPath $notesRoot -Filter "release-acceptance-*.md" -File |
+            Sort-Object LastWriteTime -Descending)
 
-    if ($null -eq $latest) {
+    if ($candidateNotes.Count -eq 0) {
         throw "No portable release acceptance notes files found in: $notesRoot"
     }
 
-    return $latest.FullName
+    foreach ($candidate in $candidateNotes) {
+        $candidateLines = @(Get-Content -LiteralPath $candidate.FullName)
+        if (Test-AcceptedPortableReleaseNotesComplete -Lines $candidateLines) {
+            return $candidate.FullName
+        }
+    }
+
+    throw "No complete portable release acceptance notes files found in: $notesRoot. Pass -AcceptanceNotesPath to inspect or intentionally use a specific notes file."
 }
 
 function Get-FirstMetadataValue {
@@ -153,6 +159,35 @@ function Get-OverallResult {
     }
 
     return ""
+}
+
+function Test-AcceptedPortableReleaseNotesComplete {
+    param(
+        [string[]]$Lines
+    )
+
+    if (-not (Test-CheckedLine -Lines $Lines -Label "Verifier passed for this release package.")) {
+        return $false
+    }
+
+    if (-not (Test-CheckedLine -Lines $Lines -Label "Package commit matched current HEAD or mismatch was intentionally recorded.")) {
+        return $false
+    }
+
+    if (-not (Test-CheckedLine -Lines $Lines -Label "Package was launched normally or normal launch was intentionally deferred.")) {
+        return $false
+    }
+
+    if (-not (Test-CheckedLine -Lines $Lines -Label "Fixture launch and read-only fixture Scan were completed or intentionally deferred.")) {
+        return $false
+    }
+
+    $overallResult = Get-OverallResult -Lines $Lines
+    if ($overallResult -notin @("Pass", "Pass with issues noted")) {
+        return $false
+    }
+
+    return (Test-ChecklistComplete -Lines $Lines)
 }
 
 $notesPath = if ([string]::IsNullOrWhiteSpace($AcceptanceNotesPath)) {

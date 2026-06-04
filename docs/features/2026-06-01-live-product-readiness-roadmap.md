@@ -87,6 +87,8 @@ Later packet note: `Second Real-Profile Quarantine Batch` recorded the user-clic
 
 Later packet note: `Verified Portable Package Candidate` cut `.local\releases\windows-file-cleaner-v20260604-121922` from `e6ac3eb` after the inline status wording fix. Publish ran MVP preflight, current-commit package verification passed, and checklist-only acceptance notes were written to `.local\release-acceptance\release-acceptance-20260604-122009.md`, but the notes remain incomplete pending human package acceptance. The accepted package baseline remains `.local\releases\windows-file-cleaner-v20260602-011556` at `bc9b869`.
 
+Later packet note: `Accepted Package Complete Notes Selection` made accepted-package helpers select the latest complete acceptance notes by default, so incomplete candidate notes no longer shadow the accepted `bc9b869` baseline. The pending candidate notes remain available by explicit path.
+
 ## Domain Language Changes
 
 No new durable domain terms.

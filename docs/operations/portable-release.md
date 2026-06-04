@@ -25,12 +25,16 @@ This candidate includes app behavior through the real-profile Quarantine inline 
 .\tools\Summarize-LocalReleaseAcceptanceNotes.cmd -RequireComplete
 ```
 
+Without `-Path`, `-RequireComplete` selects the latest completed acceptance notes. Use an explicit `-Path` when inspecting a pending candidate notes file.
+
 ## Print Accepted Launch Commands
 
 ```powershell
 .\tools\Start-AcceptedLocalRelease.cmd -PrintOnly
 .\tools\Start-AcceptedLocalRelease.cmd -Fixture -PrintOnly
 ```
+
+Without `-AcceptanceNotesPath`, accepted-package launch commands select the latest completed acceptance notes, so incomplete candidate notes do not replace the accepted baseline.
 
 ## Publish A New Local Package
 

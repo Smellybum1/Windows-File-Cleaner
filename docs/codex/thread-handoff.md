@@ -20,6 +20,7 @@ Load archived evidence only when the task needs historical packet detail.
 - Repo: `D:\Codex\Windows File Cleaner`
 - Branch: `main`
 - Latest package/evidence packet: `2026-06-04-verified-portable-package-candidate`
+- Latest tooling packet: `2026-06-04-accepted-package-complete-notes-selection`
 - Latest live-product evidence: `2026-06-04-second-real-profile-quarantine-batch`
 - Latest working app packet: `2026-06-04-real-profile-quarantine-inline-status-wording`
 - Latest docs/workflow baseline before these packets: `1ea1b76 Reduce workflow markdown bloat`
@@ -28,6 +29,7 @@ Load archived evidence only when the task needs historical packet detail.
 - Accepted package: `.local\releases\windows-file-cleaner-v20260602-011556` at commit `bc9b869`
 - Accepted notes: `.local\release-acceptance\release-acceptance-20260602-011743.md`
 - Verified package candidate pending acceptance: `.local\releases\windows-file-cleaner-v20260604-121922` at commit `e6ac3eb`
+- Accepted-package helpers select the latest complete acceptance notes by default; use explicit notes paths for pending candidate review.
 
 See `docs/codex/current-state.md` for the complete compact snapshot.
 
@@ -78,5 +80,5 @@ The second user-clicked WPF batch moved one exact C:\Users\moxhe pip\cache\http-
 
 Next best step: stop after the second tiny exact real-profile batch. Do not chain another real-profile Quarantine batch while exact-profile displayed undo work is present unless a new Grill with Docs pass decides that outstanding selected-manifest undo work is acceptable. Recovery remains selected-manifest-only with exact RESTORE and immediate selected-restore revalidation if needed.
 
-Accepted package baseline remains .local\releases\windows-file-cleaner-v20260602-011556 at commit bc9b869 with completed ignored acceptance notes .local\release-acceptance\release-acceptance-20260602-011743.md. Verified package candidate .local\releases\windows-file-cleaner-v20260604-121922 at commit e6ac3eb is pending human package acceptance; ignored notes .local\release-acceptance\release-acceptance-20260604-122009.md are incomplete. Use docs/operations/*.md for command detail. Historical packet evidence is archived in .codex/archive/progress-2026-05-2026-06.md and docs/codex/archive/thread-handoff-2026-06-02.md.
+Accepted package baseline remains .local\releases\windows-file-cleaner-v20260602-011556 at commit bc9b869 with completed ignored acceptance notes .local\release-acceptance\release-acceptance-20260602-011743.md. Accepted-package helpers select latest complete notes by default. Verified package candidate .local\releases\windows-file-cleaner-v20260604-121922 at commit e6ac3eb is pending human package acceptance; ignored notes .local\release-acceptance\release-acceptance-20260604-122009.md are incomplete and should be inspected with an explicit path. Use docs/operations/*.md for command detail. Historical packet evidence is archived in .codex/archive/progress-2026-05-2026-06.md and docs/codex/archive/thread-handoff-2026-06-02.md.
 ```

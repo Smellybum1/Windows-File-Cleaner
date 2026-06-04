@@ -11,6 +11,7 @@ Use this as the first compact orientation file for new Codex threads. Historical
 - Latest live evidence: 2026-06-04 second tiny exact real-profile Quarantine batch.
 - Latest working app packet: real-profile Quarantine inline status wording fix.
 - Latest package candidate: `.local\releases\windows-file-cleaner-v20260604-121922` at `e6ac3eb`, verified but not human-accepted.
+- Latest tooling packet: accepted-package helpers select latest complete acceptance notes by default.
 - Latest docs/workflow baseline before these packets: `1ea1b76 Reduce workflow markdown bloat`
 - App stack: C# / WPF / .NET 8
 - Product: local Windows cleanup reviewer for `C:\Users\moxhe`
@@ -49,6 +50,7 @@ Use this as the first compact orientation file for new Codex threads. Historical
 - New manifest: `D:\WindowsFileCleanerQuarantine\actions\quarantine-action-draft-20260604014901-b7b402a2\restore-manifest.json`.
 - Latest working app packet fixed WPF inline post-execution status so exact real-profile Quarantine results are no longer described as fixture Quarantine results.
 - Portable package candidate `.local\releases\windows-file-cleaner-v20260604-121922` was cut from `e6ac3eb` after that app wording fix. Publish ran MVP preflight; `Test-LocalRelease.cmd -RequireCurrentCommit` passed; checklist-only acceptance notes were written to `.local\release-acceptance\release-acceptance-20260604-122009.md` but remain incomplete pending human package acceptance.
+- Accepted-package tooling now selects the latest complete acceptance notes by default, so incomplete candidate notes do not replace the accepted `bc9b869` baseline unless an explicit notes path is used.
 
 ## Still Unavailable
 

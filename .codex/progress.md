@@ -8,7 +8,9 @@ This file is now the compact current progress log. Historical packet evidence fr
 
 Read first: `docs/codex/current-state.md`.
 
-The latest package/evidence packet is `2026-06-04-verified-portable-package-candidate`: package `.local\releases\windows-file-cleaner-v20260604-121922` was cut from app commit `e6ac3eb` after the real-profile inline status wording fix, verified with current-commit package checks, and left pending human package acceptance.
+The latest tooling/evidence packet is `2026-06-04-accepted-package-complete-notes-selection`: accepted-package helpers now select the latest complete acceptance notes by default, while pending candidate notes require an explicit path.
+
+The latest package candidate remains `2026-06-04-verified-portable-package-candidate`: package `.local\releases\windows-file-cleaner-v20260604-121922` was cut from app commit `e6ac3eb` after the real-profile inline status wording fix, verified with current-commit package checks, and left pending human package acceptance.
 
 The latest live-product evidence remains `2026-06-04-second-real-profile-quarantine-batch`: the user approved and clicked one exact `C:\Users\moxhe` WPF Quarantine batch for a single `pip\cache\http-v2` `.body` file. The app remains a local Windows File Cleaner for `C:\Users\moxhe`; Storage Scan is read-only, exact real-profile movement is human-clicked only, and unavailable workflows remain broad/all-manifest real-profile Undo Quarantine, custom/non-exact real-profile Quarantine, custom selected restore, permanent deletion, persisted cleanup history, installed shortcut automation, and installer behavior.
 
@@ -22,6 +24,8 @@ Latest working app packet fixed the WPF inline post-execution status wording so 
 
 Current package candidate `.local\releases\windows-file-cleaner-v20260604-121922` is verified but not accepted. Ignored acceptance notes `.local\release-acceptance\release-acceptance-20260604-122009.md` record verifier and commit evidence, but normal launch, fixture launch, overall result, and the remaining checklist items are not recorded. Accepted package baseline remains `.local\releases\windows-file-cleaner-v20260602-011556` at commit `bc9b869`.
 
+Accepted-package tooling now selects the latest complete acceptance notes by default. This keeps daily readiness and accepted-package launch commands on the completed `bc9b869` package while the newer `e6ac3eb` candidate notes remain incomplete and inspectable by explicit path.
+
 ## Next Recommended Work
 
 1. Stop after the second tiny exact real-profile batch; do not chain another real-profile Quarantine batch.
@@ -32,6 +36,54 @@ Current package candidate `.local\releases\windows-file-cleaner-v20260604-121922
 6. Start an ADR 0020 shortcut/installer follow-up only if the user explicitly asks for installed shortcut or installer automation.
 
 ## Recent Completed Packets
+
+### 2026-06-04: Accepted Package Complete Notes Selection
+
+Status: completed
+
+Goal:
+
+- Keep accepted-package daily commands stable after a newer package candidate writes incomplete ignored acceptance notes.
+
+Safety profile:
+
+- `terminal-readonly`; no WPF launch, scan, movement, restore, deletion, approval, installed shortcut, installer behavior, or cleanup history.
+
+Changes:
+
+- `Summarize-LocalReleaseAcceptanceNotes.ps1 -RequireComplete` now selects the latest complete acceptance notes by default when no explicit `-Path` is supplied.
+- `Start-AcceptedLocalRelease.ps1` now selects the latest complete acceptance notes by default.
+- Explicit paths still inspect pending candidate notes and still fail `-RequireComplete` when those notes are incomplete.
+
+Verification:
+
+- `cmd.exe /c tools\Summarize-LocalReleaseAcceptanceNotes.cmd -RequireComplete`
+- `cmd.exe /c tools\Start-AcceptedLocalRelease.cmd -PrintOnly`
+- `cmd.exe /c tools\Summarize-LocalReleaseAcceptanceNotes.cmd -Path ".local\release-acceptance\release-acceptance-20260604-122009.md"`
+- Expected incomplete check: `cmd.exe /c tools\Summarize-LocalReleaseAcceptanceNotes.cmd -Path ".local\release-acceptance\release-acceptance-20260604-122009.md" -RequireComplete` exited `1` with the expected missing acceptance evidence.
+- Expected incomplete accepted-launcher check: `cmd.exe /c tools\Start-AcceptedLocalRelease.cmd -AcceptanceNotesPath ".local\release-acceptance\release-acceptance-20260604-122009.md" -PrintOnly` exited `1` before launch-command printing.
+- `cmd.exe /c tools\Invoke-DailyLocalReadiness.cmd`
+- `cmd.exe /c tools\Test-LocalRelease.cmd -ReleasePath ".local\releases\windows-file-cleaner-v20260604-121922"`
+
+Docs updated:
+
+- `docs/features/2026-06-04-accepted-package-complete-notes-selection.md`
+- `docs/features/index.md`
+- `docs/features/2026-06-01-live-product-readiness-roadmap.md`
+- `docs/codex/current-state.md`
+- `docs/codex/thread-handoff.md`
+- `.codex/progress.md`
+- `docs/operations/portable-release.md`
+- `docs/domain/context.md`
+- `README.md`
+
+ADRs:
+
+- Skipped; this is a tooling correction under ADR 0020 and does not add installed shortcut or installer behavior.
+
+Follow-up:
+
+- Complete the human package acceptance pass for `.local\releases\windows-file-cleaner-v20260604-121922` before promoting it over the accepted `bc9b869` baseline.
 
 ### 2026-06-04: Verified Portable Package Candidate
 
