@@ -15,7 +15,7 @@ Read first: `docs/codex/current-state.md`.
 
 Latest docs/workflow packet: `2026-06-04-startup-context-compaction`. It moved oversized read-first docs into reference/archive files and replaced them with compact active docs to reduce Codex thread lag. No app behavior changed.
 
-Latest tooling/evidence packet: `2026-06-04-daily-readiness-exact-profile-undo-spotlight`. Default daily readiness now ends with an exact-profile undo-work stop-state spotlight after the broad Restore Manifest summary.
+Latest tooling/evidence packet: `2026-06-04-daily-readiness-exact-profile-undo-spotlight-regression`. MVP preflight now runs a synthetic regression proving daily readiness's final exact-profile undo-work spotlight excludes fixture-scope undo work.
 
 Latest package candidate: `.local\releases\windows-file-cleaner-v20260604-121922` at app commit `e6ac3eb`, verified but not human-accepted. Current pending acceptance notes: `.local\release-acceptance\release-acceptance-20260604-134337.md`.
 
@@ -69,6 +69,37 @@ Verification:
 ADRs:
 
 - Skipped; this adds terminal-only visibility for existing Restore Manifest evidence and does not change product behavior, cleanup execution, restore execution, persistence, deployment, or package acceptance policy.
+
+### 2026-06-04: Daily Readiness Exact-Profile Undo Spotlight Regression
+
+Status: completed
+
+Goal:
+
+- Cover the daily readiness exact-profile undo-work stop-state spotlight in normal MVP preflight so future changes do not accidentally mix fixture-scope undo work into the final exact-profile readout.
+
+Safety profile:
+
+- `terminal-readonly`. The regression writes temporary ignored synthetic Restore Manifests under `.local\daily-readiness-undo-spotlight-test`, removes them, and does not launch WPF, scan real-profile files, move, restore, delete, approve cleanup, write real Restore Manifests, promote a package, create shortcuts, install anything, or create cleanup history.
+
+Changes:
+
+- Added `tools\Test-DailyReadinessExactProfileUndoSpotlight.cmd` and `.ps1`.
+- The regression creates one synthetic exact `C:\Users\moxhe` undo-work manifest and one synthetic fixture-scope undo-work manifest under the same ignored Quarantine Root.
+- The test asserts broad daily readiness sees both manifests and the final exact-profile spotlight displays only the exact-profile manifest.
+- `Invoke-MvpPreflight.cmd` now runs the regression by default before `git diff --check`.
+- Added `-SkipDailyReadinessUndoSpotlightCheck` for focused preflight loops.
+
+Verification:
+
+- `cmd.exe /c tools\Test-DailyReadinessExactProfileUndoSpotlight.cmd`
+- `cmd.exe /c tools\Invoke-MvpPreflight.cmd`
+- `git diff --check` passed with expected CRLF warnings only.
+- Confirmed `.local\daily-readiness-undo-spotlight-test` was absent after cleanup.
+
+ADRs:
+
+- Skipped; this extends terminal-only verification coverage for existing daily readiness and Restore Manifest summary tooling without changing product behavior, cleanup execution, restore execution, persistence, deployment, or package acceptance policy.
 
 ### 2026-06-04: MVP Preflight Next-Batch Stop Guard Regression
 
@@ -321,6 +352,7 @@ ADRs:
 ### Current Live Product And Package Packets
 
 - `2026-06-04-local-release-acceptance-command-stamping`: completed and pushed at `5a4115e`.
+- `2026-06-04-daily-readiness-exact-profile-undo-spotlight-regression`: MVP preflight now covers the exact-profile undo-work spotlight with ignored synthetic Restore Manifests.
 - `2026-06-04-daily-readiness-exact-profile-undo-spotlight`: default daily readiness spotlights exact-profile undo-work stop state.
 - `2026-06-04-mvp-preflight-next-batch-stop-guard-regression`: MVP preflight now runs the real-profile next-batch stop guard regression by default.
 - `2026-06-04-real-profile-next-batch-early-undo-guard`: next-batch evidence now stops before MVP preflight when displayed undo work exists.

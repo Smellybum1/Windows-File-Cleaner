@@ -5,6 +5,7 @@ param(
     [switch]$SkipFixtureChecklist,
     [switch]$SkipLocalReleaseAcceptanceSummaryCheck,
     [switch]$SkipRealProfileNextBatchStopGuardCheck,
+    [switch]$SkipDailyReadinessUndoSpotlightCheck,
     [switch]$SkipDiffCheck
 )
 
@@ -16,6 +17,7 @@ $fixtureScript = Join-Path $PSScriptRoot "New-StorageScanSmokeFixture.ps1"
 $fixtureReviewScript = Join-Path $PSScriptRoot "Start-MvpFixtureReview.ps1"
 $localReleaseAcceptanceSummaryTestScript = Join-Path $PSScriptRoot "Test-LocalReleaseAcceptanceSummary.ps1"
 $realProfileNextBatchStopGuardTestScript = Join-Path $PSScriptRoot "Test-RealProfileNextBatchStopGuard.ps1"
+$dailyReadinessUndoSpotlightTestScript = Join-Path $PSScriptRoot "Test-DailyReadinessExactProfileUndoSpotlight.ps1"
 $fixtureRoot = [System.IO.Path]::GetFullPath((Join-Path $repoRoot ".local\storage-scan-smoke-fixture")).TrimEnd([System.IO.Path]::DirectorySeparatorChar)
 
 function Invoke-PreflightStep {
@@ -78,6 +80,12 @@ try {
     if (-not $SkipRealProfileNextBatchStopGuardCheck) {
         Invoke-PreflightStep -Name "Real-profile next-batch stop guard regression" -Command {
             & powershell.exe -NoProfile -ExecutionPolicy Bypass -File $realProfileNextBatchStopGuardTestScript
+        }
+    }
+
+    if (-not $SkipDailyReadinessUndoSpotlightCheck) {
+        Invoke-PreflightStep -Name "Daily readiness exact-profile undo spotlight regression" -Command {
+            & powershell.exe -NoProfile -ExecutionPolicy Bypass -File $dailyReadinessUndoSpotlightTestScript
         }
     }
 

@@ -61,7 +61,7 @@ dotnet run --project tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.T
 .\tools\Invoke-MvpPreflight.cmd
 ```
 
-Run `.\tools\Invoke-MvpPreflight.cmd` before any real-profile scan after code or workflow changes. It also runs the local release acceptance summary and real-profile next-batch stop guard regressions, so those safety outputs stay covered by the normal preflight path.
+Run `.\tools\Invoke-MvpPreflight.cmd` before any real-profile scan after code or workflow changes. It also runs the local release acceptance summary, real-profile next-batch stop guard, and daily readiness exact-profile undo spotlight regressions, so those safety outputs stay covered by the normal preflight path.
 
 ## Run The App
 

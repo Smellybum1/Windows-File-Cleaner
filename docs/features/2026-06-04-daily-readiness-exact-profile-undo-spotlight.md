@@ -21,14 +21,18 @@ The default daily readiness command already printed a broad Restore Manifest sum
 - `Invoke-DailyLocalReadiness.cmd` now prints an `Exact-profile undo-work stop state` section after the broad Restore Manifest summary.
 - The section runs the read-only Restore Manifest summary with `-CleanupScope "C:\Users\moxhe" -UndoWorkOnly`.
 - `-ShowRestoreEntries` is forwarded to the spotlight when requested, but the default daily command stays concise.
+- `tools\Test-DailyReadinessExactProfileUndoSpotlight.cmd` now verifies the spotlight with temporary ignored synthetic Restore Manifests, and MVP preflight runs that regression by default.
 
 ## Verification
 
 - `cmd.exe /c tools\Invoke-DailyLocalReadiness.cmd`
+- `cmd.exe /c tools\Test-DailyReadinessExactProfileUndoSpotlight.cmd`
 - `cmd.exe /c tools\Invoke-MvpPreflight.cmd`
 - `git diff --check` passed with expected CRLF warnings only.
 
 The output showed the exact-profile undo-work manifest `quarantine-action-draft-20260604014901-b7b402a2` with displayed undo work `1`, without launching WPF, scanning, moving, restoring, deleting, approving cleanup, writing manifests, or creating cleanup history.
+
+The synthetic regression proved broad daily readiness can see both exact-profile and fixture-scope undo-work manifests, while the final exact-profile spotlight displays only the exact `C:\Users\moxhe` undo-work manifest.
 
 ## ADRs
 
@@ -37,3 +41,4 @@ No ADR added. This adds terminal-only visibility for existing Restore Manifest e
 ## Follow-Up
 
 - Keep using selected-manifest restore only if recovery is needed and after exact selected-manifest readiness, exact `RESTORE`, and immediate revalidation.
+- Use `Invoke-MvpPreflight.cmd -SkipDailyReadinessUndoSpotlightCheck` only for focused local loops where this spotlight is not in scope.
