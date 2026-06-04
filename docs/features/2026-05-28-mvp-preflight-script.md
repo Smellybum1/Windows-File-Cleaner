@@ -36,6 +36,7 @@ The repo should include a script that:
 - Runs the local release acceptance summary regression check.
 - Runs the real-profile next-batch stop guard regression check.
 - Runs the daily readiness exact-profile undo spotlight regression check.
+- Runs the documentation consistency regression check.
 - Runs `git diff --check`.
 - Prints the next notes-enabled fixture review launcher command.
 - States that no real user files were scanned or modified by preflight.
@@ -87,7 +88,7 @@ Small feature-level decisions:
 
 - Add `tools/Invoke-MvpPreflight.ps1`.
 - Keep fixture generation dry-run by default through `New-StorageScanSmokeFixture.ps1 -WhatIf`.
-- Add `-SkipRestore`, `-SkipFixtureWhatIf`, `-SkipFixtureChecklist`, `-SkipLocalReleaseAcceptanceSummaryCheck`, `-SkipRealProfileNextBatchStopGuardCheck`, `-SkipDailyReadinessUndoSpotlightCheck`, and `-SkipDiffCheck` switches for focused local loops.
+- Add `-SkipRestore`, `-SkipFixtureWhatIf`, `-SkipFixtureChecklist`, `-SkipLocalReleaseAcceptanceSummaryCheck`, `-SkipRealProfileNextBatchStopGuardCheck`, `-SkipDailyReadinessUndoSpotlightCheck`, `-SkipDocumentationConsistencyCheck`, and `-SkipDiffCheck` switches for focused local loops.
 
 ADR-worthy decisions:
 
@@ -158,6 +159,7 @@ What changed:
 - Later packet `Daily Readiness Exact-Profile Undo Spotlight Regression` added the daily readiness exact-profile undo spotlight regression step before the whitespace diff check, with `-SkipDailyReadinessUndoSpotlightCheck` for focused local loops. A follow-up made that regression use `Invoke-DailyLocalReadiness.cmd -SyntheticRestoreManifestOnly` so CI and clean runners do not need ignored accepted-package notes or local package folders for this focused Restore Manifest check.
 - Later packet `CI Actions Runtime Maintenance` kept the same preflight command but updated the GitHub Actions workflow to Node 24-capable official actions and pinned the hosted runner to `windows-2022`.
 - Later packet `CI Windows Image Canary` kept the same preflight command and added a manual GitHub Actions runner-image choice for future Windows 2025 / Visual Studio 2026 evaluation.
+- Later packet `Documentation Consistency Regression` added a docs-link and latest-packet breadcrumb check before the whitespace diff check, with `-SkipDocumentationConsistencyCheck` for focused local loops.
 
 Files changed:
 

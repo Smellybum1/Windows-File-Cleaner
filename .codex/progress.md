@@ -15,7 +15,7 @@ Read first: `docs/codex/current-state.md`.
 
 Latest docs/workflow packet: `2026-06-04-thread-handoff-ci-alignment`. It refreshed `docs/codex/thread-handoff.md` so fresh-thread startup context names the CI Windows image canary, CI operations runbook, push-run evidence, and current docs packet. No app behavior changed.
 
-Latest tooling/evidence packet: `2026-06-04-ci-windows-image-canary`. GitHub Actions MVP Preflight now has a manual runner-image canary for `windows-2025-vs2026` while push and pull-request runs remain on `windows-2022`.
+Latest tooling/evidence packet: `2026-06-04-documentation-consistency-regression`. MVP preflight now verifies active documentation links and latest packet breadcrumb alignment before the whitespace diff check.
 
 Latest package candidate: `.local\releases\windows-file-cleaner-v20260604-121922` at app commit `e6ac3eb`, verified but not human-accepted. Current pending acceptance notes: `.local\release-acceptance\release-acceptance-20260604-164509.md`.
 
@@ -40,6 +40,35 @@ Post-action evidence:
 6. Use `docs/operations/*.md` for command detail.
 
 ## Recent Packet Summaries
+
+### 2026-06-04: Documentation Consistency Regression
+
+Status: completed
+
+Goal:
+
+- Catch active documentation drift before handoff and CI evidence goes stale, especially operation runbook links and latest packet breadcrumbs.
+
+Safety profile:
+
+- `terminal-readonly`. The regression reads committed docs only and runs in MVP preflight. It does not launch WPF, scan real-profile files, move, restore, delete, approve cleanup, promote a package, create shortcuts, install anything, write acceptance notes, write Restore Manifests, or create cleanup history.
+
+Changes:
+
+- Added `tools\Test-DocumentationConsistency.cmd` and `.ps1`.
+- The check verifies active markdown references in README, feature index, current state, progress, and thread handoff point at existing files.
+- The check verifies required operational runbooks are listed in both the feature index and thread handoff.
+- The check verifies latest docs/workflow and tooling/evidence packet breadcrumbs align between current state, progress, and thread handoff.
+- MVP preflight now runs the check by default before the whitespace diff check, with `-SkipDocumentationConsistencyCheck` for focused local loops.
+
+Verification:
+
+- `cmd.exe /c tools\Test-DocumentationConsistency.cmd`
+- `cmd.exe /c tools\Invoke-MvpPreflight.cmd`
+
+ADRs:
+
+- Skipped; this adds terminal-only documentation verification and does not change product behavior, cleanup execution, restore execution, persistence, security, data model, deployment packaging, or core UX flow.
 
 ### 2026-06-04: Thread Handoff CI Alignment
 
@@ -935,6 +964,7 @@ ADRs:
 
 ### Current Live Product And Package Packets
 
+- `2026-06-04-documentation-consistency-regression`: MVP preflight now verifies active documentation links and latest packet breadcrumb alignment before the whitespace diff check.
 - `2026-06-04-ci-windows-image-canary`: MVP Preflight now has a manual runner-image canary for intentionally testing `windows-2025-vs2026` while push/PR runs remain on `windows-2022`.
 - `2026-06-04-ci-actions-runtime-maintenance`: GitHub Actions MVP Preflight now uses Node 24-capable official actions and pins CI to `windows-2022` before the `windows-latest` Windows 2025 / Visual Studio 2026 migration.
 - `2026-06-04-package-summary-ignored-path-guard-regression`: package acceptance summaries now reject explicit notes paths outside ignored `.local`, covered by MVP preflight summary regression.
