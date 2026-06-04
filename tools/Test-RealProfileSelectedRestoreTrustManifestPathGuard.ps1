@@ -167,3 +167,4 @@ finally {
 
 Write-Host "Real-profile selected restore trust manifest path guard regression passed."
 Write-Host "Boundary: the helper was run only with -WhatIf, using an ignored .local Quarantine Root for safe preview and committed README.md only as a non-.local rejection target; this did not launch WPF, scan, move, restore, delete, approve cleanup, write Restore Manifests, modify real-profile files, install anything, or create cleanup history."
+exit 0

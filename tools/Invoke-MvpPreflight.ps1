@@ -52,9 +52,17 @@ function Invoke-PreflightStep {
     Write-Host ""
     Write-Host "== $Name =="
     $global:LASTEXITCODE = 0
-    & $Command
+    try {
+        & $Command
+    }
+    catch {
+        Write-Host "::error title=MVP Preflight::$Name threw: $($_.Exception.Message)"
+        throw
+    }
+
     $exitCode = $global:LASTEXITCODE
     if ($exitCode -ne 0) {
+        Write-Host "::error title=MVP Preflight::$Name failed with exit code $exitCode."
         throw "Preflight step '$Name' failed with exit code $exitCode."
     }
 }
