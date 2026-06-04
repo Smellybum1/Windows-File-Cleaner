@@ -39,3 +39,4 @@ No ADR added. This preserves ADR 0020 portable-package boundaries by adding term
 ## Follow-Up
 
 - Complete human package acceptance for `.local\releases\windows-file-cleaner-v20260604-121922` before promoting it.
+- Later packet `2026-06-04-local-release-acceptance-summary-regression-check.md` added targeted temporary-note regression coverage for this summary behavior.

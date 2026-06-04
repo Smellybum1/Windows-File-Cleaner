@@ -20,7 +20,7 @@ Load detailed reference docs or archived evidence only when the task needs histo
 - Repo: `D:\Codex\Windows File Cleaner`
 - Branch: `main`
 - Latest package/evidence packet: `2026-06-04-verified-portable-package-candidate`
-- Latest tooling/evidence packet: `2026-06-04-package-acceptance-summary-next-steps`
+- Latest tooling/evidence packet: `2026-06-04-local-release-acceptance-summary-regression-check`
 - Latest docs/workflow packet: `2026-06-04-startup-context-compaction`
 - Latest live-product evidence: `2026-06-04-second-real-profile-quarantine-batch`
 - Latest working app packet: `2026-06-04-real-profile-quarantine-inline-status-wording`
@@ -33,6 +33,7 @@ Load detailed reference docs or archived evidence only when the task needs histo
 - Current pending candidate notes: `.local\release-acceptance\release-acceptance-20260604-134337.md`
 - Daily readiness shows the latest package acceptance notes as informational context after verifying the completed accepted notes.
 - Incomplete package acceptance summaries print guarded recorder and recheck commands; the current candidate recorder command includes `-RecordCommitMismatch` and remains human-pass-only.
+- `tools\Test-LocalReleaseAcceptanceSummary.cmd` provides targeted temporary-note regression coverage for package acceptance summaries.
 - Accepted-package helpers select the latest complete acceptance notes by default; use explicit notes paths for pending candidate review.
 - `Record-LocalReleaseAcceptanceNotes.cmd` requires verifier evidence and explicit `-RecordCommitMismatch` when package/current-HEAD mismatch evidence is not already recorded.
 - Generated package acceptance notes stamp the actual `-ReleasePath` verifier/checklist commands and include `-RequireCurrentCommit` only when that switch created the notes.

@@ -11,7 +11,7 @@ Use this as the first compact orientation file for new Codex threads. Historical
 - Latest live evidence: 2026-06-04 second tiny exact real-profile Quarantine batch.
 - Latest working app packet: real-profile Quarantine inline status wording fix.
 - Latest package candidate: `.local\releases\windows-file-cleaner-v20260604-121922` at `e6ac3eb`, verified but not human-accepted.
-- Latest tooling/evidence packet: package acceptance summary next-step commands.
+- Latest tooling/evidence packet: local release acceptance summary regression check.
 - Latest docs/workflow packet: startup context compaction.
 - Previous docs/workflow baseline: `1ea1b76 Reduce workflow markdown bloat`
 - App stack: C# / WPF / .NET 8
@@ -54,6 +54,7 @@ Use this as the first compact orientation file for new Codex threads. Historical
 - Refreshed candidate acceptance notes were generated at `.local\release-acceptance\release-acceptance-20260604-134337.md` after docs-only `HEAD` advanced to `bb82b29`. These refreshed notes stamp exact `-ReleasePath` verifier/checklist commands, record verifier evidence, leave commit evidence unrecorded until the human intentionally accepts the expected package/current-HEAD mismatch, and remain incomplete pending human package acceptance.
 - Daily readiness now shows the latest package acceptance notes as informational context after verifying the completed accepted notes; incomplete candidate notes still do not replace the accepted `bc9b869` baseline.
 - Incomplete package acceptance summaries now print guarded next-step recorder and recheck commands; for the current candidate they include `-RecordCommitMismatch` and still say the human package acceptance pass must be completed first.
+- `tools\Test-LocalReleaseAcceptanceSummary.cmd` verifies accepted/incomplete package acceptance summary behavior with temporary ignored `.local` notes and cleans up after itself.
 - Accepted-package tooling now selects the latest complete acceptance notes by default, so incomplete candidate notes do not replace the accepted `bc9b869` baseline unless an explicit notes path is used.
 - Release acceptance recording now refuses missing verifier evidence and requires explicit `-RecordCommitMismatch` before commit mismatch evidence is marked recorded.
 - Generated package acceptance notes now stamp the actual `-ReleasePath` verifier/checklist commands, include `-RequireCurrentCommit` only when that switch created the notes, and print the exact commit-mismatch recorder command when current-commit evidence is intentionally not required.

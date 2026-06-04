@@ -36,6 +36,7 @@ Historical roadmap notes are preserved in `docs/features/archive/2026-06-01-live
 - `2026-06-04-second-real-profile-quarantine-batch.md`
 - `2026-06-04-real-profile-quarantine-inline-status-wording.md`
 - `2026-06-04-verified-portable-package-candidate.md`
+- `2026-06-04-local-release-acceptance-summary-regression-check.md`
 - `2026-06-04-package-acceptance-summary-next-steps.md`
 - `2026-06-04-daily-readiness-latest-package-notes.md`
 - `2026-06-04-local-release-acceptance-command-stamping.md`

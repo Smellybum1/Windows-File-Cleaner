@@ -15,7 +15,7 @@ Read first: `docs/codex/current-state.md`.
 
 Latest docs/workflow packet: `2026-06-04-startup-context-compaction`. It moved oversized read-first docs into reference/archive files and replaced them with compact active docs to reduce Codex thread lag. No app behavior changed.
 
-Latest tooling/evidence packet: `2026-06-04-package-acceptance-summary-next-steps`. Incomplete package acceptance summaries now print guarded recorder and recheck commands so the pending human acceptance path is visible from both explicit summaries and daily readiness.
+Latest tooling/evidence packet: `2026-06-04-local-release-acceptance-summary-regression-check`. The package acceptance summary helper now has a targeted terminal-only regression command that uses temporary ignored `.local` notes and cleans up after itself.
 
 Latest package candidate: `.local\releases\windows-file-cleaner-v20260604-121922` at app commit `e6ac3eb`, verified but not human-accepted. Current pending acceptance notes: `.local\release-acceptance\release-acceptance-20260604-134337.md`.
 
@@ -40,6 +40,36 @@ Post-action evidence:
 6. Use `docs/operations/*.md` for command detail.
 
 ## Recent Packet Summaries
+
+### 2026-06-04: Local Release Acceptance Summary Regression Check
+
+Status: completed
+
+Goal:
+
+- Add a targeted regression check for package acceptance summary output, especially the guarded next-step block for incomplete notes.
+
+Safety profile:
+
+- `terminal-readonly`. The check writes temporary ignored notes under `.local\release-acceptance-summary-test`, runs read-only summaries, and removes its test files. No WPF launch, scan, movement, restore, deletion of real-profile files, approval, installed shortcut, installer behavior, package promotion, or cleanup history.
+
+Changes:
+
+- Added `tools\Test-LocalReleaseAcceptanceSummary.cmd` and `.ps1`.
+- The test synthesizes incomplete and complete portable release acceptance notes under ignored `.local`.
+- It asserts incomplete notes print `Pending acceptance next steps`, `-RecordCommitMismatch`, and the no-launch/no-scan/no-cleanup-history boundary.
+- It asserts completed notes pass `-RequireComplete` without printing pending next steps.
+
+Verification:
+
+- `cmd.exe /c tools\Test-LocalReleaseAcceptanceSummary.cmd`
+- `cmd.exe /c tools\Summarize-LocalReleaseAcceptanceNotes.cmd -RequireComplete`
+- Confirmed `.local\release-acceptance-summary-test` was absent after the test cleaned up.
+- `git diff --check` passed with expected CRLF warnings only.
+
+ADRs:
+
+- Skipped; this adds terminal-only regression coverage for existing portable-package acceptance tooling and does not change product, cleanup, restore, persistence, or deployment behavior.
 
 ### 2026-06-04: Package Acceptance Summary Next Steps
 
@@ -171,6 +201,7 @@ ADRs:
 ### Current Live Product And Package Packets
 
 - `2026-06-04-local-release-acceptance-command-stamping`: completed and pushed at `5a4115e`.
+- `2026-06-04-local-release-acceptance-summary-regression-check`: added targeted temporary-note regression coverage for summary next-step behavior.
 - `2026-06-04-package-acceptance-summary-next-steps`: incomplete package acceptance summaries print guarded recorder and recheck commands.
 - `2026-06-04-daily-readiness-latest-package-notes`: daily readiness surfaces the latest package acceptance notes as informational context.
 - `2026-06-04-pending-package-acceptance-notes-refresh`: refreshed pending candidate notes at `.local\release-acceptance\release-acceptance-20260604-134337.md`.

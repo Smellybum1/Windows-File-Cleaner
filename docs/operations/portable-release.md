@@ -56,6 +56,14 @@ Use this only when app behavior changes should ship as a new accepted package ba
 .\tools\Test-LocalRelease.cmd -RequireCurrentCommit
 ```
 
+Targeted package acceptance summary regression:
+
+```powershell
+.\tools\Test-LocalReleaseAcceptanceSummary.cmd
+```
+
+This writes temporary ignored notes under `.local\release-acceptance-summary-test`, verifies complete and incomplete summary behavior, then removes the test notes.
+
 ## Acceptance Notes
 
 ```powershell
