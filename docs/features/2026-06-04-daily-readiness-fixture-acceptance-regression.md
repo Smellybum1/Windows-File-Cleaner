@@ -10,7 +10,7 @@ Cover daily readiness fixture acceptance notes forwarding so optional fixture-no
 
 ## Safety Profile
 
-`terminal-readonly`. The regression writes temporary ignored package files, complete package acceptance notes, fixture acceptance notes, and an empty synthetic Restore Manifest root under `.local\daily-readiness-fixture-acceptance-test`, runs daily readiness with explicit paths, and removes the test folder. It does not launch WPF, click `Scan`, scan real-profile files, move, restore, delete, approve cleanup, promote a package, create shortcuts, install anything, or create cleanup history.
+`terminal-readonly`. The regression writes temporary ignored package files, complete package acceptance notes, fixture acceptance notes, and an empty synthetic Restore Manifest root under `.local\daily-readiness-fixture-acceptance-test`, runs daily readiness with explicit paths, uses committed `README.md` only as a non-`.local` rejection target, and removes the test folder. It does not launch WPF, click `Scan`, scan real-profile files, move, restore, delete, approve cleanup, promote a package, create shortcuts, install anything, write real acceptance notes, write Restore Manifests, or create cleanup history.
 
 ## Problem
 
@@ -21,6 +21,7 @@ Daily readiness can include fixture acceptance notes with `-IncludeFixtureAccept
 - Added `tools\Test-DailyReadinessFixtureAcceptanceNotes.cmd` and `.ps1`.
 - The regression creates a verifier-valid synthetic local release package and complete package acceptance notes under ignored `.local`.
 - It verifies `Invoke-DailyLocalReadiness.cmd -RequireFixtureAcceptanceComplete` fails on incomplete fixture notes during the fixture-notes step and before accepted launch-command printing.
+- It verifies an explicit fixture notes path outside ignored `.local` fails during the fixture-notes step and before accepted launch-command printing.
 - It verifies optional incomplete fixture notes still print recording guidance and allow the read-only daily flow to continue.
 - It verifies complete fixture notes pass strict daily readiness, accepted launch commands remain print-only, and Restore Manifest summary uses the synthetic empty root.
 - `Invoke-MvpPreflight.cmd` now runs this regression by default after the standalone fixture acceptance notes regression.

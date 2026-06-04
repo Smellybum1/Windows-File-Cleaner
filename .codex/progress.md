@@ -15,7 +15,7 @@ Read first: `docs/codex/current-state.md`.
 
 Latest docs/workflow packet: `2026-06-04-ci-evidence-wording-stabilization`. It rewords CI evidence docs so #365 is representative current-path proof instead of self-staling latest-run proof. No app behavior changed.
 
-Latest tooling/evidence packet: `2026-06-04-fixture-summary-ignored-path-guard`. Fixture acceptance summaries now reject explicit notes paths outside ignored `.local` before printing summary output or recorder guidance.
+Latest tooling/evidence packet: `2026-06-04-daily-readiness-fixture-notes-path-guard`. Daily readiness now has composed regression coverage that explicit fixture notes paths outside ignored `.local` fail before accepted launch-command printing.
 
 Latest package candidate: `.local\releases\windows-file-cleaner-v20260604-121922` at app commit `e6ac3eb`, verified but not human-accepted. Current pending acceptance notes: `.local\release-acceptance\release-acceptance-20260604-164509.md`.
 
@@ -40,6 +40,38 @@ Post-action evidence:
 6. Use `docs/operations/*.md` for command detail.
 
 ## Recent Packet Summaries
+
+### 2026-06-04: Daily Readiness Fixture Notes Path Guard
+
+Status: completed
+
+Goal:
+
+- Cover the daily readiness fixture acceptance notes path boundary so explicit fixture notes paths outside ignored `.local` fail before accepted launch-command printing.
+
+Safety profile:
+
+- `terminal-readonly`. The regression writes temporary ignored synthetic package files, package acceptance notes, fixture acceptance notes, and an empty Restore Manifest root under `.local\daily-readiness-fixture-acceptance-test`, uses committed `README.md` only as a non-`.local` rejection target, and removes the temporary test folder. It does not launch WPF, scan real-profile files, move, restore, delete, approve cleanup, promote a package, create shortcuts, install anything, write real acceptance notes, write Restore Manifests, or create cleanup history.
+
+Changes:
+
+- `tools\Test-DailyReadinessFixtureAcceptanceNotes.ps1` now verifies a non-`.local` explicit fixture notes path fails during the daily readiness `Fixture acceptance notes evidence` step.
+- The regression asserts the fixture summary guard message is visible in daily readiness output.
+- The regression asserts daily readiness stops before accepted normal launch-command printing.
+- Daily-use, manual fixture review, compact handoff docs, and the feature index record the composed path-boundary coverage.
+
+Verification:
+
+- `cmd.exe /c tools\Test-DailyReadinessFixtureAcceptanceNotes.cmd`
+- `cmd.exe /c tools\Test-FixtureAcceptanceNotes.cmd`
+- `cmd.exe /c tools\Invoke-DailyLocalReadiness.cmd -IncludeFixtureAcceptanceNotes`
+- `cmd.exe /c tools\Test-DocumentationConsistency.cmd`
+- `cmd.exe /c tools\Invoke-MvpPreflight.cmd`
+- `git diff --check`
+
+ADRs:
+
+- Skipped; this tightens terminal-only regression coverage for existing fixture acceptance notes and daily readiness tooling and does not change product behavior, cleanup execution, restore execution, persistence, deployment, package acceptance policy, or real readiness behavior.
 
 ### 2026-06-04: Fixture Summary Ignored-Path Guard
 
@@ -1140,6 +1172,7 @@ ADRs:
 
 ### Current Live Product And Package Packets
 
+- `2026-06-04-daily-readiness-fixture-notes-path-guard`: daily readiness now has composed regression coverage that explicit fixture notes paths outside ignored `.local` fail before accepted launch-command printing.
 - `2026-06-04-fixture-summary-ignored-path-guard`: fixture acceptance summaries now reject explicit notes paths outside ignored `.local`.
 - `2026-06-04-fixture-completion-summary-wording`: completed fixture acceptance summaries now say evidence is complete and no recorder action is pending.
 - `2026-06-04-package-completion-summary-wording`: completed package acceptance summaries now say evidence is complete and no recorder action is pending.

@@ -65,7 +65,7 @@ Targeted daily readiness fixture acceptance notes regression:
 .\tools\Test-DailyReadinessFixtureAcceptanceNotes.cmd
 ```
 
-This writes temporary ignored synthetic package files, package acceptance notes, fixture acceptance notes, and an empty Restore Manifest root under `.local\daily-readiness-fixture-acceptance-test`, verifies optional and strict daily readiness fixture-note forwarding, then removes the test folder.
+This writes temporary ignored synthetic package files, package acceptance notes, fixture acceptance notes, and an empty Restore Manifest root under `.local\daily-readiness-fixture-acceptance-test`, verifies optional and strict daily readiness fixture-note forwarding, verifies explicit non-`.local` fixture notes paths stop before accepted launch-command printing, then removes the test folder.
 
 MVP preflight runs both fixture acceptance regressions by default after the fixture checklist. Use `.\tools\Invoke-MvpPreflight.cmd -SkipFixtureAcceptanceNotesCheck` or `.\tools\Invoke-MvpPreflight.cmd -SkipDailyReadinessFixtureAcceptanceCheck` only for focused local loops where those fixture acceptance notes paths are not in scope.
 

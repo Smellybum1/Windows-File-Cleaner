@@ -14,6 +14,7 @@ $releasePath = Join-Path $releaseRoot $releaseName
 $acceptedNotesPath = Join-Path $testRoot "release-acceptance-daily-readiness-complete.md"
 $incompleteFixtureNotesPath = Join-Path $testRoot "fixture-acceptance-daily-readiness-incomplete.md"
 $completeFixtureNotesPath = Join-Path $testRoot "fixture-acceptance-daily-readiness-complete.md"
+$outsideLocalFixtureNotesPath = Join-Path $repoRoot "README.md"
 $quarantineRoot = Join-Path $testRoot "quarantine-root"
 $dailyReadinessScript = Join-Path $PSScriptRoot "Invoke-DailyLocalReadiness.ps1"
 $fixtureScope = [System.IO.Path]::GetFullPath((Join-Path $repoRoot ".local\storage-scan-smoke-fixture")).TrimEnd([System.IO.Path]::DirectorySeparatorChar)
@@ -447,6 +448,17 @@ try {
     Assert-ContainsText -Lines $strictIncompleteResult.Output -ExpectedText "Completion check: incomplete."
     Assert-ContainsText -Lines $strictIncompleteResult.Output -ExpectedText "Daily local readiness failed during: Fixture acceptance notes evidence"
     Assert-DoesNotContainText -Lines $strictIncompleteResult.Output -UnexpectedText "== Accepted normal launch command =="
+
+    $outsideLocalResult = Invoke-DailyReadiness -Arguments ((Get-BaseDailyArguments -FixtureNotesPath $outsideLocalFixtureNotesPath) + "-IncludeFixtureAcceptanceNotes")
+    if ($outsideLocalResult.ExitCode -ne 1) {
+        throw "Daily readiness should fail when explicit fixture notes path is outside ignored .local. Exit code: $($outsideLocalResult.ExitCode)"
+    }
+
+    Assert-ContainsText -Lines $outsideLocalResult.Output -ExpectedText "== Accepted package evidence =="
+    Assert-ContainsText -Lines $outsideLocalResult.Output -ExpectedText "== Fixture acceptance notes evidence =="
+    Assert-ContainsText -Lines $outsideLocalResult.Output -ExpectedText "Fixture acceptance notes path must stay under ignored .local: $localRoot"
+    Assert-ContainsText -Lines $outsideLocalResult.Output -ExpectedText "Daily local readiness failed during: Fixture acceptance notes evidence"
+    Assert-DoesNotContainText -Lines $outsideLocalResult.Output -UnexpectedText "== Accepted normal launch command =="
 
     $optionalIncompleteResult = Invoke-DailyReadiness -Arguments ((Get-BaseDailyArguments -FixtureNotesPath $incompleteFixtureNotesPath) + "-IncludeFixtureAcceptanceNotes")
     if ($optionalIncompleteResult.ExitCode -ne 0) {
