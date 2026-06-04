@@ -1,6 +1,7 @@
 [CmdletBinding()]
 param(
     [switch]$SkipRestore,
+    [switch]$SkipFixtureRootPathGuardCheck,
     [switch]$SkipFixtureWhatIf,
     [switch]$SkipFixtureChecklist,
     [switch]$SkipFixtureAcceptanceNotesCheck,
@@ -21,6 +22,7 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
 $repoRoot = Split-Path -Parent $PSScriptRoot
+$fixtureRootPathGuardTestScript = Join-Path $PSScriptRoot "Test-FixtureRootPathGuard.ps1"
 $fixtureScript = Join-Path $PSScriptRoot "New-StorageScanSmokeFixture.ps1"
 $fixtureReviewScript = Join-Path $PSScriptRoot "Start-MvpFixtureReview.ps1"
 $fixtureAcceptanceNotesTestScript = Join-Path $PSScriptRoot "Test-FixtureAcceptanceNotes.ps1"
@@ -73,6 +75,12 @@ try {
 
     Invoke-PreflightStep -Name "WPF app tests" -Command {
         & dotnet run --project tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj --no-build
+    }
+
+    if (-not $SkipFixtureRootPathGuardCheck) {
+        Invoke-PreflightStep -Name "Fixture root path guard regression" -Command {
+            & powershell.exe -NoProfile -ExecutionPolicy Bypass -File $fixtureRootPathGuardTestScript
+        }
     }
 
     if (-not $SkipFixtureWhatIf) {

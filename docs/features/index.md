@@ -6,6 +6,7 @@ Use this index before opening individual feature briefs. The folder contains man
 
 ## Active Or Current
 
+- `2026-06-04-fixture-root-path-guard-regression.md`: synthetic fixture creation and fixture review launch roots now have MVP preflight coverage that explicit roots outside ignored `.local` fail before fixture writes, checklist output, or WPF launch.
 - `2026-06-04-local-release-path-guard-regression.md`: portable release publisher, verifier, and launcher now have MVP preflight coverage that explicit release roots and release paths outside ignored `.local` fail before publisher, verifier, or launch-command output.
 - `2026-06-04-accepted-launcher-notes-path-guard.md`: accepted-package launcher regression now covers explicit acceptance notes paths outside ignored `.local` failing before launch-command output.
 - `2026-06-04-pending-notes-head-wording-stabilization.md`: pending package acceptance notes docs now describe refresh commits as generation-time provenance and rely on summary status lines for live current-HEAD context.

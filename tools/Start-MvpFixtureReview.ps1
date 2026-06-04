@@ -13,6 +13,7 @@ $ErrorActionPreference = "Stop"
 
 $repoRoot = Split-Path -Parent $PSScriptRoot
 $repoFullPath = [System.IO.Path]::GetFullPath($repoRoot).TrimEnd([System.IO.Path]::DirectorySeparatorChar)
+$localRoot = [System.IO.Path]::GetFullPath((Join-Path $repoRoot ".local")).TrimEnd([System.IO.Path]::DirectorySeparatorChar)
 $preflightScript = Join-Path $PSScriptRoot "Invoke-MvpPreflight.ps1"
 $fixtureScript = Join-Path $PSScriptRoot "New-StorageScanSmokeFixture.ps1"
 
@@ -322,9 +323,9 @@ else {
     $fixtureFullPath = [System.IO.Path]::GetFullPath((Join-Path $repoRoot $FixtureRoot)).TrimEnd([System.IO.Path]::DirectorySeparatorChar)
 }
 
-if (-not ($fixtureFullPath.Equals($repoFullPath, [System.StringComparison]::OrdinalIgnoreCase) -or
-    $fixtureFullPath.StartsWith($repoFullPath + [System.IO.Path]::DirectorySeparatorChar, [System.StringComparison]::OrdinalIgnoreCase))) {
-    throw "Fixture root must stay inside the repository: $repoFullPath"
+if (-not ($fixtureFullPath.Equals($localRoot, [System.StringComparison]::OrdinalIgnoreCase) -or
+    $fixtureFullPath.StartsWith($localRoot + [System.IO.Path]::DirectorySeparatorChar, [System.StringComparison]::OrdinalIgnoreCase))) {
+    throw "Fixture root must stay under the ignored .local directory: $localRoot"
 }
 
 if ($ChecklistOnly) {

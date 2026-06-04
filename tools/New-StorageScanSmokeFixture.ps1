@@ -7,7 +7,7 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
 $repoRoot = Split-Path -Parent $PSScriptRoot
-$repoFullPath = [System.IO.Path]::GetFullPath($repoRoot).TrimEnd([System.IO.Path]::DirectorySeparatorChar)
+$localRoot = [System.IO.Path]::GetFullPath((Join-Path $repoRoot ".local")).TrimEnd([System.IO.Path]::DirectorySeparatorChar)
 
 if ([System.IO.Path]::IsPathRooted($Root)) {
     $fixtureRoot = [System.IO.Path]::GetFullPath($Root).TrimEnd([System.IO.Path]::DirectorySeparatorChar)
@@ -16,9 +16,9 @@ else {
     $fixtureRoot = [System.IO.Path]::GetFullPath((Join-Path $repoRoot $Root)).TrimEnd([System.IO.Path]::DirectorySeparatorChar)
 }
 
-if (-not ($fixtureRoot.Equals($repoFullPath, [System.StringComparison]::OrdinalIgnoreCase) -or
-    $fixtureRoot.StartsWith($repoFullPath + [System.IO.Path]::DirectorySeparatorChar, [System.StringComparison]::OrdinalIgnoreCase))) {
-    throw "Fixture root must stay inside the repository: $repoFullPath"
+if (-not ($fixtureRoot.Equals($localRoot, [System.StringComparison]::OrdinalIgnoreCase) -or
+    $fixtureRoot.StartsWith($localRoot + [System.IO.Path]::DirectorySeparatorChar, [System.StringComparison]::OrdinalIgnoreCase))) {
+    throw "Fixture root must stay under the ignored .local directory: $localRoot"
 }
 
 function New-SmokeFixtureFile {

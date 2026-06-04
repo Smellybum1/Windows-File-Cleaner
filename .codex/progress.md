@@ -15,7 +15,7 @@ Read first: `docs/codex/current-state.md`.
 
 Latest docs/workflow packet: `2026-06-04-pending-notes-head-wording-stabilization`. It rewords pending package acceptance notes docs so refresh commits are generation-time provenance and live notes/current-HEAD context comes from the summary helper. No app behavior changed.
 
-Latest tooling/evidence packet: `2026-06-04-local-release-path-guard-regression`. Portable release publisher, verifier, and launcher now have MVP preflight coverage that explicit release roots and release paths outside ignored `.local` fail before publisher, verifier, or launch-command output.
+Latest tooling/evidence packet: `2026-06-04-fixture-root-path-guard-regression`. Synthetic fixture creation and fixture review launch roots now have MVP preflight coverage that explicit roots outside ignored `.local` fail before fixture writes, checklist output, or WPF launch.
 
 Latest package candidate: `.local\releases\windows-file-cleaner-v20260604-121922` at app commit `e6ac3eb`, verified but not human-accepted. Current pending acceptance notes: `.local\release-acceptance\release-acceptance-20260604-164509.md`.
 
@@ -42,6 +42,40 @@ Post-action evidence:
 6. Use `docs/operations/*.md` for command detail.
 
 ## Recent Packet Summaries
+
+### 2026-06-04: Fixture Root Path Guard Regression
+
+Status: completed
+
+Goal:
+
+- Require synthetic fixture creation and fixture review launch roots to stay under ignored `.local` before fixture writes, checklist output, or WPF launch can happen.
+
+Safety profile:
+
+- `terminal-readonly`. The regression uses committed `README.md` only as a non-`.local` rejection target and does not write test files. It does not launch WPF, create fixture files, scan real-profile files, move, restore, delete, approve cleanup, write acceptance notes, write Restore Manifests, install anything, or create cleanup history.
+
+Changes:
+
+- `New-StorageScanSmokeFixture.cmd` now requires `-Root` to resolve under ignored `.local`.
+- `Start-MvpFixtureReview.cmd` now requires `-FixtureRoot` to resolve under ignored `.local`.
+- Added `tools\Test-FixtureRootPathGuard.cmd` and `.ps1`.
+- The regression verifies `New-StorageScanSmokeFixture.cmd -Root README.md -WhatIf` fails before WhatIf fixture-file output.
+- The regression verifies `Start-MvpFixtureReview.cmd -FixtureRoot README.md -ChecklistOnly` fails before fixture checklist output.
+- `Invoke-MvpPreflight.cmd` now runs the regression by default before fixture dry-run output, with `-SkipFixtureRootPathGuardCheck` for focused local loops.
+
+Verification:
+
+- `cmd.exe /c tools\Test-FixtureRootPathGuard.cmd`
+- `cmd.exe /c tools\New-StorageScanSmokeFixture.cmd -WhatIf`
+- `cmd.exe /c tools\Start-MvpFixtureReview.cmd -ChecklistOnly`
+- `cmd.exe /c tools\Test-DocumentationConsistency.cmd`
+- `cmd.exe /c tools\Invoke-MvpPreflight.cmd`
+- `git diff --check`
+
+ADRs:
+
+- Skipped; this tightens terminal fixture tooling guardrails and preflight coverage without changing app cleanup behavior, restore behavior, persistence, package acceptance, deployment, or real-profile movement policy.
 
 ### 2026-06-04: Local Release Path Guard Regression
 
@@ -1330,6 +1364,7 @@ ADRs:
 
 ### Current Live Product And Package Packets
 
+- `2026-06-04-fixture-root-path-guard-regression`: synthetic fixture creation and fixture review launch roots now have MVP preflight coverage that explicit roots outside ignored `.local` fail before fixture writes, checklist output, or WPF launch.
 - `2026-06-04-local-release-path-guard-regression`: portable release publisher, verifier, and launcher now have MVP preflight coverage that explicit release roots and release paths outside ignored `.local` fail before publisher, verifier, or launch-command output.
 - `2026-06-04-accepted-launcher-notes-path-guard`: accepted-package launcher regression now covers explicit acceptance notes paths outside ignored `.local` failing before launch-command output.
 - `2026-06-04-pending-notes-head-wording-stabilization`: pending package acceptance notes docs now describe refresh commits as generation-time provenance and rely on summary status lines for live current-HEAD context.
