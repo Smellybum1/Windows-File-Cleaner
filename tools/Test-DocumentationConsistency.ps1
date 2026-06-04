@@ -75,6 +75,75 @@ function Assert-ReferencedPathsExist {
     }
 }
 
+function Get-MarkdownSection {
+    param(
+        [Parameter(Mandatory)]
+        [string]$Text,
+
+        [Parameter(Mandatory)]
+        [string]$Header
+    )
+
+    $pattern = "(?ms)^##\s+$([regex]::Escape($Header))\s*\r?\n(?<body>.*?)(?=^##\s+|\z)"
+    $match = [regex]::Match($Text, $pattern)
+    if (-not $match.Success) {
+        throw "Feature index is missing the '$Header' section."
+    }
+
+    return $match.Groups["body"].Value
+}
+
+function Get-ActiveFeatureBriefReferences {
+    param(
+        [Parameter(Mandatory)]
+        [string]$FeatureIndexText
+    )
+
+    $activeSection = Get-MarkdownSection -Text $FeatureIndexText -Header "Active Or Current"
+    $matches = [regex]::Matches($activeSection, '(?m)^\s*-\s+`(?<path>[^`]+\.md)`\s*:')
+    $paths = [System.Collections.Generic.SortedSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
+    foreach ($match in $matches) {
+        [void]$paths.Add($match.Groups["path"].Value)
+    }
+
+    if ($paths.Count -eq 0) {
+        throw "Feature index Active Or Current section does not list any feature briefs."
+    }
+
+    return @($paths)
+}
+
+function Assert-ActiveFeatureBriefsExist {
+    param(
+        [Parameter(Mandatory)]
+        [string]$FeatureIndexText
+    )
+
+    $featuresRoot = [System.IO.Path]::GetFullPath((Join-Path $repoRoot "docs\features"))
+    if (-not $featuresRoot.EndsWith([System.IO.Path]::DirectorySeparatorChar)) {
+        $featuresRoot = $featuresRoot + [System.IO.Path]::DirectorySeparatorChar
+    }
+
+    foreach ($briefReference in Get-ActiveFeatureBriefReferences -FeatureIndexText $FeatureIndexText) {
+        $repoRelativePath = if ($briefReference -match "[/\\]") {
+            $briefReference
+        }
+        else {
+            Join-Path "docs\features" $briefReference
+        }
+
+        $pathForJoin = $repoRelativePath -replace "/", "\"
+        $fullPath = [System.IO.Path]::GetFullPath((Join-Path $repoRoot $pathForJoin))
+        if (-not $fullPath.StartsWith($featuresRoot, [System.StringComparison]::OrdinalIgnoreCase)) {
+            throw "Feature index Active Or Current entry must stay under docs/features: $briefReference"
+        }
+
+        if (-not (Test-Path -LiteralPath $fullPath -PathType Leaf)) {
+            throw "Feature index Active Or Current entry references a missing feature brief: $briefReference"
+        }
+    }
+}
+
 function Get-CurrentStatePacketName {
     param(
         [Parameter(Mandatory)]
@@ -178,6 +247,8 @@ foreach ($entry in @(
     Assert-ReferencedPathsExist -Text $entry.Text -Description $entry.Description
 }
 
+Assert-ActiveFeatureBriefsExist -FeatureIndexText $featureIndexText
+
 foreach ($requiredRunbook in @(
         "docs/operations/ci.md",
         "docs/operations/daily-use.md",
@@ -207,4 +278,4 @@ Assert-ContainsText `
     -Description "Thread handoff startup context"
 
 Write-Host "Documentation consistency regression passed."
-Write-Host "Boundary: checked committed documentation links and packet breadcrumbs only; this did not launch WPF, scan, move, restore, delete, approve cleanup, write manifests, install anything, or create cleanup history."
+Write-Host "Boundary: checked committed documentation links, active feature-index entries, and packet breadcrumbs only; this did not launch WPF, scan, move, restore, delete, approve cleanup, write manifests, install anything, or create cleanup history."

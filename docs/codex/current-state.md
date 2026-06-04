@@ -11,7 +11,7 @@ Use this as the first compact orientation file for new Codex threads. Historical
 - Latest live evidence: 2026-06-04 second tiny exact real-profile Quarantine batch.
 - Latest working app packet: real-profile Quarantine inline status wording fix.
 - Latest package candidate: `.local\releases\windows-file-cleaner-v20260604-121922` at `e6ac3eb`, verified but not human-accepted.
-- Latest tooling/evidence packet: documentation consistency regression.
+- Latest tooling/evidence packet: feature index entry regression.
 - Latest docs/workflow packet: thread handoff CI alignment.
 - Previous docs/workflow baseline: `1ea1b76 Reduce workflow markdown bloat`
 - App stack: C# / WPF / .NET 8
@@ -70,7 +70,7 @@ Use this as the first compact orientation file for new Codex threads. Historical
 - GitHub Actions MVP Preflight also has a manual `workflow_dispatch` runner-image choice so `windows-2025-vs2026` can be tested intentionally without changing the push or pull-request baseline.
 - Push CI run #360 for commit `3e2e2ae` passed, validating the normal push fallback for `inputs.runner_image || 'windows-2022'`.
 - `docs/operations/ci.md` captures normal push/PR CI behavior, the manual `windows-2025-vs2026` canary procedure, baseline-change rule, and safety boundary.
-- `tools\Test-DocumentationConsistency.cmd` verifies active markdown references and latest packet breadcrumbs across README, feature index, current state, progress, and thread handoff. MVP preflight runs it by default before the whitespace diff check; use `-SkipDocumentationConsistencyCheck` only for focused local loops.
+- `tools\Test-DocumentationConsistency.cmd` verifies active markdown references, bare active feature-index entries, and latest packet breadcrumbs across README, feature index, current state, progress, and thread handoff. MVP preflight runs it by default before the whitespace diff check; use `-SkipDocumentationConsistencyCheck` only for focused local loops.
 - MVP preflight now runs the local release acceptance summary regression check by default before the local release acceptance recorder regression; use `-SkipLocalReleaseAcceptanceSummaryCheck` only for focused local loops.
 - `tools\Test-LocalReleaseAcceptanceRecorder.cmd` verifies the package acceptance recorder rejects missing manual intent, missing verifier evidence, and missing commit evidence without explicit mismatch acceptance; it also verifies `-WhatIf` does not write and explicit `-RecordCommitMismatch` can complete synthetic ignored notes.
 - MVP preflight now runs the local release acceptance recorder regression check by default after the package summary regression; use `-SkipLocalReleaseAcceptanceRecorderCheck` only for focused local loops.

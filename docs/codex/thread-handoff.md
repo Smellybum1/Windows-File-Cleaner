@@ -20,7 +20,7 @@ Load detailed reference docs or archived evidence only when the task needs histo
 - Repo: `D:\Codex\Windows File Cleaner`
 - Branch: `main`
 - Latest package/evidence packet: `2026-06-04-pending-package-acceptance-notes-refresh-after-tooling-hardening`
-- Latest tooling/evidence packet: `2026-06-04-documentation-consistency-regression`
+- Latest tooling/evidence packet: `2026-06-04-feature-index-entry-regression`
 - Latest docs/workflow packet: `2026-06-04-thread-handoff-ci-alignment`
 - Latest live-product evidence: `2026-06-04-second-real-profile-quarantine-batch`
 - Latest working app packet: `2026-06-04-real-profile-quarantine-inline-status-wording`
@@ -39,7 +39,7 @@ Load detailed reference docs or archived evidence only when the task needs histo
 - GitHub Actions MVP Preflight now uses `actions/checkout@v6`, `actions/setup-dotnet@v5`, `windows-2022` for push/pull-request runs, and a manual `workflow_dispatch` runner-image choice for intentional `windows-2025-vs2026` canary runs.
 - Push CI run #360 validated the no-input `inputs.runner_image || 'windows-2022'` fallback. Later docs-only push runs #361 and #362 also passed.
 - `docs/operations/ci.md` captures normal push/PR CI behavior, the manual Windows image canary procedure, baseline-change rule, and safety boundary.
-- `tools\Test-DocumentationConsistency.cmd` verifies active documentation links and latest packet breadcrumbs; MVP preflight now runs it by default before the whitespace diff check.
+- `tools\Test-DocumentationConsistency.cmd` verifies active documentation links, bare active feature-index entries, and latest packet breadcrumbs; MVP preflight now runs it by default before the whitespace diff check.
 - `tools\Test-FixtureAcceptanceNotes.cmd` covers fixture acceptance summary and recorder behavior with temporary ignored notes, and MVP preflight now runs it by default after the fixture checklist. It asserts incomplete summaries show recording guidance, `-RequireComplete` reports blockers, recorder calls require `-RecordManualAcceptance`, `-WhatIf` does not write, and synthetic explicit recording can complete notes.
 - `tools\Test-DailyReadinessFixtureAcceptanceNotes.cmd` covers optional and strict daily readiness fixture-note forwarding with temporary ignored package files, acceptance notes, fixture notes, and an empty Restore Manifest root. MVP preflight now runs it by default after the standalone fixture notes regression. It asserts required incomplete fixture notes fail before launch-command printing, optional incomplete notes show recording guidance and continue, and complete required notes pass the normal print-only daily flow.
 - `tools\Test-DailyReadinessLatestPackageNotes.cmd` covers daily readiness latest package notes visibility with temporary ignored package notes and fixture notes. MVP preflight now runs it by default after the daily readiness fixture acceptance notes regression. It asserts accepted evidence stays on completed notes while a newer incomplete candidate is shown as informational context with guarded `-RecordCommitMismatch` next steps, and a newer malformed-looking notes file reports missing evidence without blocking accepted-package readiness.

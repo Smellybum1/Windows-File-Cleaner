@@ -19,6 +19,7 @@ Catch active documentation drift before handoff and CI evidence goes stale, espe
 
 - A targeted command verifies committed read-first and handoff docs.
 - The check verifies active markdown references in README, feature index, current state, progress, and thread handoff point at existing files.
+- The check verifies bare active feature-index entries point at existing files under `docs/features`.
 - The check verifies required operational runbooks are listed in both the feature index and thread handoff.
 - The check verifies latest docs/workflow and tooling/evidence packet breadcrumbs align between current state, progress, and thread handoff.
 - MVP preflight runs the check by default, with a skip switch for focused local loops.
@@ -44,6 +45,7 @@ What changed:
 - Added a documentation consistency regression command.
 - MVP preflight now runs the documentation consistency regression by default.
 - The regression checks active operational runbook references and latest packet breadcrumb alignment.
+- Later packet `Feature Index Entry Regression` added coverage for bare `Active Or Current` feature-index filenames.
 
 Tests run:
 

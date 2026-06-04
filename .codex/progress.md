@@ -15,7 +15,7 @@ Read first: `docs/codex/current-state.md`.
 
 Latest docs/workflow packet: `2026-06-04-thread-handoff-ci-alignment`. It refreshed `docs/codex/thread-handoff.md` so fresh-thread startup context names the CI Windows image canary, CI operations runbook, push-run evidence, and current docs packet. No app behavior changed.
 
-Latest tooling/evidence packet: `2026-06-04-documentation-consistency-regression`. MVP preflight now verifies active documentation links and latest packet breadcrumb alignment before the whitespace diff check.
+Latest tooling/evidence packet: `2026-06-04-feature-index-entry-regression`. MVP preflight now verifies active feature-index entries, active documentation links, and latest packet breadcrumb alignment before the whitespace diff check.
 
 Latest package candidate: `.local\releases\windows-file-cleaner-v20260604-121922` at app commit `e6ac3eb`, verified but not human-accepted. Current pending acceptance notes: `.local\release-acceptance\release-acceptance-20260604-164509.md`.
 
@@ -40,6 +40,33 @@ Post-action evidence:
 6. Use `docs/operations/*.md` for command detail.
 
 ## Recent Packet Summaries
+
+### 2026-06-04: Feature Index Entry Regression
+
+Status: completed
+
+Goal:
+
+- Make the documentation consistency regression catch stale bare filenames in the active feature brief index.
+
+Safety profile:
+
+- `terminal-readonly`. The regression reads committed docs only and runs in MVP preflight. It does not launch WPF, scan real-profile files, move, restore, delete, approve cleanup, promote a package, create shortcuts, install anything, write acceptance notes, write Restore Manifests, or create cleanup history.
+
+Changes:
+
+- `tools\Test-DocumentationConsistency.ps1` now parses `docs/features/index.md` `Active Or Current` entries.
+- Bare active feature filenames are resolved under `docs/features`.
+- The regression rejects missing active feature briefs and entries that resolve outside `docs/features`.
+
+Verification:
+
+- `cmd.exe /c tools\Test-DocumentationConsistency.cmd`
+- `cmd.exe /c tools\Invoke-MvpPreflight.cmd`
+
+ADRs:
+
+- Skipped; this adds terminal-only documentation verification and does not change product behavior, cleanup execution, restore execution, persistence, security, data model, deployment packaging, or core UX flow.
 
 ### 2026-06-04: Documentation Consistency Regression
 
@@ -964,6 +991,7 @@ ADRs:
 
 ### Current Live Product And Package Packets
 
+- `2026-06-04-feature-index-entry-regression`: documentation consistency now verifies bare active feature-index entries resolve to existing feature briefs.
 - `2026-06-04-documentation-consistency-regression`: MVP preflight now verifies active documentation links and latest packet breadcrumb alignment before the whitespace diff check.
 - `2026-06-04-ci-windows-image-canary`: MVP Preflight now has a manual runner-image canary for intentionally testing `windows-2025-vs2026` while push/PR runs remain on `windows-2022`.
 - `2026-06-04-ci-actions-runtime-maintenance`: GitHub Actions MVP Preflight now uses Node 24-capable official actions and pins CI to `windows-2022` before the `windows-latest` Windows 2025 / Visual Studio 2026 migration.

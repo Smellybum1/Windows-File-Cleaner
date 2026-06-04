@@ -21,7 +21,7 @@ runs-on: "${{ inputs.runner_image || 'windows-2022' }}"
 
 The no-input push fallback was validated by GitHub Actions MVP Preflight #360 on commit `3e2e2ae`. A later docs-only push, #361 on commit `e6ff40c`, also passed.
 
-Safety profile: `terminal-readonly` from `docs/codex/safety-profiles.md`. CI restores, builds, runs tests, runs fixture and synthetic regression checks, checks active documentation consistency, and checks whitespace. It must not launch WPF, scan `C:\Users\moxhe`, move, restore, delete, approve cleanup, write real Restore Manifests, create shortcuts, install anything, promote a package, or create cleanup history.
+Safety profile: `terminal-readonly` from `docs/codex/safety-profiles.md`. CI restores, builds, runs tests, runs fixture and synthetic regression checks, checks active documentation consistency including active feature-index entries, and checks whitespace. It must not launch WPF, scan `C:\Users\moxhe`, move, restore, delete, approve cleanup, write real Restore Manifests, create shortcuts, install anything, promote a package, or create cleanup history.
 
 ## Local Equivalent
 

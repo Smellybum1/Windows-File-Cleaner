@@ -160,6 +160,7 @@ What changed:
 - Later packet `CI Actions Runtime Maintenance` kept the same preflight command but updated the GitHub Actions workflow to Node 24-capable official actions and pinned the hosted runner to `windows-2022`.
 - Later packet `CI Windows Image Canary` kept the same preflight command and added a manual GitHub Actions runner-image choice for future Windows 2025 / Visual Studio 2026 evaluation.
 - Later packet `Documentation Consistency Regression` added a docs-link and latest-packet breadcrumb check before the whitespace diff check, with `-SkipDocumentationConsistencyCheck` for focused local loops.
+- Later packet `Feature Index Entry Regression` hardened that docs check so bare active feature-index filenames must resolve to existing files under `docs/features`.
 
 Files changed:
 
