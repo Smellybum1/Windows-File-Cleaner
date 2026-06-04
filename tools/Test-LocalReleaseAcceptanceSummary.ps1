@@ -7,6 +7,7 @@ $ErrorActionPreference = "Stop"
 $repoRoot = Split-Path -Parent $PSScriptRoot
 $repoFullPath = [System.IO.Path]::GetFullPath($repoRoot).TrimEnd([System.IO.Path]::DirectorySeparatorChar)
 $localRoot = [System.IO.Path]::GetFullPath((Join-Path $repoRoot ".local")).TrimEnd([System.IO.Path]::DirectorySeparatorChar)
+$notesRoot = [System.IO.Path]::GetFullPath((Join-Path $repoRoot ".local\release-acceptance")).TrimEnd([System.IO.Path]::DirectorySeparatorChar)
 $testRoot = [System.IO.Path]::GetFullPath((Join-Path $repoRoot ".local\release-acceptance-summary-test")).TrimEnd([System.IO.Path]::DirectorySeparatorChar)
 $summaryScript = Join-Path $PSScriptRoot "Summarize-LocalReleaseAcceptanceNotes.ps1"
 
@@ -66,6 +67,8 @@ function New-TestAcceptanceNotes {
         [Parameter(Mandatory)]
         [bool]$CommitEvidenceRecorded
     )
+
+    Assert-UnderLocalPath -Path $Path
 
     $check = if ($Complete) { "x" } else { " " }
     $commitCheck = if ($CommitEvidenceRecorded) { "x" } else { " " }
@@ -146,6 +149,8 @@ function New-TestMalformedAcceptanceNotes {
         [string]$Path
     )
 
+    Assert-UnderLocalPath -Path $Path
+
     $lines = @(
         "# Portable Release Acceptance Notes",
         "",
@@ -160,13 +165,15 @@ function New-TestMalformedAcceptanceNotes {
 
 function Invoke-Summary {
     param(
-        [Parameter(Mandatory)]
         [string]$Path,
 
         [switch]$RequireComplete
     )
 
-    $arguments = @("-NoProfile", "-ExecutionPolicy", "Bypass", "-File", $summaryScript, "-Path", $Path)
+    $arguments = @("-NoProfile", "-ExecutionPolicy", "Bypass", "-File", $summaryScript)
+    if (-not [string]::IsNullOrWhiteSpace($Path)) {
+        $arguments += @("-Path", $Path)
+    }
     if ($RequireComplete.IsPresent) {
         $arguments += "-RequireComplete"
     }
@@ -179,14 +186,32 @@ function Invoke-Summary {
 }
 
 Assert-UnderLocalPath -Path $testRoot
+Assert-UnderLocalPath -Path $notesRoot
 
 $incompletePath = Join-Path $testRoot "release-acceptance-summary-test-incomplete.md"
 $completePath = Join-Path $testRoot "release-acceptance-summary-test-complete.md"
 $malformedPath = Join-Path $testRoot "release-acceptance-summary-test-malformed.md"
-$testFiles = @($incompletePath, $completePath, $malformedPath)
+$defaultIncompletePath = Join-Path $notesRoot "release-acceptance-summary-default-test-incomplete.md"
+$defaultCompletePath = Join-Path $notesRoot "release-acceptance-summary-default-test-complete.md"
+$defaultMalformedPath = Join-Path $notesRoot "release-acceptance-summary-default-test-malformed.md"
+$testFiles = @(
+    $incompletePath,
+    $completePath,
+    $malformedPath,
+    $defaultIncompletePath,
+    $defaultCompletePath,
+    $defaultMalformedPath
+)
 
 try {
+    foreach ($file in $testFiles) {
+        if (Test-Path -LiteralPath $file -PathType Leaf) {
+            Remove-Item -LiteralPath $file -Force
+        }
+    }
+
     New-Item -ItemType Directory -Path $testRoot -Force | Out-Null
+    New-Item -ItemType Directory -Path $notesRoot -Force | Out-Null
     New-TestAcceptanceNotes -Path $incompletePath -Complete:$false -CommitEvidenceRecorded:$false
     New-TestAcceptanceNotes -Path $completePath -Complete:$true -CommitEvidenceRecorded:$true
     New-TestMalformedAcceptanceNotes -Path $malformedPath
@@ -237,6 +262,26 @@ try {
     Assert-ContainsText -Lines $malformedCompletionResult.Output -ExpectedText "Overall result is Not recorded."
     Assert-ContainsText -Lines $malformedCompletionResult.Output -ExpectedText "No portable release checklist items were found."
     Assert-DoesNotContainText -Lines $malformedCompletionResult.Output -UnexpectedText "All checklist items are marked Pass."
+
+    New-TestAcceptanceNotes -Path $defaultCompletePath -Complete:$true -CommitEvidenceRecorded:$true
+    New-TestAcceptanceNotes -Path $defaultIncompletePath -Complete:$false -CommitEvidenceRecorded:$false
+    New-TestMalformedAcceptanceNotes -Path $defaultMalformedPath
+    $baseTime = Get-Date
+    [System.IO.File]::SetLastWriteTime($defaultCompletePath, $baseTime.AddMinutes(1))
+    [System.IO.File]::SetLastWriteTime($defaultIncompletePath, $baseTime.AddMinutes(2))
+    [System.IO.File]::SetLastWriteTime($defaultMalformedPath, $baseTime.AddMinutes(3))
+
+    $defaultCompletionResult = Invoke-Summary -RequireComplete
+    if ($defaultCompletionResult.ExitCode -ne 0) {
+        throw "Default -RequireComplete should select the latest complete notes while skipping newer incomplete and malformed-looking notes. Exit code: $($defaultCompletionResult.ExitCode)"
+    }
+
+    Assert-ContainsText -Lines $defaultCompletionResult.Output -ExpectedText "Notes file: $defaultCompletePath"
+    Assert-ContainsText -Lines $defaultCompletionResult.Output -ExpectedText "Completion check: complete. Portable release acceptance notes are ready to record."
+    Assert-ContainsText -Lines $defaultCompletionResult.Output -ExpectedText "All checklist items are marked Pass."
+    Assert-DoesNotContainText -Lines $defaultCompletionResult.Output -UnexpectedText "Notes file: $defaultIncompletePath"
+    Assert-DoesNotContainText -Lines $defaultCompletionResult.Output -UnexpectedText "Notes file: $defaultMalformedPath"
+    Assert-DoesNotContainText -Lines $defaultCompletionResult.Output -UnexpectedText "Pending acceptance next steps:"
 
     $completeResult = Invoke-Summary -Path $completePath -RequireComplete
     if ($completeResult.ExitCode -ne 0) {

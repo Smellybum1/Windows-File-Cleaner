@@ -70,7 +70,7 @@ Targeted package acceptance summary regression:
 .\tools\Test-LocalReleaseAcceptanceSummary.cmd
 ```
 
-This writes temporary ignored complete, incomplete, and malformed-looking notes under `.local\release-acceptance-summary-test`, verifies summary behavior including missing-checklist wording, then removes the test notes.
+This writes temporary ignored complete, incomplete, and malformed-looking notes under `.local\release-acceptance-summary-test` and `.local\release-acceptance`, verifies summary behavior including missing-checklist wording and default completed-notes selection, then removes the test notes.
 
 Targeted daily readiness latest package notes regression:
 

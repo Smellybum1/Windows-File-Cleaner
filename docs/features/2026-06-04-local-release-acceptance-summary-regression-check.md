@@ -6,11 +6,11 @@ Status: completed
 
 ## Goal
 
-Add a targeted terminal-only regression check for portable release acceptance summary output, especially the guarded next-step guidance for incomplete or malformed-looking notes.
+Add a targeted terminal-only regression check for portable release acceptance summary output, especially the guarded next-step guidance and default completed-notes selection when incomplete or malformed-looking notes exist.
 
 ## Safety Profile
 
-`terminal-readonly`. The check writes temporary ignored complete, incomplete, and malformed-looking test notes under `.local\release-acceptance-summary-test`, runs the read-only summary helper, and removes those test notes. It does not launch WPF, click `Scan`, scan real-profile files, move, restore, delete real-profile files, approve cleanup, create shortcuts, install anything, promote a package, or create cleanup history.
+`terminal-readonly`. The check writes temporary ignored complete, incomplete, and malformed-looking test notes under `.local\release-acceptance-summary-test` and `.local\release-acceptance`, runs the read-only summary helper, and removes those test notes. It does not launch WPF, click `Scan`, scan real-profile files, move, restore, delete real-profile files, approve cleanup, create shortcuts, install anything, promote a package, or create cleanup history.
 
 ## Problem
 
@@ -23,6 +23,7 @@ The summary helper now prints guarded next-step commands for incomplete package 
 - The test synthesizes incomplete and complete acceptance notes under ignored `.local`.
 - It verifies incomplete notes print `Pending acceptance next steps`, `-RecordCommitMismatch`, and the no-launch/no-scan/no-cleanup-history boundary.
 - It verifies malformed-looking notes report missing evidence, zero checklist sections, guarded verifier guidance, no recorder command while verifier evidence is missing, and `-RequireComplete` blockers.
+- It verifies default `Summarize-LocalReleaseAcceptanceNotes.cmd -RequireComplete` skips newer incomplete and malformed-looking notes under `.local\release-acceptance` and selects the latest complete notes.
 - It verifies complete notes pass `-RequireComplete` and do not print pending next steps.
 - The test removes its generated notes and test folder when complete.
 - MVP preflight now runs this regression by default before the local release acceptance recorder regression.

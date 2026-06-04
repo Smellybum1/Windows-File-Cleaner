@@ -15,7 +15,7 @@ Read first: `docs/codex/current-state.md`.
 
 Latest docs/workflow packet: `2026-06-04-startup-context-compaction`. It moved oversized read-first docs into reference/archive files and replaced them with compact active docs to reduce Codex thread lag. No app behavior changed.
 
-Latest tooling/evidence packet: `2026-06-04-package-summary-malformed-notes-regression`. MVP preflight now covers malformed-looking package acceptance summaries so missing checklist structure is reported as missing instead of all-pass.
+Latest tooling/evidence packet: `2026-06-04-package-summary-default-selection-regression`. MVP preflight now covers default package acceptance summary selection when newer incomplete or malformed-looking notes exist.
 
 Latest package candidate: `.local\releases\windows-file-cleaner-v20260604-121922` at app commit `e6ac3eb`, verified but not human-accepted. Current pending acceptance notes: `.local\release-acceptance\release-acceptance-20260604-134337.md`.
 
@@ -40,6 +40,38 @@ Post-action evidence:
 6. Use `docs/operations/*.md` for command detail.
 
 ## Recent Packet Summaries
+
+### 2026-06-04: Package Summary Default Selection Regression
+
+Status: completed
+
+Goal:
+
+- Cover default `Summarize-LocalReleaseAcceptanceNotes.cmd -RequireComplete` selection when newer incomplete or malformed-looking acceptance notes exist in the normal ignored notes folder.
+
+Safety profile:
+
+- `terminal-readonly`. The regression writes temporary ignored complete, incomplete, and malformed-looking package acceptance notes under `.local\release-acceptance-summary-test` and `.local\release-acceptance`, invokes the read-only summary helper, and removes the temporary files. It does not launch WPF, scan real-profile files, move, restore, delete, approve cleanup, promote a package, create shortcuts, install anything, or create cleanup history.
+
+Changes:
+
+- Extended `tools\Test-LocalReleaseAcceptanceSummary.cmd` / `.ps1`.
+- The regression now creates default-selection test notes in `.local\release-acceptance`.
+- It makes the malformed-looking notes newest and the incomplete notes newer than the complete notes, then verifies default `-RequireComplete` still selects the latest complete notes.
+- It verifies the default-selected completed notes do not print pending acceptance next steps or select the incomplete/malformed-looking notes.
+
+Verification:
+
+- `cmd.exe /c tools\Test-LocalReleaseAcceptanceSummary.cmd`
+- `cmd.exe /c tools\Summarize-LocalReleaseAcceptanceNotes.cmd -RequireComplete`
+- `cmd.exe /c tools\Test-DailyReadinessLatestPackageNotes.cmd`
+- `cmd.exe /c tools\Test-AcceptedLocalReleaseSelection.cmd`
+- `cmd.exe /c tools\Test-LocalReleaseAcceptanceRecorder.cmd`
+- `cmd.exe /c tools\Invoke-MvpPreflight.cmd`
+
+ADRs:
+
+- Skipped; this adds terminal-only regression coverage for existing package acceptance summary selection under ADR 0020 and does not change product behavior, cleanup execution, restore execution, persistence, deployment, package acceptance policy, or real readiness behavior.
 
 ### 2026-06-04: Package Summary Malformed Notes Regression
 
@@ -664,6 +696,7 @@ ADRs:
 
 ### Current Live Product And Package Packets
 
+- `2026-06-04-package-summary-default-selection-regression`: MVP preflight now covers default package acceptance summary selection with newer incomplete and malformed-looking notes under ignored `.local\release-acceptance`.
 - `2026-06-04-package-summary-malformed-notes-regression`: MVP preflight now covers malformed-looking package acceptance summaries with temporary ignored notes and accurate missing-checklist wording.
 - `2026-06-04-accepted-launcher-malformed-notes-regression`: MVP preflight now covers accepted-package launcher default selection and explicit malformed-looking-notes rejection with temporary ignored notes and synthetic print-only package files.
 - `2026-06-04-daily-readiness-latest-package-notes-regression`: MVP preflight now covers daily readiness latest package notes informational behavior with temporary ignored complete, incomplete, and malformed-looking package acceptance notes.
