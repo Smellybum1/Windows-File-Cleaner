@@ -40,6 +40,7 @@ $acceptedLauncher = Join-Path $PSScriptRoot "Start-AcceptedLocalRelease.cmd"
 $releaseNotesSummary = Join-Path $PSScriptRoot "Summarize-LocalReleaseAcceptanceNotes.cmd"
 $fixtureNotesSummary = Join-Path $PSScriptRoot "Summarize-FixtureAcceptanceNotes.cmd"
 $restoreManifestSummary = Join-Path $PSScriptRoot "Summarize-RestoreManifests.cmd"
+$defaultRealProfileCleanupScope = "C:\Users\moxhe"
 
 function Invoke-DailyReadinessStep {
     param(
@@ -150,6 +151,15 @@ if ($RequireAnyRestoreManifest.IsPresent) {
     $restoreArguments += "-RequireAny"
 }
 
+$exactProfileUndoWorkArguments = @()
+if (-not [string]::IsNullOrWhiteSpace($QuarantineRoot)) {
+    $exactProfileUndoWorkArguments += @("-QuarantineRoot", $QuarantineRoot)
+}
+$exactProfileUndoWorkArguments += @("-CleanupScope", $defaultRealProfileCleanupScope, "-UndoWorkOnly")
+if ($ShowRestoreEntries.IsPresent) {
+    $exactProfileUndoWorkArguments += "-ShowEntries"
+}
+
 Invoke-DailyReadinessStep -Title "Accepted package evidence" -CommandPath $releaseNotesSummary -Arguments $notesArguments
 Invoke-DailyReadinessInformationalStep -Title "Latest package acceptance notes (informational)" -CommandPath $releaseNotesSummary
 if ($shouldSummarizeFixtureAcceptance) {
@@ -158,6 +168,7 @@ if ($shouldSummarizeFixtureAcceptance) {
 Invoke-DailyReadinessStep -Title "Accepted normal launch command" -CommandPath $acceptedLauncher -Arguments $acceptedNormalArguments
 Invoke-DailyReadinessStep -Title "Accepted fixture launch command (same verified package)" -CommandPath $acceptedLauncher -Arguments $acceptedFixtureArguments
 Invoke-DailyReadinessStep -Title "Restore Manifest summary" -CommandPath $restoreManifestSummary -Arguments $restoreArguments
+Invoke-DailyReadinessStep -Title "Exact-profile undo-work stop state" -CommandPath $restoreManifestSummary -Arguments $exactProfileUndoWorkArguments
 
 Write-Host ""
 Write-Host "Daily local readiness check passed."

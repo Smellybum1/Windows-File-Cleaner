@@ -28,6 +28,8 @@ The daily readiness output first verifies the latest completed accepted package 
 
 When the latest candidate notes are incomplete, that informational summary also prints the guarded recorder and recheck commands for the human package acceptance pass.
 
+Daily readiness ends with a broad Restore Manifest summary and an exact-profile undo-work stop-state spotlight. After the 2026-06-04 second exact-profile Quarantine batch, the spotlight is expected to show displayed undo work `1` until the selected manifest is restored.
+
 ## Accepted Package Launch Commands
 
 Print the accepted package command without launching WPF:

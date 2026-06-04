@@ -15,7 +15,7 @@ Read first: `docs/codex/current-state.md`.
 
 Latest docs/workflow packet: `2026-06-04-startup-context-compaction`. It moved oversized read-first docs into reference/archive files and replaced them with compact active docs to reduce Codex thread lag. No app behavior changed.
 
-Latest tooling/evidence packet: `2026-06-04-mvp-preflight-next-batch-stop-guard-regression`. MVP preflight now runs the real-profile next-batch stop guard regression by default before the whitespace diff check, with `-SkipRealProfileNextBatchStopGuardCheck` for focused local loops.
+Latest tooling/evidence packet: `2026-06-04-daily-readiness-exact-profile-undo-spotlight`. Default daily readiness now ends with an exact-profile undo-work stop-state spotlight after the broad Restore Manifest summary.
 
 Latest package candidate: `.local\releases\windows-file-cleaner-v20260604-121922` at app commit `e6ac3eb`, verified but not human-accepted. Current pending acceptance notes: `.local\release-acceptance\release-acceptance-20260604-134337.md`.
 
@@ -40,6 +40,35 @@ Post-action evidence:
 6. Use `docs/operations/*.md` for command detail.
 
 ## Recent Packet Summaries
+
+### 2026-06-04: Daily Readiness Exact-Profile Undo Spotlight
+
+Status: completed
+
+Goal:
+
+- Make the current exact-profile undo-work stop state visible in the default daily readiness command without requiring a separate Restore Manifest command.
+
+Safety profile:
+
+- `terminal-readonly`. The spotlight reads Restore Manifest summaries only. No WPF launch, scan, real-profile movement, restore, delete, approval, Restore Manifest writes, package promotion, shortcut, install, or cleanup history.
+
+Changes:
+
+- `Invoke-DailyLocalReadiness.cmd` now prints an `Exact-profile undo-work stop state` section after the broad Restore Manifest summary.
+- The spotlight uses `-CleanupScope "C:\Users\moxhe" -UndoWorkOnly`.
+- `-ShowRestoreEntries` forwards to the spotlight when requested.
+- Updated compact runbooks, current state, and feature notes.
+
+Verification:
+
+- `cmd.exe /c tools\Invoke-DailyLocalReadiness.cmd`
+- `cmd.exe /c tools\Invoke-MvpPreflight.cmd`
+- `git diff --check` passed with expected CRLF warnings only.
+
+ADRs:
+
+- Skipped; this adds terminal-only visibility for existing Restore Manifest evidence and does not change product behavior, cleanup execution, restore execution, persistence, deployment, or package acceptance policy.
 
 ### 2026-06-04: MVP Preflight Next-Batch Stop Guard Regression
 
@@ -292,6 +321,7 @@ ADRs:
 ### Current Live Product And Package Packets
 
 - `2026-06-04-local-release-acceptance-command-stamping`: completed and pushed at `5a4115e`.
+- `2026-06-04-daily-readiness-exact-profile-undo-spotlight`: default daily readiness spotlights exact-profile undo-work stop state.
 - `2026-06-04-mvp-preflight-next-batch-stop-guard-regression`: MVP preflight now runs the real-profile next-batch stop guard regression by default.
 - `2026-06-04-real-profile-next-batch-early-undo-guard`: next-batch evidence now stops before MVP preflight when displayed undo work exists.
 - `2026-06-04-mvp-preflight-release-summary-regression`: MVP preflight now runs the package acceptance summary regression check by default.

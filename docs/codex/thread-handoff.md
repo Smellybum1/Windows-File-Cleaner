@@ -20,7 +20,7 @@ Load detailed reference docs or archived evidence only when the task needs histo
 - Repo: `D:\Codex\Windows File Cleaner`
 - Branch: `main`
 - Latest package/evidence packet: `2026-06-04-verified-portable-package-candidate`
-- Latest tooling/evidence packet: `2026-06-04-mvp-preflight-next-batch-stop-guard-regression`
+- Latest tooling/evidence packet: `2026-06-04-daily-readiness-exact-profile-undo-spotlight`
 - Latest docs/workflow packet: `2026-06-04-startup-context-compaction`
 - Latest live-product evidence: `2026-06-04-second-real-profile-quarantine-batch`
 - Latest working app packet: `2026-06-04-real-profile-quarantine-inline-status-wording`
@@ -32,6 +32,7 @@ Load detailed reference docs or archived evidence only when the task needs histo
 - Verified package candidate pending acceptance: `.local\releases\windows-file-cleaner-v20260604-121922` at commit `e6ac3eb`
 - Current pending candidate notes: `.local\release-acceptance\release-acceptance-20260604-134337.md`
 - Daily readiness shows the latest package acceptance notes as informational context after verifying the completed accepted notes.
+- Daily readiness ends with an exact-profile undo-work stop-state spotlight after the broad Restore Manifest summary.
 - Incomplete package acceptance summaries print guarded recorder and recheck commands; the current candidate recorder command includes `-RecordCommitMismatch` and remains human-pass-only.
 - `tools\Test-LocalReleaseAcceptanceSummary.cmd` provides targeted temporary-note regression coverage for package acceptance summaries, and MVP preflight now runs it by default before the whitespace diff check.
 - `Invoke-RealProfileQuarantineReadiness.cmd -RequireNextBatchEvidence` checks displayed undo work before MVP preflight, and `tools\Test-RealProfileNextBatchStopGuard.cmd` covers that early stop with ignored synthetic manifests. MVP preflight now runs that regression by default before the whitespace diff check.
@@ -88,7 +89,7 @@ Current state: main includes the second tiny exact real-profile Quarantine evide
 
 The second user-clicked WPF batch moved one exact C:\Users\moxhe pip\cache\http-v2 .body file, 28.93 MB, with moved 1, failed 0, Recovery review no. Post-action read-only summary showed 5 of 11 exact-profile manifests, displayed exact-profile undo work 1, displayed exact-profile recovery review 2, and new manifest D:\WindowsFileCleanerQuarantine\actions\quarantine-action-draft-20260604014901-b7b402a2\restore-manifest.json.
 
-Next best step: stop after the second tiny exact real-profile batch. Do not chain another real-profile Quarantine batch while exact-profile displayed undo work is present unless a new Grill with Docs pass decides that outstanding selected-manifest undo work is acceptable. Recovery remains selected-manifest-only with exact RESTORE and immediate selected-restore revalidation if needed. The next-batch evidence preset now stops before MVP preflight while displayed undo work exists; do not use that early-stop output as movement evidence.
+Next best step: stop after the second tiny exact real-profile batch. Do not chain another real-profile Quarantine batch while exact-profile displayed undo work is present unless a new Grill with Docs pass decides that outstanding selected-manifest undo work is acceptable. Recovery remains selected-manifest-only with exact RESTORE and immediate selected-restore revalidation if needed. Daily readiness spotlights this exact-profile undo-work stop state. The next-batch evidence preset now stops before MVP preflight while displayed undo work exists; do not use that early-stop output as movement evidence.
 
 Accepted package baseline remains .local\releases\windows-file-cleaner-v20260602-011556 at commit bc9b869 with completed ignored acceptance notes .local\release-acceptance\release-acceptance-20260602-011743.md. Accepted-package helpers select latest complete notes by default. Daily readiness shows latest package acceptance notes as informational context but still keeps incomplete candidate notes from replacing the accepted baseline. MVP preflight includes the local release acceptance summary and real-profile next-batch stop guard regression checks; use -SkipLocalReleaseAcceptanceSummaryCheck or -SkipRealProfileNextBatchStopGuardCheck only for focused local loops.
 
