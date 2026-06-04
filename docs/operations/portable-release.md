@@ -39,7 +39,7 @@ Incomplete notes summaries print guarded next-step commands. For a behind-curren
 .\tools\Start-AcceptedLocalRelease.cmd -Fixture -PrintOnly
 ```
 
-Without `-AcceptanceNotesPath`, accepted-package launch commands select the latest completed acceptance notes, so incomplete candidate notes do not replace the accepted baseline.
+Without `-AcceptanceNotesPath`, accepted-package launch commands select the latest completed acceptance notes, so incomplete or malformed-looking candidate notes do not replace the accepted baseline.
 
 ## Publish A New Local Package
 
@@ -62,7 +62,7 @@ Targeted accepted package launcher selection regression:
 .\tools\Test-AcceptedLocalReleaseSelection.cmd
 ```
 
-This writes temporary ignored notes under `.local\release-acceptance`, writes synthetic print-only package placeholder files under `.local\accepted-release-selection-test`, verifies accepted launcher selection behavior, then removes its temporary files.
+This writes temporary ignored complete, incomplete, and malformed-looking notes under `.local\release-acceptance`, writes synthetic print-only package placeholder files under `.local\accepted-release-selection-test`, verifies accepted launcher selection behavior, then removes its temporary files.
 
 Targeted package acceptance summary regression:
 

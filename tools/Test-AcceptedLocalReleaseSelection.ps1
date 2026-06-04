@@ -175,6 +175,31 @@ function New-TestAcceptanceNotes {
     [System.IO.File]::WriteAllLines($Path, $lines, $utf8NoBom)
 }
 
+function New-TestMalformedAcceptanceNotes {
+    param(
+        [Parameter(Mandatory)]
+        [string]$Path,
+
+        [Parameter(Mandatory)]
+        [string]$ReleaseDirectory
+    )
+
+    Assert-UnderLocalPath -Path $Path
+    Assert-UnderLocalPath -Path $ReleaseDirectory
+
+    $lines = @(
+        "# Portable Release Acceptance Notes",
+        "",
+        "Created: malformed accepted launcher selection regression",
+        "Release folder: $ReleaseDirectory",
+        "",
+        "This file intentionally omits the acceptance evidence, overall result, and checklist sections."
+    )
+
+    $utf8NoBom = [System.Text.UTF8Encoding]::new($false)
+    [System.IO.File]::WriteAllLines($Path, $lines, $utf8NoBom)
+}
+
 function Invoke-AcceptedLauncher {
     param(
         [string[]]$Arguments = @()
@@ -208,11 +233,13 @@ Assert-UnderLocalPath -Path $testRoot
 
 $completeReleasePath = Join-Path $testRoot "complete-release"
 $incompleteReleasePath = Join-Path $testRoot "incomplete-release"
+$malformedReleasePath = Join-Path $testRoot "malformed-release"
 $completeNotesPath = Join-Path $notesRoot "release-acceptance-selection-test-complete.md"
 $incompleteNotesPath = Join-Path $notesRoot "release-acceptance-selection-test-incomplete.md"
+$malformedNotesPath = Join-Path $notesRoot "release-acceptance-selection-test-malformed.md"
 
 try {
-    foreach ($path in @($completeNotesPath, $incompleteNotesPath)) {
+    foreach ($path in @($completeNotesPath, $incompleteNotesPath, $malformedNotesPath)) {
         if (Test-Path -LiteralPath $path -PathType Leaf) {
             Remove-Item -LiteralPath $path -Force
         }
@@ -225,12 +252,15 @@ try {
     New-Item -ItemType Directory -Path $notesRoot -Force | Out-Null
     New-TestReleasePackage -ReleaseDirectory $completeReleasePath
     New-TestReleasePackage -ReleaseDirectory $incompleteReleasePath
+    New-TestReleasePackage -ReleaseDirectory $malformedReleasePath
     New-TestAcceptanceNotes -Path $completeNotesPath -ReleaseDirectory $completeReleasePath -Complete:$true
     New-TestAcceptanceNotes -Path $incompleteNotesPath -ReleaseDirectory $incompleteReleasePath -Complete:$false
+    New-TestMalformedAcceptanceNotes -Path $malformedNotesPath -ReleaseDirectory $malformedReleasePath
 
     $baseTime = Get-Date
     [System.IO.File]::SetLastWriteTime($completeNotesPath, $baseTime.AddMinutes(1))
     [System.IO.File]::SetLastWriteTime($incompleteNotesPath, $baseTime.AddMinutes(2))
+    [System.IO.File]::SetLastWriteTime($malformedNotesPath, $baseTime.AddMinutes(3))
 
     $explicitIncompleteResult = Invoke-AcceptedLauncher -Arguments @(
         "-AcceptanceNotesPath",
@@ -251,6 +281,28 @@ try {
     Assert-DoesNotContainText -Lines $explicitIncompleteResult.Output -UnexpectedText "Launch command:"
     Assert-DoesNotContainText -Lines $explicitIncompleteResult.Output -UnexpectedText "Print-only mode: WPF was not launched."
 
+    $explicitMalformedResult = Invoke-AcceptedLauncher -Arguments @(
+        "-AcceptanceNotesPath",
+        $malformedNotesPath,
+        "-PrintOnly",
+        "-SkipVerify"
+    )
+    if ($explicitMalformedResult.ExitCode -ne 1) {
+        throw "Explicit malformed-looking accepted notes should stop before launch-command printing. Exit code: $($explicitMalformedResult.ExitCode)"
+    }
+
+    Assert-ContainsText -Lines $explicitMalformedResult.Output -ExpectedText "Accepted portable release launcher cannot continue because the notes are incomplete:"
+    Assert-ContainsText -Lines $explicitMalformedResult.Output -ExpectedText "Verifier evidence is not recorded."
+    Assert-ContainsText -Lines $explicitMalformedResult.Output -ExpectedText "Commit evidence is not recorded."
+    Assert-ContainsText -Lines $explicitMalformedResult.Output -ExpectedText "Normal launch evidence is not recorded."
+    Assert-ContainsText -Lines $explicitMalformedResult.Output -ExpectedText "Fixture launch evidence is not recorded."
+    Assert-ContainsText -Lines $explicitMalformedResult.Output -ExpectedText "Overall result is not recorded as Pass or Pass with issues noted."
+    Assert-ContainsText -Lines $explicitMalformedResult.Output -ExpectedText "One or more portable release checklist items are not marked Pass."
+    Assert-ContainsText -Lines $explicitMalformedResult.Output -ExpectedText "Notes file: $malformedNotesPath"
+    Assert-ContainsText -Lines $explicitMalformedResult.Output -ExpectedText "This check read ignored notes only; it did not launch WPF, scan, move, restore, delete, approve cleanup, or create cleanup history."
+    Assert-DoesNotContainText -Lines $explicitMalformedResult.Output -UnexpectedText "Launch command:"
+    Assert-DoesNotContainText -Lines $explicitMalformedResult.Output -UnexpectedText "Print-only mode: WPF was not launched."
+
     $defaultSelectionResult = Invoke-AcceptedLauncher -Arguments @(
         "-PrintOnly",
         "-SkipVerify"
@@ -266,12 +318,14 @@ try {
     Assert-ContainsText -Lines $defaultSelectionResult.Output -ExpectedText "Print-only mode: WPF was not launched."
     Assert-DoesNotContainText -Lines $defaultSelectionResult.Output -UnexpectedText "Acceptance notes: $incompleteNotesPath"
     Assert-DoesNotContainText -Lines $defaultSelectionResult.Output -UnexpectedText "Accepted release: $incompleteReleasePath"
+    Assert-DoesNotContainText -Lines $defaultSelectionResult.Output -UnexpectedText "Acceptance notes: $malformedNotesPath"
+    Assert-DoesNotContainText -Lines $defaultSelectionResult.Output -UnexpectedText "Accepted release: $malformedReleasePath"
 
     Write-Host "Accepted local release selection regression passed."
-    Write-Host "Boundary: temporary notes and synthetic package files were written under ignored .local only; this did not launch WPF, scan, move, restore, delete, approve cleanup, promote a package, create shortcuts, install anything, or create cleanup history."
+    Write-Host "Boundary: temporary complete, incomplete, and malformed-looking notes plus synthetic package files were written under ignored .local only; this did not launch WPF, scan, move, restore, delete, approve cleanup, promote a package, create shortcuts, install anything, or create cleanup history."
 }
 finally {
-    foreach ($path in @($completeNotesPath, $incompleteNotesPath)) {
+    foreach ($path in @($completeNotesPath, $incompleteNotesPath, $malformedNotesPath)) {
         if (Test-Path -LiteralPath $path -PathType Leaf) {
             Remove-Item -LiteralPath $path -Force
         }

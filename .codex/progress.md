@@ -15,7 +15,7 @@ Read first: `docs/codex/current-state.md`.
 
 Latest docs/workflow packet: `2026-06-04-startup-context-compaction`. It moved oversized read-first docs into reference/archive files and replaced them with compact active docs to reduce Codex thread lag. No app behavior changed.
 
-Latest tooling/evidence packet: `2026-06-04-daily-readiness-latest-package-notes-regression`. MVP preflight now covers daily readiness latest package notes informational behavior, including malformed-looking latest notes tolerance.
+Latest tooling/evidence packet: `2026-06-04-accepted-launcher-malformed-notes-regression`. MVP preflight now covers accepted-package launcher rejection for explicit malformed-looking notes while default selection still skips incomplete or malformed-looking candidates.
 
 Latest package candidate: `.local\releases\windows-file-cleaner-v20260604-121922` at app commit `e6ac3eb`, verified but not human-accepted. Current pending acceptance notes: `.local\release-acceptance\release-acceptance-20260604-134337.md`.
 
@@ -40,6 +40,36 @@ Post-action evidence:
 6. Use `docs/operations/*.md` for command detail.
 
 ## Recent Packet Summaries
+
+### 2026-06-04: Accepted Launcher Malformed Notes Regression
+
+Status: completed
+
+Goal:
+
+- Cover accepted-package launcher selection when a newer malformed-looking acceptance notes file exists, so default daily launch commands stay on completed accepted notes and explicit malformed notes cannot print launch commands.
+
+Safety profile:
+
+- `terminal-readonly`. The regression writes temporary ignored complete, incomplete, and malformed-looking package acceptance notes under `.local\release-acceptance`, writes synthetic print-only package placeholder files under `.local\accepted-release-selection-test`, invokes the accepted launcher with `-PrintOnly -SkipVerify`, and removes the temporary files. It does not launch WPF, scan real-profile files, move, restore, delete, approve cleanup, promote a package, create shortcuts, install anything, or create cleanup history.
+
+Changes:
+
+- Extended `tools\Test-AcceptedLocalReleaseSelection.cmd` / `.ps1`.
+- The regression now creates a newer malformed-looking notes file with a synthetic release folder.
+- It verifies explicit malformed-looking notes report missing verifier, commit, launch, overall-result, and checklist evidence before launch-command printing.
+- It verifies default accepted-package selection still uses the completed notes and does not select newer incomplete or malformed-looking notes.
+
+Verification:
+
+- `cmd.exe /c tools\Test-AcceptedLocalReleaseSelection.cmd`
+- `cmd.exe /c tools\Test-DailyReadinessLatestPackageNotes.cmd`
+- `cmd.exe /c tools\Test-LocalReleaseAcceptanceSummary.cmd`
+- `cmd.exe /c tools\Invoke-MvpPreflight.cmd`
+
+ADRs:
+
+- Skipped; this adds terminal-only regression coverage for existing accepted-package launcher guardrails under ADR 0020 and does not change product behavior, cleanup execution, restore execution, persistence, deployment, package acceptance policy, or real readiness behavior.
 
 ### 2026-06-04: Daily Readiness Latest Package Notes Regression
 
@@ -604,10 +634,11 @@ ADRs:
 
 ### Current Live Product And Package Packets
 
+- `2026-06-04-accepted-launcher-malformed-notes-regression`: MVP preflight now covers accepted-package launcher default selection and explicit malformed-looking-notes rejection with temporary ignored notes and synthetic print-only package files.
 - `2026-06-04-daily-readiness-latest-package-notes-regression`: MVP preflight now covers daily readiness latest package notes informational behavior with temporary ignored complete, incomplete, and malformed-looking package acceptance notes.
 - `2026-06-04-daily-readiness-fixture-acceptance-regression`: MVP preflight now covers optional and strict daily readiness fixture-note forwarding with synthetic package and Restore Manifest evidence under ignored `.local`.
 - `2026-06-04-fixture-acceptance-notes-regression`: MVP preflight now covers fixture notes summary completion blockers, recorder manual-intent guard, `-WhatIf` no-write behavior, and synthetic completion.
-- `2026-06-04-accepted-local-release-selection-regression`: MVP preflight now covers accepted-package launcher default selection and explicit incomplete-notes rejection with temporary ignored notes and synthetic print-only package files.
+- `2026-06-04-accepted-local-release-selection-regression`: MVP preflight now covers accepted-package launcher default selection and explicit incomplete or malformed-looking notes rejection with temporary ignored notes and synthetic print-only package files.
 - `2026-06-04-local-release-acceptance-recorder-regression`: MVP preflight now covers package acceptance recorder guardrails for missing manual intent, missing verifier evidence, missing commit evidence without explicit mismatch acceptance, and `-WhatIf` no-write behavior.
 - `2026-06-04-synthetic-restore-manifest-mode-guard-regression`: focused synthetic readiness modes now have negative guard coverage for missing/outside `.local` roots, acceptance-note params, and next-batch missing `-SkipMvpPreflight`.
 - `2026-06-04-local-release-acceptance-command-stamping`: completed and pushed at `5a4115e`.
