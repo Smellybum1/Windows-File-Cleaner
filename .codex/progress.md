@@ -13,7 +13,7 @@ Read archived evidence only when the current task needs old packet detail.
 
 Read first: `docs/codex/current-state.md`.
 
-Latest docs/workflow packet: `2026-06-04-thread-handoff-ci-alignment`. It refreshed `docs/codex/thread-handoff.md` so fresh-thread startup context names the CI Windows image canary, CI operations runbook, push-run evidence, and current docs packet. No app behavior changed.
+Latest docs/workflow packet: `2026-06-04-ci-evidence-refresh`. It records GitHub Actions MVP Preflight #365 evidence for the current normal push path after active feature-index entries were added to the documentation consistency regression. No app behavior changed.
 
 Latest tooling/evidence packet: `2026-06-04-feature-index-entry-regression`. MVP preflight now verifies active feature-index entries, active documentation links, and latest packet breadcrumb alignment before the whitespace diff check.
 
@@ -40,6 +40,33 @@ Post-action evidence:
 6. Use `docs/operations/*.md` for command detail.
 
 ## Recent Packet Summaries
+
+### 2026-06-04: CI Evidence Refresh
+
+Status: completed
+
+Goal:
+
+- Keep committed CI and handoff documentation aligned with the latest normal push evidence after the documentation consistency hardening packets.
+
+Safety profile:
+
+- `docs-only`. The change updates committed documentation only. It does not launch WPF, scan real-profile files, move, restore, delete, approve cleanup, promote a package, create shortcuts, install anything, write acceptance notes, write Restore Manifests, or create cleanup history.
+
+Changes:
+
+- `docs\operations\ci.md` now records GitHub Actions MVP Preflight #365 evidence for commit `98d3412`.
+- Compact current-state, progress, and thread-handoff docs name this packet and current CI evidence.
+- The feature-index regression brief records #365 as external CI proof.
+
+Verification:
+
+- `cmd.exe /c tools\Test-DocumentationConsistency.cmd`
+- `git diff --check`
+
+ADRs:
+
+- Skipped; this records CI evidence in committed documentation and does not change product behavior, cleanup execution, restore execution, persistence, security, data model, deployment packaging, or core UX flow.
 
 ### 2026-06-04: Feature Index Entry Regression
 
@@ -991,6 +1018,7 @@ ADRs:
 
 ### Current Live Product And Package Packets
 
+- `2026-06-04-ci-evidence-refresh`: CI runbook and compact handoff docs now record #365 proof for the current normal push preflight path.
 - `2026-06-04-feature-index-entry-regression`: documentation consistency now verifies bare active feature-index entries resolve to existing feature briefs.
 - `2026-06-04-documentation-consistency-regression`: MVP preflight now verifies active documentation links and latest packet breadcrumb alignment before the whitespace diff check.
 - `2026-06-04-ci-windows-image-canary`: MVP Preflight now has a manual runner-image canary for intentionally testing `windows-2025-vs2026` while push/PR runs remain on `windows-2022`.

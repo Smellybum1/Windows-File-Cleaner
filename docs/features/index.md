@@ -6,6 +6,7 @@ Use this index before opening individual feature briefs. The folder contains man
 
 ## Active Or Current
 
+- `2026-06-04-ci-evidence-refresh.md`: CI runbook and compact handoff docs now record #365 proof for the current normal push preflight path.
 - `2026-06-04-feature-index-entry-regression.md`: documentation consistency now verifies bare active feature-index entries resolve to existing feature briefs.
 - `2026-06-04-documentation-consistency-regression.md`: MVP preflight now verifies active docs links and latest packet breadcrumb alignment.
 - `2026-06-04-ci-windows-image-canary.md`: MVP Preflight now has a manual runner-image canary for intentionally testing `windows-2025-vs2026` while push/PR runs remain on `windows-2022`.

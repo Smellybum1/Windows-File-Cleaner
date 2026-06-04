@@ -46,6 +46,7 @@ Tests run:
 
 - `cmd.exe /c tools\Test-DocumentationConsistency.cmd`
 - `cmd.exe /c tools\Invoke-MvpPreflight.cmd`
+- GitHub Actions [MVP Preflight #365](https://github.com/Smellybum1/Windows-File-Cleaner/actions/runs/26940183876) passed on push commit `98d3412` in `1m 33s`.
 
 Docs updated:
 
