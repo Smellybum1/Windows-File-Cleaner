@@ -69,6 +69,8 @@ What changed:
 Tests run:
 
 - `cmd.exe /c tools\Invoke-MvpPreflight.cmd`
+- GitHub Actions [MVP Preflight #360](https://github.com/Smellybum1/Windows-File-Cleaner/actions/runs/26938525187) on push commit `3e2e2ae` passed in `1m 27s`.
+- The #360 push run proves the no-input fallback resolved successfully for a normal push event while keeping the baseline on `windows-2022`.
 
 Docs updated:
 
@@ -95,5 +97,5 @@ Follow-up work:
 
 Risky assumptions:
 
-- The `inputs.runner_image || 'windows-2022'` expression stays valid for push and pull-request runs where no manual input is supplied.
-- A manual canary is enough for future image evaluation; it does not prove Windows 2025 / Visual Studio 2026 readiness until the canary is actually run and reviewed.
+- The `inputs.runner_image || 'windows-2022'` expression has been validated for push runs; pull-request fallback behavior has not been separately observed, but it uses the same no-input path.
+- A manual canary is enough for future image evaluation plumbing; it does not prove Windows 2025 / Visual Studio 2026 readiness until the canary is actually run and reviewed.

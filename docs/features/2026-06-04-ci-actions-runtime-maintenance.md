@@ -71,6 +71,7 @@ What changed:
 Tests run:
 
 - `cmd.exe /c tools\Invoke-MvpPreflight.cmd`
+- GitHub Actions MVP Preflight #359 and #360 passed on pushed commits after the workflow moved to `actions/checkout@v6`, `actions/setup-dotnet@v5`, and `windows-2022`.
 
 Docs updated:
 
@@ -93,5 +94,5 @@ Follow-up work:
 
 Risky assumptions:
 
-- Hosted `windows-2022` runners support the Node 24 action runtime required by the updated official actions.
-- Pinning to `windows-2022` is preferable to accepting the Visual Studio 2026 migration implicitly for this Windows desktop app's release-readiness checks.
+- Hosted `windows-2022` runner support for the Node 24 official actions is validated by successful push CI runs after the update.
+- Pinning to `windows-2022` remains preferable to accepting the Visual Studio 2026 migration implicitly for this Windows desktop app's release-readiness checks.

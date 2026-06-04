@@ -64,6 +64,7 @@ Changes:
 Verification:
 
 - `cmd.exe /c tools\Invoke-MvpPreflight.cmd`
+- GitHub Actions MVP Preflight #360 passed on push commit `3e2e2ae` in `1m 27s`, validating the no-input push fallback for `inputs.runner_image || 'windows-2022'`.
 
 ADRs:
 
