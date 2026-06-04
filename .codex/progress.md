@@ -13,7 +13,7 @@ Read archived evidence only when the current task needs old packet detail.
 
 Read first: `docs/codex/current-state.md`.
 
-Latest docs/workflow packet: `2026-06-04-ci-evidence-refresh`. It records GitHub Actions MVP Preflight #365 evidence for the current normal push path after active feature-index entries were added to the documentation consistency regression. No app behavior changed.
+Latest docs/workflow packet: `2026-06-04-ci-evidence-wording-stabilization`. It rewords CI evidence docs so #365 is representative current-path proof instead of self-staling latest-run proof. No app behavior changed.
 
 Latest tooling/evidence packet: `2026-06-04-feature-index-entry-regression`. MVP preflight now verifies active feature-index entries, active documentation links, and latest packet breadcrumb alignment before the whitespace diff check.
 
@@ -40,6 +40,33 @@ Post-action evidence:
 6. Use `docs/operations/*.md` for command detail.
 
 ## Recent Packet Summaries
+
+### 2026-06-04: CI Evidence Wording Stabilization
+
+Status: completed
+
+Goal:
+
+- Prevent CI evidence docs from becoming stale after every successful docs-only push.
+
+Safety profile:
+
+- `docs-only`. The change updates committed documentation only. It does not launch WPF, scan real-profile files, move, restore, delete, approve cleanup, promote a package, create shortcuts, install anything, write acceptance notes, write Restore Manifests, or create cleanup history.
+
+Changes:
+
+- `docs\operations\ci.md` now calls #365 representative current-path evidence instead of latest normal push evidence.
+- The runbook says not to update the evidence line for every green docs-only push.
+- Compact current-state, progress, and thread-handoff docs name this packet.
+
+Verification:
+
+- `cmd.exe /c tools\Test-DocumentationConsistency.cmd`
+- `git diff --check`
+
+ADRs:
+
+- Skipped; this is docs-only CI wording stabilization and does not change product behavior, cleanup execution, restore execution, persistence, security, data model, deployment packaging, or core UX flow.
 
 ### 2026-06-04: CI Evidence Refresh
 
@@ -1018,6 +1045,7 @@ ADRs:
 
 ### Current Live Product And Package Packets
 
+- `2026-06-04-ci-evidence-wording-stabilization`: CI evidence docs now use representative current-path wording instead of self-staling latest-run wording.
 - `2026-06-04-ci-evidence-refresh`: CI runbook and compact handoff docs now record #365 proof for the current normal push preflight path.
 - `2026-06-04-feature-index-entry-regression`: documentation consistency now verifies bare active feature-index entries resolve to existing feature briefs.
 - `2026-06-04-documentation-consistency-regression`: MVP preflight now verifies active documentation links and latest packet breadcrumb alignment before the whitespace diff check.

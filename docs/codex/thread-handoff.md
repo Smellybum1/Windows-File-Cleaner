@@ -21,7 +21,7 @@ Load detailed reference docs or archived evidence only when the task needs histo
 - Branch: `main`
 - Latest package/evidence packet: `2026-06-04-pending-package-acceptance-notes-refresh-after-tooling-hardening`
 - Latest tooling/evidence packet: `2026-06-04-feature-index-entry-regression`
-- Latest docs/workflow packet: `2026-06-04-ci-evidence-refresh`
+- Latest docs/workflow packet: `2026-06-04-ci-evidence-wording-stabilization`
 - Latest live-product evidence: `2026-06-04-second-real-profile-quarantine-batch`
 - Latest working app packet: `2026-06-04-real-profile-quarantine-inline-status-wording`
 - Previous docs/workflow baseline: `1ea1b76 Reduce workflow markdown bloat`
@@ -37,7 +37,7 @@ Load detailed reference docs or archived evidence only when the task needs histo
 - Incomplete package acceptance summaries print guarded recorder and recheck commands; the current candidate recorder command includes `-RecordCommitMismatch` and remains human-pass-only.
 - Package acceptance summaries print current repository `HEAD`, notes/current-HEAD status, and package/current-HEAD status, so pending candidate notes visibly show whether package/current-HEAD mismatch context is present.
 - GitHub Actions MVP Preflight now uses `actions/checkout@v6`, `actions/setup-dotnet@v5`, `windows-2022` for push/pull-request runs, and a manual `workflow_dispatch` runner-image choice for intentional `windows-2025-vs2026` canary runs.
-- Push CI run #365 passed on `98d3412`, validating the current normal push path after active feature-index entries were added to the documentation consistency regression. Earlier #360 validated the no-input `inputs.runner_image || 'windows-2022'` fallback.
+- Push CI run #365 passed on `98d3412`, validating representative current-path evidence after active feature-index entries were added to the documentation consistency regression. Earlier #360 validated the no-input `inputs.runner_image || 'windows-2022'` fallback. Do not update the representative CI evidence for every green docs-only push.
 - `docs/operations/ci.md` captures normal push/PR CI behavior, the manual Windows image canary procedure, baseline-change rule, and safety boundary.
 - `tools\Test-DocumentationConsistency.cmd` verifies active documentation links, bare active feature-index entries, and latest packet breadcrumbs; MVP preflight now runs it by default before the whitespace diff check.
 - `tools\Test-FixtureAcceptanceNotes.cmd` covers fixture acceptance summary and recorder behavior with temporary ignored notes, and MVP preflight now runs it by default after the fixture checklist. It asserts incomplete summaries show recording guidance, `-RequireComplete` reports blockers, recorder calls require `-RecordManualAcceptance`, `-WhatIf` does not write, and synthetic explicit recording can complete notes.

@@ -6,7 +6,7 @@ Owner: project-owner
 
 ## Goal
 
-Keep committed CI and handoff documentation aligned with the latest normal push evidence after the documentation consistency hardening packets.
+Keep committed CI and handoff documentation aligned with representative normal push evidence after the documentation consistency hardening packets, without needing to chase every later green docs-only run.
 
 ## Non-goals
 
@@ -17,7 +17,7 @@ Keep committed CI and handoff documentation aligned with the latest normal push 
 
 ## Desired behavior
 
-- `docs/operations/ci.md` records the latest normal push MVP Preflight evidence.
+- `docs/operations/ci.md` records representative normal push MVP Preflight evidence.
 - Compact handoff docs mention that #365 passed on `98d3412`.
 - The latest docs/workflow packet breadcrumb stays aligned across current state, progress, and thread handoff.
 
@@ -25,7 +25,7 @@ Keep committed CI and handoff documentation aligned with the latest normal push 
 
 Small feature-level decisions:
 
-- Record #365 as the current normal push evidence, while preserving #360 as the first proof of the no-input `windows-2022` fallback.
+- Record #365 as representative current-path evidence, while preserving #360 as the first proof of the no-input `windows-2022` fallback.
 - Keep this as a docs-only evidence refresh.
 
 ADR-worthy decisions:
@@ -41,6 +41,7 @@ What changed:
 - Updated the CI runbook with GitHub Actions MVP Preflight #365 evidence for commit `98d3412`.
 - Updated compact current-state, progress, and thread-handoff docs to name this packet and current CI evidence.
 - Updated the feature-index regression brief to record #365 as external CI proof.
+- Later packet `CI Evidence Wording Stabilization` changed "latest" wording to representative current-path evidence, so the runbook does not become stale after every green docs-only push.
 
 Tests run:
 
