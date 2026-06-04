@@ -120,30 +120,39 @@ function New-TestRestoreManifest {
     [System.IO.File]::WriteAllText($manifestPath, ($manifest | ConvertTo-Json -Depth 8), $utf8NoBom)
 }
 
+function Invoke-ReadinessWithArguments {
+    param(
+        [string[]]$Arguments = @()
+    )
+
+    $commandArguments = @(
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        $readinessScript
+    ) + $Arguments
+
+    $output = @(powershell.exe @commandArguments 2>&1 | ForEach-Object { [string]$_ })
+    return [pscustomobject]@{
+        ExitCode = $LASTEXITCODE
+        Output = $output
+    }
+}
+
 function Invoke-ReadinessPreset {
     param(
         [Parameter(Mandatory)]
         [string]$QuarantineRoot
     )
 
-    $arguments = @(
-        "-NoProfile",
-        "-ExecutionPolicy",
-        "Bypass",
-        "-File",
-        $readinessScript,
+    return Invoke-ReadinessWithArguments -Arguments @(
         "-SkipMvpPreflight",
         "-SyntheticRestoreManifestOnly",
         "-QuarantineRoot",
         $QuarantineRoot,
         "-RequireNextBatchEvidence"
     )
-
-    $output = @(powershell.exe @arguments 2>&1 | ForEach-Object { [string]$_ })
-    return [pscustomobject]@{
-        ExitCode = $LASTEXITCODE
-        Output = $output
-    }
 }
 
 Assert-UnderLocalPath -Path $testRoot
@@ -157,6 +166,54 @@ try {
     if (Test-Path -LiteralPath $testRoot -PathType Container) {
         Remove-Item -LiteralPath $testRoot -Recurse -Force
     }
+
+    $withoutSkipResult = Invoke-ReadinessWithArguments -Arguments @(
+        "-SyntheticRestoreManifestOnly",
+        "-QuarantineRoot",
+        $clearRoot,
+        "-RequireNextBatchEvidence"
+    )
+    if ($withoutSkipResult.ExitCode -ne 1) {
+        throw "Next-batch synthetic mode should require -SkipMvpPreflight. Exit code: $($withoutSkipResult.ExitCode)"
+    }
+
+    Assert-ContainsText -Lines $withoutSkipResult.Output -ExpectedText "-SyntheticRestoreManifestOnly is only for focused synthetic regression loops and requires -SkipMvpPreflight."
+
+    $missingRootResult = Invoke-ReadinessWithArguments -Arguments @(
+        "-SkipMvpPreflight",
+        "-SyntheticRestoreManifestOnly"
+    )
+    if ($missingRootResult.ExitCode -ne 1) {
+        throw "Next-batch synthetic mode should reject a missing Quarantine Root. Exit code: $($missingRootResult.ExitCode)"
+    }
+
+    Assert-ContainsText -Lines $missingRootResult.Output -ExpectedText "-SyntheticRestoreManifestOnly requires an explicit -QuarantineRoot under ignored .local."
+
+    $outsideLocalRoot = "D:\WindowsFileCleanerQuarantine"
+    $outsideLocalResult = Invoke-ReadinessWithArguments -Arguments @(
+        "-SkipMvpPreflight",
+        "-SyntheticRestoreManifestOnly",
+        "-QuarantineRoot",
+        $outsideLocalRoot
+    )
+    if ($outsideLocalResult.ExitCode -ne 1) {
+        throw "Next-batch synthetic mode should reject a Quarantine Root outside ignored .local. Exit code: $($outsideLocalResult.ExitCode)"
+    }
+
+    Assert-ContainsText -Lines $outsideLocalResult.Output -ExpectedText "-SyntheticRestoreManifestOnly requires -QuarantineRoot to stay under ignored .local:"
+
+    $acceptanceParameterResult = Invoke-ReadinessWithArguments -Arguments @(
+        "-SkipMvpPreflight",
+        "-SyntheticRestoreManifestOnly",
+        "-QuarantineRoot",
+        $clearRoot,
+        "-IncludeFixtureAcceptanceNotes"
+    )
+    if ($acceptanceParameterResult.ExitCode -ne 1) {
+        throw "Next-batch synthetic mode should reject package or fixture acceptance notes parameters. Exit code: $($acceptanceParameterResult.ExitCode)"
+    }
+
+    Assert-ContainsText -Lines $acceptanceParameterResult.Output -ExpectedText "-SyntheticRestoreManifestOnly cannot be combined with package or fixture acceptance notes parameters."
 
     New-TestRestoreManifest -QuarantineRoot $blockedRoot -ActionId "blocked-undo-work" -EntryStatus "Moved"
     New-TestRestoreManifest -QuarantineRoot $clearRoot -ActionId "clear-restored" -EntryStatus "Restored"

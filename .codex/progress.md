@@ -15,7 +15,7 @@ Read first: `docs/codex/current-state.md`.
 
 Latest docs/workflow packet: `2026-06-04-startup-context-compaction`. It moved oversized read-first docs into reference/archive files and replaced them with compact active docs to reduce Codex thread lag. No app behavior changed.
 
-Latest tooling/evidence packet: `2026-06-04-real-profile-next-batch-stop-guard-clean-runner-regression`. MVP preflight now runs the synthetic next-batch stop guard regression without depending on ignored accepted-package evidence.
+Latest tooling/evidence packet: `2026-06-04-synthetic-restore-manifest-mode-guard-regression`. MVP preflight regression coverage now asserts the focused synthetic Restore Manifest-only modes reject unsafe or ambiguous invocations.
 
 Latest package candidate: `.local\releases\windows-file-cleaner-v20260604-121922` at app commit `e6ac3eb`, verified but not human-accepted. Current pending acceptance notes: `.local\release-acceptance\release-acceptance-20260604-134337.md`.
 
@@ -40,6 +40,34 @@ Post-action evidence:
 6. Use `docs/operations/*.md` for command detail.
 
 ## Recent Packet Summaries
+
+### 2026-06-04: Synthetic Restore Manifest-Only Mode Guard Regression
+
+Status: completed
+
+Goal:
+
+- Ensure the focused synthetic Restore Manifest-only modes remain regression-only and cannot be used as casual bypasses for accepted-package or next-batch evidence.
+
+Safety profile:
+
+- `terminal-readonly`. The checks call readiness scripts with invalid synthetic arguments and write temporary ignored synthetic Restore Manifests under `.local` for the existing positive paths. They do not launch WPF, scan real-profile files, move, restore, delete, approve cleanup, write real Restore Manifests, promote a package, create shortcuts, install anything, or create cleanup history.
+
+Changes:
+
+- `tools\Test-DailyReadinessExactProfileUndoSpotlight.cmd` now asserts `Invoke-DailyLocalReadiness.cmd -SyntheticRestoreManifestOnly` rejects a missing Quarantine Root, a Quarantine Root outside ignored `.local`, and package/fixture acceptance notes parameters.
+- `tools\Test-RealProfileNextBatchStopGuard.cmd` now asserts `Invoke-RealProfileQuarantineReadiness.cmd -SyntheticRestoreManifestOnly` requires `-SkipMvpPreflight`, rejects a missing Quarantine Root, rejects a Quarantine Root outside ignored `.local`, and rejects package/fixture acceptance notes parameters.
+- Normal daily readiness and normal next-batch readiness remain unchanged.
+
+Verification:
+
+- `cmd.exe /c tools\Test-DailyReadinessExactProfileUndoSpotlight.cmd`
+- `cmd.exe /c tools\Test-RealProfileNextBatchStopGuard.cmd`
+- `cmd.exe /c tools\Invoke-MvpPreflight.cmd`
+
+ADRs:
+
+- Skipped; this adds terminal-only negative regression coverage for existing focused test modes and does not change product behavior, cleanup execution, restore execution, persistence, deployment, package acceptance policy, or real readiness behavior.
 
 ### 2026-06-04: Daily Readiness Exact-Profile Undo Spotlight
 
@@ -411,6 +439,7 @@ ADRs:
 
 ### Current Live Product And Package Packets
 
+- `2026-06-04-synthetic-restore-manifest-mode-guard-regression`: focused synthetic readiness modes now have negative guard coverage for missing/outside `.local` roots, acceptance-note params, and next-batch missing `-SkipMvpPreflight`.
 - `2026-06-04-local-release-acceptance-command-stamping`: completed and pushed at `5a4115e`.
 - `2026-06-04-real-profile-next-batch-stop-guard-clean-runner-regression`: MVP preflight now covers the next-batch stop guard with ignored synthetic Restore Manifests without depending on local accepted-package evidence.
 - `2026-06-04-daily-readiness-exact-profile-undo-spotlight-clean-runner-regression`: MVP preflight covers the exact-profile undo-work spotlight with ignored synthetic Restore Manifests without depending on local accepted-package evidence.

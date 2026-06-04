@@ -28,7 +28,7 @@ The daily readiness output first verifies the latest completed accepted package 
 
 When the latest candidate notes are incomplete, that informational summary also prints the guarded recorder and recheck commands for the human package acceptance pass.
 
-Daily readiness ends with a broad Restore Manifest summary and an exact-profile undo-work stop-state spotlight. After the 2026-06-04 second exact-profile Quarantine batch, the spotlight is expected to show displayed undo work `1` until the selected manifest is restored. MVP preflight runs a synthetic regression for the spotlight by default; that regression uses a focused `.local` Restore Manifest-only mode so CI and clean runners do not need accepted-package evidence.
+Daily readiness ends with a broad Restore Manifest summary and an exact-profile undo-work stop-state spotlight. After the 2026-06-04 second exact-profile Quarantine batch, the spotlight is expected to show displayed undo work `1` until the selected manifest is restored. MVP preflight runs a synthetic regression for the spotlight by default; that regression uses a focused `.local` Restore Manifest-only mode so CI and clean runners do not need accepted-package evidence. The synthetic mode is guard-tested and is not a substitute for normal daily accepted-package readiness.
 
 ## Accepted Package Launch Commands
 
@@ -60,7 +60,7 @@ Full MVP preflight includes restore/build/test coverage, fixture dry-run/checkli
 
 Current stop state: after the 2026-06-04 second exact-profile Quarantine batch, exact-profile displayed undo work is expected to be `1`. Do not run or treat another next-batch review as movement evidence while that selected-manifest undo work is present unless a new Grill with Docs pass decides that outstanding undo work is acceptable for another tiny batch.
 
-The next-batch evidence preset now checks displayed undo work before MVP preflight, so a blocked run exits before producing fresh preflight evidence. MVP preflight also runs the synthetic stop-guard and daily readiness undo spotlight regressions by default; both use focused `.local` Restore Manifest-only modes for CI and clean-runner portability. Use `.\tools\Invoke-MvpPreflight.cmd -SkipRealProfileNextBatchStopGuardCheck` or `.\tools\Invoke-MvpPreflight.cmd -SkipDailyReadinessUndoSpotlightCheck` only for focused local loops where that guard or spotlight is not in scope.
+The next-batch evidence preset now checks displayed undo work before MVP preflight, so a blocked run exits before producing fresh preflight evidence. MVP preflight also runs the synthetic stop-guard and daily readiness undo spotlight regressions by default; both use focused `.local` Restore Manifest-only modes for CI and clean-runner portability. Those synthetic modes are guard-tested and are not substitutes for normal daily or next-batch evidence. Use `.\tools\Invoke-MvpPreflight.cmd -SkipRealProfileNextBatchStopGuardCheck` or `.\tools\Invoke-MvpPreflight.cmd -SkipDailyReadinessUndoSpotlightCheck` only for focused local loops where that guard or spotlight is not in scope.
 
 Evidence-only preset:
 

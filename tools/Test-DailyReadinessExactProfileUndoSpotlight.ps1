@@ -75,6 +75,26 @@ function Get-OutputSection {
     throw "Expected output section to start with: $StartText"
 }
 
+function Invoke-DailyReadinessWithArguments {
+    param(
+        [string[]]$Arguments = @()
+    )
+
+    $commandArguments = @(
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        $dailyReadinessScript
+    ) + $Arguments
+
+    $output = @(powershell.exe @commandArguments 2>&1 | ForEach-Object { [string]$_ })
+    return [pscustomobject]@{
+        ExitCode = $LASTEXITCODE
+        Output = $output
+    }
+}
+
 function New-TestRestoreManifest {
     param(
         [Parameter(Mandatory)]
@@ -146,22 +166,11 @@ function Invoke-DailyReadiness {
         [string]$QuarantineRoot
     )
 
-    $arguments = @(
-        "-NoProfile",
-        "-ExecutionPolicy",
-        "Bypass",
-        "-File",
-        $dailyReadinessScript,
+    return Invoke-DailyReadinessWithArguments -Arguments @(
         "-SyntheticRestoreManifestOnly",
         "-QuarantineRoot",
         $QuarantineRoot
     )
-
-    $output = @(powershell.exe @arguments 2>&1 | ForEach-Object { [string]$_ })
-    return [pscustomobject]@{
-        ExitCode = $LASTEXITCODE
-        Output = $output
-    }
 }
 
 Assert-UnderLocalPath -Path $testRoot
@@ -173,6 +182,37 @@ try {
     if (Test-Path -LiteralPath $testRoot -PathType Container) {
         Remove-Item -LiteralPath $testRoot -Recurse -Force
     }
+
+    $missingRootResult = Invoke-DailyReadinessWithArguments -Arguments @("-SyntheticRestoreManifestOnly")
+    if ($missingRootResult.ExitCode -ne 1) {
+        throw "Daily readiness synthetic mode should reject a missing Quarantine Root. Exit code: $($missingRootResult.ExitCode)"
+    }
+
+    Assert-ContainsText -Lines $missingRootResult.Output -ExpectedText "-SyntheticRestoreManifestOnly requires an explicit -QuarantineRoot under ignored .local."
+
+    $outsideLocalRoot = "D:\WindowsFileCleanerQuarantine"
+    $outsideLocalResult = Invoke-DailyReadinessWithArguments -Arguments @(
+        "-SyntheticRestoreManifestOnly",
+        "-QuarantineRoot",
+        $outsideLocalRoot
+    )
+    if ($outsideLocalResult.ExitCode -ne 1) {
+        throw "Daily readiness synthetic mode should reject a Quarantine Root outside ignored .local. Exit code: $($outsideLocalResult.ExitCode)"
+    }
+
+    Assert-ContainsText -Lines $outsideLocalResult.Output -ExpectedText "-SyntheticRestoreManifestOnly requires -QuarantineRoot to stay under ignored .local:"
+
+    $acceptanceParameterResult = Invoke-DailyReadinessWithArguments -Arguments @(
+        "-SyntheticRestoreManifestOnly",
+        "-QuarantineRoot",
+        $testRoot,
+        "-IncludeFixtureAcceptanceNotes"
+    )
+    if ($acceptanceParameterResult.ExitCode -ne 1) {
+        throw "Daily readiness synthetic mode should reject package or fixture acceptance notes parameters. Exit code: $($acceptanceParameterResult.ExitCode)"
+    }
+
+    Assert-ContainsText -Lines $acceptanceParameterResult.Output -ExpectedText "-SyntheticRestoreManifestOnly cannot be combined with package or fixture acceptance notes parameters."
 
     New-TestRestoreManifest -QuarantineRoot $testRoot -CleanupScope $exactCleanupScope -ActionId $exactActionId -RelativePath "AppData\Local\pip\cache\http-v2\spotlight-exact.body"
     New-TestRestoreManifest -QuarantineRoot $testRoot -CleanupScope $fixtureCleanupScope -ActionId $fixtureActionId -RelativePath "fixture-cache\spotlight-fixture.tmp"
