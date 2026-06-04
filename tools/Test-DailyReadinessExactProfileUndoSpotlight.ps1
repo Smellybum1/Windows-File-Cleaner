@@ -152,6 +152,7 @@ function Invoke-DailyReadiness {
         "Bypass",
         "-File",
         $dailyReadinessScript,
+        "-SyntheticRestoreManifestOnly",
         "-QuarantineRoot",
         $QuarantineRoot
     )
@@ -182,6 +183,9 @@ try {
     }
 
     Assert-ContainsText -Lines $result.Output -ExpectedText "== Restore Manifest summary =="
+    Assert-ContainsText -Lines $result.Output -ExpectedText "Synthetic Restore Manifest-only mode: accepted package evidence, accepted launch commands, and fixture acceptance notes are skipped for focused regression coverage."
+    Assert-DoesNotContainText -Lines $result.Output -UnexpectedText "== Accepted package evidence =="
+    Assert-DoesNotContainText -Lines $result.Output -UnexpectedText "== Accepted normal launch command =="
     Assert-ContainsText -Lines $result.Output -ExpectedText $exactActionId
     Assert-ContainsText -Lines $result.Output -ExpectedText $fixtureActionId
     Assert-ContainsText -Lines $result.Output -ExpectedText "== Exact-profile undo-work stop state =="

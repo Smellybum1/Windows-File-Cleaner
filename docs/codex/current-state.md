@@ -11,7 +11,7 @@ Use this as the first compact orientation file for new Codex threads. Historical
 - Latest live evidence: 2026-06-04 second tiny exact real-profile Quarantine batch.
 - Latest working app packet: real-profile Quarantine inline status wording fix.
 - Latest package candidate: `.local\releases\windows-file-cleaner-v20260604-121922` at `e6ac3eb`, verified but not human-accepted.
-- Latest tooling/evidence packet: daily readiness exact-profile undo spotlight preflight regression.
+- Latest tooling/evidence packet: daily readiness exact-profile undo spotlight clean-runner regression.
 - Latest docs/workflow packet: startup context compaction.
 - Previous docs/workflow baseline: `1ea1b76 Reduce workflow markdown bloat`
 - App stack: C# / WPF / .NET 8
@@ -61,7 +61,7 @@ Use this as the first compact orientation file for new Codex threads. Historical
 - `tools\Test-RealProfileNextBatchStopGuard.cmd` verifies that early stop behavior with temporary ignored synthetic Restore Manifests.
 - MVP preflight now runs the real-profile next-batch stop guard regression by default before `git diff --check`; use `-SkipRealProfileNextBatchStopGuardCheck` only for focused local loops.
 - Daily readiness now prints an exact-profile undo-work stop-state spotlight after the broad Restore Manifest summary. On current evidence it shows one exact-profile undo-work manifest: `quarantine-action-draft-20260604014901-b7b402a2`.
-- `tools\Test-DailyReadinessExactProfileUndoSpotlight.cmd` verifies with temporary ignored synthetic Restore Manifests that broad daily readiness can show fixture and exact-profile undo work while the final spotlight displays only exact-profile undo work.
+- `tools\Test-DailyReadinessExactProfileUndoSpotlight.cmd` verifies with temporary ignored synthetic Restore Manifests that broad daily readiness can show fixture and exact-profile undo work while the final spotlight displays only exact-profile undo work. The regression uses `Invoke-DailyLocalReadiness.cmd -SyntheticRestoreManifestOnly` so CI and clean runners do not need ignored accepted-package notes or package folders for this focused check.
 - MVP preflight now runs the daily readiness exact-profile undo spotlight regression by default before `git diff --check`; use `-SkipDailyReadinessUndoSpotlightCheck` only for focused local loops.
 - Accepted-package tooling now selects the latest complete acceptance notes by default, so incomplete candidate notes do not replace the accepted `bc9b869` baseline unless an explicit notes path is used.
 - Release acceptance recording now refuses missing verifier evidence and requires explicit `-RecordCommitMismatch` before commit mismatch evidence is marked recorded.

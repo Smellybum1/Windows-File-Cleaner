@@ -28,7 +28,9 @@ param(
 
     [switch]$RequireNoDisplayedUndoWork,
 
-    [switch]$RequireAnyRestoreManifest
+    [switch]$RequireAnyRestoreManifest,
+
+    [switch]$SyntheticRestoreManifestOnly
 )
 
 Set-StrictMode -Version Latest
@@ -36,11 +38,23 @@ $ErrorActionPreference = "Stop"
 
 $repoRoot = Split-Path -Parent $PSScriptRoot
 $repoFullPath = [System.IO.Path]::GetFullPath($repoRoot).TrimEnd([System.IO.Path]::DirectorySeparatorChar)
+$localRoot = [System.IO.Path]::GetFullPath((Join-Path $repoRoot ".local")).TrimEnd([System.IO.Path]::DirectorySeparatorChar)
 $acceptedLauncher = Join-Path $PSScriptRoot "Start-AcceptedLocalRelease.cmd"
 $releaseNotesSummary = Join-Path $PSScriptRoot "Summarize-LocalReleaseAcceptanceNotes.cmd"
 $fixtureNotesSummary = Join-Path $PSScriptRoot "Summarize-FixtureAcceptanceNotes.cmd"
 $restoreManifestSummary = Join-Path $PSScriptRoot "Summarize-RestoreManifests.cmd"
 $defaultRealProfileCleanupScope = "C:\Users\moxhe"
+
+function Test-UnderLocalPath {
+    param(
+        [Parameter(Mandatory)]
+        [string]$Path
+    )
+
+    $resolved = [System.IO.Path]::GetFullPath($Path).TrimEnd([System.IO.Path]::DirectorySeparatorChar)
+    return $resolved.Equals($localRoot, [System.StringComparison]::OrdinalIgnoreCase) -or
+        $resolved.StartsWith($localRoot + [System.IO.Path]::DirectorySeparatorChar, [System.StringComparison]::OrdinalIgnoreCase)
+}
 
 function Invoke-DailyReadinessStep {
     param(
@@ -89,10 +103,36 @@ function Invoke-DailyReadinessInformationalStep {
 Write-Host "Daily local readiness check"
 Write-Host "Repository: $repoFullPath"
 Write-Host "Boundary: read-only and print-only; this does not create shortcuts, install anything, launch WPF, click Scan, scan, move, restore, delete, approve cleanup, or create cleanup history."
-Write-Host "Package verification: the accepted package verifier runs once before printing the normal launch command; the fixture print-only command then skips duplicate package verification in this same readiness flow."
-Write-Host "Latest package acceptance notes: informational only; incomplete candidate notes do not replace the completed accepted package baseline."
-Write-Host "Fixture acceptance notes: optional local ignored-note summary only; strict completion is checked only when requested."
+if ($SyntheticRestoreManifestOnly.IsPresent) {
+    Write-Host "Synthetic Restore Manifest-only mode: accepted package evidence, accepted launch commands, and fixture acceptance notes are skipped for focused regression coverage."
+    Write-Host "Synthetic Restore Manifest-only mode requires an explicit ignored .local Quarantine Root and should not be used as daily accepted-package readiness evidence."
+}
+else {
+    Write-Host "Package verification: the accepted package verifier runs once before printing the normal launch command; the fixture print-only command then skips duplicate package verification in this same readiness flow."
+    Write-Host "Latest package acceptance notes: informational only; incomplete candidate notes do not replace the completed accepted package baseline."
+    Write-Host "Fixture acceptance notes: optional local ignored-note summary only; strict completion is checked only when requested."
+}
 Write-Host "Stop before real-profile movement unless the specific batch or selected Restore Manifest has fresh readiness evidence, exact confirmation, and explicit user approval."
+
+if ($SyntheticRestoreManifestOnly.IsPresent) {
+    if ([string]::IsNullOrWhiteSpace($QuarantineRoot)) {
+        Write-Host "-SyntheticRestoreManifestOnly requires an explicit -QuarantineRoot under ignored .local."
+        exit 1
+    }
+
+    if (-not (Test-UnderLocalPath -Path $QuarantineRoot)) {
+        Write-Host "-SyntheticRestoreManifestOnly requires -QuarantineRoot to stay under ignored .local: $localRoot"
+        exit 1
+    }
+
+    if (-not [string]::IsNullOrWhiteSpace($AcceptanceNotesPath) -or
+        -not [string]::IsNullOrWhiteSpace($FixtureAcceptanceNotesPath) -or
+        $IncludeFixtureAcceptanceNotes.IsPresent -or
+        $RequireFixtureAcceptanceComplete.IsPresent) {
+        Write-Host "-SyntheticRestoreManifestOnly cannot be combined with package or fixture acceptance notes parameters."
+        exit 1
+    }
+}
 
 $notesArguments = @("-RequireComplete")
 if (-not [string]::IsNullOrWhiteSpace($AcceptanceNotesPath)) {
@@ -160,13 +200,15 @@ if ($ShowRestoreEntries.IsPresent) {
     $exactProfileUndoWorkArguments += "-ShowEntries"
 }
 
-Invoke-DailyReadinessStep -Title "Accepted package evidence" -CommandPath $releaseNotesSummary -Arguments $notesArguments
-Invoke-DailyReadinessInformationalStep -Title "Latest package acceptance notes (informational)" -CommandPath $releaseNotesSummary
-if ($shouldSummarizeFixtureAcceptance) {
-    Invoke-DailyReadinessStep -Title "Fixture acceptance notes evidence" -CommandPath $fixtureNotesSummary -Arguments $fixtureNotesArguments
+if (-not $SyntheticRestoreManifestOnly.IsPresent) {
+    Invoke-DailyReadinessStep -Title "Accepted package evidence" -CommandPath $releaseNotesSummary -Arguments $notesArguments
+    Invoke-DailyReadinessInformationalStep -Title "Latest package acceptance notes (informational)" -CommandPath $releaseNotesSummary
+    if ($shouldSummarizeFixtureAcceptance) {
+        Invoke-DailyReadinessStep -Title "Fixture acceptance notes evidence" -CommandPath $fixtureNotesSummary -Arguments $fixtureNotesArguments
+    }
+    Invoke-DailyReadinessStep -Title "Accepted normal launch command" -CommandPath $acceptedLauncher -Arguments $acceptedNormalArguments
+    Invoke-DailyReadinessStep -Title "Accepted fixture launch command (same verified package)" -CommandPath $acceptedLauncher -Arguments $acceptedFixtureArguments
 }
-Invoke-DailyReadinessStep -Title "Accepted normal launch command" -CommandPath $acceptedLauncher -Arguments $acceptedNormalArguments
-Invoke-DailyReadinessStep -Title "Accepted fixture launch command (same verified package)" -CommandPath $acceptedLauncher -Arguments $acceptedFixtureArguments
 Invoke-DailyReadinessStep -Title "Restore Manifest summary" -CommandPath $restoreManifestSummary -Arguments $restoreArguments
 Invoke-DailyReadinessStep -Title "Exact-profile undo-work stop state" -CommandPath $restoreManifestSummary -Arguments $exactProfileUndoWorkArguments
 

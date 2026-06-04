@@ -155,7 +155,7 @@ What changed:
 - Later packet `Full Local MVP Preflight After Checklist-Only Next Step` reran `cmd.exe /c tools\Invoke-MvpPreflight.cmd` after `71cf15a`; restore, build, core tests, WPF app tests, fixture `-WhatIf`, sectioned checklist-only output with the exact visible fixture next-step block, and whitespace diff passed without launching WPF, scanning real-profile files, moving, restoring, deleting, or creating cleanup history.
 - Later packet `MVP Preflight Release Summary Regression` added the local release acceptance summary regression step before the whitespace diff check, with `-SkipLocalReleaseAcceptanceSummaryCheck` for focused local loops.
 - Later packet `MVP Preflight Next-Batch Stop Guard Regression` added the real-profile next-batch stop guard regression step before the whitespace diff check, with `-SkipRealProfileNextBatchStopGuardCheck` for focused local loops.
-- Later packet `Daily Readiness Exact-Profile Undo Spotlight Regression` added the daily readiness exact-profile undo spotlight regression step before the whitespace diff check, with `-SkipDailyReadinessUndoSpotlightCheck` for focused local loops.
+- Later packet `Daily Readiness Exact-Profile Undo Spotlight Regression` added the daily readiness exact-profile undo spotlight regression step before the whitespace diff check, with `-SkipDailyReadinessUndoSpotlightCheck` for focused local loops. A follow-up made that regression use `Invoke-DailyLocalReadiness.cmd -SyntheticRestoreManifestOnly` so CI and clean runners do not need ignored accepted-package notes or local package folders for this focused Restore Manifest check.
 
 Files changed:
 

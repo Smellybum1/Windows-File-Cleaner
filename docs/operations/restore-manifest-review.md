@@ -20,7 +20,7 @@ After the 2026-06-04 second exact-profile Quarantine batch, displayed undo work 
 
 The real-profile next-batch evidence preset uses that displayed undo-work strictness before MVP preflight, so outstanding selected-manifest undo work stops the preset early.
 
-MVP preflight also runs a synthetic daily readiness spotlight regression to prove the broad summary can include fixture-scope undo work while the final exact-profile spotlight stays focused on `C:\Users\moxhe`.
+MVP preflight also runs a synthetic daily readiness spotlight regression to prove the broad summary can include fixture-scope undo work while the final exact-profile spotlight stays focused on `C:\Users\moxhe`. The regression uses a focused `.local` Restore Manifest-only mode, so it stays independent from ignored accepted-package notes and local package folders.
 
 ## Recovery Review Focus
 

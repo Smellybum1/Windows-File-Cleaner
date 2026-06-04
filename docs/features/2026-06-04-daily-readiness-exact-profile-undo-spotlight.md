@@ -22,6 +22,7 @@ The default daily readiness command already printed a broad Restore Manifest sum
 - The section runs the read-only Restore Manifest summary with `-CleanupScope "C:\Users\moxhe" -UndoWorkOnly`.
 - `-ShowRestoreEntries` is forwarded to the spotlight when requested, but the default daily command stays concise.
 - `tools\Test-DailyReadinessExactProfileUndoSpotlight.cmd` now verifies the spotlight with temporary ignored synthetic Restore Manifests, and MVP preflight runs that regression by default.
+- The regression uses `Invoke-DailyLocalReadiness.cmd -SyntheticRestoreManifestOnly`, which requires an explicit ignored `.local` Quarantine Root and skips package evidence only for this focused synthetic check.
 
 ## Verification
 
@@ -33,6 +34,8 @@ The default daily readiness command already printed a broad Restore Manifest sum
 The output showed the exact-profile undo-work manifest `quarantine-action-draft-20260604014901-b7b402a2` with displayed undo work `1`, without launching WPF, scanning, moving, restoring, deleting, approving cleanup, writing manifests, or creating cleanup history.
 
 The synthetic regression proved broad daily readiness can see both exact-profile and fixture-scope undo-work manifests, while the final exact-profile spotlight displays only the exact `C:\Users\moxhe` undo-work manifest.
+
+The regression does not depend on ignored accepted-package notes or local package folders, so the default MVP preflight remains suitable for CI and clean clones. Normal daily readiness still verifies accepted package evidence before Restore Manifest evidence.
 
 ## ADRs
 
