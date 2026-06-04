@@ -237,6 +237,7 @@ $malformedReleasePath = Join-Path $testRoot "malformed-release"
 $completeNotesPath = Join-Path $notesRoot "release-acceptance-selection-test-complete.md"
 $incompleteNotesPath = Join-Path $notesRoot "release-acceptance-selection-test-incomplete.md"
 $malformedNotesPath = Join-Path $notesRoot "release-acceptance-selection-test-malformed.md"
+$outsideLocalNotesPath = Join-Path $repoRoot "README.md"
 
 try {
     foreach ($path in @($completeNotesPath, $incompleteNotesPath, $malformedNotesPath)) {
@@ -261,6 +262,21 @@ try {
     [System.IO.File]::SetLastWriteTime($completeNotesPath, $baseTime.AddMinutes(1))
     [System.IO.File]::SetLastWriteTime($incompleteNotesPath, $baseTime.AddMinutes(2))
     [System.IO.File]::SetLastWriteTime($malformedNotesPath, $baseTime.AddMinutes(3))
+
+    $outsideLocalResult = Invoke-AcceptedLauncher -Arguments @(
+        "-AcceptanceNotesPath",
+        $outsideLocalNotesPath,
+        "-PrintOnly",
+        "-SkipVerify"
+    )
+    if ($outsideLocalResult.ExitCode -ne 1) {
+        throw "Explicit accepted launcher notes path outside ignored .local should fail before launch-command printing. Exit code: $($outsideLocalResult.ExitCode)"
+    }
+
+    Assert-ContainsText -Lines $outsideLocalResult.Output -ExpectedText "Acceptance notes path must stay under the ignored .local directory:"
+    Assert-DoesNotContainText -Lines $outsideLocalResult.Output -UnexpectedText "Accepted portable release launcher"
+    Assert-DoesNotContainText -Lines $outsideLocalResult.Output -UnexpectedText "Launch command:"
+    Assert-DoesNotContainText -Lines $outsideLocalResult.Output -UnexpectedText "Print-only mode: WPF was not launched."
 
     $explicitIncompleteResult = Invoke-AcceptedLauncher -Arguments @(
         "-AcceptanceNotesPath",

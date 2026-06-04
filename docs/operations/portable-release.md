@@ -66,7 +66,7 @@ Targeted accepted package launcher selection regression:
 .\tools\Test-AcceptedLocalReleaseSelection.cmd
 ```
 
-This writes temporary ignored complete, incomplete, and malformed-looking notes under `.local\release-acceptance`, writes synthetic print-only package placeholder files under `.local\accepted-release-selection-test`, verifies accepted launcher selection behavior, then removes its temporary files.
+This writes temporary ignored complete, incomplete, and malformed-looking notes under `.local\release-acceptance`, writes synthetic print-only package placeholder files under `.local\accepted-release-selection-test`, verifies accepted launcher selection behavior, verifies explicit non-`.local` notes paths fail before launch-command printing, then removes its temporary files.
 
 Targeted generated acceptance command stamping regression:
 

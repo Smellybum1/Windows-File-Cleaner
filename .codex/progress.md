@@ -15,7 +15,7 @@ Read first: `docs/codex/current-state.md`.
 
 Latest docs/workflow packet: `2026-06-04-pending-notes-head-wording-stabilization`. It rewords pending package acceptance notes docs so refresh commits are generation-time provenance and live notes/current-HEAD context comes from the summary helper. No app behavior changed.
 
-Latest tooling/evidence packet: `2026-06-04-daily-readiness-latest-notes-isolation`. Daily readiness latest package notes regression now uses explicit synthetic latest-notes paths under its private ignored test folder.
+Latest tooling/evidence packet: `2026-06-04-accepted-launcher-notes-path-guard`. Accepted-package launcher regression now covers explicit acceptance notes paths outside ignored `.local` failing before accepted launcher output or launch-command printing.
 
 Latest package candidate: `.local\releases\windows-file-cleaner-v20260604-121922` at app commit `e6ac3eb`, verified but not human-accepted. Current pending acceptance notes: `.local\release-acceptance\release-acceptance-20260604-164509.md`.
 
@@ -42,6 +42,36 @@ Post-action evidence:
 6. Use `docs/operations/*.md` for command detail.
 
 ## Recent Packet Summaries
+
+### 2026-06-04: Accepted Launcher Notes Path Guard
+
+Status: completed
+
+Goal:
+
+- Cover the accepted-package launcher boundary that explicit acceptance notes paths must stay under ignored `.local` before any launch-command guidance is printed.
+
+Safety profile:
+
+- `terminal-readonly`. The regression writes temporary ignored acceptance notes and synthetic print-only package placeholder files under `.local`, uses committed `README.md` only as a non-`.local` rejection target, and removes the temporary files. It does not launch WPF, scan real-profile files, move, restore, delete, approve cleanup, promote a package, create shortcuts, install anything, write real acceptance notes, write Restore Manifests, or create cleanup history.
+
+Changes:
+
+- `tools\Test-AcceptedLocalReleaseSelection.ps1` now invokes the accepted launcher with `README.md` as an explicit non-`.local` notes path.
+- The regression asserts the launcher reports the ignored `.local` path boundary.
+- It also asserts the launcher stops before accepted launcher output, launch-command printing, or print-only WPF-not-launched output.
+- Compact package docs and handoff notes now record the composed explicit-path guard coverage.
+
+Verification:
+
+- `cmd.exe /c tools\Test-AcceptedLocalReleaseSelection.cmd`
+- `cmd.exe /c tools\Test-DocumentationConsistency.cmd`
+- `cmd.exe /c tools\Invoke-MvpPreflight.cmd`
+- `git diff --check`
+
+ADRs:
+
+- Skipped; this tightens terminal-only regression coverage for existing accepted-package launcher tooling under ADR 0020 and does not change package acceptance policy, package promotion, cleanup, restore, persistence, deployment, or app behavior.
 
 ### 2026-06-04: Pending Notes HEAD Wording Stabilization
 
@@ -1267,6 +1297,7 @@ ADRs:
 
 ### Current Live Product And Package Packets
 
+- `2026-06-04-accepted-launcher-notes-path-guard`: accepted-package launcher regression now covers explicit acceptance notes paths outside ignored `.local` failing before launch-command output.
 - `2026-06-04-pending-notes-head-wording-stabilization`: pending package acceptance notes docs now describe refresh commits as generation-time provenance and rely on summary status lines for live current-HEAD context.
 - `2026-06-04-daily-readiness-latest-notes-isolation`: daily readiness latest package notes regression now uses explicit synthetic latest-notes paths under its private ignored test folder.
 - `2026-06-04-daily-readiness-package-notes-path-guard`: daily readiness now has composed regression coverage that explicit package acceptance notes paths outside ignored `.local` fail before latest-notes or launch-command printing.
