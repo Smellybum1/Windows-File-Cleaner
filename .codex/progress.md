@@ -15,7 +15,7 @@ Read first: `docs/codex/current-state.md`.
 
 Latest docs/workflow packet: `2026-06-04-startup-context-compaction`. It moved oversized read-first docs into reference/archive files and replaced them with compact active docs to reduce Codex thread lag. No app behavior changed.
 
-Latest tooling/evidence packet: `2026-06-04-real-profile-next-batch-early-undo-guard`. The next-batch evidence preset now checks displayed undo work before MVP preflight, and the regression command verifies the early stop with ignored synthetic Restore Manifests.
+Latest tooling/evidence packet: `2026-06-04-mvp-preflight-next-batch-stop-guard-regression`. MVP preflight now runs the real-profile next-batch stop guard regression by default before the whitespace diff check, with `-SkipRealProfileNextBatchStopGuardCheck` for focused local loops.
 
 Latest package candidate: `.local\releases\windows-file-cleaner-v20260604-121922` at app commit `e6ac3eb`, verified but not human-accepted. Current pending acceptance notes: `.local\release-acceptance\release-acceptance-20260604-134337.md`.
 
@@ -40,6 +40,34 @@ Post-action evidence:
 6. Use `docs/operations/*.md` for command detail.
 
 ## Recent Packet Summaries
+
+### 2026-06-04: MVP Preflight Next-Batch Stop Guard Regression
+
+Status: completed
+
+Goal:
+
+- Fold the real-profile next-batch stop guard regression into normal MVP preflight so the synthetic early-stop coverage is not a standalone command people can forget before future real-profile scan review evidence.
+
+Safety profile:
+
+- `terminal-readonly`. The preflight step writes temporary ignored synthetic Restore Manifests under `.local\real-profile-next-batch-stop-guard-test`, removes them, and does not launch WPF, scan real-profile files, move, restore, delete, approve cleanup, write real Restore Manifests, promote a package, create shortcuts, install anything, or create cleanup history.
+
+Changes:
+
+- `Invoke-MvpPreflight.cmd` now runs `Test-RealProfileNextBatchStopGuard.ps1` by default after the local release acceptance summary regression and before `git diff --check`.
+- Added `-SkipRealProfileNextBatchStopGuardCheck` for focused preflight loops.
+- Updated compact runbooks, handoff docs, and active feature notes to show the new default preflight coverage.
+
+Verification:
+
+- `cmd.exe /c tools\Test-RealProfileNextBatchStopGuard.cmd`
+- `cmd.exe /c tools\Invoke-MvpPreflight.cmd`
+- `git diff --check` passed with expected CRLF warnings only.
+
+ADRs:
+
+- Skipped; this extends terminal-only verification coverage for existing ADR 0017, ADR 0018, and ADR 0019 stop-state tooling and does not change product behavior, cleanup execution, restore execution, persistence, deployment, or package acceptance policy.
 
 ### 2026-06-04: Real-Profile Next-Batch Early Undo Guard
 
@@ -264,6 +292,7 @@ ADRs:
 ### Current Live Product And Package Packets
 
 - `2026-06-04-local-release-acceptance-command-stamping`: completed and pushed at `5a4115e`.
+- `2026-06-04-mvp-preflight-next-batch-stop-guard-regression`: MVP preflight now runs the real-profile next-batch stop guard regression by default.
 - `2026-06-04-real-profile-next-batch-early-undo-guard`: next-batch evidence now stops before MVP preflight when displayed undo work exists.
 - `2026-06-04-mvp-preflight-release-summary-regression`: MVP preflight now runs the package acceptance summary regression check by default.
 - `2026-06-04-local-release-acceptance-summary-regression-check`: added targeted temporary-note regression coverage for summary next-step behavior.

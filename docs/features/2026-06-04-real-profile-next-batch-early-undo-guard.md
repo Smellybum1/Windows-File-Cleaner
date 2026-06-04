@@ -23,6 +23,8 @@ After the 2026-06-04 second exact-profile Quarantine batch, exact-profile displa
 - Added `tools\Test-RealProfileNextBatchStopGuard.cmd` and `.ps1`.
 - The regression synthesizes a blocked root with a `Moved` exact-profile entry and proves the preset exits before full preflight or daily readiness.
 - The regression synthesizes a clear root with a `Restored` exact-profile entry and proves the preset can continue when displayed undo work is absent.
+- MVP preflight now runs this regression by default before the whitespace diff check.
+- `Invoke-MvpPreflight.cmd -SkipRealProfileNextBatchStopGuardCheck` can skip only this regression for focused local loops.
 
 ## Verification
 
@@ -39,3 +41,4 @@ No ADR added. This strengthens terminal-only enforcement around existing ADR 001
 ## Follow-Up
 
 - Keep the current stop state until the selected manifest is restored or a new Grill with Docs pass decides outstanding selected-manifest undo work is acceptable.
+- The normal MVP preflight path now covers the synthetic stop-guard regression before future real-profile scan review evidence.

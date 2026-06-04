@@ -34,6 +34,7 @@ The repo should include a script that:
 - Runs the synthetic fixture generator in `-WhatIf` mode.
 - Prints the fixture review checklist in checklist-only mode.
 - Runs the local release acceptance summary regression check.
+- Runs the real-profile next-batch stop guard regression check.
 - Runs `git diff --check`.
 - Prints the next notes-enabled fixture review launcher command.
 - States that no real user files were scanned or modified by preflight.
@@ -85,7 +86,7 @@ Small feature-level decisions:
 
 - Add `tools/Invoke-MvpPreflight.ps1`.
 - Keep fixture generation dry-run by default through `New-StorageScanSmokeFixture.ps1 -WhatIf`.
-- Add `-SkipRestore`, `-SkipFixtureWhatIf`, `-SkipFixtureChecklist`, `-SkipLocalReleaseAcceptanceSummaryCheck`, and `-SkipDiffCheck` switches for focused local loops.
+- Add `-SkipRestore`, `-SkipFixtureWhatIf`, `-SkipFixtureChecklist`, `-SkipLocalReleaseAcceptanceSummaryCheck`, `-SkipRealProfileNextBatchStopGuardCheck`, and `-SkipDiffCheck` switches for focused local loops.
 
 ADR-worthy decisions:
 
@@ -152,6 +153,7 @@ What changed:
 - Later packet `Checklist-Only Visible Fixture Next Step` made the checklist-only output printed by preflight more self-contained by repeating the exact notes-enabled visible fixture command and the checklist-only no-preflight/no-fixture/no-WPF/no-scan/no-movement boundary.
 - Later packet `Full Local MVP Preflight After Checklist-Only Next Step` reran `cmd.exe /c tools\Invoke-MvpPreflight.cmd` after `71cf15a`; restore, build, core tests, WPF app tests, fixture `-WhatIf`, sectioned checklist-only output with the exact visible fixture next-step block, and whitespace diff passed without launching WPF, scanning real-profile files, moving, restoring, deleting, or creating cleanup history.
 - Later packet `MVP Preflight Release Summary Regression` added the local release acceptance summary regression step before the whitespace diff check, with `-SkipLocalReleaseAcceptanceSummaryCheck` for focused local loops.
+- Later packet `MVP Preflight Next-Batch Stop Guard Regression` added the real-profile next-batch stop guard regression step before the whitespace diff check, with `-SkipRealProfileNextBatchStopGuardCheck` for focused local loops.
 
 Files changed:
 
@@ -171,6 +173,7 @@ Tests run:
 - Later checklist-only-next-step packet ran `cmd.exe /c tools\Start-MvpFixtureReview.cmd -ChecklistOnly`, `cmd.exe /c tools\Start-MvpFixtureReview.cmd -ChecklistOnly -WriteAcceptanceNotes`, `cmd.exe /c tools\Start-MvpFixtureReview.cmd -WhatIf -SkipPreflight -SkipLaunch -WriteAcceptanceNotes`, `cmd.exe /c tools\Invoke-MvpPreflight.cmd -SkipRestore`, and whitespace checks.
 - Later full-preflight-after-checklist-only-next-step packet ran `cmd.exe /c tools\Invoke-MvpPreflight.cmd`.
 - Later MVP-preflight-release-summary-regression packet ran `cmd.exe /c tools\Test-LocalReleaseAcceptanceSummary.cmd`, `cmd.exe /c tools\Invoke-MvpPreflight.cmd -SkipRestore`, and `cmd.exe /c tools\Invoke-MvpPreflight.cmd`; restore, build, core tests, WPF app tests, fixture `-WhatIf`, fixture checklist-only output, local release acceptance summary regression, and whitespace diff passed without launching WPF, scanning real-profile files, moving, restoring, deleting, approving cleanup, or creating cleanup history.
+- Later MVP-preflight-next-batch-stop-guard-regression packet ran `cmd.exe /c tools\Test-RealProfileNextBatchStopGuard.cmd` and then the updated MVP preflight; restore/build/test, fixture dry-run/checklist output, local release acceptance summary regression, real-profile next-batch stop guard regression, and whitespace diff passed without launching WPF, scanning real-profile files, moving, restoring, deleting, approving cleanup, writing real Restore Manifests, or creating cleanup history.
 
 Docs updated:
 
