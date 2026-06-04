@@ -15,7 +15,7 @@ Read first: `docs/codex/current-state.md`.
 
 Latest docs/workflow packet: `2026-06-04-startup-context-compaction`. It moved oversized read-first docs into reference/archive files and replaced them with compact active docs to reduce Codex thread lag. No app behavior changed.
 
-Latest tooling/evidence packet: `2026-06-04-daily-readiness-fixture-acceptance-regression`. MVP preflight now covers daily readiness fixture acceptance notes forwarding.
+Latest tooling/evidence packet: `2026-06-04-daily-readiness-latest-package-notes-regression`. MVP preflight now covers daily readiness latest package notes informational behavior.
 
 Latest package candidate: `.local\releases\windows-file-cleaner-v20260604-121922` at app commit `e6ac3eb`, verified but not human-accepted. Current pending acceptance notes: `.local\release-acceptance\release-acceptance-20260604-134337.md`.
 
@@ -40,6 +40,39 @@ Post-action evidence:
 6. Use `docs/operations/*.md` for command detail.
 
 ## Recent Packet Summaries
+
+### 2026-06-04: Daily Readiness Latest Package Notes Regression
+
+Status: completed
+
+Goal:
+
+- Cover daily readiness latest package notes visibility so incomplete candidate notes stay informational and do not replace completed accepted package evidence.
+
+Safety profile:
+
+- `terminal-readonly`. The regression writes temporary ignored package acceptance notes under `.local\release-acceptance`, fixture acceptance notes and an empty Restore Manifest root under `.local\daily-readiness-latest-package-notes-test`, invokes daily readiness with explicit accepted notes, and removes the test files. It does not launch WPF, scan real-profile files, move, restore, delete, approve cleanup, promote a package, create shortcuts, install anything, or create cleanup history.
+
+Changes:
+
+- Added `tools\Test-DailyReadinessLatestPackageNotes.cmd` and `.ps1`.
+- The regression creates older complete accepted notes and newer incomplete candidate notes under ignored `.local\release-acceptance`.
+- It verifies accepted package evidence uses the complete notes passed explicitly.
+- It verifies the informational latest-notes block selects the newer incomplete notes and prints guarded pending next steps including `-RecordCommitMismatch`.
+- It verifies the informational latest-notes block is not treated as a failure, then intentionally stops before accepted launch-command printing by requiring incomplete fixture acceptance notes.
+- `Invoke-MvpPreflight.cmd` now runs the daily readiness latest package notes regression by default after the daily readiness fixture acceptance notes regression.
+- Added `-SkipDailyReadinessLatestPackageNotesCheck` for focused local loops.
+
+Verification:
+
+- `cmd.exe /c tools\Test-DailyReadinessLatestPackageNotes.cmd`
+- `cmd.exe /c tools\Test-LocalReleaseAcceptanceSummary.cmd`
+- `cmd.exe /c tools\Test-DailyReadinessFixtureAcceptanceNotes.cmd`
+- `cmd.exe /c tools\Invoke-MvpPreflight.cmd`
+
+ADRs:
+
+- Skipped; this adds terminal-only regression coverage for existing daily readiness package acceptance evidence and does not change product behavior, cleanup execution, restore execution, persistence, deployment, package acceptance policy, or real readiness behavior.
 
 ### 2026-06-04: Daily Readiness Fixture Acceptance Regression
 
@@ -570,6 +603,7 @@ ADRs:
 
 ### Current Live Product And Package Packets
 
+- `2026-06-04-daily-readiness-latest-package-notes-regression`: MVP preflight now covers daily readiness latest package notes informational behavior with temporary ignored complete and incomplete package acceptance notes.
 - `2026-06-04-daily-readiness-fixture-acceptance-regression`: MVP preflight now covers optional and strict daily readiness fixture-note forwarding with synthetic package and Restore Manifest evidence under ignored `.local`.
 - `2026-06-04-fixture-acceptance-notes-regression`: MVP preflight now covers fixture notes summary completion blockers, recorder manual-intent guard, `-WhatIf` no-write behavior, and synthetic completion.
 - `2026-06-04-accepted-local-release-selection-regression`: MVP preflight now covers accepted-package launcher default selection and explicit incomplete-notes rejection with temporary ignored notes and synthetic print-only package files.

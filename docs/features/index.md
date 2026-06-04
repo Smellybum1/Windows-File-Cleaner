@@ -7,6 +7,7 @@ Use this index before opening individual feature briefs. The folder contains man
 ## Active Or Current
 
 - `2026-06-04-startup-context-compaction.md`: current docs/context reduction packet for faster Codex threads.
+- `2026-06-04-daily-readiness-latest-package-notes-regression.md`: daily readiness latest package notes informational behavior, now included in MVP preflight.
 - `2026-06-04-daily-readiness-fixture-acceptance-regression.md`: daily readiness fixture acceptance notes forwarding, now included in MVP preflight.
 - `2026-06-04-fixture-acceptance-notes-regression.md`: fixture acceptance notes summary/recorder guardrails, now included in MVP preflight.
 - `2026-06-04-daily-readiness-exact-profile-undo-spotlight.md`: default daily readiness now spotlights exact-profile undo-work stop state, covered by guard-tested MVP preflight regression.

@@ -72,6 +72,14 @@ Targeted package acceptance summary regression:
 
 This writes temporary ignored notes under `.local\release-acceptance-summary-test`, verifies complete and incomplete summary behavior, then removes the test notes.
 
+Targeted daily readiness latest package notes regression:
+
+```powershell
+.\tools\Test-DailyReadinessLatestPackageNotes.cmd
+```
+
+This writes temporary ignored complete and incomplete notes under `.local\release-acceptance`, verifies daily readiness keeps accepted evidence on completed notes while showing the newer incomplete notes as informational context, then removes the test notes.
+
 Targeted package acceptance recorder regression:
 
 ```powershell
@@ -80,7 +88,7 @@ Targeted package acceptance recorder regression:
 
 This writes temporary ignored notes under `.local\release-acceptance-recording-test`, verifies recorder guardrails, then removes the test notes.
 
-MVP preflight also runs these regressions by default. Use `.\tools\Invoke-MvpPreflight.cmd -SkipAcceptedLocalReleaseSelectionCheck`, `.\tools\Invoke-MvpPreflight.cmd -SkipLocalReleaseAcceptanceSummaryCheck`, or `.\tools\Invoke-MvpPreflight.cmd -SkipLocalReleaseAcceptanceRecorderCheck` only for focused local loops where those package acceptance checks are not in scope.
+MVP preflight also runs these regressions by default. Use `.\tools\Invoke-MvpPreflight.cmd -SkipAcceptedLocalReleaseSelectionCheck`, `.\tools\Invoke-MvpPreflight.cmd -SkipDailyReadinessLatestPackageNotesCheck`, `.\tools\Invoke-MvpPreflight.cmd -SkipLocalReleaseAcceptanceSummaryCheck`, or `.\tools\Invoke-MvpPreflight.cmd -SkipLocalReleaseAcceptanceRecorderCheck` only for focused local loops where those package acceptance checks are not in scope.
 
 ## Acceptance Notes
 
