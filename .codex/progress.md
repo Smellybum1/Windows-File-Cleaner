@@ -64,6 +64,7 @@ Changes:
 Verification:
 
 - `cmd.exe /c tools\Test-LocalReleaseAcceptanceCommandStamping.cmd`
+- Temporary no-space-path simulation via `subst W: "D:\Codex\Windows File Cleaner"` and `cmd.exe /c W:\tools\Test-LocalReleaseAcceptanceCommandStamping.cmd`
 - `cmd.exe /c tools\Invoke-MvpPreflight.cmd`
 - `cmd.exe /c tools\Summarize-LocalReleaseAcceptanceNotes.cmd -RequireComplete`
 - `git diff --check`

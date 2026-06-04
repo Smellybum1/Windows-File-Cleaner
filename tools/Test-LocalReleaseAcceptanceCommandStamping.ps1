@@ -76,6 +76,19 @@ function Assert-DoesNotContainText {
     }
 }
 
+function Format-ExpectedToolArgument {
+    param(
+        [Parameter(Mandatory)]
+        [string]$Argument
+    )
+
+    if ($Argument.Contains(" ") -or $Argument.Contains("`"")) {
+        return "`"$($Argument.Replace('"', '\"'))`""
+    }
+
+    return $Argument
+}
+
 function Write-TestFile {
     param(
         [Parameter(Mandatory)]
@@ -238,16 +251,18 @@ try {
     $behindHeadNotesPath = Get-GeneratedNotesPath -Lines $behindHeadResult.Output
     $generatedNotes.Add($behindHeadNotesPath)
     $behindHeadLines = Assert-GeneratedNotes -NotesPath $behindHeadNotesPath -ReleaseDirectory $behindHeadReleasePath
+    $behindHeadReleaseArgument = Format-ExpectedToolArgument -Argument $behindHeadReleasePath
+    $behindHeadNotesArgument = Format-ExpectedToolArgument -Argument $behindHeadNotesPath
 
     Assert-ContainsText -Lines $behindHeadResult.Output -ExpectedText "Portable release acceptance notes template: $behindHeadNotesPath"
-    Assert-ContainsText -Lines $behindHeadResult.Output -ExpectedText ".\tools\Record-LocalReleaseAcceptanceNotes.cmd -Path `"$behindHeadNotesPath`" -RecordManualAcceptance"
-    Assert-ContainsText -Lines $behindHeadResult.Output -ExpectedText ".\tools\Record-LocalReleaseAcceptanceNotes.cmd -Path `"$behindHeadNotesPath`" -RecordManualAcceptance -RecordCommitMismatch"
+    Assert-ContainsText -Lines $behindHeadResult.Output -ExpectedText ".\tools\Record-LocalReleaseAcceptanceNotes.cmd -Path $behindHeadNotesArgument -RecordManualAcceptance"
+    Assert-ContainsText -Lines $behindHeadResult.Output -ExpectedText ".\tools\Record-LocalReleaseAcceptanceNotes.cmd -Path $behindHeadNotesArgument -RecordManualAcceptance -RecordCommitMismatch"
     Assert-ContainsText -Lines $behindHeadResult.Output -ExpectedText "If the package/current-HEAD mismatch is intentional, review the verifier warning, then run:"
-    Assert-ContainsText -Lines $behindHeadLines -ExpectedText ".\tools\Test-LocalRelease.cmd -ReleasePath `"$behindHeadReleasePath`""
-    Assert-ContainsText -Lines $behindHeadLines -ExpectedText ".\tools\Start-LocalRelease.cmd -ReleasePath `"$behindHeadReleasePath`" -ChecklistOnly"
-    Assert-ContainsText -Lines $behindHeadLines -ExpectedText ".\tools\Start-LocalRelease.cmd -ReleasePath `"$behindHeadReleasePath`" -Fixture -ChecklistOnly"
+    Assert-ContainsText -Lines $behindHeadLines -ExpectedText ".\tools\Test-LocalRelease.cmd -ReleasePath $behindHeadReleaseArgument"
+    Assert-ContainsText -Lines $behindHeadLines -ExpectedText ".\tools\Start-LocalRelease.cmd -ReleasePath $behindHeadReleaseArgument -ChecklistOnly"
+    Assert-ContainsText -Lines $behindHeadLines -ExpectedText ".\tools\Start-LocalRelease.cmd -ReleasePath $behindHeadReleaseArgument -Fixture -ChecklistOnly"
     Assert-ContainsText -Lines $behindHeadLines -ExpectedText '- Package/current-HEAD mismatch note: current-commit evidence was not required when these notes were created; review the verifier warning and use `-RecordCommitMismatch` only if accepting that mismatch.'
-    Assert-ContainsText -Lines $behindHeadLines -ExpectedText ".\tools\Record-LocalReleaseAcceptanceNotes.cmd -Path `"$behindHeadNotesPath`" -RecordManualAcceptance -RecordCommitMismatch"
+    Assert-ContainsText -Lines $behindHeadLines -ExpectedText ".\tools\Record-LocalReleaseAcceptanceNotes.cmd -Path $behindHeadNotesArgument -RecordManualAcceptance -RecordCommitMismatch"
     $behindHeadStampedCommandLines = @($behindHeadLines | Where-Object {
             $_.Contains("Required verifier:") -or
             $_.Contains("Checklist command:") -or
@@ -265,14 +280,16 @@ try {
     $currentCommitNotesPath = Get-GeneratedNotesPath -Lines $currentCommitResult.Output
     $generatedNotes.Add($currentCommitNotesPath)
     $currentCommitLines = Assert-GeneratedNotes -NotesPath $currentCommitNotesPath -ReleaseDirectory $currentCommitReleasePath
+    $currentCommitReleaseArgument = Format-ExpectedToolArgument -Argument $currentCommitReleasePath
+    $currentCommitNotesArgument = Format-ExpectedToolArgument -Argument $currentCommitNotesPath
 
     Assert-ContainsText -Lines $currentCommitResult.Output -ExpectedText "Portable release acceptance notes template: $currentCommitNotesPath"
-    Assert-ContainsText -Lines $currentCommitResult.Output -ExpectedText ".\tools\Record-LocalReleaseAcceptanceNotes.cmd -Path `"$currentCommitNotesPath`" -RecordManualAcceptance"
+    Assert-ContainsText -Lines $currentCommitResult.Output -ExpectedText ".\tools\Record-LocalReleaseAcceptanceNotes.cmd -Path $currentCommitNotesArgument -RecordManualAcceptance"
     Assert-DoesNotContainText -Lines $currentCommitResult.Output -UnexpectedText "-RecordCommitMismatch"
     Assert-DoesNotContainText -Lines $currentCommitResult.Output -UnexpectedText "If the package/current-HEAD mismatch is intentional"
-    Assert-ContainsText -Lines $currentCommitLines -ExpectedText ".\tools\Test-LocalRelease.cmd -ReleasePath `"$currentCommitReleasePath`" -RequireCurrentCommit"
-    Assert-ContainsText -Lines $currentCommitLines -ExpectedText ".\tools\Start-LocalRelease.cmd -ReleasePath `"$currentCommitReleasePath`" -ChecklistOnly -RequireCurrentCommit"
-    Assert-ContainsText -Lines $currentCommitLines -ExpectedText ".\tools\Start-LocalRelease.cmd -ReleasePath `"$currentCommitReleasePath`" -Fixture -ChecklistOnly -RequireCurrentCommit"
+    Assert-ContainsText -Lines $currentCommitLines -ExpectedText ".\tools\Test-LocalRelease.cmd -ReleasePath $currentCommitReleaseArgument -RequireCurrentCommit"
+    Assert-ContainsText -Lines $currentCommitLines -ExpectedText ".\tools\Start-LocalRelease.cmd -ReleasePath $currentCommitReleaseArgument -ChecklistOnly -RequireCurrentCommit"
+    Assert-ContainsText -Lines $currentCommitLines -ExpectedText ".\tools\Start-LocalRelease.cmd -ReleasePath $currentCommitReleaseArgument -Fixture -ChecklistOnly -RequireCurrentCommit"
     Assert-DoesNotContainText -Lines $currentCommitLines -UnexpectedText "Package/current-HEAD mismatch note:"
     Assert-DoesNotContainText -Lines $currentCommitLines -UnexpectedText "-RecordCommitMismatch"
 
