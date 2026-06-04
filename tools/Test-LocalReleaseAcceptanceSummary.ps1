@@ -92,7 +92,9 @@ function New-TestAcceptanceNotes {
         [Parameter(Mandatory)]
         [bool]$CommitEvidenceRecorded,
 
-        [string]$GitCommit = "summary-test"
+        [string]$GitCommit = "summary-test",
+
+        [string]$ReleaseMetadataCommit = "summary-test-release"
     )
 
     Assert-UnderLocalPath -Path $Path
@@ -117,7 +119,7 @@ function New-TestAcceptanceNotes {
     $lines.Add("- Git branch: main")
     $lines.Add("- Git commit: $GitCommit")
     $lines.Add("- Worktree status at notes creation: clean")
-    $lines.Add("- Release metadata commit: summary-test-release")
+    $lines.Add("- Release metadata commit: $ReleaseMetadataCommit")
     $lines.Add("- Release metadata worktree status at publish: clean")
     $lines.Add("- Release metadata preflight skipped: False")
     $lines.Add("- Executable: $testRoot\release\app\WindowsFileCleaner.App.exe")
@@ -250,7 +252,7 @@ try {
     New-Item -ItemType Directory -Path $testRoot -Force | Out-Null
     New-Item -ItemType Directory -Path $notesRoot -Force | Out-Null
     New-TestAcceptanceNotes -Path $incompletePath -Complete:$false -CommitEvidenceRecorded:$false
-    New-TestAcceptanceNotes -Path $completePath -Complete:$true -CommitEvidenceRecorded:$true -GitCommit $currentGitCommit
+    New-TestAcceptanceNotes -Path $completePath -Complete:$true -CommitEvidenceRecorded:$true -GitCommit $currentGitCommit -ReleaseMetadataCommit $currentGitCommit
     New-TestMalformedAcceptanceNotes -Path $malformedPath
 
     $incompleteResult = Invoke-Summary -Path $incompletePath
@@ -279,6 +281,7 @@ try {
     Assert-ContainsText -Lines $malformedResult.Output -ExpectedText "Release folder: unknown"
     Assert-ContainsText -Lines $malformedResult.Output -ExpectedText "Current repository HEAD: "
     Assert-ContainsText -Lines $malformedResult.Output -ExpectedText "Notes/current HEAD status: Notes commit unavailable"
+    Assert-ContainsText -Lines $malformedResult.Output -ExpectedText "Package/current HEAD status: Package commit unavailable"
     Assert-ContainsText -Lines $malformedResult.Output -ExpectedText "Acceptance evidence: verifier: Missing; commit: Missing; normal launch: Missing; fixture launch: Missing"
     Assert-ContainsText -Lines $malformedResult.Output -ExpectedText "Overall result: Not recorded"
     Assert-ContainsText -Lines $malformedResult.Output -ExpectedText "Checklist totals: 0 pass, 0 issue, 0 not checked, 0 not recorded"
@@ -337,6 +340,7 @@ try {
 
     Assert-ContainsText -Lines $completeResult.Output -ExpectedText "Current repository HEAD: "
     Assert-ContainsText -Lines $completeResult.Output -ExpectedText "Notes/current HEAD status: Matches current HEAD"
+    Assert-ContainsText -Lines $completeResult.Output -ExpectedText "Package/current HEAD status: Matches current HEAD"
     Assert-ContainsText -Lines $completeResult.Output -ExpectedText "Completion check: complete. Portable release acceptance notes are ready to record."
     Assert-DoesNotContainText -Lines $completeResult.Output -UnexpectedText "Pending acceptance next steps:"
 
@@ -346,6 +350,7 @@ try {
     }
 
     Assert-ContainsText -Lines $differingCommitResult.Output -ExpectedText "Notes/current HEAD status: Differs from current HEAD"
+    Assert-ContainsText -Lines $differingCommitResult.Output -ExpectedText "Package/current HEAD status: Differs from current HEAD"
 
     Write-Host "Local release acceptance summary regression passed."
     Write-Host "Boundary: test notes were written under ignored .local only; this did not launch WPF, scan, move, restore, delete, approve cleanup, or create cleanup history."

@@ -30,7 +30,7 @@ The current pending acceptance notes were refreshed after package/readiness tool
 
 Without `-Path`, `-RequireComplete` selects the latest completed acceptance notes. Use an explicit `-Path` when inspecting a pending candidate notes file.
 
-Summaries print the notes `Git commit`, current repository `HEAD`, and `Notes/current HEAD status`. Treat `Differs from current HEAD` as package/current-HEAD mismatch context to review before recording acceptance, not as automatic acceptance or rejection.
+Summaries print the notes `Git commit`, release metadata commit, current repository `HEAD`, `Notes/current HEAD status`, and `Package/current HEAD status`. Treat `Differs from current HEAD` as package/current-HEAD mismatch context to review before recording acceptance, not as automatic acceptance or rejection.
 
 Incomplete notes summaries print guarded next-step commands. For a behind-current-`HEAD` candidate, the recorder command includes `-RecordCommitMismatch` and should be used only after the human package acceptance pass and intentional package/current-HEAD mismatch acceptance.
 

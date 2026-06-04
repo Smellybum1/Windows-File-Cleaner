@@ -15,7 +15,7 @@ Read first: `docs/codex/current-state.md`.
 
 Latest docs/workflow packet: `2026-06-04-startup-context-compaction`. It moved oversized read-first docs into reference/archive files and replaced them with compact active docs to reduce Codex thread lag. No app behavior changed.
 
-Latest tooling/evidence packet: `2026-06-04-package-acceptance-current-head-summary`. Package acceptance summaries now show current repository `HEAD` and notes/current-HEAD status while remaining read-only.
+Latest tooling/evidence packet: `2026-06-04-package-acceptance-current-head-summary`. Package acceptance summaries now show current repository `HEAD`, notes/current-HEAD status, and package/current-HEAD status while remaining read-only.
 
 Latest package candidate: `.local\releases\windows-file-cleaner-v20260604-121922` at app commit `e6ac3eb`, verified but not human-accepted. Current pending acceptance notes: `.local\release-acceptance\release-acceptance-20260604-164509.md`.
 
@@ -47,7 +47,7 @@ Status: completed
 
 Goal:
 
-- Make package acceptance summaries show whether the notes creation commit matches the current repository `HEAD`, so pending human acceptance can see package/current-HEAD mismatch context without inferring it from separate commands.
+- Make package acceptance summaries show whether the notes creation commit and package commit match the current repository `HEAD`, so pending human acceptance can see package/current-HEAD mismatch context without inferring it from separate commands.
 
 Safety profile:
 
@@ -57,8 +57,9 @@ Changes:
 
 - `tools\Summarize-LocalReleaseAcceptanceNotes.ps1` now prints `Current repository HEAD`.
 - It also prints `Notes/current HEAD status` as `Matches current HEAD`, `Differs from current HEAD`, `Notes commit unavailable`, or `Current HEAD unavailable`.
+- It prints `Package/current HEAD status` as `Matches current HEAD`, `Differs from current HEAD`, `Package commit unavailable`, or `Current HEAD unavailable`.
 - Short and full Git commit text are treated as matching when one is a prefix of the other.
-- `tools\Test-LocalReleaseAcceptanceSummary.cmd` / `.ps1` now covers matching, differing, and missing notes commit cases.
+- `tools\Test-LocalReleaseAcceptanceSummary.cmd` / `.ps1` now covers matching, differing, and missing notes/package commit cases.
 
 Verification:
 

@@ -24,7 +24,7 @@ Strict fixture-notes completion check:
 
 Safety profile: `terminal-readonly` from `docs/codex/safety-profiles.md`.
 
-The daily readiness output first verifies the latest completed accepted package notes, then shows the latest package acceptance notes as informational context. Incomplete or malformed-looking candidate notes do not replace the accepted package baseline. Package acceptance summaries include current repository `HEAD` and notes/current-HEAD status so package/current-HEAD mismatch context is visible.
+The daily readiness output first verifies the latest completed accepted package notes, then shows the latest package acceptance notes as informational context. Incomplete or malformed-looking candidate notes do not replace the accepted package baseline. Package acceptance summaries include current repository `HEAD`, notes/current-HEAD status, and package/current-HEAD status so package/current-HEAD mismatch context is visible.
 
 When the latest candidate notes are incomplete, that informational summary also prints the guarded recorder and recheck commands for the human package acceptance pass. If a latest notes file is malformed-looking, the informational summary reports missing evidence instead of changing accepted-package readiness.
 

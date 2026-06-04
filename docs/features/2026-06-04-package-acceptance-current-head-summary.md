@@ -6,7 +6,7 @@ Status: completed
 
 ## Goal
 
-Make package acceptance summaries show whether the notes creation commit matches the current repository `HEAD`, so pending human acceptance can see package/current-HEAD mismatch context without inferring it from separate commands.
+Make package acceptance summaries show whether the notes creation commit and package commit match the current repository `HEAD`, so pending human acceptance can see package/current-HEAD mismatch context without inferring it from separate commands.
 
 ## Safety Profile
 
@@ -14,14 +14,15 @@ Make package acceptance summaries show whether the notes creation commit matches
 
 ## Problem
 
-The latest pending package acceptance notes are intentionally behind current `HEAD` after later docs/tooling commits. The summary already showed the notes `Git commit`, but did not show the current repository `HEAD` or a direct notes/current-HEAD status line. That made the expected mismatch harder to review during daily readiness and package acceptance.
+The latest pending package acceptance notes and the package metadata commit are intentionally behind current `HEAD` after later docs/tooling commits. The summary already showed the notes `Git commit` and `Release metadata commit`, but did not show the current repository `HEAD` or direct notes/current-HEAD and package/current-HEAD status lines. That made the expected mismatch harder to review during daily readiness and package acceptance.
 
 ## Changes
 
 - `Summarize-LocalReleaseAcceptanceNotes.cmd` now prints `Current repository HEAD`.
 - It also prints `Notes/current HEAD status` as `Matches current HEAD`, `Differs from current HEAD`, `Notes commit unavailable`, or `Current HEAD unavailable`.
+- It prints `Package/current HEAD status` as `Matches current HEAD`, `Differs from current HEAD`, `Package commit unavailable`, or `Current HEAD unavailable`.
 - Short and full Git commit text are treated as matching when one is a prefix of the other.
-- `Test-LocalReleaseAcceptanceSummary.cmd` now covers matching, differing, and missing notes commit cases.
+- `Test-LocalReleaseAcceptanceSummary.cmd` now covers matching, differing, and missing notes/package commit cases.
 
 ## Verification
 

@@ -256,6 +256,35 @@ function Test-GitCommitTextMatches {
         $ActualCommit.StartsWith($ExpectedCommit, [System.StringComparison]::OrdinalIgnoreCase)
 }
 
+function Get-CommitCurrentHeadStatus {
+    param(
+        [Parameter(Mandatory)]
+        [string]$CommitText,
+
+        [Parameter(Mandatory)]
+        [string]$CurrentGitCommit,
+
+        [Parameter(Mandatory)]
+        [string]$UnavailableStatus
+    )
+
+    if ([string]::IsNullOrWhiteSpace($CommitText) -or
+        $CommitText.Equals("unknown", [System.StringComparison]::OrdinalIgnoreCase)) {
+        return $UnavailableStatus
+    }
+
+    if ([string]::IsNullOrWhiteSpace($CurrentGitCommit) -or
+        $CurrentGitCommit.Equals("unknown", [System.StringComparison]::OrdinalIgnoreCase)) {
+        return "Current HEAD unavailable"
+    }
+
+    if (Test-GitCommitTextMatches -ExpectedCommit $CommitText -ActualCommit $CurrentGitCommit) {
+        return "Matches current HEAD"
+    }
+
+    return "Differs from current HEAD"
+}
+
 function Get-NotesCurrentHeadStatus {
     param(
         [Parameter(Mandatory)]
@@ -265,21 +294,25 @@ function Get-NotesCurrentHeadStatus {
         [string]$CurrentGitCommit
     )
 
-    if ([string]::IsNullOrWhiteSpace($NotesGitCommit) -or
-        $NotesGitCommit.Equals("unknown", [System.StringComparison]::OrdinalIgnoreCase)) {
-        return "Notes commit unavailable"
-    }
+    return Get-CommitCurrentHeadStatus `
+        -CommitText $NotesGitCommit `
+        -CurrentGitCommit $CurrentGitCommit `
+        -UnavailableStatus "Notes commit unavailable"
+}
 
-    if ([string]::IsNullOrWhiteSpace($CurrentGitCommit) -or
-        $CurrentGitCommit.Equals("unknown", [System.StringComparison]::OrdinalIgnoreCase)) {
-        return "Current HEAD unavailable"
-    }
+function Get-PackageCurrentHeadStatus {
+    param(
+        [Parameter(Mandatory)]
+        [string]$ReleaseMetadataCommit,
 
-    if (Test-GitCommitTextMatches -ExpectedCommit $NotesGitCommit -ActualCommit $CurrentGitCommit) {
-        return "Matches current HEAD"
-    }
+        [Parameter(Mandatory)]
+        [string]$CurrentGitCommit
+    )
 
-    return "Differs from current HEAD"
+    return Get-CommitCurrentHeadStatus `
+        -CommitText $ReleaseMetadataCommit `
+        -CurrentGitCommit $CurrentGitCommit `
+        -UnavailableStatus "Package commit unavailable"
 }
 
 function Write-PortableReleaseAcceptanceNextSteps {
@@ -434,6 +467,7 @@ if (-not (Test-Path -LiteralPath $notesPath)) {
 
 $lines = Get-Content -LiteralPath $fullNotesPath
 $notesGitCommit = Get-FirstMetadataValue -Lines $lines -Prefix "- Git commit:"
+$releaseMetadataCommit = Get-FirstMetadataValue -Lines $lines -Prefix "- Release metadata commit:"
 $currentGitCommit = Get-CurrentRepositoryHead
 $overallIndex = [array]::IndexOf($lines, "Overall result:")
 $overallResult = "Not recorded"
@@ -461,7 +495,8 @@ Write-Host ("Git commit: {0}" -f $notesGitCommit)
 Write-Host ("Current repository HEAD: {0}" -f $currentGitCommit)
 Write-Host ("Notes/current HEAD status: {0}" -f (Get-NotesCurrentHeadStatus -NotesGitCommit $notesGitCommit -CurrentGitCommit $currentGitCommit))
 Write-Host ("Worktree at notes creation: {0}" -f (Get-FirstMetadataValue -Lines $lines -Prefix "- Worktree status at notes creation:"))
-Write-Host ("Release metadata commit: {0}" -f (Get-FirstMetadataValue -Lines $lines -Prefix "- Release metadata commit:"))
+Write-Host ("Release metadata commit: {0}" -f $releaseMetadataCommit)
+Write-Host ("Package/current HEAD status: {0}" -f (Get-PackageCurrentHeadStatus -ReleaseMetadataCommit $releaseMetadataCommit -CurrentGitCommit $currentGitCommit))
 Write-Host ("Release metadata preflight skipped: {0}" -f (Get-FirstMetadataValue -Lines $lines -Prefix "- Release metadata preflight skipped:"))
 Write-Host ("Normal launch command: {0}" -f (Get-FirstMetadataValue -Lines $lines -Prefix "- Normal launch command:"))
 Write-Host ("Fixture launch command: {0}" -f (Get-FirstMetadataValue -Lines $lines -Prefix "- Fixture launch command:"))
