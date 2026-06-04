@@ -8,6 +8,7 @@ $repoRoot = Split-Path -Parent $PSScriptRoot
 $trustManifestScript = Join-Path $PSScriptRoot "New-RealProfileSelectedRestoreTrustManifest.ps1"
 $localRoot = [System.IO.Path]::GetFullPath((Join-Path $repoRoot ".local")).TrimEnd([System.IO.Path]::DirectorySeparatorChar)
 $testQuarantineRoot = [System.IO.Path]::GetFullPath((Join-Path $repoRoot ".local\real-profile-selected-restore-trust-helper-path-guard-test")).TrimEnd([System.IO.Path]::DirectorySeparatorChar)
+$outsideLocalQuarantineRoot = Join-Path $repoRoot "README.md"
 $uniqueSuffix = [Guid]::NewGuid().ToString("N")
 $safeRelativePath = "WindowsFileCleanerRestoreTrustTest\path-guard-safe-$uniqueSuffix.txt"
 $escapedRelativePath = "..\moxhe\WindowsFileCleanerRestoreTrustTest\path-guard-escape-$uniqueSuffix.txt"
@@ -99,6 +100,22 @@ try {
     Assert-ContainsText -Lines $safeResult.Output -ExpectedText "Quarantine Root: $testQuarantineRoot"
     Assert-ContainsText -Lines $safeResult.Output -ExpectedText "Next app command:"
 
+    $outsideLocalResult = Invoke-TrustManifestTool -Arguments @(
+        "-QuarantineRoot",
+        $outsideLocalQuarantineRoot,
+        "-RelativePath",
+        $safeRelativePath,
+        "-WhatIf"
+    )
+    if ($outsideLocalResult.ExitCode -ne 1) {
+        throw "Trust helper QuarantineRoot outside default D: root and ignored .local should fail before preview output. Exit code: $($outsideLocalResult.ExitCode)"
+    }
+
+    Assert-ContainsText -Lines $outsideLocalResult.Output -ExpectedText "QuarantineRoot must stay under the default D: Quarantine Root or the ignored .local directory."
+    Assert-DoesNotContainText -Lines $outsideLocalResult.Output -UnexpectedText "Selected real-profile restore trust manifest preview:"
+    Assert-DoesNotContainText -Lines $outsideLocalResult.Output -UnexpectedText "Restore Manifest:"
+    Assert-DoesNotContainText -Lines $outsideLocalResult.Output -UnexpectedText "Next app command:"
+
     $escapedResult = Invoke-TrustManifestTool -Arguments @(
         "-QuarantineRoot",
         $testQuarantineRoot,
@@ -126,4 +143,4 @@ finally {
 }
 
 Write-Host "Real-profile selected restore trust manifest path guard regression passed."
-Write-Host "Boundary: the helper was run only with -WhatIf and an ignored .local Quarantine Root; this did not launch WPF, scan, move, restore, delete, approve cleanup, write Restore Manifests, modify real-profile files, install anything, or create cleanup history."
+Write-Host "Boundary: the helper was run only with -WhatIf, using an ignored .local Quarantine Root for safe preview and committed README.md only as a non-.local rejection target; this did not launch WPF, scan, move, restore, delete, approve cleanup, write Restore Manifests, modify real-profile files, install anything, or create cleanup history."

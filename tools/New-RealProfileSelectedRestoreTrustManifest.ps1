@@ -7,6 +7,10 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
+$repoRoot = Split-Path -Parent $PSScriptRoot
+$localRoot = [System.IO.Path]::GetFullPath((Join-Path $repoRoot ".local")).TrimEnd([System.IO.Path]::DirectorySeparatorChar)
+$defaultQuarantineRoot = [System.IO.Path]::GetFullPath("D:\WindowsFileCleanerQuarantine").TrimEnd([System.IO.Path]::DirectorySeparatorChar)
+
 if ([System.IO.Path]::IsPathRooted($RelativePath)) {
     throw "RelativePath must be relative to the current user profile."
 }
@@ -21,6 +25,14 @@ if (-not [System.IO.Path]::IsPathRooted($QuarantineRoot)) {
 }
 
 $quarantineRootFullPath = [System.IO.Path]::GetFullPath($QuarantineRoot).TrimEnd([System.IO.Path]::DirectorySeparatorChar)
+
+if (-not ($quarantineRootFullPath.Equals($defaultQuarantineRoot, [System.StringComparison]::OrdinalIgnoreCase) -or
+    $quarantineRootFullPath.StartsWith($defaultQuarantineRoot + [System.IO.Path]::DirectorySeparatorChar, [System.StringComparison]::OrdinalIgnoreCase) -or
+    $quarantineRootFullPath.Equals($localRoot, [System.StringComparison]::OrdinalIgnoreCase) -or
+    $quarantineRootFullPath.StartsWith($localRoot + [System.IO.Path]::DirectorySeparatorChar, [System.StringComparison]::OrdinalIgnoreCase))) {
+    throw "QuarantineRoot must stay under the default D: Quarantine Root or the ignored .local directory. Default root: $defaultQuarantineRoot; ignored local root: $localRoot"
+}
+
 $originalPath = [System.IO.Path]::GetFullPath((Join-Path $cleanupScope $RelativePath))
 
 if (-not ($originalPath.StartsWith($cleanupScope + [System.IO.Path]::DirectorySeparatorChar, [System.StringComparison]::OrdinalIgnoreCase))) {

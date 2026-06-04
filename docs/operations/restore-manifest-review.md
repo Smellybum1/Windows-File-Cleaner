@@ -42,7 +42,7 @@ MVP preflight also runs a synthetic daily readiness spotlight regression to prov
 
 ## Trust Helper Guard
 
-The sacrificial selected-restore trust helper remains a human-intent test tool. It now rejects generated quarantine source paths outside the action `items` root, even when the requested restore target normalizes back inside `C:\Users\moxhe`.
+The sacrificial selected-restore trust helper remains a human-intent test tool. It now rejects explicit `QuarantineRoot` values outside the default `D:\WindowsFileCleanerQuarantine` root or ignored repo `.local`, and rejects generated quarantine source paths outside the action `items` root even when the requested restore target normalizes back inside `C:\Users\moxhe`.
 
 Targeted local regression:
 
@@ -50,4 +50,4 @@ Targeted local regression:
 .\tools\Test-RealProfileSelectedRestoreTrustManifestPathGuard.cmd
 ```
 
-This runs the helper only with `-WhatIf` and an ignored `.local` Quarantine Root. It does not launch WPF, scan, move, restore, delete, write Restore Manifests, modify real-profile files, approve cleanup, or create cleanup history.
+This runs the helper only with `-WhatIf`, an ignored `.local` Quarantine Root, and committed `README.md` as a non-`.local` rejection target. It does not launch WPF, scan, move, restore, delete, write Restore Manifests, modify real-profile files, approve cleanup, or create cleanup history.

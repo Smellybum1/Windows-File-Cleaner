@@ -6,7 +6,7 @@ Status: completed
 
 ## Goal
 
-Keep the sacrificial real-profile selected restore trust helper's generated quarantine source inside the action `items` root, even when the requested `RelativePath` normalizes back inside `C:\Users\moxhe`.
+Keep the sacrificial real-profile selected restore trust helper's `QuarantineRoot` under the default `D:\WindowsFileCleanerQuarantine` root or ignored repo `.local`, and keep generated quarantine sources inside the action `items` root even when the requested `RelativePath` normalizes back inside `C:\Users\moxhe`.
 
 ## Non-Goals
 
@@ -18,17 +18,21 @@ Keep the sacrificial real-profile selected restore trust helper's generated quar
 
 ## Safety Profile
 
-`terminal-readonly`. The regression runs the helper only with `-WhatIf` and an ignored `.local` Quarantine Root. It does not launch WPF, scan, move, restore, delete, approve cleanup, write Restore Manifests, modify real-profile files, install anything, or create cleanup history.
+`terminal-readonly`. The regression runs the helper only with `-WhatIf`, an ignored `.local` Quarantine Root for safe preview, and committed `README.md` as a non-`.local` rejection target. It does not launch WPF, scan, move, restore, delete, approve cleanup, write Restore Manifests, modify real-profile files, install anything, or create cleanup history.
 
 ## Problem
 
 `New-RealProfileSelectedRestoreTrustManifest.cmd` already rejects absolute `RelativePath` values and verifies the restore target resolves under the current `C:\Users\moxhe` profile. A path such as `..\moxhe\...` can still normalize to a restore target inside the profile while causing the generated quarantine source to escape the action `items` folder. That would violate the action-scoped Restore Manifest layout expected by ADR 0019 revalidation.
 
+The helper is also write-capable outside `-WhatIf`, so explicit `QuarantineRoot` values should stay inside the normal default Quarantine Root or ignored `.local` test area before any preview, manifest, or app-command output.
+
 ## Changes
 
+- `New-RealProfileSelectedRestoreTrustManifest.cmd` now rejects explicit `QuarantineRoot` values outside the default `D:\WindowsFileCleanerQuarantine` root and ignored repo `.local`.
 - `New-RealProfileSelectedRestoreTrustManifest.cmd` now rejects generated quarantine source paths that do not resolve under the action `items` root.
 - Added `tools\Test-RealProfileSelectedRestoreTrustManifestPathGuard.cmd` and `.ps1`.
 - The regression verifies a safe relative path passes in `-WhatIf` mode with an ignored `.local` Quarantine Root.
+- The regression verifies committed `README.md` as a non-`.local` `QuarantineRoot` fails before preview, manifest, or app-command output.
 - The regression verifies an escaped `..\moxhe\...` relative path fails before preview, manifest, or app-command output.
 - The regression asserts no ignored test Quarantine Root is created in `-WhatIf` mode and bounds any cleanup under repo `.local`.
 
