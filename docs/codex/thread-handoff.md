@@ -19,7 +19,7 @@ Load detailed reference docs or archived evidence only when the task needs histo
 
 - Repo: `D:\Codex\Windows File Cleaner`
 - Branch: `main`
-- Latest package/evidence packet: `2026-06-04-verified-portable-package-candidate`
+- Latest package/evidence packet: `2026-06-04-pending-package-acceptance-notes-refresh-after-tooling-hardening`
 - Latest tooling/evidence packet: `2026-06-04-local-release-acceptance-command-stamping-regression`
 - Latest docs/workflow packet: `2026-06-04-startup-context-compaction`
 - Latest live-product evidence: `2026-06-04-second-real-profile-quarantine-batch`
@@ -30,7 +30,7 @@ Load detailed reference docs or archived evidence only when the task needs histo
 - Accepted package: `.local\releases\windows-file-cleaner-v20260602-011556` at commit `bc9b869`
 - Accepted notes: `.local\release-acceptance\release-acceptance-20260602-011743.md`
 - Verified package candidate pending acceptance: `.local\releases\windows-file-cleaner-v20260604-121922` at commit `e6ac3eb`
-- Current pending candidate notes: `.local\release-acceptance\release-acceptance-20260604-134337.md`
+- Current pending candidate notes: `.local\release-acceptance\release-acceptance-20260604-164509.md`
 - Daily readiness shows the latest package acceptance notes as informational context after verifying the completed accepted notes.
 - Daily readiness ends with an exact-profile undo-work stop-state spotlight after the broad Restore Manifest summary.
 - `tools\Test-DailyReadinessExactProfileUndoSpotlight.cmd` covers that spotlight with ignored synthetic Restore Manifests, and MVP preflight now runs it by default before the whitespace diff check. The regression uses the focused `-SyntheticRestoreManifestOnly` daily readiness mode so CI and clean runners do not need ignored accepted-package evidence for this check. It also asserts the synthetic mode rejects missing/outside-`.local` roots and acceptance-note parameters.
@@ -100,7 +100,7 @@ Next best step: stop after the second tiny exact real-profile batch. Do not chai
 
 Accepted package baseline remains .local\releases\windows-file-cleaner-v20260602-011556 at commit bc9b869 with completed ignored acceptance notes .local\release-acceptance\release-acceptance-20260602-011743.md. Accepted-package helpers select latest complete notes by default. Daily readiness and accepted-package launchers keep incomplete or malformed-looking candidate notes from replacing the accepted baseline; explicit incomplete or malformed-looking accepted-launcher notes paths stop before launch-command printing. MVP preflight includes the fixture acceptance notes, daily readiness fixture acceptance notes, daily readiness latest package notes, local release acceptance command stamping, accepted local release selection, local release acceptance summary, local release acceptance recorder, real-profile next-batch stop guard, and daily readiness exact-profile undo spotlight regression checks; use -SkipFixtureAcceptanceNotesCheck, -SkipDailyReadinessFixtureAcceptanceCheck, -SkipDailyReadinessLatestPackageNotesCheck, -SkipLocalReleaseAcceptanceCommandStampingCheck, -SkipAcceptedLocalReleaseSelectionCheck, -SkipLocalReleaseAcceptanceSummaryCheck, -SkipLocalReleaseAcceptanceRecorderCheck, -SkipRealProfileNextBatchStopGuardCheck, or -SkipDailyReadinessUndoSpotlightCheck only for focused local loops. The synthetic Restore Manifest-only modes used inside those focused regressions are guard-tested and are not daily or next-batch evidence substitutes.
 
-Verified package candidate .local\releases\windows-file-cleaner-v20260604-121922 at commit e6ac3eb is pending human package acceptance; refreshed pending notes .local\release-acceptance\release-acceptance-20260604-134337.md are incomplete and should be inspected with an explicit path. They stamp the actual -ReleasePath verifier/checklist commands and intentionally leave commit evidence unrecorded until the human accepts the expected package/current-HEAD mismatch. The summary helper prints the guarded -RecordCommitMismatch recorder command, but it should be used only after the human package acceptance pass.
+Verified package candidate .local\releases\windows-file-cleaner-v20260604-121922 at commit e6ac3eb is pending human package acceptance; refreshed pending notes .local\release-acceptance\release-acceptance-20260604-164509.md are incomplete and should be inspected with an explicit path. They stamp the actual -ReleasePath verifier/checklist commands and intentionally leave commit evidence unrecorded until the human accepts the expected package/current-HEAD mismatch. The summary helper prints the guarded -RecordCommitMismatch recorder command, but it should be used only after the human package acceptance pass.
 
 If new candidate notes are created after docs-only commits, use -RecordCommitMismatch only after intentionally accepting the package/current-HEAD mismatch. Use docs/operations/*.md for command detail.
 

@@ -90,7 +90,7 @@ Verified package candidate pending human acceptance:
 
 - Package: `.local\releases\windows-file-cleaner-v20260604-121922`
 - Commit: `e6ac3eb`
-- Current pending acceptance notes: `.local\release-acceptance\release-acceptance-20260604-134337.md`
+- Current pending acceptance notes: `.local\release-acceptance\release-acceptance-20260604-164509.md`
 
 Keep using the accepted baseline until the candidate has a completed human acceptance pass.
 

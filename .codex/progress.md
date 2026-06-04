@@ -17,7 +17,7 @@ Latest docs/workflow packet: `2026-06-04-startup-context-compaction`. It moved o
 
 Latest tooling/evidence packet: `2026-06-04-local-release-acceptance-command-stamping-regression`. MVP preflight now covers generated package acceptance notes command stamping for release-path, current-commit, and commit-mismatch recorder guidance.
 
-Latest package candidate: `.local\releases\windows-file-cleaner-v20260604-121922` at app commit `e6ac3eb`, verified but not human-accepted. Current pending acceptance notes: `.local\release-acceptance\release-acceptance-20260604-134337.md`.
+Latest package candidate: `.local\releases\windows-file-cleaner-v20260604-121922` at app commit `e6ac3eb`, verified but not human-accepted. Current pending acceptance notes: `.local\release-acceptance\release-acceptance-20260604-164509.md`.
 
 Accepted package baseline: `.local\releases\windows-file-cleaner-v20260602-011556` at commit `bc9b869`, with completed ignored notes `.local\release-acceptance\release-acceptance-20260602-011743.md`.
 
@@ -40,6 +40,38 @@ Post-action evidence:
 6. Use `docs/operations/*.md` for command detail.
 
 ## Recent Packet Summaries
+
+### 2026-06-04: Pending Package Acceptance Notes Refresh After Tooling Hardening
+
+Status: completed
+
+Goal:
+
+- Refresh the pending human package acceptance notes for `.local\releases\windows-file-cleaner-v20260604-121922` after package/readiness tooling commits advanced current `HEAD` beyond the packaged app commit.
+
+Safety profile:
+
+- `terminal-readonly`. `Start-LocalRelease.cmd -ChecklistOnly -WriteAcceptanceNotes` verified the existing ignored package candidate and wrote a new ignored notes file under `.local\release-acceptance`. It did not launch WPF, scan real-profile files, move, restore, delete, approve cleanup, promote a package, create shortcuts, install anything, or create cleanup history.
+
+Changes:
+
+- Generated refreshed pending notes at `.local\release-acceptance\release-acceptance-20260604-164509.md`.
+- The refreshed notes record verifier evidence at current `HEAD` `1aa5cf1`.
+- They intentionally leave commit evidence unrecorded because package commit `e6ac3eb` differs from current `HEAD`; human package acceptance must explicitly record `-RecordCommitMismatch` after accepting that mismatch.
+- Updated current package handoff docs and runbooks to point at the refreshed notes path while keeping the accepted package baseline on `bc9b869`.
+
+Verification:
+
+- `cmd.exe /c tools\Start-LocalRelease.cmd -ReleasePath ".local\releases\windows-file-cleaner-v20260604-121922" -ChecklistOnly -WriteAcceptanceNotes`
+- `cmd.exe /c tools\Summarize-LocalReleaseAcceptanceNotes.cmd -Path ".local\release-acceptance\release-acceptance-20260604-164509.md"`
+- Expected incomplete candidate check: `cmd.exe /c tools\Summarize-LocalReleaseAcceptanceNotes.cmd -Path ".local\release-acceptance\release-acceptance-20260604-164509.md" -RequireComplete` exited `1` with the expected missing commit, normal launch, fixture launch, overall result, and checklist evidence.
+- `cmd.exe /c tools\Summarize-LocalReleaseAcceptanceNotes.cmd -RequireComplete`
+- `cmd.exe /c tools\Start-AcceptedLocalRelease.cmd -PrintOnly`
+- `cmd.exe /c tools\Invoke-DailyLocalReadiness.cmd`
+
+ADRs:
+
+- Skipped; this refreshes ignored acceptance evidence and committed handoff docs under ADR 0020 portable-package boundaries. It does not change product behavior, cleanup execution, restore execution, persistence, deployment, package acceptance policy, or real readiness behavior.
 
 ### 2026-06-04: Local Release Acceptance Command Stamping Regression
 
@@ -730,6 +762,7 @@ ADRs:
 
 ### Current Live Product And Package Packets
 
+- `2026-06-04-pending-package-acceptance-notes-refresh-after-tooling-hardening`: current pending candidate notes refreshed to `.local\release-acceptance\release-acceptance-20260604-164509.md` after package/readiness tooling commits advanced `HEAD` beyond package commit `e6ac3eb`.
 - `2026-06-04-local-release-acceptance-command-stamping-regression`: MVP preflight now covers generated package acceptance notes command stamping for actual release paths, current-commit evidence, and guarded commit-mismatch recorder guidance.
 - `2026-06-04-package-summary-default-selection-regression`: MVP preflight now covers default package acceptance summary selection with newer incomplete and malformed-looking notes under ignored `.local\release-acceptance`.
 - `2026-06-04-package-summary-malformed-notes-regression`: MVP preflight now covers malformed-looking package acceptance summaries with temporary ignored notes and accurate missing-checklist wording.
@@ -751,7 +784,7 @@ ADRs:
 - `2026-06-04-local-release-acceptance-summary-regression-check`: added targeted temporary-note regression coverage for summary next-step behavior, now including malformed-looking notes with missing checklist structure.
 - `2026-06-04-package-acceptance-summary-next-steps`: incomplete package acceptance summaries print guarded recorder and recheck commands.
 - `2026-06-04-daily-readiness-latest-package-notes`: daily readiness surfaces the latest package acceptance notes as informational context.
-- `2026-06-04-pending-package-acceptance-notes-refresh`: refreshed pending candidate notes at `.local\release-acceptance\release-acceptance-20260604-134337.md`.
+- `2026-06-04-pending-package-acceptance-notes-refresh`: earlier refreshed pending candidate notes at `.local\release-acceptance\release-acceptance-20260604-134337.md`; current pending notes are now `.local\release-acceptance\release-acceptance-20260604-164509.md`.
 - `2026-06-04-local-release-recorder-commit-evidence-guard`: recorder blocks missing verifier evidence and requires explicit commit-mismatch recording.
 - `2026-06-04-accepted-package-complete-notes-selection`: accepted-package helpers select latest complete notes by default.
 - `2026-06-04-verified-portable-package-candidate`: candidate package verified but pending human acceptance.

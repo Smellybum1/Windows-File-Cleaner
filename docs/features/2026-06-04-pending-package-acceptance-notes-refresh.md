@@ -6,7 +6,7 @@ Status: completed
 
 ## Goal
 
-Refresh the pending human acceptance notes for `.local\releases\windows-file-cleaner-v20260604-121922` after docs-only `HEAD` advanced beyond the packaged app commit.
+Refresh the pending human acceptance notes for `.local\releases\windows-file-cleaner-v20260604-121922` after current `HEAD` advanced beyond the packaged app commit.
 
 ## Safety Profile
 
@@ -14,13 +14,14 @@ Refresh the pending human acceptance notes for `.local\releases\windows-file-cle
 
 ## Problem
 
-The first candidate acceptance notes were generated when package commit `e6ac3eb` matched current `HEAD`. After later docs/tooling commits, the candidate package intentionally became behind current docs-only `HEAD`, so the human acceptance pass needed notes that preserve the expected mismatch instead of suggesting current-commit commands.
+The first candidate acceptance notes were generated when package commit `e6ac3eb` matched current `HEAD`. After later docs/tooling commits, the candidate package intentionally became behind current `HEAD`, so the human acceptance pass needed notes that preserve the expected mismatch instead of suggesting current-commit commands.
 
 ## Changes
 
 - Generated refreshed pending notes at `.local\release-acceptance\release-acceptance-20260604-134337.md`.
 - The refreshed notes stamp exact `-ReleasePath` verifier, checklist, and fixture checklist commands for `.local\releases\windows-file-cleaner-v20260604-121922`.
 - The refreshed notes record verifier evidence and intentionally leave commit evidence unrecorded until the human accepts the expected `e6ac3eb` package versus `bb82b29` docs-only `HEAD` mismatch with `-RecordCommitMismatch`.
+- Follow-up refresh after package/readiness tooling hardening generated current pending notes at `.local\release-acceptance\release-acceptance-20260604-164509.md`; those notes record verifier evidence at `HEAD` `1aa5cf1` and preserve the expected `e6ac3eb` package/current-`HEAD` mismatch for human acceptance.
 - The accepted package baseline remains `.local\releases\windows-file-cleaner-v20260602-011556` at `bc9b869`.
 
 ## Verification
@@ -31,6 +32,10 @@ The first candidate acceptance notes were generated when package commit `e6ac3eb
 - `cmd.exe /c tools\Summarize-LocalReleaseAcceptanceNotes.cmd -RequireComplete` still selected the completed accepted `bc9b869` notes.
 - `cmd.exe /c tools\Start-AcceptedLocalRelease.cmd -PrintOnly` still printed the accepted `bc9b869` launch command without launching WPF.
 - `git diff --check` passed with expected CRLF warnings only.
+- Follow-up refresh verification: `cmd.exe /c tools\Start-LocalRelease.cmd -ReleasePath ".local\releases\windows-file-cleaner-v20260604-121922" -ChecklistOnly -WriteAcceptanceNotes`
+- Follow-up summary: `cmd.exe /c tools\Summarize-LocalReleaseAcceptanceNotes.cmd -Path ".local\release-acceptance\release-acceptance-20260604-164509.md"`
+- Follow-up expected incomplete candidate check: `cmd.exe /c tools\Summarize-LocalReleaseAcceptanceNotes.cmd -Path ".local\release-acceptance\release-acceptance-20260604-164509.md" -RequireComplete` exited `1` with the expected missing commit, human launch, overall result, and checklist evidence.
+- Follow-up accepted baseline check: `cmd.exe /c tools\Summarize-LocalReleaseAcceptanceNotes.cmd -RequireComplete` still selected the completed accepted `bc9b869` notes.
 
 ## ADRs
 
@@ -39,4 +44,4 @@ No ADR added. This refreshes ignored acceptance evidence and committed handoff d
 ## Follow-Up
 
 - Complete the human package acceptance pass for `.local\releases\windows-file-cleaner-v20260604-121922` before promoting it.
-- Keep using the accepted `bc9b869` package baseline until `.local\release-acceptance\release-acceptance-20260604-134337.md` is completed and passes `Summarize-LocalReleaseAcceptanceNotes.cmd -RequireComplete`.
+- Keep using the accepted `bc9b869` package baseline until `.local\release-acceptance\release-acceptance-20260604-164509.md` is completed and passes `Summarize-LocalReleaseAcceptanceNotes.cmd -RequireComplete`.

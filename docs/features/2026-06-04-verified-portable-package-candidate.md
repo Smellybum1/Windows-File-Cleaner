@@ -19,9 +19,9 @@ Cut and verify a portable package candidate from the latest app-code commit afte
 - Package commit: `e6ac3eb467bffb4e41bd5697da702f649292315d`
 - Executable SHA-256: `0E733191EF0B52742F35BAC5C86B34CE7075731DFB4A849EDD9E0EAA330025C1`
 - Initial ignored acceptance notes: `.local\release-acceptance\release-acceptance-20260604-122009.md`
-- Current pending acceptance notes: `.local\release-acceptance\release-acceptance-20260604-134337.md`
+- Current pending acceptance notes: `.local\release-acceptance\release-acceptance-20260604-164509.md`
 
-The initial ignored acceptance notes are not complete: verifier and commit evidence are recorded, but normal launch, fixture launch, overall result, and the remaining checklist items are not recorded. Refreshed pending notes were later generated after docs-only `HEAD` advanced to `bb82b29`; those notes stamp exact `-ReleasePath` commands and require explicit `-RecordCommitMismatch` if the human accepts the expected package/current-HEAD mismatch. The current accepted package baseline remains `.local\releases\windows-file-cleaner-v20260602-011556` at commit `bc9b869` until a human package acceptance pass is completed and recorded.
+The initial ignored acceptance notes are not complete: verifier and commit evidence are recorded, but normal launch, fixture launch, overall result, and the remaining checklist items are not recorded. Refreshed pending notes were later generated after docs/tooling `HEAD` advanced beyond the app package commit; the current notes stamp exact `-ReleasePath` commands and require explicit `-RecordCommitMismatch` if the human accepts the expected package/current-HEAD mismatch. The current accepted package baseline remains `.local\releases\windows-file-cleaner-v20260602-011556` at commit `bc9b869` until a human package acceptance pass is completed and recorded.
 
 ## Verification
 
@@ -36,5 +36,5 @@ No ADR added. This follows ADR 0020: portable packages remain the v1 daily path,
 
 ## Follow-Up
 
-- If the user wants this package promoted, run the package acceptance pass from `docs/operations/portable-release.md`, then record completion against `.local\release-acceptance\release-acceptance-20260604-134337.md` with `tools\Record-LocalReleaseAcceptanceNotes.cmd -RecordManualAcceptance -RecordCommitMismatch` only after intentionally accepting the expected package/current-HEAD mismatch.
+- If the user wants this package promoted, run the package acceptance pass from `docs/operations/portable-release.md`, then record completion against `.local\release-acceptance\release-acceptance-20260604-164509.md` with `tools\Record-LocalReleaseAcceptanceNotes.cmd -RecordManualAcceptance -RecordCommitMismatch` only after intentionally accepting the expected package/current-HEAD mismatch.
 - After this docs packet is committed, the package commit will intentionally be behind the docs-only closeout commit. Use package metadata and acceptance notes for package provenance rather than treating the package as built from that later docs-only commit.
