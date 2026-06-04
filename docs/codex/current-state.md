@@ -10,6 +10,7 @@ Use this as the first compact orientation file for new Codex threads. Historical
 - Branch: `main`
 - Latest live evidence: 2026-06-04 second tiny exact real-profile Quarantine batch.
 - Latest working app packet: real-profile Quarantine inline status wording fix.
+- Latest package candidate: `.local\releases\windows-file-cleaner-v20260604-121922` at `e6ac3eb`, verified but not human-accepted.
 - Latest docs/workflow baseline before these packets: `1ea1b76 Reduce workflow markdown bloat`
 - App stack: C# / WPF / .NET 8
 - Product: local Windows cleanup reviewer for `C:\Users\moxhe`
@@ -46,7 +47,8 @@ Use this as the first compact orientation file for new Codex threads. Historical
 - The user-approved second WPF batch moved one exact `C:\Users\moxhe` `pip\cache\http-v2` `.body` file into Quarantine with `moved 1`, `failed 0`, `Recovery review: no`.
 - Read-only terminal summary after the action showed 5 of 11 exact-profile manifests, displayed exact-profile undo work `1`, and displayed exact-profile recovery review `2`.
 - New manifest: `D:\WindowsFileCleanerQuarantine\actions\quarantine-action-draft-20260604014901-b7b402a2\restore-manifest.json`.
-- Current working packet fixed WPF inline post-execution status so exact real-profile Quarantine results are no longer described as fixture Quarantine results.
+- Latest working app packet fixed WPF inline post-execution status so exact real-profile Quarantine results are no longer described as fixture Quarantine results.
+- Portable package candidate `.local\releases\windows-file-cleaner-v20260604-121922` was cut from `e6ac3eb` after that app wording fix. Publish ran MVP preflight; `Test-LocalRelease.cmd -RequireCurrentCommit` passed; checklist-only acceptance notes were written to `.local\release-acceptance\release-acceptance-20260604-122009.md` but remain incomplete pending human package acceptance.
 
 ## Still Unavailable
 
@@ -60,6 +62,8 @@ Use this as the first compact orientation file for new Codex threads. Historical
 ## Next Best Step
 
 Stop after the second tiny exact real-profile batch. Do not chain another real-profile Quarantine batch while exact-profile displayed undo work is present unless a new Grill with Docs pass decides that outstanding selected-manifest undo work is acceptable. If recovery is needed, use selected-manifest restore only for the exact selected Restore Manifest after readiness, exact `RESTORE`, and immediate selected-restore revalidation pass.
+
+If packaging is the next focus, complete a human acceptance pass for `.local\releases\windows-file-cleaner-v20260604-121922` before promoting it. Until then, keep using the accepted package baseline from `bc9b869` for daily accepted-package launch commands.
 
 ## High-Value Commands
 

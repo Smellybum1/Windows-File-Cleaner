@@ -26,6 +26,8 @@ Before considering another tiny exact real-profile Quarantine batch, run the ter
 .\tools\Invoke-RealProfileNextBatchReview.cmd
 ```
 
+Current stop state: after the second tiny exact-profile Quarantine batch on 2026-06-04, exact-profile displayed undo work is expected to be `1`. Do not treat another next-batch review as movement evidence while that undo work is present unless a new Grill with Docs pass decides the outstanding selected-manifest undo work is acceptable.
+
 For read-only recovery evidence after Quarantine or selected restore work, summarize Restore Manifests from the terminal:
 
 ```powershell
@@ -41,7 +43,7 @@ All commands above are evidence or launch-command helpers unless `-PrintOnly` is
 - Storage Scan does not modify scanned files.
 - The visible WPF app can move files and narrow eligible folders when the Cleanup Scope is a recognized synthetic fixture and the exact Quarantine confirmation gate is open.
 - The visible WPF app can move files and narrow eligible folders from the exact real-profile Cleanup Scope `C:\Users\moxhe` only for the first ADR 0018 phase after all readiness evidence, exact `QUARANTINE`, Real-Profile Quarantine Approval Evidence, and immediate pre-execution revalidation pass. Cross-volume folder Quarantine uses a guarded copy-then-delete fallback because the preferred `D:` Quarantine Root is on a different drive than the real profile. Codex and automated tests do not click this real-profile movement path.
-- The first user-clicked exact real-profile Quarantine trust batch succeeded by user report on 2026-06-01 with one small `pip\cache\http\b\c` row moved, one completed Restore Manifest, `moved 1, failed 0`, and zero readiness blockers. This does not enable broader scopes, broad Undo Quarantine, permanent deletion, or cleanup history.
+- The first user-clicked exact real-profile Quarantine trust batch succeeded by user report on 2026-06-01 with one small `pip\cache\http\b\c` row moved, one completed Restore Manifest, `moved 1, failed 0`, and zero readiness blockers. The second user-clicked exact real-profile Quarantine batch succeeded on 2026-06-04 with one `pip\cache\http-v2` `.body` file moved, `moved 1`, `failed 0`, and `Recovery review: no`; that new manifest currently has selected-manifest undo work available. This does not enable broader scopes, broad Undo Quarantine, permanent deletion, or cleanup history.
 - The visible WPF app can undo only the current synthetic fixture Quarantine execution; that current-fixture undo remains available after a rescan until undo is attempted.
 - The visible WPF app can discover action-scoped Restore Manifests under the selected Quarantine Root without restoring them.
 - The visible WPF app can select one discovered Restore Manifest and preview selected manifest readiness without restoring it.
@@ -167,6 +169,8 @@ The publisher runs MVP preflight by default, publishes the WPF app as `Release` 
 The release artifacts stay under ignored `.local\releases`. The script prints the exact executable path plus normal and fixture launch commands. `README-FIRST.txt` travels with the folder and zip as the package-local start-here note, including launch options and the reversible-only safety boundary. The publisher records the packaged executable SHA-256 in `release-metadata.txt` and writes a sibling zip checksum sidecar. This is a portable package, not an installer: it does not create shortcuts, does not enable permanent deletion, does not add persisted cleanup history, and does not add broad/all-manifest restore. Portable v1 remains reversible-only: read-only Storage Scan, review, gated Quarantine, and selected restore. ADR 0020 keeps installed shortcut and installer support deferred until a later explicit user-approved packaging packet.
 
 Current accepted local package baseline: `.local\releases\windows-file-cleaner-v20260602-011556` at commit `bc9b869`, with completed ignored acceptance notes at `.local\release-acceptance\release-acceptance-20260602-011743.md`. The notes summary reports verifier/current-commit/normal-launch/fixture-launch evidence recorded, overall result `Pass`, and `6 pass, 0 issue, 0 not checked, 0 not recorded`; those notes are local evidence only and are not app persistence or cleanup history.
+
+Verified package candidate pending human acceptance: `.local\releases\windows-file-cleaner-v20260604-121922` at commit `e6ac3eb`, with ignored acceptance notes at `.local\release-acceptance\release-acceptance-20260604-122009.md`. The notes summary records verifier and commit evidence, but normal launch, fixture launch, overall result, and the remaining checklist items are not recorded. Use the current accepted package baseline until the candidate has a completed human acceptance pass.
 
 Each release folder also contains ignored local launch scripts:
 
@@ -380,6 +384,7 @@ To focus the displayed manifest list to the exact real-profile Cleanup Scope:
 
 ```powershell
 .\tools\Summarize-RestoreManifests.cmd -CleanupScope "C:\Users\moxhe"
+.\tools\Summarize-RestoreManifests.cmd -CleanupScope "C:\Users\moxhe" -ShowEntries
 .\tools\Summarize-RestoreManifests.cmd -CleanupScope "C:\Users\moxhe" -RecoveryReviewOnly -ShowEntries
 ```
 
@@ -387,14 +392,16 @@ To focus only manifests that still have undo work:
 
 ```powershell
 .\tools\Summarize-RestoreManifests.cmd -UndoWorkOnly -ShowEntries
+.\tools\Summarize-RestoreManifests.cmd -CleanupScope "C:\Users\moxhe" -UndoWorkOnly -ShowEntries
 ```
 
-To fail a read-only check on the displayed exact-profile evidence instead of the full selected Quarantine Root:
+To fail a read-only check on displayed evidence instead of the full selected Quarantine Root:
 
 ```powershell
-.\tools\Summarize-RestoreManifests.cmd -CleanupScope "C:\Users\moxhe" -RequireAnyDisplayed -RequireNoDisplayedUndoWork
 .\tools\Summarize-RestoreManifests.cmd -CleanupScope "C:\Users\moxhe" -RecoveryReviewOnly -RequireNoDisplayedRecoveryReview
 ```
+
+After the 2026-06-04 second exact-profile Quarantine batch, exact-profile displayed undo work is expected to be `1`; use `-RequireNoDisplayedUndoWork` only when zero displayed undo work is the intended assertion.
 
 The summary helper reads `actions\*\restore-manifest.json`, reports manifest counts, entry status counts, size, cleanup scopes, undo-work and recovery-review flags, and discovery issues. It is read-only: it does not launch WPF, scan, move, restore, delete, write manifests, approve cleanup, or create cleanup history. Use `-CleanupScope` as a display filter when exact real-profile evidence should be separated from fixture evidence; full-root aggregate counts remain visible. Use `-RequireAny`, `-RequireNoRecoveryReview`, and `-RequireNoUndoWork` when a verification step should check the full selected Quarantine Root. Use `-RequireAnyDisplayed`, `-RequireNoDisplayedRecoveryReview`, and `-RequireNoDisplayedUndoWork` when a verification step should check only the currently displayed manifest set. These checks are evidence only and do not restore or clean anything.
 

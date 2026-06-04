@@ -1,6 +1,6 @@
 # Portable Release Runbook
 
-Last updated: 2026-06-03
+Last updated: 2026-06-04
 
 Portable v1 is the local self-contained WPF app package. It is not an installer and does not create installed shortcuts.
 
@@ -9,6 +9,15 @@ Portable v1 is the local self-contained WPF app package. It is not an installer 
 - Package: `.local\releases\windows-file-cleaner-v20260602-011556`
 - Package commit: `bc9b869`
 - Acceptance notes: `.local\release-acceptance\release-acceptance-20260602-011743.md`
+
+## Verified Candidate Pending Acceptance
+
+- Package: `.local\releases\windows-file-cleaner-v20260604-121922`
+- Package commit: `e6ac3eb`
+- Acceptance notes: `.local\release-acceptance\release-acceptance-20260604-122009.md`
+- Status: verified with `Test-LocalRelease.cmd -RequireCurrentCommit`, but not human-accepted.
+
+This candidate includes app behavior through the real-profile Quarantine inline status wording fix. Its ignored acceptance notes record verifier and commit evidence, but normal launch, fixture launch, overall result, and the remaining checklist items are not recorded. Keep using the accepted baseline until the human package acceptance pass is completed and recorded.
 
 ## Verify Accepted Notes
 

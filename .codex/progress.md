@@ -8,7 +8,9 @@ This file is now the compact current progress log. Historical packet evidence fr
 
 Read first: `docs/codex/current-state.md`.
 
-The latest product/evidence packet is `2026-06-04-second-real-profile-quarantine-batch`: the user approved and clicked one exact `C:\Users\moxhe` WPF Quarantine batch for a single `pip\cache\http-v2` `.body` file. The app remains a local Windows File Cleaner for `C:\Users\moxhe`; Storage Scan is read-only, exact real-profile movement is human-clicked only, and unavailable workflows remain broad/all-manifest real-profile Undo Quarantine, custom/non-exact real-profile Quarantine, custom selected restore, permanent deletion, persisted cleanup history, installed shortcut automation, and installer behavior.
+The latest package/evidence packet is `2026-06-04-verified-portable-package-candidate`: package `.local\releases\windows-file-cleaner-v20260604-121922` was cut from app commit `e6ac3eb` after the real-profile inline status wording fix, verified with current-commit package checks, and left pending human package acceptance.
+
+The latest live-product evidence remains `2026-06-04-second-real-profile-quarantine-batch`: the user approved and clicked one exact `C:\Users\moxhe` WPF Quarantine batch for a single `pip\cache\http-v2` `.body` file. The app remains a local Windows File Cleaner for `C:\Users\moxhe`; Storage Scan is read-only, exact real-profile movement is human-clicked only, and unavailable workflows remain broad/all-manifest real-profile Undo Quarantine, custom/non-exact real-profile Quarantine, custom selected restore, permanent deletion, persisted cleanup history, installed shortcut automation, and installer behavior.
 
 The latest docs/workflow baseline before these packets is `1ea1b76 Reduce workflow markdown bloat`. It archived long historical evidence, added compact current-state/safety/runbook docs, and reduced active startup-doc bloat without changing app behavior.
 
@@ -16,17 +18,68 @@ Fresh current-head next-batch evidence passed on `655e075` with `cmd.exe /c tool
 
 The second tiny exact real-profile WPF batch moved one `pip\cache\http-v2` `.body` file, `28.93 MB`, with `moved 1`, `failed 0`, and `Recovery review: no`. Read-only terminal summary afterward showed manifest `quarantine-action-draft-20260604014901-b7b402a2`, exact-profile display 5 of 11 manifests, displayed undo work `1`, and displayed recovery review `2`.
 
-Current working packet fixed the WPF inline post-execution status wording so exact real-profile Quarantine execution is no longer summarized as fixture Quarantine execution.
+Latest working app packet fixed the WPF inline post-execution status wording so exact real-profile Quarantine execution is no longer summarized as fixture Quarantine execution.
+
+Current package candidate `.local\releases\windows-file-cleaner-v20260604-121922` is verified but not accepted. Ignored acceptance notes `.local\release-acceptance\release-acceptance-20260604-122009.md` record verifier and commit evidence, but normal launch, fixture launch, overall result, and the remaining checklist items are not recorded. Accepted package baseline remains `.local\releases\windows-file-cleaner-v20260602-011556` at commit `bc9b869`.
 
 ## Next Recommended Work
 
 1. Stop after the second tiny exact real-profile batch; do not chain another real-profile Quarantine batch.
 2. Do not click real-profile Quarantine from Codex.
 3. Do not run or treat another next-batch review as movement evidence while exact-profile displayed undo work is present unless a new Grill with Docs pass decides that outstanding selected-manifest undo work is acceptable.
-4. Use `docs/operations/daily-use.md`, `docs/operations/portable-release.md`, `docs/operations/manual-fixture-review.md`, and `docs/operations/restore-manifest-review.md` for command detail.
-5. Start an ADR 0020 shortcut/installer follow-up only if the user explicitly asks for installed shortcut or installer automation.
+4. If packaging is the next focus, complete human package acceptance for `.local\releases\windows-file-cleaner-v20260604-121922` before promoting it over the accepted `bc9b869` baseline.
+5. Use `docs/operations/daily-use.md`, `docs/operations/portable-release.md`, `docs/operations/manual-fixture-review.md`, and `docs/operations/restore-manifest-review.md` for command detail.
+6. Start an ADR 0020 shortcut/installer follow-up only if the user explicitly asks for installed shortcut or installer automation.
 
 ## Recent Completed Packets
+
+### 2026-06-04: Verified Portable Package Candidate
+
+Status: completed
+
+Goal:
+
+- Cut and verify a portable package candidate from the latest app-code commit without promoting it before a human package acceptance pass.
+
+Safety profile:
+
+- `terminal-readonly` for verification and acceptance-note summarization; package publishing wrote ignored `.local\releases` artifacts only and ran MVP preflight before publishing. No WPF launch, real-profile scan, movement, restore, deletion, approval, installed shortcut, installer behavior, or cleanup history.
+
+Evidence:
+
+- Package: `.local\releases\windows-file-cleaner-v20260604-121922`
+- Package commit: `e6ac3eb467bffb4e41bd5697da702f649292315d`
+- Executable SHA-256: `0E733191EF0B52742F35BAC5C86B34CE7075731DFB4A849EDD9E0EAA330025C1`
+- Ignored acceptance notes: `.local\release-acceptance\release-acceptance-20260604-122009.md`
+- Notes summary: verifier and commit evidence recorded; normal launch, fixture launch, overall result, and five checklist items not recorded.
+
+Verification:
+
+- `cmd.exe /c tools\Publish-LocalRelease.cmd`
+- `cmd.exe /c tools\Test-LocalRelease.cmd -ReleasePath ".local\releases\windows-file-cleaner-v20260604-121922" -RequireCurrentCommit`
+- `cmd.exe /c tools\Start-LocalRelease.cmd -ReleasePath ".local\releases\windows-file-cleaner-v20260604-121922" -ChecklistOnly -RequireCurrentCommit -WriteAcceptanceNotes`
+- `cmd.exe /c tools\Summarize-LocalReleaseAcceptanceNotes.cmd -Path ".local\release-acceptance\release-acceptance-20260604-122009.md"`
+
+Docs updated:
+
+- `docs/features/2026-06-04-verified-portable-package-candidate.md`
+- `docs/features/index.md`
+- `docs/features/2026-06-01-live-product-readiness-roadmap.md`
+- `docs/codex/current-state.md`
+- `docs/codex/thread-handoff.md`
+- `.codex/progress.md`
+- `docs/operations/portable-release.md`
+- `docs/operations/daily-use.md`
+- `docs/operations/restore-manifest-review.md`
+- `README.md`
+
+ADRs:
+
+- Skipped; this follows ADR 0020 and does not add installed shortcut or installer behavior.
+
+Follow-up:
+
+- Complete the human package acceptance pass and record notes before promoting this package over the accepted `bc9b869` baseline.
 
 ### 2026-06-04: Real-Profile Quarantine Inline Status Wording
 

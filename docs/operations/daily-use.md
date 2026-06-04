@@ -1,6 +1,6 @@
 # Daily Use Runbook
 
-Last updated: 2026-06-03
+Last updated: 2026-06-04
 
 This runbook keeps operational command detail out of the stable domain docs.
 
@@ -50,6 +50,8 @@ Use this before asking the user to do another tiny exact `C:\Users\moxhe` WPF ba
 
 That wrapper runs full MVP preflight by default, then exact-profile readiness evidence, then prints the manual WPF checklist. It is not cleanup approval and does not prove a future WPF batch is executable.
 
+Current stop state: after the 2026-06-04 second exact-profile Quarantine batch, exact-profile displayed undo work is expected to be `1`. Do not run or treat another next-batch review as movement evidence while that selected-manifest undo work is present unless a new Grill with Docs pass decides that outstanding undo work is acceptable for another tiny batch.
+
 Evidence-only preset:
 
 ```powershell
@@ -72,10 +74,16 @@ Default summary:
 .\tools\Summarize-RestoreManifests.cmd
 ```
 
-Exact-profile displayed undo-work evidence:
+Exact-profile display:
 
 ```powershell
-.\tools\Summarize-RestoreManifests.cmd -CleanupScope "C:\Users\moxhe" -RequireAnyDisplayed -RequireNoDisplayedUndoWork
+.\tools\Summarize-RestoreManifests.cmd -CleanupScope "C:\Users\moxhe" -ShowEntries
+```
+
+Exact-profile undo-work focus:
+
+```powershell
+.\tools\Summarize-RestoreManifests.cmd -CleanupScope "C:\Users\moxhe" -UndoWorkOnly -ShowEntries
 ```
 
 Exact-profile recovery-review focus:

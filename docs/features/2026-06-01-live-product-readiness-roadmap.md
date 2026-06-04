@@ -85,6 +85,8 @@ Later packet note: `Accepted Launcher Output Boundary` made `Start-AcceptedLocal
 
 Later packet note: `Second Real-Profile Quarantine Batch` recorded the user-clicked 2026-06-04 exact-profile batch: one `pip\cache\http-v2` `.body` file, `28.93 MB`, moved with `moved 1`, `failed 0`, `Recovery review: no`. Post-action read-only summary showed exact-profile displayed undo work `1`, so do not chain another real-profile batch without a new Grill with Docs pass deciding how to handle outstanding selected-manifest undo work.
 
+Later packet note: `Verified Portable Package Candidate` cut `.local\releases\windows-file-cleaner-v20260604-121922` from `e6ac3eb` after the inline status wording fix. Publish ran MVP preflight, current-commit package verification passed, and checklist-only acceptance notes were written to `.local\release-acceptance\release-acceptance-20260604-122009.md`, but the notes remain incomplete pending human package acceptance. The accepted package baseline remains `.local\releases\windows-file-cleaner-v20260602-011556` at `bc9b869`.
+
 ## Domain Language Changes
 
 No new durable domain terms.

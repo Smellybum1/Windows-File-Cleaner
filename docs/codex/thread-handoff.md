@@ -19,12 +19,15 @@ Load archived evidence only when the task needs historical packet detail.
 
 - Repo: `D:\Codex\Windows File Cleaner`
 - Branch: `main`
-- Latest docs/workflow packet before this closeout: `1ea1b76 Reduce workflow markdown bloat`
-- Latest product/evidence packet before this docs cleanup: `3dad056 Record current-head next-batch review evidence`
+- Latest package/evidence packet: `2026-06-04-verified-portable-package-candidate`
+- Latest live-product evidence: `2026-06-04-second-real-profile-quarantine-batch`
+- Latest working app packet: `2026-06-04-real-profile-quarantine-inline-status-wording`
+- Latest docs/workflow baseline before these packets: `1ea1b76 Reduce workflow markdown bloat`
 - App: C# / WPF / .NET 8 local Windows cleanup reviewer for `C:\Users\moxhe`
 - Storage Scan: read-only
 - Accepted package: `.local\releases\windows-file-cleaner-v20260602-011556` at commit `bc9b869`
 - Accepted notes: `.local\release-acceptance\release-acceptance-20260602-011743.md`
+- Verified package candidate pending acceptance: `.local\releases\windows-file-cleaner-v20260604-121922` at commit `e6ac3eb`
 
 See `docs/codex/current-state.md` for the complete compact snapshot.
 
@@ -42,18 +45,9 @@ Codex must not click real-profile Quarantine, restore, delete, or cleanup execut
 
 ## Best Next Work
 
-The next live-product step can be the user's manual WPF next-batch review if they are ready. Fresh terminal evidence has already passed through `.\tools\Invoke-RealProfileNextBatchReview.cmd` on `c7cb545`.
+Stop after the 2026-06-04 second tiny exact real-profile batch. The new exact-profile Restore Manifest still has selected-manifest undo work available, so do not chain another real-profile Quarantine batch or treat another next-batch review as movement evidence unless a new Grill with Docs pass decides that outstanding selected-manifest undo work is acceptable.
 
-Keep any next batch:
-
-- exact `C:\Users\moxhe`;
-- at most 10 rows and 1 GB;
-- Likely safe plus Quarantine candidate only;
-- selected-batch-only;
-- readiness-gated;
-- human-clicked only.
-
-Do not proceed to movement unless the user explicitly chooses a specific tiny batch after WPF readiness, exact `QUARANTINE`, Real-Profile Quarantine Approval Evidence, and immediate Pre-Execution Revalidation are visible.
+If recovery is needed, use selected-manifest restore only for the exact selected `C:\Users\moxhe` Restore Manifest after selected manifest readiness, exact `RESTORE`, and immediate selected-restore revalidation pass. If packaging is the next focus, complete the human package acceptance pass for `.local\releases\windows-file-cleaner-v20260604-121922` before promoting it over the accepted `bc9b869` package baseline.
 
 ## Operational Runbooks
 
@@ -78,11 +72,11 @@ We are continuing Windows File Cleaner in D:\Codex\Windows File Cleaner.
 
 Read AGENTS.md, docs/codex/current-state.md, .codex/progress.md, docs/codex/safety-profiles.md, README.md, docs/domain/context.md, docs/domain/glossary.md, and relevant active docs/features/ and docs/decisions/ before implementing.
 
-Current state: main includes the compact workflow-docs cleanup packet at 1ea1b76. The latest product/evidence packet before that cleanup was 3dad056, Record current-head next-batch review evidence. The app is a C#/.NET 8 WPF local Windows cleanup reviewer for C:\Users\moxhe. Storage Scan is read-only. Fixture Quarantine, current-fixture undo, fixture selected restore, exact real-profile selected restore, and first-phase exact real-profile Quarantine exist behind their gates. The first tiny exact real-profile Quarantine and selected restore recovery loop both succeeded by user report.
+Current state: main includes the second tiny exact real-profile Quarantine evidence, real-profile inline status wording fix, and a verified portable package candidate. The app is a C#/.NET 8 WPF local Windows cleanup reviewer for C:\Users\moxhe. Storage Scan is read-only. Fixture Quarantine, current-fixture undo, fixture selected restore, exact real-profile selected restore, and first-phase exact real-profile Quarantine exist behind their gates. The first tiny exact real-profile Quarantine and selected restore recovery loop both succeeded by user report; the second tiny exact real-profile Quarantine batch also succeeded and currently leaves exact-profile displayed undo work 1.
 
-Fresh current-head next-batch evidence passed with .\tools\Invoke-RealProfileNextBatchReview.cmd on c7cb545: full MVP preflight, accepted package verification with expected package/current-HEAD warning, optional Fixture Acceptance Notes status, exact-profile Restore Manifest display, focused recovery-review and undo-work evidence, and manual WPF checklist printing all completed without WPF launch, real-profile scan, movement, restore, deletion, approval, manifest writes, shortcut creation, installer behavior, or cleanup history.
+The second user-clicked WPF batch moved one exact C:\Users\moxhe pip\cache\http-v2 .body file, 28.93 MB, with moved 1, failed 0, Recovery review no. Post-action read-only summary showed 5 of 11 exact-profile manifests, displayed exact-profile undo work 1, displayed exact-profile recovery review 2, and new manifest D:\WindowsFileCleanerQuarantine\actions\quarantine-action-draft-20260604014901-b7b402a2\restore-manifest.json.
 
-Next best step: ask the user to do the manual WPF next-batch review if they are ready. Do not click real-profile movement from Codex. Do not guide a Quarantine click unless the user explicitly chooses a specific tiny exact C:\Users\moxhe batch after WPF readiness, exact QUARANTINE, Real-Profile Quarantine Approval Evidence, and immediate Pre-Execution Revalidation are visible.
+Next best step: stop after the second tiny exact real-profile batch. Do not chain another real-profile Quarantine batch while exact-profile displayed undo work is present unless a new Grill with Docs pass decides that outstanding selected-manifest undo work is acceptable. Recovery remains selected-manifest-only with exact RESTORE and immediate selected-restore revalidation if needed.
 
-Accepted package baseline remains .local\releases\windows-file-cleaner-v20260602-011556 at commit bc9b869 with completed ignored acceptance notes .local\release-acceptance\release-acceptance-20260602-011743.md. Use docs/operations/*.md for command detail. Historical packet evidence is archived in .codex/archive/progress-2026-05-2026-06.md and docs/codex/archive/thread-handoff-2026-06-02.md.
+Accepted package baseline remains .local\releases\windows-file-cleaner-v20260602-011556 at commit bc9b869 with completed ignored acceptance notes .local\release-acceptance\release-acceptance-20260602-011743.md. Verified package candidate .local\releases\windows-file-cleaner-v20260604-121922 at commit e6ac3eb is pending human package acceptance; ignored notes .local\release-acceptance\release-acceptance-20260604-122009.md are incomplete. Use docs/operations/*.md for command detail. Historical packet evidence is archived in .codex/archive/progress-2026-05-2026-06.md and docs/codex/archive/thread-handoff-2026-06-02.md.
 ```

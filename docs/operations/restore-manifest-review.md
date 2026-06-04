@@ -1,6 +1,6 @@
 # Restore Manifest Review Runbook
 
-Last updated: 2026-06-03
+Last updated: 2026-06-04
 
 Restore Manifest discovery/review lives in the WPF Quarantine tab's `Restore Manifest Review` panel. Terminal summaries are read-only evidence and do not add broad/all-manifest restore.
 
@@ -13,8 +13,10 @@ Restore Manifest discovery/review lives in the WPF Quarantine tab's `Restore Man
 ## Exact-Profile Display
 
 ```powershell
-.\tools\Summarize-RestoreManifests.cmd -CleanupScope "C:\Users\moxhe" -RequireAnyDisplayed -RequireNoDisplayedUndoWork
+.\tools\Summarize-RestoreManifests.cmd -CleanupScope "C:\Users\moxhe" -ShowEntries
 ```
+
+After the 2026-06-04 second exact-profile Quarantine batch, displayed undo work is expected to be `1` until the selected manifest is restored. Use `-RequireNoDisplayedUndoWork` only when zero displayed undo work is the intended assertion.
 
 ## Recovery Review Focus
 
@@ -25,7 +27,7 @@ Restore Manifest discovery/review lives in the WPF Quarantine tab's `Restore Man
 ## Undo Work Focus
 
 ```powershell
-.\tools\Summarize-RestoreManifests.cmd -CleanupScope "C:\Users\moxhe" -UndoWorkOnly
+.\tools\Summarize-RestoreManifests.cmd -CleanupScope "C:\Users\moxhe" -UndoWorkOnly -ShowEntries
 ```
 
 ## Boundaries
