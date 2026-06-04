@@ -15,7 +15,7 @@ Read first: `docs/codex/current-state.md`.
 
 Latest docs/workflow packet: `2026-06-04-startup-context-compaction`. It moved oversized read-first docs into reference/archive files and replaced them with compact active docs to reduce Codex thread lag. No app behavior changed.
 
-Latest tooling/evidence packet: `2026-06-04-pending-package-acceptance-notes-refresh`. It refreshed the pending candidate package acceptance notes after docs-only `HEAD` advanced, so the human acceptance path now has exact `-ReleasePath` commands and explicit package/current-HEAD mismatch recording guidance.
+Latest tooling/evidence packet: `2026-06-04-daily-readiness-latest-package-notes`. Daily readiness now surfaces the latest package acceptance notes as informational context after verifying the completed accepted package baseline.
 
 Latest package candidate: `.local\releases\windows-file-cleaner-v20260604-121922` at app commit `e6ac3eb`, verified but not human-accepted. Current pending acceptance notes: `.local\release-acceptance\release-acceptance-20260604-134337.md`.
 
@@ -40,6 +40,34 @@ Post-action evidence:
 6. Use `docs/operations/*.md` for command detail.
 
 ## Recent Packet Summaries
+
+### 2026-06-04: Daily Readiness Latest Package Notes
+
+Status: completed
+
+Goal:
+
+- Make pending package acceptance state visible from the daily terminal readiness command without promoting the pending candidate or launching WPF.
+
+Safety profile:
+
+- `terminal-readonly`. This packet changes terminal output and docs only. No WPF launch, scan, movement, restore, deletion, approval, installed shortcut, installer behavior, or cleanup history.
+
+Changes:
+
+- `Invoke-DailyLocalReadiness.cmd` now prints an informational `Latest package acceptance notes` block after the completed accepted package evidence block.
+- The accepted package evidence block still uses `-RequireComplete`, so incomplete candidate notes do not replace the accepted `bc9b869` baseline.
+- The latest-notes block is non-fatal; if a future ignored notes file is malformed, accepted package readiness still relies on completed accepted notes only.
+- Daily-use docs and read-first handoff docs now call out that incomplete candidate notes are informational.
+
+Verification:
+
+- `cmd.exe /c tools\Invoke-DailyLocalReadiness.cmd`
+- `git diff --check`
+
+ADRs:
+
+- Skipped; this preserves ADR 0020 by keeping accepted package commands as the daily path and not creating shortcuts, installers, or package promotion behavior.
 
 ### 2026-06-04: Pending Package Acceptance Notes Refresh
 
@@ -112,6 +140,7 @@ ADRs:
 ### Current Live Product And Package Packets
 
 - `2026-06-04-local-release-acceptance-command-stamping`: completed and pushed at `5a4115e`.
+- `2026-06-04-daily-readiness-latest-package-notes`: daily readiness surfaces the latest package acceptance notes as informational context.
 - `2026-06-04-pending-package-acceptance-notes-refresh`: refreshed pending candidate notes at `.local\release-acceptance\release-acceptance-20260604-134337.md`.
 - `2026-06-04-local-release-recorder-commit-evidence-guard`: recorder blocks missing verifier evidence and requires explicit commit-mismatch recording.
 - `2026-06-04-accepted-package-complete-notes-selection`: accepted-package helpers select latest complete notes by default.

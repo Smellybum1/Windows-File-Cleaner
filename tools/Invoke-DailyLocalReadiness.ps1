@@ -63,10 +63,33 @@ function Invoke-DailyReadinessStep {
     }
 }
 
+function Invoke-DailyReadinessInformationalStep {
+    param(
+        [Parameter(Mandatory)]
+        [string]$Title,
+
+        [Parameter(Mandatory)]
+        [string]$CommandPath,
+
+        [string[]]$Arguments = @()
+    )
+
+    Write-Host ""
+    Write-Host "== $Title =="
+    & $CommandPath @Arguments
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host ""
+        Write-Host "Informational daily local readiness step did not complete: $Title"
+        Write-Host "Exit code: $LASTEXITCODE"
+        Write-Host "Accepted package readiness continues to use completed accepted notes only."
+    }
+}
+
 Write-Host "Daily local readiness check"
 Write-Host "Repository: $repoFullPath"
 Write-Host "Boundary: read-only and print-only; this does not create shortcuts, install anything, launch WPF, click Scan, scan, move, restore, delete, approve cleanup, or create cleanup history."
 Write-Host "Package verification: the accepted package verifier runs once before printing the normal launch command; the fixture print-only command then skips duplicate package verification in this same readiness flow."
+Write-Host "Latest package acceptance notes: informational only; incomplete candidate notes do not replace the completed accepted package baseline."
 Write-Host "Fixture acceptance notes: optional local ignored-note summary only; strict completion is checked only when requested."
 Write-Host "Stop before real-profile movement unless the specific batch or selected Restore Manifest has fresh readiness evidence, exact confirmation, and explicit user approval."
 
@@ -128,6 +151,7 @@ if ($RequireAnyRestoreManifest.IsPresent) {
 }
 
 Invoke-DailyReadinessStep -Title "Accepted package evidence" -CommandPath $releaseNotesSummary -Arguments $notesArguments
+Invoke-DailyReadinessInformationalStep -Title "Latest package acceptance notes (informational)" -CommandPath $releaseNotesSummary
 if ($shouldSummarizeFixtureAcceptance) {
     Invoke-DailyReadinessStep -Title "Fixture acceptance notes evidence" -CommandPath $fixtureNotesSummary -Arguments $fixtureNotesArguments
 }

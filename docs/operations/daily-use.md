@@ -24,6 +24,8 @@ Strict fixture-notes completion check:
 
 Safety profile: `terminal-readonly` from `docs/codex/safety-profiles.md`.
 
+The daily readiness output first verifies the latest completed accepted package notes, then shows the latest package acceptance notes as informational context. Incomplete candidate notes do not replace the accepted package baseline.
+
 ## Accepted Package Launch Commands
 
 Print the accepted package command without launching WPF:

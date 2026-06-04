@@ -14,7 +14,7 @@ Start with terminal-only readiness and accepted package print commands:
 .\tools\Start-AcceptedLocalRelease.cmd -Fixture -PrintOnly
 ```
 
-Remove `-PrintOnly` only when you intentionally want to launch the accepted package. These commands do not install shortcuts or approve cleanup.
+Remove `-PrintOnly` only when you intentionally want to launch the accepted package. These commands do not install shortcuts or approve cleanup. Daily readiness also shows the latest package acceptance notes for context; incomplete candidate notes do not replace the accepted baseline.
 
 Before any future tiny exact real-profile Quarantine review, use the terminal-only evidence wrapper and then stop for human WPF review:
 

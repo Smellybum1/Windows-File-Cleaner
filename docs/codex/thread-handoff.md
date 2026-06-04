@@ -20,7 +20,7 @@ Load detailed reference docs or archived evidence only when the task needs histo
 - Repo: `D:\Codex\Windows File Cleaner`
 - Branch: `main`
 - Latest package/evidence packet: `2026-06-04-verified-portable-package-candidate`
-- Latest tooling/evidence packet: `2026-06-04-pending-package-acceptance-notes-refresh`
+- Latest tooling/evidence packet: `2026-06-04-daily-readiness-latest-package-notes`
 - Latest docs/workflow packet: `2026-06-04-startup-context-compaction`
 - Latest live-product evidence: `2026-06-04-second-real-profile-quarantine-batch`
 - Latest working app packet: `2026-06-04-real-profile-quarantine-inline-status-wording`
@@ -31,6 +31,7 @@ Load detailed reference docs or archived evidence only when the task needs histo
 - Accepted notes: `.local\release-acceptance\release-acceptance-20260602-011743.md`
 - Verified package candidate pending acceptance: `.local\releases\windows-file-cleaner-v20260604-121922` at commit `e6ac3eb`
 - Current pending candidate notes: `.local\release-acceptance\release-acceptance-20260604-134337.md`
+- Daily readiness shows the latest package acceptance notes as informational context after verifying the completed accepted notes.
 - Accepted-package helpers select the latest complete acceptance notes by default; use explicit notes paths for pending candidate review.
 - `Record-LocalReleaseAcceptanceNotes.cmd` requires verifier evidence and explicit `-RecordCommitMismatch` when package/current-HEAD mismatch evidence is not already recorded.
 - Generated package acceptance notes stamp the actual `-ReleasePath` verifier/checklist commands and include `-RequireCurrentCommit` only when that switch created the notes.
@@ -86,7 +87,7 @@ The second user-clicked WPF batch moved one exact C:\Users\moxhe pip\cache\http-
 
 Next best step: stop after the second tiny exact real-profile batch. Do not chain another real-profile Quarantine batch while exact-profile displayed undo work is present unless a new Grill with Docs pass decides that outstanding selected-manifest undo work is acceptable. Recovery remains selected-manifest-only with exact RESTORE and immediate selected-restore revalidation if needed.
 
-Accepted package baseline remains .local\releases\windows-file-cleaner-v20260602-011556 at commit bc9b869 with completed ignored acceptance notes .local\release-acceptance\release-acceptance-20260602-011743.md. Accepted-package helpers select latest complete notes by default.
+Accepted package baseline remains .local\releases\windows-file-cleaner-v20260602-011556 at commit bc9b869 with completed ignored acceptance notes .local\release-acceptance\release-acceptance-20260602-011743.md. Accepted-package helpers select latest complete notes by default. Daily readiness shows latest package acceptance notes as informational context but still keeps incomplete candidate notes from replacing the accepted baseline.
 
 Verified package candidate .local\releases\windows-file-cleaner-v20260604-121922 at commit e6ac3eb is pending human package acceptance; refreshed pending notes .local\release-acceptance\release-acceptance-20260604-134337.md are incomplete and should be inspected with an explicit path. They stamp the actual -ReleasePath verifier/checklist commands and intentionally leave commit evidence unrecorded until the human accepts the expected package/current-HEAD mismatch.
 
