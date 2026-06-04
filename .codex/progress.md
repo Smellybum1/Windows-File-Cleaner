@@ -13,7 +13,7 @@ Read archived evidence only when the current task needs old packet detail.
 
 Read first: `docs/codex/current-state.md`.
 
-Latest docs/workflow packet: `2026-06-04-ci-operations-runbook`. It added a compact CI runbook for normal MVP Preflight behavior, the manual Windows image canary procedure, baseline-change rule, and safety boundary. No app behavior changed.
+Latest docs/workflow packet: `2026-06-04-thread-handoff-ci-alignment`. It refreshed `docs/codex/thread-handoff.md` so fresh-thread startup context names the CI Windows image canary, CI operations runbook, push-run evidence, and current docs packet. No app behavior changed.
 
 Latest tooling/evidence packet: `2026-06-04-ci-windows-image-canary`. GitHub Actions MVP Preflight now has a manual runner-image canary for `windows-2025-vs2026` while push and pull-request runs remain on `windows-2022`.
 
@@ -40,6 +40,33 @@ Post-action evidence:
 6. Use `docs/operations/*.md` for command detail.
 
 ## Recent Packet Summaries
+
+### 2026-06-04: Thread Handoff CI Alignment
+
+Status: completed
+
+Goal:
+
+- Keep the active thread handoff aligned with the current CI and docs workflow packets so fresh Codex starts do not inherit stale package/startup packet names.
+
+Safety profile:
+
+- `docs-only`. The change updates committed documentation only. It does not launch WPF, scan real-profile files, move, restore, delete, approve cleanup, promote a package, create shortcuts, install anything, write acceptance notes, write Restore Manifests, or create cleanup history.
+
+Changes:
+
+- `docs\codex\thread-handoff.md` now names the CI Windows image canary as the latest tooling/evidence packet.
+- It names the thread-handoff CI alignment as the latest docs/workflow packet.
+- It now mentions the `actions/checkout@v6` / `actions/setup-dotnet@v5` / `windows-2022` baseline, manual `windows-2025-vs2026` canary, push CI #360/#361/#362 evidence, and `docs\operations\ci.md`.
+- The startup prompt inside the handoff now includes the CI canary/runbook context.
+
+Verification:
+
+- `git diff --check`
+
+ADRs:
+
+- Skipped; this is handoff documentation alignment for existing CI/docs workflow behavior and does not change product behavior, cleanup execution, restore execution, persistence, security, data model, deployment packaging, or core UX flow.
 
 ### 2026-06-04: CI Operations Runbook
 

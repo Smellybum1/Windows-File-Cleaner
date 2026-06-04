@@ -12,7 +12,7 @@ Use this as the first compact orientation file for new Codex threads. Historical
 - Latest working app packet: real-profile Quarantine inline status wording fix.
 - Latest package candidate: `.local\releases\windows-file-cleaner-v20260604-121922` at `e6ac3eb`, verified but not human-accepted.
 - Latest tooling/evidence packet: CI Windows image canary.
-- Latest docs/workflow packet: CI operations runbook.
+- Latest docs/workflow packet: thread handoff CI alignment.
 - Previous docs/workflow baseline: `1ea1b76 Reduce workflow markdown bloat`
 - App stack: C# / WPF / .NET 8
 - Product: local Windows cleanup reviewer for `C:\Users\moxhe`
