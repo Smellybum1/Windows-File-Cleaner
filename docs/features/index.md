@@ -6,6 +6,7 @@ Use this index before opening individual feature briefs. The folder contains man
 
 ## Active Or Current
 
+- `2026-06-04-local-release-acceptance-command-stamping.md`: generated package acceptance notes stamp actual release-path/current-commit commands.
 - `2026-06-04-local-release-recorder-commit-evidence-guard.md`: release acceptance recorder now blocks missing verifier evidence and requires explicit commit-mismatch recording.
 - `2026-06-04-accepted-package-complete-notes-selection.md`: accepted-package commands select latest complete notes while pending candidate notes require explicit paths.
 - `2026-06-04-verified-portable-package-candidate.md`: verified current app-code portable package candidate, pending human package acceptance.

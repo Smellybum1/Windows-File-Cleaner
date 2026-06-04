@@ -96,6 +96,35 @@ function Format-LaunchCommand {
     return ($parts -join " ")
 }
 
+function Format-LocalReleaseToolArgument {
+    param(
+        [Parameter(Mandatory)]
+        [string]$Argument
+    )
+
+    if ($Argument.Contains(" ") -or $Argument.Contains("`"")) {
+        return "`"$($Argument.Replace('"', '\"'))`""
+    }
+
+    return $Argument
+}
+
+function Format-LocalReleaseToolCommand {
+    param(
+        [Parameter(Mandatory)]
+        [string]$CommandPath,
+
+        [string[]]$Arguments = @()
+    )
+
+    $parts = @($CommandPath)
+    foreach ($argument in $Arguments) {
+        $parts += Format-LocalReleaseToolArgument -Argument $argument
+    }
+
+    return ($parts -join " ")
+}
+
 function Get-PortableReleaseChecklistItems {
     param(
         [Parameter(Mandatory)]
@@ -272,13 +301,27 @@ function Write-PortableReleaseAcceptanceNotesNextSteps {
         [bool]$RequireCurrentCommitEvidence
     )
 
+    $recordManualAcceptanceCommand = Format-LocalReleaseToolCommand `
+        -CommandPath ".\tools\Record-LocalReleaseAcceptanceNotes.cmd" `
+        -Arguments @("-Path", $NotesPath, "-RecordManualAcceptance")
+    $recordCommitMismatchCommand = Format-LocalReleaseToolCommand `
+        -CommandPath ".\tools\Record-LocalReleaseAcceptanceNotes.cmd" `
+        -Arguments @("-Path", $NotesPath, "-RecordManualAcceptance", "-RecordCommitMismatch")
+    $summaryCommand = Format-LocalReleaseToolCommand `
+        -CommandPath ".\tools\Summarize-LocalReleaseAcceptanceNotes.cmd" `
+        -Arguments @("-Path", $NotesPath)
+    $completionCommand = Format-LocalReleaseToolCommand `
+        -CommandPath ".\tools\Summarize-LocalReleaseAcceptanceNotes.cmd" `
+        -Arguments @("-Path", $NotesPath, "-RequireComplete")
+
     Write-Host "After the package acceptance pass, fill the notes file, then run:"
-    Write-Host ".\tools\Record-LocalReleaseAcceptanceNotes.cmd -Path `"$NotesPath`" -RecordManualAcceptance"
+    Write-Host $recordManualAcceptanceCommand
     if (-not $RequireCurrentCommitEvidence) {
-        Write-Host "If the package/current-HEAD mismatch is intentional, rerun the recorder with -RecordCommitMismatch."
+        Write-Host "If the package/current-HEAD mismatch is intentional, review the verifier warning, then run:"
+        Write-Host $recordCommitMismatchCommand
     }
-    Write-Host ".\tools\Summarize-LocalReleaseAcceptanceNotes.cmd -Path `"$NotesPath`""
-    Write-Host ".\tools\Summarize-LocalReleaseAcceptanceNotes.cmd -Path `"$NotesPath`" -RequireComplete"
+    Write-Host $summaryCommand
+    Write-Host $completionCommand
     Write-Host "These commands update/read ignored notes only; they do not launch WPF, scan, move, restore, delete, approve cleanup, or create cleanup history."
 }
 
@@ -346,6 +389,39 @@ function New-PortableReleaseAcceptanceNotes {
     else {
         "Recorded automatically because Start-LocalRelease completed Test-LocalRelease successfully before writing these notes."
     }
+    $verifierCommandArguments = @("-ReleasePath", $ReleaseDirectory)
+    if ($RequireCurrentCommitEvidence) {
+        $verifierCommandArguments += "-RequireCurrentCommit"
+    }
+    $requiredVerifierCommand = Format-LocalReleaseToolCommand `
+        -CommandPath ".\tools\Test-LocalRelease.cmd" `
+        -Arguments $verifierCommandArguments
+    $checklistCommandArguments = @("-ReleasePath", $ReleaseDirectory, "-ChecklistOnly")
+    if ($RequireCurrentCommitEvidence) {
+        $checklistCommandArguments += "-RequireCurrentCommit"
+    }
+    $checklistCommand = Format-LocalReleaseToolCommand `
+        -CommandPath ".\tools\Start-LocalRelease.cmd" `
+        -Arguments $checklistCommandArguments
+    $fixtureChecklistCommandArguments = @("-ReleasePath", $ReleaseDirectory, "-Fixture", "-ChecklistOnly")
+    if ($RequireCurrentCommitEvidence) {
+        $fixtureChecklistCommandArguments += "-RequireCurrentCommit"
+    }
+    $fixtureChecklistCommand = Format-LocalReleaseToolCommand `
+        -CommandPath ".\tools\Start-LocalRelease.cmd" `
+        -Arguments $fixtureChecklistCommandArguments
+    $recordManualAcceptanceCommand = Format-LocalReleaseToolCommand `
+        -CommandPath ".\tools\Record-LocalReleaseAcceptanceNotes.cmd" `
+        -Arguments @("-Path", $notesPath, "-RecordManualAcceptance")
+    $recordCommitMismatchCommand = Format-LocalReleaseToolCommand `
+        -CommandPath ".\tools\Record-LocalReleaseAcceptanceNotes.cmd" `
+        -Arguments @("-Path", $notesPath, "-RecordManualAcceptance", "-RecordCommitMismatch")
+    $summaryCommand = Format-LocalReleaseToolCommand `
+        -CommandPath ".\tools\Summarize-LocalReleaseAcceptanceNotes.cmd" `
+        -Arguments @("-Path", $notesPath)
+    $completionCommand = Format-LocalReleaseToolCommand `
+        -CommandPath ".\tools\Summarize-LocalReleaseAcceptanceNotes.cmd" `
+        -Arguments @("-Path", $notesPath, "-RequireComplete")
 
     New-Item -ItemType Directory -Path $notesRoot -Force | Out-Null
 
@@ -371,9 +447,12 @@ function New-PortableReleaseAcceptanceNotes {
     $lines.Add("- Fixture launch script: $FixtureLaunchScript")
     $lines.Add("- Fixture launch command: $FixtureLaunchCommand")
     $lines.Add("- Fixture Cleanup Scope: $FixtureScopePath")
-    $lines.Add('- Required verifier: `.\tools\Test-LocalRelease.cmd -RequireCurrentCommit`')
-    $lines.Add('- Checklist command: `.\tools\Start-LocalRelease.cmd -ChecklistOnly -RequireCurrentCommit`')
-    $lines.Add('- Fixture checklist command: `.\tools\Start-LocalRelease.cmd -Fixture -ChecklistOnly -RequireCurrentCommit`')
+    $lines.Add("- Required verifier: ``$requiredVerifierCommand``")
+    $lines.Add("- Checklist command: ``$checklistCommand``")
+    $lines.Add("- Fixture checklist command: ``$fixtureChecklistCommand``")
+    if (-not $RequireCurrentCommitEvidence) {
+        $lines.Add('- Package/current-HEAD mismatch note: current-commit evidence was not required when these notes were created; review the verifier warning and use `-RecordCommitMismatch` only if accepting that mismatch.')
+    }
     $lines.Add("- [$verifierCheckbox] Verifier passed for this release package.")
     $lines.Add("- [$commitCheckbox] Package commit matched current HEAD or mismatch was intentionally recorded.")
     $lines.Add("- [ ] Package was launched normally or normal launch was intentionally deferred.")
@@ -393,12 +472,12 @@ function New-PortableReleaseAcceptanceNotes {
     $lines.Add("After filling this file, run these commands from the repository root:")
     $lines.Add("")
     $lines.Add('```powershell')
-    $lines.Add(('.\tools\Record-LocalReleaseAcceptanceNotes.cmd -Path "{0}" -RecordManualAcceptance' -f $notesPath))
+    $lines.Add($recordManualAcceptanceCommand)
     if (-not $RequireCurrentCommitEvidence) {
-        $lines.Add(('.\tools\Record-LocalReleaseAcceptanceNotes.cmd -Path "{0}" -RecordManualAcceptance -RecordCommitMismatch' -f $notesPath))
+        $lines.Add($recordCommitMismatchCommand)
     }
-    $lines.Add(('.\tools\Summarize-LocalReleaseAcceptanceNotes.cmd -Path "{0}"' -f $notesPath))
-    $lines.Add(('.\tools\Summarize-LocalReleaseAcceptanceNotes.cmd -Path "{0}" -RequireComplete' -f $notesPath))
+    $lines.Add($summaryCommand)
+    $lines.Add($completionCommand)
     $lines.Add('```')
     $lines.Add("")
     $lines.Add("These commands read this ignored notes file only. They do not launch WPF, scan, move, restore, delete, approve cleanup, or create cleanup history.")

@@ -217,7 +217,7 @@ To also write a local, ignored markdown notes template for package acceptance:
 .\tools\Start-LocalRelease.cmd -ChecklistOnly -RequireCurrentCommit -WriteAcceptanceNotes
 ```
 
-The template is written under `.local\release-acceptance`, stamps the repo branch/commit, current worktree state, package metadata commit/preflight evidence, package paths, exact normal and fixture launch commands, local evidence checkboxes, and exact post-pass recorder/summary commands. When the launcher verifies the package first, the notes pre-record verifier evidence; when `-RequireCurrentCommit` is used and passes, they also pre-record current-commit evidence. Normal launch and fixture launch/scan acceptance remain manual evidence. After filling the notes, summarize the latest ignored notes or a specific notes file:
+The template is written under `.local\release-acceptance`, stamps the repo branch/commit, current worktree state, package metadata commit/preflight evidence, package paths, exact normal and fixture launch commands, local evidence checkboxes, and exact post-pass recorder/summary commands. It also stamps the actual `-ReleasePath` verifier/checklist commands and includes `-RequireCurrentCommit` only when that switch was used. When the launcher verifies the package first, the notes pre-record verifier evidence; when `-RequireCurrentCommit` is used and passes, they also pre-record current-commit evidence. Normal launch and fixture launch/scan acceptance remain manual evidence. After filling the notes, summarize the latest ignored notes or a specific notes file:
 
 ```powershell
 .\tools\Summarize-LocalReleaseAcceptanceNotes.cmd

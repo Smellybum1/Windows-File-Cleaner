@@ -91,6 +91,8 @@ Later packet note: `Accepted Package Complete Notes Selection` made accepted-pac
 
 Later packet note: `Local Release Recorder Commit Evidence Guard` made package acceptance recording fail when verifier evidence is missing, and require explicit `-RecordCommitMismatch` before package/current-HEAD mismatch evidence is marked recorded. Generated package acceptance notes now include the recorder command and the explicit mismatch variant when notes are created without `-RequireCurrentCommit`.
 
+Later packet note: `Local Release Acceptance Command Stamping` made generated package acceptance notes stamp the actual `-ReleasePath` verifier/checklist commands and include `-RequireCurrentCommit` only when the notes were created with that switch.
+
 ## Domain Language Changes
 
 No new durable domain terms.

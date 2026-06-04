@@ -8,7 +8,7 @@ This file is now the compact current progress log. Historical packet evidence fr
 
 Read first: `docs/codex/current-state.md`.
 
-The latest tooling/evidence packet is `2026-06-04-local-release-recorder-commit-evidence-guard`: package acceptance recording now refuses missing verifier evidence and requires explicit `-RecordCommitMismatch` before package/current-HEAD mismatch evidence is marked recorded.
+The latest tooling/evidence packet is `2026-06-04-local-release-acceptance-command-stamping`: generated package acceptance notes now stamp the actual `-ReleasePath` verifier/checklist commands, include `-RequireCurrentCommit` only when that switch created the notes, and print the exact commit-mismatch recorder command when current-commit evidence is intentionally not required.
 
 The latest package candidate remains `2026-06-04-verified-portable-package-candidate`: package `.local\releases\windows-file-cleaner-v20260604-121922` was cut from app commit `e6ac3eb` after the real-profile inline status wording fix, verified with current-commit package checks, and left pending human package acceptance.
 
@@ -38,6 +38,55 @@ Package acceptance recording now requires verifier evidence and explicit package
 6. Start an ADR 0020 shortcut/installer follow-up only if the user explicitly asks for installed shortcut or installer automation.
 
 ## Recent Completed Packets
+
+### 2026-06-04: Local Release Acceptance Command Stamping
+
+Status: completed
+
+Goal:
+
+- Make generated portable release acceptance notes stamp the actual verifier, checklist, and recorder commands for the package context that created the notes.
+
+Safety profile:
+
+- `terminal-readonly`; verification generated ignored test notes under `.local\release-acceptance` and removed them after confirming each generated path stayed under that ignored notes folder. No WPF launch, scan, movement, restore, deletion, approval, installed shortcut, installer behavior, or cleanup history.
+
+Changes:
+
+- `Start-LocalRelease.ps1` now formats release-tool commands with quoted arguments when paths contain spaces.
+- Generated notes include `-ReleasePath "<release folder>"` for verifier and checklist commands.
+- Generated notes include `-RequireCurrentCommit` only when the notes were created with that switch.
+- Behind-current-HEAD notes include a package/current-HEAD mismatch note plus the exact `-RecordCommitMismatch` recorder command.
+
+Verification:
+
+- `cmd.exe /c tools\Start-LocalRelease.cmd -ReleasePath ".local\releases\windows-file-cleaner-v20260604-121922" -ChecklistOnly -WriteAcceptanceNotes`
+- Parsed the generated ignored notes and verified release-path command stamping, `-RecordCommitMismatch` guidance, the package/current-HEAD mismatch note, and no stale `-RequireCurrentCommit` in the required/checklist command lines; then removed the generated notes after path containment validation.
+- `cmd.exe /c tools\Start-LocalRelease.cmd -ReleasePath ".local\releases\windows-file-cleaner-v20260604-121922" -ChecklistOnly -WriteAcceptanceNotes -SkipVerify -RequireCurrentCommit`
+- Parsed the generated ignored notes and verified current-commit command stamping, no mismatch note, and no `-RecordCommitMismatch` recorder command; then removed the generated notes after path containment validation.
+- `git diff --check`
+- `cmd.exe /c tools\Summarize-LocalReleaseAcceptanceNotes.cmd -RequireComplete`
+- `cmd.exe /c tools\Start-AcceptedLocalRelease.cmd -PrintOnly`
+
+Docs updated:
+
+- `docs/features/2026-06-04-local-release-acceptance-command-stamping.md`
+- `docs/features/index.md`
+- `docs/features/2026-06-01-live-product-readiness-roadmap.md`
+- `docs/codex/current-state.md`
+- `.codex/progress.md`
+- `docs/operations/portable-release.md`
+- `docs/domain/context.md`
+- `docs/domain/glossary.md`
+- `README.md`
+
+ADRs:
+
+- Skipped; this is a release-acceptance tooling correction under ADR 0020 and does not add installed shortcut, installer, cleanup, restore, deletion, persistence, or history behavior.
+
+Follow-up:
+
+- Complete the human package acceptance pass for `.local\releases\windows-file-cleaner-v20260604-121922` before promoting it over the accepted `bc9b869` baseline.
 
 ### 2026-06-04: Local Release Recorder Commit Evidence Guard
 
