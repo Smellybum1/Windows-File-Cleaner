@@ -26,6 +26,8 @@ Safety profile: `terminal-readonly` from `docs/codex/safety-profiles.md`.
 
 The daily readiness output first verifies the latest completed accepted package notes, then shows the latest package acceptance notes as informational context. Incomplete candidate notes do not replace the accepted package baseline.
 
+When the latest candidate notes are incomplete, that informational summary also prints the guarded recorder and recheck commands for the human package acceptance pass.
+
 ## Accepted Package Launch Commands
 
 Print the accepted package command without launching WPF:

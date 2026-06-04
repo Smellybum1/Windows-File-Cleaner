@@ -15,7 +15,7 @@ Read first: `docs/codex/current-state.md`.
 
 Latest docs/workflow packet: `2026-06-04-startup-context-compaction`. It moved oversized read-first docs into reference/archive files and replaced them with compact active docs to reduce Codex thread lag. No app behavior changed.
 
-Latest tooling/evidence packet: `2026-06-04-daily-readiness-latest-package-notes`. Daily readiness now surfaces the latest package acceptance notes as informational context after verifying the completed accepted package baseline.
+Latest tooling/evidence packet: `2026-06-04-package-acceptance-summary-next-steps`. Incomplete package acceptance summaries now print guarded recorder and recheck commands so the pending human acceptance path is visible from both explicit summaries and daily readiness.
 
 Latest package candidate: `.local\releases\windows-file-cleaner-v20260604-121922` at app commit `e6ac3eb`, verified but not human-accepted. Current pending acceptance notes: `.local\release-acceptance\release-acceptance-20260604-134337.md`.
 
@@ -40,6 +40,37 @@ Post-action evidence:
 6. Use `docs/operations/*.md` for command detail.
 
 ## Recent Packet Summaries
+
+### 2026-06-04: Package Acceptance Summary Next Steps
+
+Status: completed
+
+Goal:
+
+- Make incomplete package acceptance summaries print the exact next commands while preserving manual acceptance and package-promotion boundaries.
+
+Safety profile:
+
+- `terminal-readonly`. This packet changes terminal output and docs only. No WPF launch, scan, movement, restore, deletion, approval, installed shortcut, installer behavior, package promotion, or cleanup history.
+
+Changes:
+
+- `Summarize-LocalReleaseAcceptanceNotes.cmd` now prints `Pending acceptance next steps` when the selected notes are incomplete.
+- The next-step block prints the guarded recorder command only after verifier evidence is recorded, and uses `-RecordCommitMismatch` when commit evidence is not recorded.
+- The block repeats summary and completion-check commands and says the human package acceptance pass must happen before recording manual acceptance.
+- Completed accepted notes remain unchanged: no pending next-step block is printed.
+
+Verification:
+
+- `cmd.exe /c tools\Summarize-LocalReleaseAcceptanceNotes.cmd -Path ".local\release-acceptance\release-acceptance-20260604-134337.md"`
+- `cmd.exe /c tools\Summarize-LocalReleaseAcceptanceNotes.cmd -RequireComplete`
+- Expected incomplete candidate check: `cmd.exe /c tools\Summarize-LocalReleaseAcceptanceNotes.cmd -Path ".local\release-acceptance\release-acceptance-20260604-134337.md" -RequireComplete` exited `1`.
+- `cmd.exe /c tools\Invoke-DailyLocalReadiness.cmd`
+- `git diff --check` passed with expected CRLF warnings only.
+
+ADRs:
+
+- Skipped; this is terminal guidance only and preserves ADR 0020 portable-package boundaries.
 
 ### 2026-06-04: Daily Readiness Latest Package Notes
 
@@ -140,6 +171,7 @@ ADRs:
 ### Current Live Product And Package Packets
 
 - `2026-06-04-local-release-acceptance-command-stamping`: completed and pushed at `5a4115e`.
+- `2026-06-04-package-acceptance-summary-next-steps`: incomplete package acceptance summaries print guarded recorder and recheck commands.
 - `2026-06-04-daily-readiness-latest-package-notes`: daily readiness surfaces the latest package acceptance notes as informational context.
 - `2026-06-04-pending-package-acceptance-notes-refresh`: refreshed pending candidate notes at `.local\release-acceptance\release-acceptance-20260604-134337.md`.
 - `2026-06-04-local-release-recorder-commit-evidence-guard`: recorder blocks missing verifier evidence and requires explicit commit-mismatch recording.

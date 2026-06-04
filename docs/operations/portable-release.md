@@ -30,6 +30,8 @@ The current pending acceptance notes were refreshed after docs-only `HEAD` advan
 
 Without `-Path`, `-RequireComplete` selects the latest completed acceptance notes. Use an explicit `-Path` when inspecting a pending candidate notes file.
 
+Incomplete notes summaries print guarded next-step commands. For a behind-current-`HEAD` candidate, the recorder command includes `-RecordCommitMismatch` and should be used only after the human package acceptance pass and intentional package/current-HEAD mismatch acceptance.
+
 ## Print Accepted Launch Commands
 
 ```powershell

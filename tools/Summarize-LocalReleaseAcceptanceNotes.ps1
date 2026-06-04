@@ -191,6 +191,92 @@ function Get-CompactSummaryText {
     return ($compactText.Substring(0, $MaxLength - 3).TrimEnd() + "...")
 }
 
+function Format-LocalReleaseToolArgument {
+    param(
+        [Parameter(Mandatory)]
+        [string]$Argument
+    )
+
+    if ($Argument.Contains(" ") -or $Argument.Contains("`"")) {
+        return "`"$($Argument.Replace('"', '\"'))`""
+    }
+
+    return $Argument
+}
+
+function Format-LocalReleaseToolCommand {
+    param(
+        [Parameter(Mandatory)]
+        [string]$CommandPath,
+
+        [string[]]$Arguments = @()
+    )
+
+    $parts = @($CommandPath)
+    foreach ($argument in $Arguments) {
+        $parts += Format-LocalReleaseToolArgument -Argument $argument
+    }
+
+    return ($parts -join " ")
+}
+
+function Write-PortableReleaseAcceptanceNextSteps {
+    param(
+        [Parameter(Mandatory)]
+        [string]$NotesPath,
+
+        [Parameter(Mandatory)]
+        [string]$VerifierEvidenceState,
+
+        [Parameter(Mandatory)]
+        [string]$CommitEvidenceState,
+
+        [Parameter(Mandatory)]
+        [bool]$IsComplete
+    )
+
+    if ($IsComplete) {
+        return
+    }
+
+    $summaryCommand = Format-LocalReleaseToolCommand `
+        -CommandPath ".\tools\Summarize-LocalReleaseAcceptanceNotes.cmd" `
+        -Arguments @("-Path", $NotesPath)
+    $completionCommand = Format-LocalReleaseToolCommand `
+        -CommandPath ".\tools\Summarize-LocalReleaseAcceptanceNotes.cmd" `
+        -Arguments @("-Path", $NotesPath, "-RequireComplete")
+
+    Write-Host ""
+    Write-Host "Pending acceptance next steps:"
+    Write-Host "- Complete the human package acceptance pass before recording manual acceptance."
+
+    if ($VerifierEvidenceState -ne "Recorded") {
+        Write-Host "- Verifier evidence is $VerifierEvidenceState; run the required verifier for this notes file before recording manual acceptance."
+    }
+    elseif ($CommitEvidenceState -eq "Recorded") {
+        $recordCommand = Format-LocalReleaseToolCommand `
+            -CommandPath ".\tools\Record-LocalReleaseAcceptanceNotes.cmd" `
+            -Arguments @("-Path", $NotesPath, "-RecordManualAcceptance")
+        Write-Host "- After the human pass, record manual acceptance with:"
+        Write-Host $recordCommand
+    }
+    elseif ($CommitEvidenceState -eq "Not recorded") {
+        $recordMismatchCommand = Format-LocalReleaseToolCommand `
+            -CommandPath ".\tools\Record-LocalReleaseAcceptanceNotes.cmd" `
+            -Arguments @("-Path", $NotesPath, "-RecordManualAcceptance", "-RecordCommitMismatch")
+        Write-Host "- Commit evidence is not recorded. If the package/current-HEAD mismatch is intentional, review and accept that mismatch, then run:"
+        Write-Host $recordMismatchCommand
+    }
+    else {
+        Write-Host "- Commit evidence is $CommitEvidenceState; inspect the notes file before recording manual acceptance."
+    }
+
+    Write-Host "- Review or recheck with:"
+    Write-Host $summaryCommand
+    Write-Host $completionCommand
+    Write-Host "These commands update/read ignored notes only; they do not launch WPF, scan, move, restore, delete, approve cleanup, or create cleanup history."
+}
+
 function Get-PortableReleaseChecklistEntries {
     param(
         [string[]]$Lines
@@ -301,6 +387,7 @@ $verifierEvidenceState = Get-CheckboxEvidenceState -Lines $lines -Label "Verifie
 $commitEvidenceState = Get-CheckboxEvidenceState -Lines $lines -Label "Package commit matched current HEAD or mismatch was intentionally recorded."
 $normalLaunchEvidenceState = Get-CheckboxEvidenceState -Lines $lines -Label "Package was launched normally or normal launch was intentionally deferred."
 $fixtureLaunchEvidenceState = Get-CheckboxEvidenceState -Lines $lines -Label "Fixture launch and read-only fixture Scan were completed or intentionally deferred."
+$notesComplete = Test-PortableReleaseAcceptanceComplete -Lines $lines
 
 Write-Host "Portable release acceptance notes summary"
 Write-Host "Notes file: $fullNotesPath"
@@ -344,6 +431,11 @@ else {
 
 Write-Host ""
 Write-Host "This is a read-only summary of local ignored notes. It does not launch WPF, scan, move, restore, delete, approve cleanup, or create cleanup history."
+Write-PortableReleaseAcceptanceNextSteps `
+    -NotesPath $fullNotesPath `
+    -VerifierEvidenceState $verifierEvidenceState `
+    -CommitEvidenceState $commitEvidenceState `
+    -IsComplete $notesComplete
 
 if ($RequireComplete) {
     $completionBlockers = [System.Collections.Generic.List[string]]::new()

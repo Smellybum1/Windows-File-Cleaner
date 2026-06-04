@@ -35,3 +35,4 @@ No ADR added. This keeps ADR 0020 intact: accepted package commands remain the d
 ## Follow-Up
 
 - Complete human acceptance for `.local\releases\windows-file-cleaner-v20260604-121922` before promoting it.
+- Later packet `2026-06-04-package-acceptance-summary-next-steps.md` made the informational summary print the guarded recorder and recheck commands.
