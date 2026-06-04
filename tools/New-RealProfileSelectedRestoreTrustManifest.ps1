@@ -38,6 +38,10 @@ $itemsRoot = [System.IO.Path]::GetFullPath((Join-Path $actionRoot "items"))
 $manifestPath = [System.IO.Path]::GetFullPath((Join-Path $actionRoot "restore-manifest.json"))
 $quarantinePath = [System.IO.Path]::GetFullPath((Join-Path $itemsRoot $RelativePath))
 
+if (-not ($quarantinePath.StartsWith($itemsRoot + [System.IO.Path]::DirectorySeparatorChar, [System.StringComparison]::OrdinalIgnoreCase))) {
+    throw "Quarantine source must stay inside the action items root: $itemsRoot"
+}
+
 if (Test-Path -LiteralPath $actionRoot) {
     throw "Refusing to reuse an existing action root: $actionRoot"
 }

@@ -39,3 +39,15 @@ MVP preflight also runs a synthetic daily readiness spotlight regression to prov
 - WPF restore remains one selected fixture or exact `C:\Users\moxhe` Restore Manifest after readiness and exact `RESTORE`.
 - Broad/all-manifest restore remains unavailable.
 - Terminal summaries do not launch WPF, scan, move, restore, delete, write manifests, approve cleanup, or create cleanup history.
+
+## Trust Helper Guard
+
+The sacrificial selected-restore trust helper remains a human-intent test tool. It now rejects generated quarantine source paths outside the action `items` root, even when the requested restore target normalizes back inside `C:\Users\moxhe`.
+
+Targeted local regression:
+
+```powershell
+.\tools\Test-RealProfileSelectedRestoreTrustManifestPathGuard.cmd
+```
+
+This runs the helper only with `-WhatIf` and an ignored `.local` Quarantine Root. It does not launch WPF, scan, move, restore, delete, write Restore Manifests, modify real-profile files, approve cleanup, or create cleanup history.
