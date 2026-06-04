@@ -8,6 +8,7 @@ Use this index before opening individual feature briefs. The folder contains man
 
 - `2026-06-04-startup-context-compaction.md`: current docs/context reduction packet for faster Codex threads.
 - `2026-06-04-local-release-acceptance-command-stamping.md`: latest release tooling packet; generated package acceptance notes stamp actual release-path/current-commit commands.
+- `2026-06-04-pending-package-acceptance-notes-refresh.md`: refreshed pending candidate acceptance notes after docs-only `HEAD` advanced beyond the app package commit.
 - `2026-06-04-verified-portable-package-candidate.md`: verified current app-code portable package candidate, pending human package acceptance.
 - `2026-06-04-second-real-profile-quarantine-batch.md`: latest user-clicked exact-profile Quarantine evidence and current stop state.
 - `2026-06-01-live-product-readiness-roadmap.md`: current readiness tracks and next live-product gates.

@@ -15,9 +15,9 @@ Read first: `docs/codex/current-state.md`.
 
 Latest docs/workflow packet: `2026-06-04-startup-context-compaction`. It moved oversized read-first docs into reference/archive files and replaced them with compact active docs to reduce Codex thread lag. No app behavior changed.
 
-Latest tooling/evidence packet before compaction: `2026-06-04-local-release-acceptance-command-stamping`. Generated package acceptance notes stamp actual `-ReleasePath` commands and only include `-RequireCurrentCommit` when that switch created the notes.
+Latest tooling/evidence packet: `2026-06-04-pending-package-acceptance-notes-refresh`. It refreshed the pending candidate package acceptance notes after docs-only `HEAD` advanced, so the human acceptance path now has exact `-ReleasePath` commands and explicit package/current-HEAD mismatch recording guidance.
 
-Latest package candidate: `.local\releases\windows-file-cleaner-v20260604-121922` at app commit `e6ac3eb`, verified but not human-accepted.
+Latest package candidate: `.local\releases\windows-file-cleaner-v20260604-121922` at app commit `e6ac3eb`, verified but not human-accepted. Current pending acceptance notes: `.local\release-acceptance\release-acceptance-20260604-134337.md`.
 
 Accepted package baseline: `.local\releases\windows-file-cleaner-v20260602-011556` at commit `bc9b869`, with completed ignored notes `.local\release-acceptance\release-acceptance-20260602-011743.md`.
 
@@ -40,6 +40,38 @@ Post-action evidence:
 6. Use `docs/operations/*.md` for command detail.
 
 ## Recent Packet Summaries
+
+### 2026-06-04: Pending Package Acceptance Notes Refresh
+
+Status: completed
+
+Goal:
+
+- Refresh the pending candidate acceptance notes after docs-only `HEAD` advanced beyond the packaged app commit, without launching WPF or changing app behavior.
+
+Safety profile:
+
+- `terminal-readonly`. `Start-LocalRelease.cmd -ChecklistOnly -WriteAcceptanceNotes` wrote ignored `.local\release-acceptance` notes only after read-only package verification. No WPF launch, scan, movement, restore, deletion, approval, installed shortcut, installer behavior, or cleanup history.
+
+Changes:
+
+- Generated refreshed pending notes at `.local\release-acceptance\release-acceptance-20260604-134337.md`.
+- Refreshed notes stamp exact `-ReleasePath` verifier, checklist, and fixture checklist commands for `.local\releases\windows-file-cleaner-v20260604-121922`.
+- Refreshed notes keep verifier evidence recorded and leave commit evidence unrecorded until the human explicitly accepts the expected `e6ac3eb` package versus `bb82b29` docs-only `HEAD` mismatch with `-RecordCommitMismatch`.
+- Kept the accepted package baseline on `.local\releases\windows-file-cleaner-v20260602-011556` at `bc9b869`.
+
+Verification:
+
+- `cmd.exe /c tools\Start-LocalRelease.cmd -ReleasePath ".local\releases\windows-file-cleaner-v20260604-121922" -ChecklistOnly -WriteAcceptanceNotes`
+- `cmd.exe /c tools\Summarize-LocalReleaseAcceptanceNotes.cmd -Path ".local\release-acceptance\release-acceptance-20260604-134337.md"`
+- Expected incomplete candidate check: `cmd.exe /c tools\Summarize-LocalReleaseAcceptanceNotes.cmd -Path ".local\release-acceptance\release-acceptance-20260604-134337.md" -RequireComplete` exited `1` with the expected missing commit, human launch, overall result, and checklist evidence.
+- `cmd.exe /c tools\Summarize-LocalReleaseAcceptanceNotes.cmd -RequireComplete` still selected the completed accepted `bc9b869` notes.
+- `cmd.exe /c tools\Start-AcceptedLocalRelease.cmd -PrintOnly` still printed the accepted `bc9b869` launch command without launching WPF.
+- `git diff --check` passed with expected CRLF warnings only.
+
+ADRs:
+
+- Skipped; this refreshes ignored acceptance evidence and docs only under ADR 0020 portable-package boundaries.
 
 ### 2026-06-04: Startup Context Compaction
 
@@ -80,6 +112,7 @@ ADRs:
 ### Current Live Product And Package Packets
 
 - `2026-06-04-local-release-acceptance-command-stamping`: completed and pushed at `5a4115e`.
+- `2026-06-04-pending-package-acceptance-notes-refresh`: refreshed pending candidate notes at `.local\release-acceptance\release-acceptance-20260604-134337.md`.
 - `2026-06-04-local-release-recorder-commit-evidence-guard`: recorder blocks missing verifier evidence and requires explicit commit-mismatch recording.
 - `2026-06-04-accepted-package-complete-notes-selection`: accepted-package helpers select latest complete notes by default.
 - `2026-06-04-verified-portable-package-candidate`: candidate package verified but pending human acceptance.

@@ -14,10 +14,13 @@ Portable v1 is the local self-contained WPF app package. It is not an installer 
 
 - Package: `.local\releases\windows-file-cleaner-v20260604-121922`
 - Package commit: `e6ac3eb`
-- Acceptance notes: `.local\release-acceptance\release-acceptance-20260604-122009.md`
+- Initial acceptance notes: `.local\release-acceptance\release-acceptance-20260604-122009.md`
+- Current pending acceptance notes: `.local\release-acceptance\release-acceptance-20260604-134337.md`
 - Status: verified with `Test-LocalRelease.cmd -RequireCurrentCommit`, but not human-accepted.
 
-This candidate includes app behavior through the real-profile Quarantine inline status wording fix. Its ignored acceptance notes record verifier and commit evidence, but normal launch, fixture launch, overall result, and the remaining checklist items are not recorded. Keep using the accepted baseline until the human package acceptance pass is completed and recorded.
+This candidate includes app behavior through the real-profile Quarantine inline status wording fix. Its initial ignored acceptance notes record verifier and commit evidence from the package cut time, but normal launch, fixture launch, overall result, and the remaining checklist items are not recorded.
+
+The current pending acceptance notes were refreshed after docs-only `HEAD` advanced beyond the packaged app commit. They record verifier evidence, intentionally leave commit evidence unrecorded until the human accepts the expected package/current-HEAD mismatch, and stamp exact `-ReleasePath` commands. Keep using the accepted baseline until the human package acceptance pass is completed and recorded.
 
 ## Verify Accepted Notes
 
@@ -63,6 +66,16 @@ Generated notes stamp the actual `-ReleasePath` used for verifier and checklist 
 Use `-RequireCurrentCommit` when cutting notes for a package that should match current `HEAD`. For an already verified package candidate that is behind docs-only commits, inspect the package verifier warning and existing metadata instead of requiring current `HEAD`.
 
 Record acceptance notes only after the human package acceptance pass is complete. If the notes do not already have commit evidence recorded because the package intentionally differs from current `HEAD`, pass `-RecordCommitMismatch` only after reviewing and accepting that package/current-HEAD mismatch.
+
+For the current pending candidate, inspect and complete:
+
+```powershell
+.\tools\Summarize-LocalReleaseAcceptanceNotes.cmd -Path ".local\release-acceptance\release-acceptance-20260604-134337.md"
+.\tools\Record-LocalReleaseAcceptanceNotes.cmd -Path ".local\release-acceptance\release-acceptance-20260604-134337.md" -RecordManualAcceptance -RecordCommitMismatch
+.\tools\Summarize-LocalReleaseAcceptanceNotes.cmd -Path ".local\release-acceptance\release-acceptance-20260604-134337.md" -RequireComplete
+```
+
+Use the recorder command only after README review, normal launch, fixture launch/read-only fixture Scan, portable boundary review, real-profile stop-boundary confirmation, and intentional acceptance of the `e6ac3eb` package versus docs-only current-`HEAD` mismatch.
 
 ## Boundaries
 
