@@ -4,6 +4,7 @@ param(
     [switch]$SkipFixtureWhatIf,
     [switch]$SkipFixtureChecklist,
     [switch]$SkipFixtureAcceptanceNotesCheck,
+    [switch]$SkipDailyReadinessFixtureAcceptanceCheck,
     [switch]$SkipAcceptedLocalReleaseSelectionCheck,
     [switch]$SkipLocalReleaseAcceptanceSummaryCheck,
     [switch]$SkipLocalReleaseAcceptanceRecorderCheck,
@@ -19,6 +20,7 @@ $repoRoot = Split-Path -Parent $PSScriptRoot
 $fixtureScript = Join-Path $PSScriptRoot "New-StorageScanSmokeFixture.ps1"
 $fixtureReviewScript = Join-Path $PSScriptRoot "Start-MvpFixtureReview.ps1"
 $fixtureAcceptanceNotesTestScript = Join-Path $PSScriptRoot "Test-FixtureAcceptanceNotes.ps1"
+$dailyReadinessFixtureAcceptanceTestScript = Join-Path $PSScriptRoot "Test-DailyReadinessFixtureAcceptanceNotes.ps1"
 $acceptedLocalReleaseSelectionTestScript = Join-Path $PSScriptRoot "Test-AcceptedLocalReleaseSelection.ps1"
 $localReleaseAcceptanceSummaryTestScript = Join-Path $PSScriptRoot "Test-LocalReleaseAcceptanceSummary.ps1"
 $localReleaseAcceptanceRecorderTestScript = Join-Path $PSScriptRoot "Test-LocalReleaseAcceptanceRecorder.ps1"
@@ -80,6 +82,12 @@ try {
     if (-not $SkipFixtureAcceptanceNotesCheck) {
         Invoke-PreflightStep -Name "Fixture acceptance notes regression" -Command {
             & powershell.exe -NoProfile -ExecutionPolicy Bypass -File $fixtureAcceptanceNotesTestScript
+        }
+    }
+
+    if (-not $SkipDailyReadinessFixtureAcceptanceCheck) {
+        Invoke-PreflightStep -Name "Daily readiness fixture acceptance notes regression" -Command {
+            & powershell.exe -NoProfile -ExecutionPolicy Bypass -File $dailyReadinessFixtureAcceptanceTestScript
         }
     }
 

@@ -15,7 +15,7 @@ Read first: `docs/codex/current-state.md`.
 
 Latest docs/workflow packet: `2026-06-04-startup-context-compaction`. It moved oversized read-first docs into reference/archive files and replaced them with compact active docs to reduce Codex thread lag. No app behavior changed.
 
-Latest tooling/evidence packet: `2026-06-04-fixture-acceptance-notes-regression`. MVP preflight now covers fixture acceptance notes summary and recorder guardrails.
+Latest tooling/evidence packet: `2026-06-04-daily-readiness-fixture-acceptance-regression`. MVP preflight now covers daily readiness fixture acceptance notes forwarding.
 
 Latest package candidate: `.local\releases\windows-file-cleaner-v20260604-121922` at app commit `e6ac3eb`, verified but not human-accepted. Current pending acceptance notes: `.local\release-acceptance\release-acceptance-20260604-134337.md`.
 
@@ -40,6 +40,38 @@ Post-action evidence:
 6. Use `docs/operations/*.md` for command detail.
 
 ## Recent Packet Summaries
+
+### 2026-06-04: Daily Readiness Fixture Acceptance Regression
+
+Status: completed
+
+Goal:
+
+- Cover optional and strict daily readiness fixture acceptance notes forwarding with synthetic evidence that does not depend on ignored real package artifacts.
+
+Safety profile:
+
+- `terminal-readonly`. The regression writes temporary ignored synthetic package files, package acceptance notes, fixture acceptance notes, and an empty Restore Manifest root under `.local\daily-readiness-fixture-acceptance-test`, invokes daily readiness with explicit paths, and removes the test folder. It does not launch WPF, scan real-profile files, move, restore, delete, approve cleanup, promote a package, create shortcuts, install anything, or create cleanup history.
+
+Changes:
+
+- Added `tools\Test-DailyReadinessFixtureAcceptanceNotes.cmd` and `.ps1`.
+- The regression creates a verifier-valid synthetic local release package and complete package acceptance notes under ignored `.local`.
+- It verifies strict daily readiness fails incomplete fixture notes during the fixture-notes step and before accepted launch-command printing.
+- It verifies optional incomplete fixture notes print recorder guidance and allow the print-only daily readiness flow to continue.
+- It verifies complete required fixture notes pass daily readiness with accepted launch commands still print-only and Restore Manifest summary pointed at the synthetic empty root.
+- `Invoke-MvpPreflight.cmd` now runs the daily readiness fixture acceptance notes regression by default after the standalone fixture acceptance notes regression.
+- Added `-SkipDailyReadinessFixtureAcceptanceCheck` for focused local loops.
+
+Verification:
+
+- `cmd.exe /c tools\Test-DailyReadinessFixtureAcceptanceNotes.cmd`
+- `cmd.exe /c tools\Test-FixtureAcceptanceNotes.cmd`
+- `cmd.exe /c tools\Invoke-MvpPreflight.cmd`
+
+ADRs:
+
+- Skipped; this adds terminal-only regression coverage for existing daily readiness and fixture acceptance notes tooling and does not change product behavior, cleanup execution, restore execution, persistence, deployment, package acceptance policy, or real readiness behavior.
 
 ### 2026-06-04: Fixture Acceptance Notes Regression
 
@@ -538,6 +570,7 @@ ADRs:
 
 ### Current Live Product And Package Packets
 
+- `2026-06-04-daily-readiness-fixture-acceptance-regression`: MVP preflight now covers optional and strict daily readiness fixture-note forwarding with synthetic package and Restore Manifest evidence under ignored `.local`.
 - `2026-06-04-fixture-acceptance-notes-regression`: MVP preflight now covers fixture notes summary completion blockers, recorder manual-intent guard, `-WhatIf` no-write behavior, and synthetic completion.
 - `2026-06-04-accepted-local-release-selection-regression`: MVP preflight now covers accepted-package launcher default selection and explicit incomplete-notes rejection with temporary ignored notes and synthetic print-only package files.
 - `2026-06-04-local-release-acceptance-recorder-regression`: MVP preflight now covers package acceptance recorder guardrails for missing manual intent, missing verifier evidence, missing commit evidence without explicit mismatch acceptance, and `-WhatIf` no-write behavior.

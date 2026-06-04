@@ -15,7 +15,7 @@ Historical roadmap notes are preserved in `docs/features/archive/2026-06-01-live
 | Track | Current state | Next action |
 |---|---|---|
 | Manual fixture confidence | Fixture Quarantine, current-fixture undo, fixture selected restore, and fixture review surfaces have passed prior user-visible review. Formal fixture notes remain optional/incomplete. | Use `docs/operations/manual-fixture-review.md` when a fixture pass is needed. |
-| Real-profile read-only scan | Real-profile Storage Scan is read-only and previously worked by user report. MVP preflight now includes the local release acceptance summary, real-profile next-batch stop guard, and daily readiness exact-profile undo spotlight regression checks before the whitespace diff check. | Run MVP preflight before any real-profile scan after code/workflow changes. |
+| Real-profile read-only scan | Real-profile Storage Scan is read-only and previously worked by user report. MVP preflight now includes fixture acceptance notes, daily readiness fixture acceptance notes, local release acceptance, real-profile next-batch stop guard, and daily readiness exact-profile undo spotlight regression checks before the whitespace diff check. | Run MVP preflight before any real-profile scan after code/workflow changes. |
 | Real-profile selected restore | Exact selected `C:\Users\moxhe` Restore Manifest restore is implemented under ADR 0019 and succeeded in the first live recovery loop. | Use selected-manifest restore only for a specific selected manifest after readiness, exact `RESTORE`, and immediate revalidation. |
 | Real-profile Quarantine | First and second tiny exact-profile batches succeeded by user report. The second batch currently leaves exact-profile displayed undo work `1`. The next-batch evidence preset stops before MVP preflight while displayed undo work exists, and MVP preflight covers the synthetic stop-guard regression. | Stop. Do not chain another real-profile batch unless a new Grill with Docs pass decides outstanding selected-manifest undo work is acceptable. |
 | Restore Manifest evidence | Terminal summary and WPF manifest panes can review manifests read-only. Daily readiness now spotlights exact-profile undo-work stop state, and MVP preflight covers that spotlight with ignored synthetic Restore Manifests. The latest selected manifest readiness screenshot showed the second batch manifest as restorable with `0` blocked selected entries. | Use terminal summaries or WPF selected readiness before any recovery action. |
@@ -34,6 +34,7 @@ Historical roadmap notes are preserved in `docs/features/archive/2026-06-01-live
 ## Relevant Current Briefs
 
 - `2026-06-04-second-real-profile-quarantine-batch.md`
+- `2026-06-04-daily-readiness-fixture-acceptance-regression.md`
 - `2026-06-04-daily-readiness-exact-profile-undo-spotlight.md`
 - `2026-06-04-real-profile-next-batch-early-undo-guard.md`
 - `2026-06-04-real-profile-quarantine-inline-status-wording.md`

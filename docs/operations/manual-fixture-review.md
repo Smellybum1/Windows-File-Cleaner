@@ -1,6 +1,6 @@
 # Manual Fixture Review Runbook
 
-Last updated: 2026-06-03
+Last updated: 2026-06-04
 
 Use the tool output as the checklist source of truth:
 
@@ -55,7 +55,15 @@ Targeted fixture acceptance notes regression:
 
 This writes temporary ignored notes under `.local\fixture-acceptance-notes-test`, verifies summary and recorder behavior, then removes the test notes.
 
-MVP preflight runs this regression by default after the fixture checklist. Use `.\tools\Invoke-MvpPreflight.cmd -SkipFixtureAcceptanceNotesCheck` only for focused local loops where fixture acceptance notes are not in scope.
+Targeted daily readiness fixture acceptance notes regression:
+
+```powershell
+.\tools\Test-DailyReadinessFixtureAcceptanceNotes.cmd
+```
+
+This writes temporary ignored synthetic package files, package acceptance notes, fixture acceptance notes, and an empty Restore Manifest root under `.local\daily-readiness-fixture-acceptance-test`, verifies optional and strict daily readiness fixture-note forwarding, then removes the test folder.
+
+MVP preflight runs both fixture acceptance regressions by default after the fixture checklist. Use `.\tools\Invoke-MvpPreflight.cmd -SkipFixtureAcceptanceNotesCheck` or `.\tools\Invoke-MvpPreflight.cmd -SkipDailyReadinessFixtureAcceptanceCheck` only for focused local loops where those fixture acceptance notes paths are not in scope.
 
 Record an all-pass manual fixture review only after the visible review actually passed:
 
