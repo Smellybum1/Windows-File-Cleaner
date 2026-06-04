@@ -275,7 +275,7 @@ try {
         throw "Recorded fixture notes should pass completion summary. Exit code: $($completeResult.ExitCode)"
     }
 
-    Assert-ContainsText -Lines $completeResult.Output -ExpectedText "Completion check: complete. Acceptance notes are ready to record."
+    Assert-ContainsText -Lines $completeResult.Output -ExpectedText "Completion check: complete. Fixture acceptance evidence is complete; no recorder action is pending."
     Assert-ContainsText -Lines $completeResult.Output -ExpectedText "Checklist totals: 10 pass, 0 issue, 0 not checked, 0 not recorded"
     Assert-DoesNotContainText -Lines $completeResult.Output -UnexpectedText "After an actual all-pass visible fixture review, record these ignored notes with:"
 

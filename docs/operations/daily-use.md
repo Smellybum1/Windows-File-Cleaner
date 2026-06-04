@@ -22,6 +22,8 @@ Strict fixture-notes completion check:
 .\tools\Invoke-DailyLocalReadiness.cmd -RequireFixtureAcceptanceComplete
 ```
 
+When strict fixture notes completion passes, completed fixture notes report that evidence is complete and no recorder action is pending.
+
 Safety profile: `terminal-readonly` from `docs/codex/safety-profiles.md`.
 
 The daily readiness output first verifies the latest completed accepted package notes, then shows the latest package acceptance notes as informational context. Incomplete or malformed-looking candidate notes do not replace the accepted package baseline. Completed accepted notes report that evidence is complete and no recorder action is pending. Package acceptance summaries include current repository `HEAD`, notes/current-HEAD status, and package/current-HEAD status so package/current-HEAD mismatch context is visible.

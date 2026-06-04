@@ -342,7 +342,7 @@ if ($RequireComplete) {
 
     Write-Host ""
     if ($completionBlockers.Count -eq 0) {
-        Write-Host "Completion check: complete. Acceptance notes are ready to record."
+        Write-Host "Completion check: complete. Fixture acceptance evidence is complete; no recorder action is pending."
     }
     else {
         Write-Host "Completion check: incomplete."

@@ -47,6 +47,8 @@ Strict completion check:
 .\tools\Summarize-FixtureAcceptanceNotes.cmd -RequireComplete
 ```
 
+When `-RequireComplete` passes, the summary reports that fixture acceptance evidence is complete and that no recorder action is pending.
+
 Targeted fixture acceptance notes regression:
 
 ```powershell

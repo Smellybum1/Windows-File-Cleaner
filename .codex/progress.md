@@ -15,7 +15,7 @@ Read first: `docs/codex/current-state.md`.
 
 Latest docs/workflow packet: `2026-06-04-ci-evidence-wording-stabilization`. It rewords CI evidence docs so #365 is representative current-path proof instead of self-staling latest-run proof. No app behavior changed.
 
-Latest tooling/evidence packet: `2026-06-04-package-completion-summary-wording`. Completed package acceptance summaries now say evidence is complete and no recorder action is pending, instead of implying completed notes still need to be recorded.
+Latest tooling/evidence packet: `2026-06-04-fixture-completion-summary-wording`. Completed fixture acceptance summaries now say evidence is complete and no recorder action is pending, instead of implying completed notes still need to be recorded.
 
 Latest package candidate: `.local\releases\windows-file-cleaner-v20260604-121922` at app commit `e6ac3eb`, verified but not human-accepted. Current pending acceptance notes: `.local\release-acceptance\release-acceptance-20260604-164509.md`.
 
@@ -40,6 +40,37 @@ Post-action evidence:
 6. Use `docs/operations/*.md` for command detail.
 
 ## Recent Packet Summaries
+
+### 2026-06-04: Fixture Completion Summary Wording
+
+Status: completed
+
+Goal:
+
+- Make completed fixture acceptance summaries say that evidence is already complete instead of implying the notes still need to be recorded.
+
+Safety profile:
+
+- `terminal-readonly`. The change updates terminal summary wording, synthetic-note regression assertions, and committed documentation only. It does not launch WPF, create fixtures, scan real-profile files, move, restore, delete, approve cleanup, create shortcuts, install anything, write acceptance notes, write Restore Manifests, or create cleanup history.
+
+Changes:
+
+- `tools\Summarize-FixtureAcceptanceNotes.ps1` now reports completed fixture acceptance evidence as complete with no recorder action pending.
+- `tools\Test-FixtureAcceptanceNotes.ps1` and `tools\Test-DailyReadinessFixtureAcceptanceNotes.ps1` now assert the completed fixture wording.
+- `docs\operations\manual-fixture-review.md`, `docs\operations\daily-use.md`, compact handoff docs, and the feature index record the wording change.
+
+Verification:
+
+- `cmd.exe /c tools\Test-FixtureAcceptanceNotes.cmd`
+- `cmd.exe /c tools\Test-DailyReadinessFixtureAcceptanceNotes.cmd`
+- `cmd.exe /c tools\Invoke-DailyLocalReadiness.cmd -IncludeFixtureAcceptanceNotes`
+- `cmd.exe /c tools\Test-DocumentationConsistency.cmd`
+- `cmd.exe /c tools\Invoke-MvpPreflight.cmd`
+- `git diff --check`
+
+ADRs:
+
+- Skipped; this is terminal wording and regression coverage for existing fixture acceptance notes tooling and does not change product behavior, cleanup execution, restore execution, persistence, deployment, package acceptance policy, or real readiness behavior.
 
 ### 2026-06-04: Package Completion Summary Wording
 
@@ -1078,6 +1109,7 @@ ADRs:
 
 ### Current Live Product And Package Packets
 
+- `2026-06-04-fixture-completion-summary-wording`: completed fixture acceptance summaries now say evidence is complete and no recorder action is pending.
 - `2026-06-04-package-completion-summary-wording`: completed package acceptance summaries now say evidence is complete and no recorder action is pending.
 - `2026-06-04-ci-evidence-wording-stabilization`: CI evidence docs now use representative current-path wording instead of self-staling latest-run wording.
 - `2026-06-04-ci-evidence-refresh`: CI runbook and compact handoff docs now record #365 proof for the current normal push preflight path.

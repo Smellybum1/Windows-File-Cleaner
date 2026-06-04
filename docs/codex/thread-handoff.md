@@ -20,7 +20,7 @@ Load detailed reference docs or archived evidence only when the task needs histo
 - Repo: `D:\Codex\Windows File Cleaner`
 - Branch: `main`
 - Latest package/evidence packet: `2026-06-04-pending-package-acceptance-notes-refresh-after-tooling-hardening`
-- Latest tooling/evidence packet: `2026-06-04-package-completion-summary-wording`
+- Latest tooling/evidence packet: `2026-06-04-fixture-completion-summary-wording`
 - Latest docs/workflow packet: `2026-06-04-ci-evidence-wording-stabilization`
 - Latest live-product evidence: `2026-06-04-second-real-profile-quarantine-batch`
 - Latest working app packet: `2026-06-04-real-profile-quarantine-inline-status-wording`
@@ -36,6 +36,7 @@ Load detailed reference docs or archived evidence only when the task needs histo
 - `tools\Test-DailyReadinessExactProfileUndoSpotlight.cmd` covers that spotlight with ignored synthetic Restore Manifests, and MVP preflight now runs it by default before the whitespace diff check. The regression uses the focused `-SyntheticRestoreManifestOnly` daily readiness mode so CI and clean runners do not need ignored accepted-package evidence for this check. It also asserts the synthetic mode rejects missing/outside-`.local` roots and acceptance-note parameters.
 - Incomplete package acceptance summaries print guarded recorder and recheck commands; the current candidate recorder command includes `-RecordCommitMismatch` and remains human-pass-only.
 - Completed package acceptance summaries say the evidence is complete and no recorder action is pending.
+- Completed fixture acceptance summaries say the evidence is complete and no recorder action is pending.
 - Package acceptance summaries print current repository `HEAD`, notes/current-HEAD status, and package/current-HEAD status, so pending candidate notes visibly show whether package/current-HEAD mismatch context is present.
 - GitHub Actions MVP Preflight now uses `actions/checkout@v6`, `actions/setup-dotnet@v5`, `windows-2022` for push/pull-request runs, and a manual `workflow_dispatch` runner-image choice for intentional `windows-2025-vs2026` canary runs.
 - Push CI run #365 passed on `98d3412`, validating representative current-path evidence after active feature-index entries were added to the documentation consistency regression. Earlier #360 validated the no-input `inputs.runner_image || 'windows-2022'` fallback. Do not update the representative CI evidence for every green docs-only push.

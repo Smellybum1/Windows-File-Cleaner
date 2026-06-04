@@ -465,7 +465,7 @@ try {
         throw "Daily readiness should pass when complete fixture notes are required complete. Exit code: $($strictCompleteResult.ExitCode)"
     }
 
-    Assert-ContainsText -Lines $strictCompleteResult.Output -ExpectedText "Completion check: complete. Acceptance notes are ready to record."
+    Assert-ContainsText -Lines $strictCompleteResult.Output -ExpectedText "Completion check: complete. Fixture acceptance evidence is complete; no recorder action is pending."
     Assert-ContainsText -Lines $strictCompleteResult.Output -ExpectedText "Checklist totals: 10 pass, 0 issue, 0 not checked, 0 not recorded"
     Assert-ContainsText -Lines $strictCompleteResult.Output -ExpectedText "== Restore Manifest summary =="
     Assert-ContainsText -Lines $strictCompleteResult.Output -ExpectedText "== Exact-profile undo-work stop state =="
