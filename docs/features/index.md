@@ -10,6 +10,7 @@ Use this index before opening individual feature briefs. The folder contains man
 - `2026-06-04-daily-readiness-exact-profile-undo-spotlight.md`: default daily readiness now spotlights exact-profile undo-work stop state, covered by guard-tested MVP preflight regression.
 - `2026-06-04-real-profile-next-batch-early-undo-guard.md`: next-batch evidence preset stops before MVP preflight when displayed undo work exists, covered by guard-tested clean-runner MVP preflight regression.
 - `2026-06-04-local-release-acceptance-summary-regression-check.md`: targeted regression command for package acceptance summary next-step output, now included in MVP preflight.
+- `2026-06-04-local-release-recorder-commit-evidence-guard.md`: package acceptance recorder guardrails for verifier/commit evidence, now included in MVP preflight.
 - `2026-06-04-package-acceptance-summary-next-steps.md`: incomplete package acceptance summaries print guarded recorder and recheck commands.
 - `2026-06-04-daily-readiness-latest-package-notes.md`: daily readiness now surfaces latest package acceptance notes without promoting incomplete candidates.
 - `2026-06-04-local-release-acceptance-command-stamping.md`: latest release tooling packet; generated package acceptance notes stamp actual release-path/current-commit commands.

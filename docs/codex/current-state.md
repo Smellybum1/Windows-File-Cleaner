@@ -11,7 +11,7 @@ Use this as the first compact orientation file for new Codex threads. Historical
 - Latest live evidence: 2026-06-04 second tiny exact real-profile Quarantine batch.
 - Latest working app packet: real-profile Quarantine inline status wording fix.
 - Latest package candidate: `.local\releases\windows-file-cleaner-v20260604-121922` at `e6ac3eb`, verified but not human-accepted.
-- Latest tooling/evidence packet: synthetic Restore Manifest-only mode guard regression.
+- Latest tooling/evidence packet: local release acceptance recorder regression.
 - Latest docs/workflow packet: startup context compaction.
 - Previous docs/workflow baseline: `1ea1b76 Reduce workflow markdown bloat`
 - App stack: C# / WPF / .NET 8
@@ -56,7 +56,9 @@ Use this as the first compact orientation file for new Codex threads. Historical
 - Incomplete package acceptance summaries now print guarded next-step recorder and recheck commands; for the current candidate they include `-RecordCommitMismatch` and still say the human package acceptance pass must be completed first.
 - `tools\Test-LocalReleaseAcceptanceSummary.cmd` verifies accepted/incomplete package acceptance summary behavior with temporary ignored `.local` notes and cleans up after itself.
 - MVP preflight now runs the local release acceptance summary regression check by default before `git diff --check`; use `-SkipLocalReleaseAcceptanceSummaryCheck` only for focused local loops.
-- Current full MVP preflight passed with restore, build, core tests, WPF app tests, fixture `-WhatIf`, fixture checklist-only output, local release acceptance summary regression, real-profile next-batch stop guard regression, daily readiness exact-profile undo spotlight regression, and whitespace diff.
+- `tools\Test-LocalReleaseAcceptanceRecorder.cmd` verifies the package acceptance recorder rejects missing manual intent, missing verifier evidence, and missing commit evidence without explicit mismatch acceptance; it also verifies `-WhatIf` does not write and explicit `-RecordCommitMismatch` can complete synthetic ignored notes.
+- MVP preflight now runs the local release acceptance recorder regression check by default after the package summary regression; use `-SkipLocalReleaseAcceptanceRecorderCheck` only for focused local loops.
+- Current full MVP preflight passed with restore, build, core tests, WPF app tests, fixture `-WhatIf`, fixture checklist-only output, local release acceptance summary regression, local release acceptance recorder regression, real-profile next-batch stop guard regression, daily readiness exact-profile undo spotlight regression, and whitespace diff.
 - `Invoke-RealProfileQuarantineReadiness.cmd -RequireNextBatchEvidence` now checks displayed undo work before MVP preflight, so outstanding selected-manifest undo work stops the preset before it can produce fresh preflight evidence.
 - `tools\Test-RealProfileNextBatchStopGuard.cmd` verifies that early stop behavior with temporary ignored synthetic Restore Manifests. Its clear synthetic path uses `Invoke-RealProfileQuarantineReadiness.cmd -SyntheticRestoreManifestOnly` so CI and clean runners do not need ignored accepted-package notes or package folders for this focused check. The regression now also asserts synthetic readiness rejects missing or outside-`.local` Quarantine Roots, package/fixture acceptance parameters, and missing `-SkipMvpPreflight`.
 - MVP preflight now runs the real-profile next-batch stop guard regression by default before `git diff --check`; use `-SkipRealProfileNextBatchStopGuardCheck` only for focused local loops.

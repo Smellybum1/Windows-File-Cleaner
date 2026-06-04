@@ -24,6 +24,9 @@ Package candidates can also intentionally differ from current `HEAD` after docs-
 - If commit evidence is not already recorded, the recorder now requires explicit `-RecordCommitMismatch` before it marks the commit evidence checkbox.
 - `Start-LocalRelease.ps1` now prints and embeds the recorder command in generated notes, plus the explicit `-RecordCommitMismatch` variant when notes are created without `-RequireCurrentCommit`.
 - README and the portable release runbook now document when to use `-RecordCommitMismatch`.
+- Added `tools\Test-LocalReleaseAcceptanceRecorder.cmd` and `.ps1` for reusable regression coverage.
+- `Invoke-MvpPreflight.cmd` now runs the recorder regression by default after the package acceptance summary regression.
+- Added `Invoke-MvpPreflight.cmd -SkipLocalReleaseAcceptanceRecorderCheck` for focused local loops.
 
 ## Verification
 
@@ -34,7 +37,11 @@ Package candidates can also intentionally differ from current `HEAD` after docs-
 - `cmd.exe /c tools\Record-LocalReleaseAcceptanceNotes.cmd -Path ".local\release-acceptance-recording-test\release-acceptance-missing-commit.md" -RecordManualAcceptance -RecordCommitMismatch -WhatIf`
 - `cmd.exe /c tools\Record-LocalReleaseAcceptanceNotes.cmd` exited `1` before writing because `-RecordManualAcceptance` was missing.
 - `cmd.exe /c tools\Start-LocalRelease.cmd -ReleasePath ".local\releases\windows-file-cleaner-v20260604-121922" -ChecklistOnly -WriteAcceptanceNotes`; the generated ignored test notes contained `-RecordCommitMismatch` guidance and were removed after verifying the generated path stayed under `.local\release-acceptance`.
+- `cmd.exe /c tools\Test-LocalReleaseAcceptanceRecorder.cmd`
+- `cmd.exe /c tools\Invoke-MvpPreflight.cmd`
 - `git diff --check`
+
+The reusable regression writes only temporary ignored notes under `.local\release-acceptance-recording-test`, verifies `-WhatIf` leaves notes unchanged, verifies explicit `-RecordCommitMismatch` can complete synthetic notes, and cleans up the test folder.
 
 ## ADRs
 

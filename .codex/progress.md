@@ -15,7 +15,7 @@ Read first: `docs/codex/current-state.md`.
 
 Latest docs/workflow packet: `2026-06-04-startup-context-compaction`. It moved oversized read-first docs into reference/archive files and replaced them with compact active docs to reduce Codex thread lag. No app behavior changed.
 
-Latest tooling/evidence packet: `2026-06-04-synthetic-restore-manifest-mode-guard-regression`. MVP preflight regression coverage now asserts the focused synthetic Restore Manifest-only modes reject unsafe or ambiguous invocations.
+Latest tooling/evidence packet: `2026-06-04-local-release-acceptance-recorder-regression`. MVP preflight now covers the package acceptance recorder guardrails that keep candidate promotion human-owned.
 
 Latest package candidate: `.local\releases\windows-file-cleaner-v20260604-121922` at app commit `e6ac3eb`, verified but not human-accepted. Current pending acceptance notes: `.local\release-acceptance\release-acceptance-20260604-134337.md`.
 
@@ -40,6 +40,39 @@ Post-action evidence:
 6. Use `docs/operations/*.md` for command detail.
 
 ## Recent Packet Summaries
+
+### 2026-06-04: Local Release Acceptance Recorder Regression
+
+Status: completed
+
+Goal:
+
+- Fold the portable package acceptance recorder guardrails into default MVP preflight so a future candidate cannot be recorded or promoted through a weakened notes path.
+
+Safety profile:
+
+- `terminal-readonly`. The regression writes temporary ignored acceptance notes under `.local\release-acceptance-recording-test`, invokes recorder and summary tooling against those notes, and removes the test folder. It does not launch WPF, scan real-profile files, move, restore, delete, approve cleanup, promote a package, create shortcuts, install anything, or create cleanup history.
+
+Changes:
+
+- Added `tools\Test-LocalReleaseAcceptanceRecorder.cmd` and `.ps1`.
+- The regression asserts `Record-LocalReleaseAcceptanceNotes.cmd` requires `-RecordManualAcceptance`.
+- It asserts missing verifier evidence fails without writing.
+- It asserts missing commit evidence fails without writing unless `-RecordCommitMismatch` is explicit.
+- It asserts `-WhatIf` leaves notes unchanged.
+- It asserts an explicit mismatch recording can complete synthetic ignored notes and pass `Summarize-LocalReleaseAcceptanceNotes.cmd -RequireComplete`.
+- `Invoke-MvpPreflight.cmd` now runs the recorder regression by default after the local release acceptance summary regression.
+- Added `-SkipLocalReleaseAcceptanceRecorderCheck` for focused local loops.
+
+Verification:
+
+- `cmd.exe /c tools\Test-LocalReleaseAcceptanceRecorder.cmd`
+- `cmd.exe /c tools\Test-LocalReleaseAcceptanceSummary.cmd`
+- `cmd.exe /c tools\Invoke-MvpPreflight.cmd`
+
+ADRs:
+
+- Skipped; this adds terminal-only regression coverage for existing package acceptance recorder guardrails under ADR 0020 and does not change product behavior, cleanup execution, restore execution, persistence, deployment, package acceptance policy, or real readiness behavior.
 
 ### 2026-06-04: Synthetic Restore Manifest-Only Mode Guard Regression
 
@@ -439,6 +472,7 @@ ADRs:
 
 ### Current Live Product And Package Packets
 
+- `2026-06-04-local-release-acceptance-recorder-regression`: MVP preflight now covers package acceptance recorder guardrails for missing manual intent, missing verifier evidence, missing commit evidence without explicit mismatch acceptance, and `-WhatIf` no-write behavior.
 - `2026-06-04-synthetic-restore-manifest-mode-guard-regression`: focused synthetic readiness modes now have negative guard coverage for missing/outside `.local` roots, acceptance-note params, and next-batch missing `-SkipMvpPreflight`.
 - `2026-06-04-local-release-acceptance-command-stamping`: completed and pushed at `5a4115e`.
 - `2026-06-04-real-profile-next-batch-stop-guard-clean-runner-regression`: MVP preflight now covers the next-batch stop guard with ignored synthetic Restore Manifests without depending on local accepted-package evidence.

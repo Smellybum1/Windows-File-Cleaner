@@ -64,7 +64,15 @@ Targeted package acceptance summary regression:
 
 This writes temporary ignored notes under `.local\release-acceptance-summary-test`, verifies complete and incomplete summary behavior, then removes the test notes.
 
-MVP preflight also runs this regression by default. Use `.\tools\Invoke-MvpPreflight.cmd -SkipLocalReleaseAcceptanceSummaryCheck` only for focused local loops where package acceptance summary output is not in scope.
+Targeted package acceptance recorder regression:
+
+```powershell
+.\tools\Test-LocalReleaseAcceptanceRecorder.cmd
+```
+
+This writes temporary ignored notes under `.local\release-acceptance-recording-test`, verifies recorder guardrails, then removes the test notes.
+
+MVP preflight also runs these regressions by default. Use `.\tools\Invoke-MvpPreflight.cmd -SkipLocalReleaseAcceptanceSummaryCheck` or `.\tools\Invoke-MvpPreflight.cmd -SkipLocalReleaseAcceptanceRecorderCheck` only for focused local loops where those package acceptance checks are not in scope.
 
 ## Acceptance Notes
 
