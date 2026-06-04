@@ -30,6 +30,7 @@ Use this index before opening individual feature briefs. The folder contains man
 
 Command detail now belongs in:
 
+- `docs/operations/ci.md`
 - `docs/operations/daily-use.md`
 - `docs/operations/portable-release.md`
 - `docs/operations/manual-fixture-review.md`

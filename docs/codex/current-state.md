@@ -12,7 +12,7 @@ Use this as the first compact orientation file for new Codex threads. Historical
 - Latest working app packet: real-profile Quarantine inline status wording fix.
 - Latest package candidate: `.local\releases\windows-file-cleaner-v20260604-121922` at `e6ac3eb`, verified but not human-accepted.
 - Latest tooling/evidence packet: CI Windows image canary.
-- Latest docs/workflow packet: startup context compaction.
+- Latest docs/workflow packet: CI operations runbook.
 - Previous docs/workflow baseline: `1ea1b76 Reduce workflow markdown bloat`
 - App stack: C# / WPF / .NET 8
 - Product: local Windows cleanup reviewer for `C:\Users\moxhe`
@@ -69,6 +69,7 @@ Use this as the first compact orientation file for new Codex threads. Historical
 - GitHub Actions MVP Preflight now uses `actions/checkout@v6`, `actions/setup-dotnet@v5`, and `windows-2022` to stay on Node 24-capable official actions while preserving the current Windows runner baseline before the `windows-latest` Windows 2025 / Visual Studio 2026 migration.
 - GitHub Actions MVP Preflight also has a manual `workflow_dispatch` runner-image choice so `windows-2025-vs2026` can be tested intentionally without changing the push or pull-request baseline.
 - Push CI run #360 for commit `3e2e2ae` passed, validating the normal push fallback for `inputs.runner_image || 'windows-2022'`.
+- `docs/operations/ci.md` captures normal push/PR CI behavior, the manual `windows-2025-vs2026` canary procedure, baseline-change rule, and safety boundary.
 - MVP preflight now runs the local release acceptance summary regression check by default before the local release acceptance recorder regression; use `-SkipLocalReleaseAcceptanceSummaryCheck` only for focused local loops.
 - `tools\Test-LocalReleaseAcceptanceRecorder.cmd` verifies the package acceptance recorder rejects missing manual intent, missing verifier evidence, and missing commit evidence without explicit mismatch acceptance; it also verifies `-WhatIf` does not write and explicit `-RecordCommitMismatch` can complete synthetic ignored notes.
 - MVP preflight now runs the local release acceptance recorder regression check by default after the package summary regression; use `-SkipLocalReleaseAcceptanceRecorderCheck` only for focused local loops.

@@ -90,7 +90,7 @@ Open questions:
 
 Follow-up work:
 
-- Run the manual canary with `runner_image=windows-2025-vs2026` before changing the baseline.
+- Use `docs/operations/ci.md` to run the manual canary with `runner_image=windows-2025-vs2026` before changing the baseline.
 
 Risky assumptions:
 

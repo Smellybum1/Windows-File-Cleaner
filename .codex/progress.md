@@ -13,7 +13,7 @@ Read archived evidence only when the current task needs old packet detail.
 
 Read first: `docs/codex/current-state.md`.
 
-Latest docs/workflow packet: `2026-06-04-startup-context-compaction`. It moved oversized read-first docs into reference/archive files and replaced them with compact active docs to reduce Codex thread lag. No app behavior changed.
+Latest docs/workflow packet: `2026-06-04-ci-operations-runbook`. It added a compact CI runbook for normal MVP Preflight behavior, the manual Windows image canary procedure, baseline-change rule, and safety boundary. No app behavior changed.
 
 Latest tooling/evidence packet: `2026-06-04-ci-windows-image-canary`. GitHub Actions MVP Preflight now has a manual runner-image canary for `windows-2025-vs2026` while push and pull-request runs remain on `windows-2022`.
 
@@ -40,6 +40,33 @@ Post-action evidence:
 6. Use `docs/operations/*.md` for command detail.
 
 ## Recent Packet Summaries
+
+### 2026-06-04: CI Operations Runbook
+
+Status: completed
+
+Goal:
+
+- Make normal push/PR CI behavior and the manual Windows image canary path easy to run from committed operational docs.
+
+Safety profile:
+
+- `docs-only`. The change updates committed documentation only. It does not launch WPF, scan real-profile files, move, restore, delete, approve cleanup, promote a package, create shortcuts, install anything, write acceptance notes, write Restore Manifests, or create cleanup history.
+
+Changes:
+
+- Added `docs\operations\ci.md`.
+- The runbook records normal MVP Preflight workflow behavior, `windows-2022` push/PR baseline, #360/#361 push evidence, and the manual `runner_image=windows-2025-vs2026` canary steps.
+- README and the feature index now link to the CI runbook.
+- CI feature briefs now point follow-up canary work at the runbook.
+
+Verification:
+
+- `git diff --check`
+
+ADRs:
+
+- Skipped; this is operational documentation for existing CI behavior and does not change product behavior, cleanup execution, restore execution, persistence, security, data model, deployment packaging, or core UX flow.
 
 ### 2026-06-04: CI Windows Image Canary
 

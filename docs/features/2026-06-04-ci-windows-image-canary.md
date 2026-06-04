@@ -75,6 +75,7 @@ Tests run:
 Docs updated:
 
 - This feature brief.
+- `docs/operations/ci.md` later captured the manual canary runbook and safety boundaries.
 - `docs/features/index.md`
 - `docs/features/2026-06-04-ci-actions-runtime-maintenance.md`
 - `docs/features/2026-05-28-ci-mvp-preflight.md`
@@ -92,7 +93,7 @@ Open questions:
 
 Follow-up work:
 
-- Manually run MVP Preflight with `runner_image=windows-2025-vs2026` when the project is ready to evaluate that image.
+- Use `docs/operations/ci.md` to manually run MVP Preflight with `runner_image=windows-2025-vs2026` when the project is ready to evaluate that image.
 - If the canary passes and the human accepts the new image, update the default CI runner baseline in a separate packet.
 
 Risky assumptions:

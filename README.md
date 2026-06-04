@@ -96,6 +96,7 @@ Keep using the accepted baseline until the candidate has a completed human accep
 
 ## Operations
 
+- CI runbook: `docs/operations/ci.md`
 - Daily use: `docs/operations/daily-use.md`
 - Portable release: `docs/operations/portable-release.md`
 - Manual fixture review: `docs/operations/manual-fixture-review.md`
