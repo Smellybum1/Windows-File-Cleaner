@@ -24,9 +24,9 @@ Strict fixture-notes completion check:
 
 Safety profile: `terminal-readonly` from `docs/codex/safety-profiles.md`.
 
-The daily readiness output first verifies the latest completed accepted package notes, then shows the latest package acceptance notes as informational context. Incomplete candidate notes do not replace the accepted package baseline.
+The daily readiness output first verifies the latest completed accepted package notes, then shows the latest package acceptance notes as informational context. Incomplete or malformed-looking candidate notes do not replace the accepted package baseline.
 
-When the latest candidate notes are incomplete, that informational summary also prints the guarded recorder and recheck commands for the human package acceptance pass.
+When the latest candidate notes are incomplete, that informational summary also prints the guarded recorder and recheck commands for the human package acceptance pass. If a latest notes file is malformed-looking, the informational summary reports missing evidence instead of changing accepted-package readiness.
 
 Daily readiness ends with a broad Restore Manifest summary and an exact-profile undo-work stop-state spotlight. After the 2026-06-04 second exact-profile Quarantine batch, the spotlight is expected to show displayed undo work `1` until the selected manifest is restored. MVP preflight runs a synthetic regression for the spotlight by default; that regression uses a focused `.local` Restore Manifest-only mode so CI and clean runners do not need accepted-package evidence. The synthetic mode is guard-tested and is not a substitute for normal daily accepted-package readiness.
 

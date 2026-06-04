@@ -11,6 +11,7 @@ $notesRoot = [System.IO.Path]::GetFullPath((Join-Path $repoRoot ".local\release-
 $testRoot = [System.IO.Path]::GetFullPath((Join-Path $repoRoot ".local\daily-readiness-latest-package-notes-test")).TrimEnd([System.IO.Path]::DirectorySeparatorChar)
 $completeNotesPath = Join-Path $notesRoot "release-acceptance-daily-latest-test-complete.md"
 $incompleteNotesPath = Join-Path $notesRoot "release-acceptance-daily-latest-test-incomplete.md"
+$malformedNotesPath = Join-Path $notesRoot "release-acceptance-daily-latest-test-malformed.md"
 $fixtureNotesPath = Join-Path $testRoot "fixture-acceptance-daily-latest-test-incomplete.md"
 $quarantineRoot = Join-Path $testRoot "quarantine-root"
 $dailyReadinessScript = Join-Path $PSScriptRoot "Invoke-DailyLocalReadiness.ps1"
@@ -261,7 +262,7 @@ Assert-UnderLocalPath -Path $notesRoot
 Assert-UnderLocalPath -Path $testRoot
 
 try {
-    foreach ($path in @($completeNotesPath, $incompleteNotesPath)) {
+    foreach ($path in @($completeNotesPath, $incompleteNotesPath, $malformedNotesPath)) {
         if (Test-Path -LiteralPath $path -PathType Leaf) {
             Remove-Item -LiteralPath $path -Force
         }
@@ -311,11 +312,46 @@ try {
     Assert-DoesNotContainText -Lines $result.Output -UnexpectedText "Informational daily local readiness step did not complete"
     Assert-DoesNotContainText -Lines $result.Output -UnexpectedText "== Accepted normal launch command =="
 
+    Write-Lines -Path $malformedNotesPath -Lines @(
+        "# Portable Release Acceptance Notes",
+        "",
+        "Created: malformed daily latest package notes regression",
+        "",
+        "This file intentionally omits the acceptance evidence and checklist sections."
+    )
+    [System.IO.File]::SetLastWriteTime($malformedNotesPath, (Get-Date).AddMinutes(10))
+
+    $malformedResult = Invoke-DailyReadiness -Arguments @(
+        "-AcceptanceNotesPath",
+        $completeNotesPath,
+        "-FixtureAcceptanceNotesPath",
+        $fixtureNotesPath,
+        "-RequireFixtureAcceptanceComplete",
+        "-QuarantineRoot",
+        $quarantineRoot
+    )
+
+    if ($malformedResult.ExitCode -ne 1) {
+        throw "Daily readiness should still continue past malformed-looking latest notes and stop at incomplete fixture notes. Exit code: $($malformedResult.ExitCode)"
+    }
+
+    Assert-ContainsText -Lines $malformedResult.Output -ExpectedText "== Accepted package evidence =="
+    Assert-ContainsText -Lines $malformedResult.Output -ExpectedText "Notes file: $completeNotesPath"
+    Assert-ContainsText -Lines $malformedResult.Output -ExpectedText "== Latest package acceptance notes (informational) =="
+    Assert-ContainsText -Lines $malformedResult.Output -ExpectedText "Notes file: $malformedNotesPath"
+    Assert-ContainsText -Lines $malformedResult.Output -ExpectedText "Acceptance evidence: verifier: Missing; commit: Missing; normal launch: Missing; fixture launch: Missing"
+    Assert-ContainsText -Lines $malformedResult.Output -ExpectedText "Checklist totals: 0 pass, 0 issue, 0 not checked, 0 not recorded"
+    Assert-ContainsText -Lines $malformedResult.Output -ExpectedText "Verifier evidence is Missing; run the required verifier for this notes file before recording manual acceptance."
+    Assert-ContainsText -Lines $malformedResult.Output -ExpectedText "== Fixture acceptance notes evidence =="
+    Assert-ContainsText -Lines $malformedResult.Output -ExpectedText "Daily local readiness failed during: Fixture acceptance notes evidence"
+    Assert-DoesNotContainText -Lines $malformedResult.Output -UnexpectedText "Informational daily local readiness step did not complete"
+    Assert-DoesNotContainText -Lines $malformedResult.Output -UnexpectedText "== Accepted normal launch command =="
+
     Write-Host "Daily readiness latest package notes regression passed."
-    Write-Host "Boundary: temporary package acceptance notes, fixture notes, and an empty Restore Manifest root were written under ignored .local only; this did not launch WPF, scan, move, restore, delete, approve cleanup, promote a package, create shortcuts, install anything, or create cleanup history."
+    Write-Host "Boundary: temporary complete, incomplete, and malformed-looking package acceptance notes, fixture notes, and an empty Restore Manifest root were written under ignored .local only; this did not launch WPF, scan, move, restore, delete, approve cleanup, promote a package, create shortcuts, install anything, or create cleanup history."
 }
 finally {
-    foreach ($path in @($completeNotesPath, $incompleteNotesPath)) {
+    foreach ($path in @($completeNotesPath, $incompleteNotesPath, $malformedNotesPath)) {
         if (Test-Path -LiteralPath $path -PathType Leaf) {
             Remove-Item -LiteralPath $path -Force
         }
