@@ -15,7 +15,7 @@ Read first: `docs/codex/current-state.md`.
 
 Latest docs/workflow packet: `2026-06-04-ci-evidence-refresh-after-exact-skip-docs-regression`. It refreshes representative normal push CI evidence to MVP Preflight #389 on `00bdfb3` after documentation consistency started checking that the CI runbook focused skip-switch section exactly matches current preflight parameters. No app behavior changed.
 
-Latest tooling/evidence packet: `2026-06-04-mvp-preflight-skip-switch-exact-documentation-regression`. Documentation consistency now parses `tools\Invoke-MvpPreflight.ps1`, parses the `docs/operations/ci.md` focused skip-switch section, and verifies the two skip-switch sets match exactly.
+Latest tooling/evidence packet: `2026-06-04-daily-readiness-exact-profile-stop-action`. Daily readiness now prints a next-action reminder after the exact-profile undo-work spotlight so nonzero displayed exact-profile undo work visibly blocks next-batch movement evidence.
 
 Latest package candidate: `.local\releases\windows-file-cleaner-v20260604-121922` at app commit `e6ac3eb`, verified but not human-accepted. Current pending acceptance notes: `.local\release-acceptance\release-acceptance-20260604-164509.md`.
 
@@ -42,6 +42,37 @@ Post-action evidence:
 6. Use `docs/operations/*.md` for command detail.
 
 ## Recent Packet Summaries
+
+### 2026-06-04: Daily Readiness Exact-Profile Stop Action
+
+Status: completed
+
+Goal:
+
+- Make daily readiness state the next action when exact-profile undo work is present, not only show the Restore Manifest spotlight.
+
+Safety profile:
+
+- `terminal-readonly`. The change updates terminal wording and a synthetic Restore Manifest regression only. It does not launch WPF, click `Scan`, scan real-profile files, move, restore, delete, approve cleanup, write real Restore Manifests, create shortcuts, install anything, or create cleanup history.
+
+Changes:
+
+- `Invoke-DailyLocalReadiness.cmd` now prints an exact-profile stop-state action reminder after the exact-profile undo-work spotlight.
+- `tools\Test-DailyReadinessExactProfileUndoSpotlight.cmd` now verifies that reminder in focused synthetic Restore Manifest-only mode.
+- `docs\operations\daily-use.md` now describes the next-action reminder and the exact skip-switch documentation consistency gate.
+- Compact current-state, progress, and thread-handoff docs name this packet and the stricter daily readiness stop-state guidance.
+
+Verification:
+
+- `cmd.exe /c tools\Test-DailyReadinessExactProfileUndoSpotlight.cmd`
+- `cmd.exe /c tools\Invoke-DailyLocalReadiness.cmd`
+- `cmd.exe /c tools\Test-DocumentationConsistency.cmd`
+- `cmd.exe /c tools\Invoke-MvpPreflight.cmd`
+- `git diff --check`
+
+ADRs:
+
+- Skipped; this is terminal-only wording and regression coverage for existing ADR 0017/0018/0019 stop boundaries and does not change cleanup execution, restore execution, persistence, security, data model, deployment packaging, or core UX flow.
 
 ### 2026-06-04: CI Evidence Refresh After Exact Skip Docs Regression
 
@@ -1570,6 +1601,7 @@ ADRs:
 ### Current Live Product And Package Packets
 
 - `2026-06-04-real-profile-selected-restore-trust-helper-preflight-regression`: MVP preflight now runs the sacrificial real-profile selected restore trust helper path guard regression by default, with a `-WhatIf`-only non-`moxhe` override and escaped-path case derived from the helper's safe preview for clean-runner portability.
+- `2026-06-04-daily-readiness-exact-profile-stop-action`: daily readiness now prints a next-action reminder after the exact-profile undo-work spotlight so nonzero displayed exact-profile undo work visibly blocks next-batch movement evidence.
 - `2026-06-04-ci-evidence-refresh-after-exact-skip-docs-regression`: CI runbook and compact handoff docs now record #389 proof for the normal push preflight path after exact skip-switch documentation coverage joined documentation consistency.
 - `2026-06-04-mvp-preflight-skip-switch-exact-documentation-regression`: documentation consistency now verifies the CI runbook focused skip-switch section exactly matches current `Invoke-MvpPreflight.cmd` skip switches, catching missing and stale entries.
 - `2026-06-04-mvp-preflight-skip-switch-documentation-regression`: documentation consistency now verifies the CI runbook lists every current `Invoke-MvpPreflight.cmd` skip switch.

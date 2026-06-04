@@ -221,5 +221,7 @@ Invoke-DailyReadinessStep -Title "Restore Manifest summary" -CommandPath $restor
 Invoke-DailyReadinessStep -Title "Exact-profile undo-work stop state" -CommandPath $restoreManifestSummary -Arguments $exactProfileUndoWorkArguments
 
 Write-Host ""
+Write-Host "Exact-profile stop-state action: if displayed exact-profile undo work is nonzero, do not run or treat another next-batch review as movement evidence."
+Write-Host "Use selected-manifest restore only if recovery is needed, or start a new Grill with Docs pass before another tiny real-profile batch."
 Write-Host "Daily local readiness check passed."
 Write-Host "No WPF app was launched, no scan was started, and no files were moved, restored, deleted, or added to cleanup history."

@@ -231,6 +231,8 @@ try {
     Assert-ContainsText -Lines $result.Output -ExpectedText $exactActionId
     Assert-ContainsText -Lines $result.Output -ExpectedText $fixtureActionId
     Assert-ContainsText -Lines $result.Output -ExpectedText "== Exact-profile undo-work stop state =="
+    Assert-ContainsText -Lines $result.Output -ExpectedText "Exact-profile stop-state action: if displayed exact-profile undo work is nonzero, do not run or treat another next-batch review as movement evidence."
+    Assert-ContainsText -Lines $result.Output -ExpectedText "Use selected-manifest restore only if recovery is needed, or start a new Grill with Docs pass before another tiny real-profile batch."
     Assert-ContainsText -Lines $result.Output -ExpectedText "Daily local readiness check passed."
 
     $spotlightSection = Get-OutputSection -Lines $result.Output -StartText "== Exact-profile undo-work stop state =="

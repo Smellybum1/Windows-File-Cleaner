@@ -34,6 +34,7 @@ Use this index before opening individual feature briefs. The folder contains man
 - `2026-06-04-daily-readiness-latest-package-notes-regression.md`: daily readiness latest package notes informational behavior, now included in MVP preflight.
 - `2026-06-04-daily-readiness-fixture-acceptance-regression.md`: daily readiness fixture acceptance notes forwarding, now included in MVP preflight.
 - `2026-06-04-fixture-acceptance-notes-regression.md`: fixture acceptance notes summary/recorder guardrails, now included in MVP preflight.
+- `2026-06-04-daily-readiness-exact-profile-stop-action.md`: daily readiness now prints a next-action reminder after the exact-profile undo-work spotlight so nonzero displayed exact-profile undo work visibly blocks next-batch movement evidence.
 - `2026-06-04-daily-readiness-exact-profile-undo-spotlight.md`: default daily readiness now spotlights exact-profile undo-work stop state, covered by guard-tested MVP preflight regression.
 - `2026-06-04-real-profile-next-batch-early-undo-guard.md`: next-batch evidence preset stops before MVP preflight when displayed undo work exists, covered by guard-tested clean-runner MVP preflight regression.
 - `2026-06-04-accepted-package-complete-notes-selection.md`: accepted-package helpers select latest complete notes by default, now covered by MVP preflight regression for incomplete and malformed-looking candidate notes.

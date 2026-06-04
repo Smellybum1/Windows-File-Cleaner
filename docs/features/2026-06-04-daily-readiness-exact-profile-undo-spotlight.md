@@ -24,6 +24,7 @@ The default daily readiness command already printed a broad Restore Manifest sum
 - `tools\Test-DailyReadinessExactProfileUndoSpotlight.cmd` now verifies the spotlight with temporary ignored synthetic Restore Manifests, and MVP preflight runs that regression by default.
 - The regression uses `Invoke-DailyLocalReadiness.cmd -SyntheticRestoreManifestOnly`, which requires an explicit ignored `.local` Quarantine Root and skips package evidence only for this focused synthetic check.
 - The regression also asserts the synthetic mode rejects a missing Quarantine Root, a Quarantine Root outside ignored `.local`, and package/fixture acceptance notes parameters.
+- Later packet `Daily Readiness Exact-Profile Stop Action` added the next-action reminder after the spotlight and extended this regression to verify it.
 
 ## Verification
 
@@ -39,6 +40,8 @@ The synthetic regression proved broad daily readiness can see both exact-profile
 The regression does not depend on ignored accepted-package notes or local package folders, so the default MVP preflight remains suitable for CI and clean clones. Normal daily readiness still verifies accepted package evidence before Restore Manifest evidence.
 
 The regression also covers the synthetic-mode guardrails for missing roots, outside-`.local` roots, and acceptance-note parameters.
+
+Later packet `Daily Readiness Exact-Profile Stop Action` made daily readiness print the stop-state action after the spotlight, so nonzero displayed exact-profile undo work visibly blocks next-batch movement evidence.
 
 ## ADRs
 
