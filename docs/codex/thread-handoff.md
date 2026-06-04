@@ -1,6 +1,6 @@
 # Thread Handoff
 
-Last updated: 2026-06-03
+Last updated: 2026-06-04
 
 Use this when starting a fresh Codex thread for this repository.
 
@@ -19,6 +19,7 @@ Load archived evidence only when the task needs historical packet detail.
 
 - Repo: `D:\Codex\Windows File Cleaner`
 - Branch: `main`
+- Latest docs/workflow packet before this closeout: `1ea1b76 Reduce workflow markdown bloat`
 - Latest product/evidence packet before this docs cleanup: `3dad056 Record current-head next-batch review evidence`
 - App: C# / WPF / .NET 8 local Windows cleanup reviewer for `C:\Users\moxhe`
 - Storage Scan: read-only
@@ -77,7 +78,7 @@ We are continuing Windows File Cleaner in D:\Codex\Windows File Cleaner.
 
 Read AGENTS.md, docs/codex/current-state.md, .codex/progress.md, docs/codex/safety-profiles.md, README.md, docs/domain/context.md, docs/domain/glossary.md, and relevant active docs/features/ and docs/decisions/ before implementing.
 
-Current state: main includes the compact workflow-docs cleanup packet. The latest product/evidence packet before that cleanup was 3dad056, Record current-head next-batch review evidence. The app is a C#/.NET 8 WPF local Windows cleanup reviewer for C:\Users\moxhe. Storage Scan is read-only. Fixture Quarantine, current-fixture undo, fixture selected restore, exact real-profile selected restore, and first-phase exact real-profile Quarantine exist behind their gates. The first tiny exact real-profile Quarantine and selected restore recovery loop both succeeded by user report.
+Current state: main includes the compact workflow-docs cleanup packet at 1ea1b76. The latest product/evidence packet before that cleanup was 3dad056, Record current-head next-batch review evidence. The app is a C#/.NET 8 WPF local Windows cleanup reviewer for C:\Users\moxhe. Storage Scan is read-only. Fixture Quarantine, current-fixture undo, fixture selected restore, exact real-profile selected restore, and first-phase exact real-profile Quarantine exist behind their gates. The first tiny exact real-profile Quarantine and selected restore recovery loop both succeeded by user report.
 
 Fresh current-head next-batch evidence passed with .\tools\Invoke-RealProfileNextBatchReview.cmd on c7cb545: full MVP preflight, accepted package verification with expected package/current-HEAD warning, optional Fixture Acceptance Notes status, exact-profile Restore Manifest display, focused recovery-review and undo-work evidence, and manual WPF checklist printing all completed without WPF launch, real-profile scan, movement, restore, deletion, approval, manifest writes, shortcut creation, installer behavior, or cleanup history.
 

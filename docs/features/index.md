@@ -1,12 +1,12 @@
 # Feature Brief Index
 
-Last updated: 2026-06-03
+Last updated: 2026-06-04
 
 Use this index before opening individual feature briefs. The folder contains many historical packet notes; do not bulk-read all feature briefs in a fresh thread.
 
 ## Active Or Current
 
-- `2026-06-03-workflow-markdown-bloat-reduction.md`: current docs/workflow bloat reduction packet.
+- `2026-06-03-workflow-markdown-bloat-reduction.md`: latest docs/workflow cleanup baseline.
 - `2026-06-01-live-product-readiness-roadmap.md`: current readiness tracks and next live-product gates.
 - `2026-06-02-current-head-next-batch-review-evidence.md`: latest current-head terminal evidence before manual WPF next-batch review.
 - `2026-06-02-real-profile-next-batch-review-wrapper.md`: combined terminal evidence plus checklist wrapper.

@@ -1,6 +1,6 @@
 # Progress Log
 
-Last updated: 2026-06-03
+Last updated: 2026-06-04
 
 This file is now the compact current progress log. Historical packet evidence from May and early June 2026 lives in `.codex/archive/progress-2026-05-2026-06.md`.
 
@@ -9,6 +9,8 @@ This file is now the compact current progress log. Historical packet evidence fr
 Read first: `docs/codex/current-state.md`.
 
 The latest product/evidence packet before this docs cleanup is `3dad056 Record current-head next-batch review evidence`. The app remains a local Windows File Cleaner for `C:\Users\moxhe`; Storage Scan is read-only, exact real-profile movement is human-clicked only, and unavailable workflows remain broad/all-manifest real-profile Undo Quarantine, custom/non-exact real-profile Quarantine, custom selected restore, permanent deletion, persisted cleanup history, installed shortcut automation, and installer behavior.
+
+The latest docs/workflow packet before this closeout is `1ea1b76 Reduce workflow markdown bloat`. It archived long historical evidence, added compact current-state/safety/runbook docs, and reduced active startup-doc bloat without changing app behavior.
 
 Fresh current-head next-batch evidence passed on `c7cb545` with `cmd.exe /c tools\Invoke-RealProfileNextBatchReview.cmd`. That wrapper ran full MVP preflight, accepted package verification, optional Fixture Acceptance Notes status, exact-profile Restore Manifest display, recovery-review focus, undo-work focus, and manual WPF checklist printing without WPF launch, real-profile scan, movement, restore, deletion, approval, manifest writes, shortcut creation, installer behavior, or cleanup history.
 
@@ -21,6 +23,36 @@ Fresh current-head next-batch evidence passed on `c7cb545` with `cmd.exe /c tool
 5. Start an ADR 0020 shortcut/installer follow-up only if the user explicitly asks for installed shortcut or installer automation.
 
 ## Recent Completed Packets
+
+### 2026-06-04: New-Thread Closeout
+
+Status: completed
+
+Goal:
+
+- Refresh active startup/workflow docs only where the new thread would otherwise miss the `1ea1b76` docs cleanup baseline or follow stale read-first pointers.
+
+Safety profile:
+
+- `docs-only`
+
+Docs updated:
+
+- `AGENTS.md` and `docs/codex/grill-with-docs.md` now point fresh threads through `docs/features/index.md` before opening feature briefs.
+- `README.md` now points current state to `docs/codex/current-state.md` and active evidence to `docs/features/index.md` instead of naming the older readiness audit as the current evidence source.
+- `docs/codex/current-state.md`, `docs/codex/thread-handoff.md`, and `docs/features/index.md` now reflect the `1ea1b76` docs/workflow cleanup baseline.
+
+Verification:
+
+- `git diff --check` passed with expected CRLF warnings.
+- Active stale-marker search found no matches for old startup/checklist/current-evidence phrases outside archived or historical feature files.
+- Active startup/workflow doc size scan found no active lines over 900 characters in the reviewed files.
+- Reviewed tracked workflow config files `global.json` and `NuGet.Config`; no changes needed.
+- No app tests, preflight, WPF launch, scan, movement, restore, deletion, or cleanup history commands were run because this packet is docs-only.
+
+ADRs:
+
+- Skipped; this is a closeout/startup-doc polish packet, not a durable product, persistence, security, deployment, data-model, or core UX decision.
 
 ### 2026-06-03: Workflow And Markdown Bloat Reduction
 

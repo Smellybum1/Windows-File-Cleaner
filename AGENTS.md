@@ -12,7 +12,7 @@ Before non-trivial implementation, read:
 - `docs/domain/context.md`
 - `docs/domain/glossary.md`
 - relevant ADRs in `docs/decisions/`
-- relevant feature briefs in `docs/features/`
+- relevant active feature briefs via `docs/features/index.md`
 - `.codex/progress.md`
 - `docs/codex/safety-profiles.md`
 - `docs/codex/grill-with-docs.md`

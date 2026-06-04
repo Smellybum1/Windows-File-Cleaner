@@ -4,9 +4,9 @@ Windows File Cleaner is a local Windows-only WPF desktop app for reviewing stora
 
 The current MVP centers on a read-only Storage Scan. It can also execute and undo Quarantine from the visible WPF app against synthetic fixture Cleanup Scopes, execute the first exact real-profile Quarantine phase for `C:\Users\moxhe` only after ADR 0017/0018 readiness and exact `QUARANTINE` pass, discover action-scoped Restore Manifests under the selected Quarantine Root, select one discovered Restore Manifest for review, preview selected restore confirmation, restore selected discovered fixture manifests, and restore exactly one selected real-profile Restore Manifest after ADR 0019 gates pass. The first live exact real-profile Quarantine batch and selected restore recovery loop both succeeded by user report, including rediscovery, rescan, and restored-path confirmation.
 
-Current readiness evidence is tracked in `docs/features/2026-05-28-mvp-readiness-audit.md`.
+Current compact state lives in `docs/codex/current-state.md`.
 
-The remaining path to a safe live product is tracked in `docs/features/2026-06-01-live-product-readiness-roadmap.md`.
+The remaining path to a safe live product is tracked in `docs/features/2026-06-01-live-product-readiness-roadmap.md`; current evidence and active briefs are indexed in `docs/features/index.md`.
 
 Fresh-thread handoff notes live in `docs/codex/thread-handoff.md`.
 

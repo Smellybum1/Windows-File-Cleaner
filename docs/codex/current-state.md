@@ -1,6 +1,6 @@
 # Current State
 
-Last updated: 2026-06-03
+Last updated: 2026-06-04
 
 Use this as the first compact orientation file for new Codex threads. Historical packet evidence lives in `.codex/archive/progress-2026-05-2026-06.md`; do not load that archive unless the current task needs old packet detail.
 
@@ -8,6 +8,7 @@ Use this as the first compact orientation file for new Codex threads. Historical
 
 - Repo: `D:\Codex\Windows File Cleaner`
 - Branch: `main`
+- Latest docs/workflow packet before this closeout: `1ea1b76 Reduce workflow markdown bloat`
 - Latest product/evidence packet before this docs cleanup: `3dad056 Record current-head next-batch review evidence`
 - App stack: C# / WPF / .NET 8
 - Product: local Windows cleanup reviewer for `C:\Users\moxhe`

@@ -16,9 +16,9 @@ Read:
 - `docs/codex/current-state.md`
 - `docs/domain/context.md`
 - `docs/domain/glossary.md`
-- `docs/domain/context-map.md`
+- `docs/domain/context-map.md` if it exists and is relevant
 - Relevant ADRs in `docs/decisions/`
-- Relevant feature briefs in `docs/features/`
+- Relevant active feature briefs via `docs/features/index.md`
 - `.codex/progress.md`
 - `docs/codex/safety-profiles.md`
 
