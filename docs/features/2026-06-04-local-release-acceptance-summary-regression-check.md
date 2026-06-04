@@ -24,6 +24,7 @@ The summary helper now prints guarded next-step commands for incomplete package 
 - It verifies incomplete notes print `Pending acceptance next steps`, `-RecordCommitMismatch`, and the no-launch/no-scan/no-cleanup-history boundary.
 - It verifies malformed-looking notes report missing evidence, zero checklist sections, guarded verifier guidance, no recorder command while verifier evidence is missing, and `-RequireComplete` blockers.
 - It verifies default `Summarize-LocalReleaseAcceptanceNotes.cmd -RequireComplete` skips newer incomplete and malformed-looking notes under `.local\release-acceptance` and selects the latest complete notes.
+- It verifies explicit summary paths outside ignored `.local` are rejected before summary output or recorder guidance is printed.
 - It verifies complete notes pass `-RequireComplete` and do not print pending next steps.
 - The test removes its generated notes and test folder when complete.
 - MVP preflight now runs this regression by default before the local release acceptance recorder regression.

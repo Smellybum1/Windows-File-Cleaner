@@ -10,6 +10,7 @@ $ErrorActionPreference = "Stop"
 
 $repoRoot = Split-Path -Parent $PSScriptRoot
 $notesRoot = Join-Path $repoRoot ".local\release-acceptance"
+$localRoot = [System.IO.Path]::GetFullPath((Join-Path $repoRoot ".local")).TrimEnd([System.IO.Path]::DirectorySeparatorChar)
 
 function Resolve-PortableReleaseAcceptanceNotesPath {
     param(
@@ -361,14 +362,13 @@ function Test-PortableReleaseAcceptanceComplete {
 }
 
 $notesPath = Resolve-PortableReleaseAcceptanceNotesPath -RequestedPath $Path -RequireCompleteDefault:$RequireComplete.IsPresent
-if (-not (Test-Path -LiteralPath $notesPath)) {
-    throw "Portable release acceptance notes file does not exist: $notesPath"
+$fullNotesPath = [System.IO.Path]::GetFullPath($notesPath)
+if (-not ($fullNotesPath.StartsWith($localRoot + [System.IO.Path]::DirectorySeparatorChar, [System.StringComparison]::OrdinalIgnoreCase))) {
+    throw "Portable release acceptance notes path must stay under ignored .local: $localRoot"
 }
 
-$fullNotesPath = [System.IO.Path]::GetFullPath($notesPath)
-$repoFullPath = [System.IO.Path]::GetFullPath($repoRoot).TrimEnd([System.IO.Path]::DirectorySeparatorChar)
-if (-not ($fullNotesPath.StartsWith($repoFullPath + [System.IO.Path]::DirectorySeparatorChar, [System.StringComparison]::OrdinalIgnoreCase))) {
-    throw "Portable release acceptance notes path must stay inside the repository: $repoFullPath"
+if (-not (Test-Path -LiteralPath $notesPath)) {
+    throw "Portable release acceptance notes file does not exist: $notesPath"
 }
 
 $lines = Get-Content -LiteralPath $fullNotesPath

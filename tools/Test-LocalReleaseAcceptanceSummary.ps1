@@ -178,7 +178,15 @@ function Invoke-Summary {
         $arguments += "-RequireComplete"
     }
 
-    $output = @(powershell.exe @arguments 2>&1 | ForEach-Object { [string]$_ })
+    $previousErrorActionPreference = $ErrorActionPreference
+    $ErrorActionPreference = "Continue"
+    try {
+        $output = @(powershell.exe @arguments 2>&1 | ForEach-Object { [string]$_ })
+    }
+    finally {
+        $ErrorActionPreference = $previousErrorActionPreference
+    }
+
     return [pscustomobject]@{
         ExitCode = $LASTEXITCODE
         Output = $output
@@ -194,6 +202,7 @@ $malformedPath = Join-Path $testRoot "release-acceptance-summary-test-malformed.
 $defaultIncompletePath = Join-Path $notesRoot "release-acceptance-summary-default-test-incomplete.md"
 $defaultCompletePath = Join-Path $notesRoot "release-acceptance-summary-default-test-complete.md"
 $defaultMalformedPath = Join-Path $notesRoot "release-acceptance-summary-default-test-malformed.md"
+$outsideLocalPath = Join-Path $repoRoot "README.md"
 $testFiles = @(
     $incompletePath,
     $completePath,
@@ -262,6 +271,14 @@ try {
     Assert-ContainsText -Lines $malformedCompletionResult.Output -ExpectedText "Overall result is Not recorded."
     Assert-ContainsText -Lines $malformedCompletionResult.Output -ExpectedText "No portable release checklist items were found."
     Assert-DoesNotContainText -Lines $malformedCompletionResult.Output -UnexpectedText "All checklist items are marked Pass."
+
+    $outsideLocalResult = Invoke-Summary -Path $outsideLocalPath
+    if ($outsideLocalResult.ExitCode -ne 1) {
+        throw "Explicit notes path outside ignored .local should exit 1. Exit code: $($outsideLocalResult.ExitCode)"
+    }
+
+    Assert-ContainsText -Lines $outsideLocalResult.Output -ExpectedText "Portable release acceptance notes path must stay under ignored .local: $localRoot"
+    Assert-DoesNotContainText -Lines $outsideLocalResult.Output -UnexpectedText "This is a read-only summary of local ignored notes."
 
     New-TestAcceptanceNotes -Path $defaultCompletePath -Complete:$true -CommitEvidenceRecorded:$true
     New-TestAcceptanceNotes -Path $defaultIncompletePath -Complete:$false -CommitEvidenceRecorded:$false

@@ -15,7 +15,7 @@ Read first: `docs/codex/current-state.md`.
 
 Latest docs/workflow packet: `2026-06-04-startup-context-compaction`. It moved oversized read-first docs into reference/archive files and replaced them with compact active docs to reduce Codex thread lag. No app behavior changed.
 
-Latest tooling/evidence packet: `2026-06-04-local-release-acceptance-command-stamping-regression`. MVP preflight now covers generated package acceptance notes command stamping for release-path, current-commit, and commit-mismatch recorder guidance.
+Latest tooling/evidence packet: `2026-06-04-package-summary-ignored-path-guard-regression`. MVP preflight now covers explicit package acceptance summary path rejection outside ignored `.local`.
 
 Latest package candidate: `.local\releases\windows-file-cleaner-v20260604-121922` at app commit `e6ac3eb`, verified but not human-accepted. Current pending acceptance notes: `.local\release-acceptance\release-acceptance-20260604-164509.md`.
 
@@ -40,6 +40,37 @@ Post-action evidence:
 6. Use `docs/operations/*.md` for command detail.
 
 ## Recent Packet Summaries
+
+### 2026-06-04: Package Summary Ignored-Path Guard Regression
+
+Status: completed
+
+Goal:
+
+- Make `Summarize-LocalReleaseAcceptanceNotes.cmd -Path` enforce the same ignored `.local` notes boundary promised by the summary output and recorder guidance.
+
+Safety profile:
+
+- `terminal-readonly`. The change affects terminal summary path validation only. The regression uses committed `README.md` as an existing in-repo but non-`.local` explicit path, writes temporary test notes only under ignored `.local`, and removes those temporary notes. It does not launch WPF, scan real-profile files, move, restore, delete, approve cleanup, promote a package, create shortcuts, install anything, or create cleanup history.
+
+Changes:
+
+- `tools\Summarize-LocalReleaseAcceptanceNotes.ps1` now rejects explicit notes paths outside ignored `.local` before reading or summarizing the file.
+- `tools\Test-LocalReleaseAcceptanceSummary.cmd` / `.ps1` now verifies an explicit non-`.local` path exits with the ignored-path guard and does not print the normal summary boundary.
+- Existing default selection remains unchanged: complete accepted notes are still selected from `.local\release-acceptance`.
+
+Verification:
+
+- `cmd.exe /c tools\Test-LocalReleaseAcceptanceSummary.cmd`
+- `cmd.exe /c tools\Invoke-MvpPreflight.cmd`
+- `cmd.exe /c tools\Summarize-LocalReleaseAcceptanceNotes.cmd -Path ".local\release-acceptance\release-acceptance-20260604-164509.md"`
+- `cmd.exe /c tools\Summarize-LocalReleaseAcceptanceNotes.cmd -RequireComplete`
+- Confirmed `.local\release-acceptance-summary-test` was absent after cleanup.
+- Confirmed no `release-acceptance-summary-default-test-*.md` files remained under `.local\release-acceptance`.
+
+ADRs:
+
+- Skipped; this tightens terminal-only validation for existing package acceptance summary tooling under ADR 0020 and does not change product behavior, cleanup execution, restore execution, persistence, deployment, package acceptance policy, or real readiness behavior.
 
 ### 2026-06-04: Pending Package Acceptance Notes Refresh After Tooling Hardening
 
@@ -762,6 +793,7 @@ ADRs:
 
 ### Current Live Product And Package Packets
 
+- `2026-06-04-package-summary-ignored-path-guard-regression`: package acceptance summaries now reject explicit notes paths outside ignored `.local`, covered by MVP preflight summary regression.
 - `2026-06-04-pending-package-acceptance-notes-refresh-after-tooling-hardening`: current pending candidate notes refreshed to `.local\release-acceptance\release-acceptance-20260604-164509.md` after package/readiness tooling commits advanced `HEAD` beyond package commit `e6ac3eb`.
 - `2026-06-04-local-release-acceptance-command-stamping-regression`: MVP preflight now covers generated package acceptance notes command stamping for actual release paths, current-commit evidence, and guarded commit-mismatch recorder guidance.
 - `2026-06-04-package-summary-default-selection-regression`: MVP preflight now covers default package acceptance summary selection with newer incomplete and malformed-looking notes under ignored `.local\release-acceptance`.
