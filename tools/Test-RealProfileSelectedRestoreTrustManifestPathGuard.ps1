@@ -4,6 +4,11 @@ param()
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
+trap {
+    Write-Host "::error title=Trust Helper Path Guard::$($_.Exception.Message)"
+    exit 1
+}
+
 $repoRoot = Split-Path -Parent $PSScriptRoot
 $trustManifestScript = Join-Path $PSScriptRoot "New-RealProfileSelectedRestoreTrustManifest.ps1"
 $localRoot = [System.IO.Path]::GetFullPath((Join-Path $repoRoot ".local")).TrimEnd([System.IO.Path]::DirectorySeparatorChar)
@@ -52,6 +57,21 @@ function Assert-DoesNotContainText {
         $compactJoined.IndexOf($compactUnexpectedText, [System.StringComparison]::Ordinal) -ge 0) {
         throw "Expected output not to contain: $UnexpectedText"
     }
+}
+
+function Format-OutputForError {
+    param(
+        [Parameter(Mandatory)]
+        [AllowEmptyString()]
+        [string[]]$Lines
+    )
+
+    $joined = ($Lines -join " | ")
+    if ($joined.Length -gt 900) {
+        return $joined.Substring(0, 900) + "..."
+    }
+
+    return $joined
 }
 
 function Invoke-TrustManifestTool {
@@ -109,7 +129,7 @@ try {
         "-WhatIf"
     )
     if ($safeResult.ExitCode -ne 0) {
-        throw "Trust helper safe WhatIf should pass. Exit code: $($safeResult.ExitCode)"
+        throw "Trust helper safe WhatIf should pass. Exit code: $($safeResult.ExitCode). Output: $(Format-OutputForError -Lines $safeResult.Output)"
     }
 
     Assert-ContainsText -Lines $safeResult.Output -ExpectedText "Selected real-profile restore trust manifest preview:"
@@ -131,7 +151,7 @@ try {
         "-WhatIf"
     )
     if ($outsideLocalResult.ExitCode -ne 1) {
-        throw "Trust helper QuarantineRoot outside default D: root and ignored .local should fail before preview output. Exit code: $($outsideLocalResult.ExitCode)"
+        throw "Trust helper QuarantineRoot outside default D: root and ignored .local should fail before preview output. Exit code: $($outsideLocalResult.ExitCode). Output: $(Format-OutputForError -Lines $outsideLocalResult.Output)"
     }
 
     Assert-ContainsText -Lines $outsideLocalResult.Output -ExpectedText "QuarantineRoot must stay under the default D: Quarantine Root or the ignored .local directory."
@@ -147,7 +167,7 @@ try {
         "-WhatIf"
     )
     if ($escapedResult.ExitCode -ne 1) {
-        throw "Trust helper escaped RelativePath should fail before preview output. Exit code: $($escapedResult.ExitCode)"
+        throw "Trust helper escaped RelativePath should fail before preview output. Exit code: $($escapedResult.ExitCode). Output: $(Format-OutputForError -Lines $escapedResult.Output)"
     }
 
     Assert-ContainsText -Lines $escapedResult.Output -ExpectedText "Quarantine source must stay inside the action items root:"
