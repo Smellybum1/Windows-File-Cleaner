@@ -140,6 +140,24 @@ function New-TestAcceptanceNotes {
     [System.IO.File]::WriteAllLines($Path, $lines, $utf8NoBom)
 }
 
+function New-TestMalformedAcceptanceNotes {
+    param(
+        [Parameter(Mandatory)]
+        [string]$Path
+    )
+
+    $lines = @(
+        "# Portable Release Acceptance Notes",
+        "",
+        "Created: malformed summary regression",
+        "",
+        "This file intentionally omits release metadata, acceptance evidence, overall result, and checklist sections."
+    )
+
+    $utf8NoBom = [System.Text.UTF8Encoding]::new($false)
+    [System.IO.File]::WriteAllLines($Path, $lines, $utf8NoBom)
+}
+
 function Invoke-Summary {
     param(
         [Parameter(Mandatory)]
@@ -164,12 +182,14 @@ Assert-UnderLocalPath -Path $testRoot
 
 $incompletePath = Join-Path $testRoot "release-acceptance-summary-test-incomplete.md"
 $completePath = Join-Path $testRoot "release-acceptance-summary-test-complete.md"
-$testFiles = @($incompletePath, $completePath)
+$malformedPath = Join-Path $testRoot "release-acceptance-summary-test-malformed.md"
+$testFiles = @($incompletePath, $completePath, $malformedPath)
 
 try {
     New-Item -ItemType Directory -Path $testRoot -Force | Out-Null
     New-TestAcceptanceNotes -Path $incompletePath -Complete:$false -CommitEvidenceRecorded:$false
     New-TestAcceptanceNotes -Path $completePath -Complete:$true -CommitEvidenceRecorded:$true
+    New-TestMalformedAcceptanceNotes -Path $malformedPath
 
     $incompleteResult = Invoke-Summary -Path $incompletePath
     if ($incompleteResult.ExitCode -ne 0) {
@@ -188,6 +208,35 @@ try {
 
     Assert-ContainsText -Lines $incompleteCompletionResult.Output -ExpectedText "Pending acceptance next steps:"
     Assert-ContainsText -Lines $incompleteCompletionResult.Output -ExpectedText "Completion check: incomplete."
+
+    $malformedResult = Invoke-Summary -Path $malformedPath
+    if ($malformedResult.ExitCode -ne 0) {
+        throw "Malformed-looking notes summary should exit 0 without -RequireComplete. Exit code: $($malformedResult.ExitCode)"
+    }
+
+    Assert-ContainsText -Lines $malformedResult.Output -ExpectedText "Release folder: unknown"
+    Assert-ContainsText -Lines $malformedResult.Output -ExpectedText "Acceptance evidence: verifier: Missing; commit: Missing; normal launch: Missing; fixture launch: Missing"
+    Assert-ContainsText -Lines $malformedResult.Output -ExpectedText "Overall result: Not recorded"
+    Assert-ContainsText -Lines $malformedResult.Output -ExpectedText "Checklist totals: 0 pass, 0 issue, 0 not checked, 0 not recorded"
+    Assert-ContainsText -Lines $malformedResult.Output -ExpectedText "No portable release checklist items were found."
+    Assert-ContainsText -Lines $malformedResult.Output -ExpectedText "Pending acceptance next steps:"
+    Assert-ContainsText -Lines $malformedResult.Output -ExpectedText "Verifier evidence is Missing; run the required verifier for this notes file before recording manual acceptance."
+    Assert-DoesNotContainText -Lines $malformedResult.Output -UnexpectedText "All checklist items are marked Pass."
+    Assert-DoesNotContainText -Lines $malformedResult.Output -UnexpectedText "-RecordCommitMismatch"
+
+    $malformedCompletionResult = Invoke-Summary -Path $malformedPath -RequireComplete
+    if ($malformedCompletionResult.ExitCode -ne 1) {
+        throw "Malformed-looking notes -RequireComplete should exit 1. Exit code: $($malformedCompletionResult.ExitCode)"
+    }
+
+    Assert-ContainsText -Lines $malformedCompletionResult.Output -ExpectedText "Completion check: incomplete."
+    Assert-ContainsText -Lines $malformedCompletionResult.Output -ExpectedText "Verifier evidence checkbox is Missing."
+    Assert-ContainsText -Lines $malformedCompletionResult.Output -ExpectedText "Commit evidence checkbox is Missing."
+    Assert-ContainsText -Lines $malformedCompletionResult.Output -ExpectedText "Normal launch evidence checkbox is Missing."
+    Assert-ContainsText -Lines $malformedCompletionResult.Output -ExpectedText "Fixture launch evidence checkbox is Missing."
+    Assert-ContainsText -Lines $malformedCompletionResult.Output -ExpectedText "Overall result is Not recorded."
+    Assert-ContainsText -Lines $malformedCompletionResult.Output -ExpectedText "No portable release checklist items were found."
+    Assert-DoesNotContainText -Lines $malformedCompletionResult.Output -UnexpectedText "All checklist items are marked Pass."
 
     $completeResult = Invoke-Summary -Path $completePath -RequireComplete
     if ($completeResult.ExitCode -ne 0) {

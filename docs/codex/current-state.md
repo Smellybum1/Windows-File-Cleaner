@@ -11,7 +11,7 @@ Use this as the first compact orientation file for new Codex threads. Historical
 - Latest live evidence: 2026-06-04 second tiny exact real-profile Quarantine batch.
 - Latest working app packet: real-profile Quarantine inline status wording fix.
 - Latest package candidate: `.local\releases\windows-file-cleaner-v20260604-121922` at `e6ac3eb`, verified but not human-accepted.
-- Latest tooling/evidence packet: accepted launcher malformed notes regression.
+- Latest tooling/evidence packet: package summary malformed notes regression.
 - Latest docs/workflow packet: startup context compaction.
 - Previous docs/workflow baseline: `1ea1b76 Reduce workflow markdown bloat`
 - App stack: C# / WPF / .NET 8
@@ -62,8 +62,8 @@ Use this as the first compact orientation file for new Codex threads. Historical
 - MVP preflight now runs the daily readiness latest package notes regression by default after the daily readiness fixture acceptance notes regression; use `-SkipDailyReadinessLatestPackageNotesCheck` only for focused local loops.
 - `tools\Test-AcceptedLocalReleaseSelection.cmd` verifies that accepted-package launch commands ignore newer incomplete and malformed-looking notes when selecting by default, while explicit incomplete or malformed-looking notes paths stop before launch-command printing. It uses temporary ignored notes and synthetic package files under `.local` with `-PrintOnly -SkipVerify`.
 - MVP preflight now runs the accepted local release selection regression by default before the package acceptance summary regression; use `-SkipAcceptedLocalReleaseSelectionCheck` only for focused local loops.
-- `tools\Test-LocalReleaseAcceptanceSummary.cmd` verifies accepted/incomplete package acceptance summary behavior with temporary ignored `.local` notes and cleans up after itself.
-- MVP preflight now runs the local release acceptance summary regression check by default before `git diff --check`; use `-SkipLocalReleaseAcceptanceSummaryCheck` only for focused local loops.
+- `tools\Test-LocalReleaseAcceptanceSummary.cmd` verifies accepted, incomplete, and malformed-looking package acceptance summary behavior with temporary ignored `.local` notes and cleans up after itself. Malformed-looking notes now report missing checklist structure instead of implying all checklist items passed.
+- MVP preflight now runs the local release acceptance summary regression check by default before the local release acceptance recorder regression; use `-SkipLocalReleaseAcceptanceSummaryCheck` only for focused local loops.
 - `tools\Test-LocalReleaseAcceptanceRecorder.cmd` verifies the package acceptance recorder rejects missing manual intent, missing verifier evidence, and missing commit evidence without explicit mismatch acceptance; it also verifies `-WhatIf` does not write and explicit `-RecordCommitMismatch` can complete synthetic ignored notes.
 - MVP preflight now runs the local release acceptance recorder regression check by default after the package summary regression; use `-SkipLocalReleaseAcceptanceRecorderCheck` only for focused local loops.
 - Current full MVP preflight passed with restore, build, core tests, WPF app tests, fixture `-WhatIf`, fixture checklist-only output, fixture acceptance notes regression, daily readiness fixture acceptance notes regression, daily readiness latest package notes regression, accepted local release selection regression, local release acceptance summary regression, local release acceptance recorder regression, real-profile next-batch stop guard regression, daily readiness exact-profile undo spotlight regression, and whitespace diff.

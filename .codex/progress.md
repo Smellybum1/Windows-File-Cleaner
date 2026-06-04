@@ -15,7 +15,7 @@ Read first: `docs/codex/current-state.md`.
 
 Latest docs/workflow packet: `2026-06-04-startup-context-compaction`. It moved oversized read-first docs into reference/archive files and replaced them with compact active docs to reduce Codex thread lag. No app behavior changed.
 
-Latest tooling/evidence packet: `2026-06-04-accepted-launcher-malformed-notes-regression`. MVP preflight now covers accepted-package launcher rejection for explicit malformed-looking notes while default selection still skips incomplete or malformed-looking candidates.
+Latest tooling/evidence packet: `2026-06-04-package-summary-malformed-notes-regression`. MVP preflight now covers malformed-looking package acceptance summaries so missing checklist structure is reported as missing instead of all-pass.
 
 Latest package candidate: `.local\releases\windows-file-cleaner-v20260604-121922` at app commit `e6ac3eb`, verified but not human-accepted. Current pending acceptance notes: `.local\release-acceptance\release-acceptance-20260604-134337.md`.
 
@@ -40,6 +40,36 @@ Post-action evidence:
 6. Use `docs/operations/*.md` for command detail.
 
 ## Recent Packet Summaries
+
+### 2026-06-04: Package Summary Malformed Notes Regression
+
+Status: completed
+
+Goal:
+
+- Cover malformed-looking portable release acceptance notes in the summary helper so missing checklist structure is reported accurately and `-RequireComplete` fails with explicit blockers.
+
+Safety profile:
+
+- `terminal-readonly`. The regression writes temporary ignored complete, incomplete, and malformed-looking package acceptance notes under `.local\release-acceptance-summary-test`, invokes the read-only summary helper, and removes the temporary files. It does not launch WPF, scan real-profile files, move, restore, delete, approve cleanup, promote a package, create shortcuts, install anything, or create cleanup history.
+
+Changes:
+
+- `Summarize-LocalReleaseAcceptanceNotes.cmd` now prints `No portable release checklist items were found.` when a notes file has zero checklist sections instead of saying all checklist items passed.
+- Extended `tools\Test-LocalReleaseAcceptanceSummary.cmd` / `.ps1`.
+- The regression now verifies malformed-looking notes report unknown/missing metadata and evidence, zero checklist totals, guarded verifier guidance, and no `-RecordCommitMismatch` command while verifier evidence is missing.
+- It verifies `-RequireComplete` fails malformed-looking notes with missing verifier, commit, normal launch, fixture launch, overall result, and checklist blockers.
+
+Verification:
+
+- `cmd.exe /c tools\Test-LocalReleaseAcceptanceSummary.cmd`
+- `cmd.exe /c tools\Test-DailyReadinessLatestPackageNotes.cmd`
+- `cmd.exe /c tools\Test-AcceptedLocalReleaseSelection.cmd`
+- `cmd.exe /c tools\Invoke-MvpPreflight.cmd`
+
+ADRs:
+
+- Skipped; this changes terminal summary wording and regression coverage for existing package acceptance notes under ADR 0020 and does not change product behavior, cleanup execution, restore execution, persistence, deployment, package acceptance policy, or real readiness behavior.
 
 ### 2026-06-04: Accepted Launcher Malformed Notes Regression
 
@@ -634,6 +664,7 @@ ADRs:
 
 ### Current Live Product And Package Packets
 
+- `2026-06-04-package-summary-malformed-notes-regression`: MVP preflight now covers malformed-looking package acceptance summaries with temporary ignored notes and accurate missing-checklist wording.
 - `2026-06-04-accepted-launcher-malformed-notes-regression`: MVP preflight now covers accepted-package launcher default selection and explicit malformed-looking-notes rejection with temporary ignored notes and synthetic print-only package files.
 - `2026-06-04-daily-readiness-latest-package-notes-regression`: MVP preflight now covers daily readiness latest package notes informational behavior with temporary ignored complete, incomplete, and malformed-looking package acceptance notes.
 - `2026-06-04-daily-readiness-fixture-acceptance-regression`: MVP preflight now covers optional and strict daily readiness fixture-note forwarding with synthetic package and Restore Manifest evidence under ignored `.local`.
@@ -649,7 +680,7 @@ ADRs:
 - `2026-06-04-mvp-preflight-next-batch-stop-guard-regression`: MVP preflight now runs the real-profile next-batch stop guard regression by default.
 - `2026-06-04-real-profile-next-batch-early-undo-guard`: next-batch evidence now stops before MVP preflight when displayed undo work exists.
 - `2026-06-04-mvp-preflight-release-summary-regression`: MVP preflight now runs the package acceptance summary regression check by default.
-- `2026-06-04-local-release-acceptance-summary-regression-check`: added targeted temporary-note regression coverage for summary next-step behavior.
+- `2026-06-04-local-release-acceptance-summary-regression-check`: added targeted temporary-note regression coverage for summary next-step behavior, now including malformed-looking notes with missing checklist structure.
 - `2026-06-04-package-acceptance-summary-next-steps`: incomplete package acceptance summaries print guarded recorder and recheck commands.
 - `2026-06-04-daily-readiness-latest-package-notes`: daily readiness surfaces the latest package acceptance notes as informational context.
 - `2026-06-04-pending-package-acceptance-notes-refresh`: refreshed pending candidate notes at `.local\release-acceptance\release-acceptance-20260604-134337.md`.

@@ -426,7 +426,12 @@ if ($attentionEntries.Count -gt 0) {
 }
 else {
     Write-Host ""
-    Write-Host "All checklist items are marked Pass."
+    if ($entries.Count -eq 0) {
+        Write-Host "No portable release checklist items were found."
+    }
+    else {
+        Write-Host "All checklist items are marked Pass."
+    }
 }
 
 Write-Host ""
