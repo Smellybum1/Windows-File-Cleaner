@@ -4,6 +4,8 @@ param(
 
     [switch]$RecordManualAcceptance,
 
+    [switch]$RecordCommitMismatch,
+
     [string]$Summary
 )
 
@@ -70,6 +72,26 @@ function Set-CheckboxLine {
         if ($script:lines[$index] -match "^- \[[ xX]\] $escapedLabel$") {
             $script:lines[$index] = "- [$desiredMark] $Label"
             return
+        }
+    }
+
+    throw "Could not find checkbox line: $Label"
+}
+
+function Test-CheckboxLineChecked {
+    param(
+        [Parameter(Mandatory)]
+        [string]$Label
+    )
+
+    $escapedLabel = [regex]::Escape($Label)
+    foreach ($line in $script:lines) {
+        if ($line -match "^- \[[xX]\] $escapedLabel$") {
+            return $true
+        }
+
+        if ($line -match "^- \[ \] $escapedLabel$") {
+            return $false
         }
     }
 
@@ -189,6 +211,20 @@ Assert-IgnoredLocalPath -FullPath $fullNotesPath
 
 $script:lines = @(Get-Content -LiteralPath $fullNotesPath)
 
+$verifierLabel = "Verifier passed for this release package."
+$commitEvidenceLabel = "Package commit matched current HEAD or mismatch was intentionally recorded."
+if (-not (Test-CheckboxLineChecked -Label $verifierLabel)) {
+    throw "Verifier evidence is not recorded. Run the package verifier before recording manual portable release acceptance."
+}
+
+if (-not (Test-CheckboxLineChecked -Label $commitEvidenceLabel)) {
+    if (-not $RecordCommitMismatch.IsPresent) {
+        throw "Commit evidence is not recorded. Pass -RecordCommitMismatch only after reviewing and intentionally accepting the package/current-HEAD mismatch."
+    }
+
+    Set-CheckboxLine -Label $commitEvidenceLabel -Checked $true
+}
+
 Set-CheckboxLine -Label "Package was launched normally or normal launch was intentionally deferred." -Checked $true
 Set-CheckboxLine -Label "Fixture launch and read-only fixture Scan were completed or intentionally deferred." -Checked $true
 Set-OverallResult -Result "Pass"
@@ -210,6 +246,9 @@ if ($PSCmdlet.ShouldProcess($fullNotesPath, "Record manual portable release acce
 }
 
 Write-Host "Recorded manual portable release acceptance notes."
+if ($RecordCommitMismatch.IsPresent) {
+    Write-Host "Package/current-HEAD mismatch evidence was explicitly recorded."
+}
 Write-Host "Notes file: $fullNotesPath"
 Write-Host "Boundary: this updated ignored markdown notes only; it did not launch WPF, scan, move, restore, delete, approve cleanup, or create cleanup history."
 Write-Host "Review with:"

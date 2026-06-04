@@ -58,7 +58,9 @@ Use this only when app behavior changes should ship as a new accepted package ba
 .\tools\Record-LocalReleaseAcceptanceNotes.cmd -RecordManualAcceptance
 ```
 
-Record acceptance notes only after the human package acceptance pass is complete.
+Use `-RequireCurrentCommit` when cutting notes for a package that should match current `HEAD`. For an already verified package candidate that is behind docs-only commits, inspect the package verifier warning and existing metadata instead of requiring current `HEAD`.
+
+Record acceptance notes only after the human package acceptance pass is complete. If the notes do not already have commit evidence recorded because the package intentionally differs from current `HEAD`, pass `-RecordCommitMismatch` only after reviewing and accepting that package/current-HEAD mismatch.
 
 ## Boundaries
 

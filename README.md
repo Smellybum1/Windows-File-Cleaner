@@ -217,7 +217,7 @@ To also write a local, ignored markdown notes template for package acceptance:
 .\tools\Start-LocalRelease.cmd -ChecklistOnly -RequireCurrentCommit -WriteAcceptanceNotes
 ```
 
-The template is written under `.local\release-acceptance`, stamps the repo branch/commit, current worktree state, package metadata commit/preflight evidence, package paths, exact normal and fixture launch commands, local evidence checkboxes, and exact post-pass summary commands. When the launcher verifies the package first, the notes pre-record verifier evidence; when `-RequireCurrentCommit` is used and passes, they also pre-record current-commit evidence. Normal launch and fixture launch/scan acceptance remain manual evidence. After filling the notes, summarize the latest ignored notes or a specific notes file:
+The template is written under `.local\release-acceptance`, stamps the repo branch/commit, current worktree state, package metadata commit/preflight evidence, package paths, exact normal and fixture launch commands, local evidence checkboxes, and exact post-pass recorder/summary commands. When the launcher verifies the package first, the notes pre-record verifier evidence; when `-RequireCurrentCommit` is used and passes, they also pre-record current-commit evidence. Normal launch and fixture launch/scan acceptance remain manual evidence. After filling the notes, summarize the latest ignored notes or a specific notes file:
 
 ```powershell
 .\tools\Summarize-LocalReleaseAcceptanceNotes.cmd
@@ -234,7 +234,7 @@ After you have actually completed the package acceptance pass, you can record th
 .\tools\Summarize-LocalReleaseAcceptanceNotes.cmd -RequireComplete
 ```
 
-`Record-LocalReleaseAcceptanceNotes` updates ignored `.local` notes only. Use it only after README review, normal launch, fixture launch/read-only fixture Scan, portable-boundary review, and real-profile stop-boundary confirmation are complete.
+`Record-LocalReleaseAcceptanceNotes` updates ignored `.local` notes only. Use it only after README review, normal launch, fixture launch/read-only fixture Scan, portable-boundary review, and real-profile stop-boundary confirmation are complete. If the package intentionally differs from current `HEAD`, add `-RecordCommitMismatch` only after reviewing the package metadata and accepting that mismatch.
 
 To print or start the latest accepted portable package from completed ignored acceptance notes:
 

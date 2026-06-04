@@ -266,13 +266,20 @@ function Get-LocalReleaseMetadataValue {
 function Write-PortableReleaseAcceptanceNotesNextSteps {
     param(
         [Parameter(Mandatory)]
-        [string]$NotesPath
+        [string]$NotesPath,
+
+        [Parameter(Mandatory)]
+        [bool]$RequireCurrentCommitEvidence
     )
 
     Write-Host "After the package acceptance pass, fill the notes file, then run:"
+    Write-Host ".\tools\Record-LocalReleaseAcceptanceNotes.cmd -Path `"$NotesPath`" -RecordManualAcceptance"
+    if (-not $RequireCurrentCommitEvidence) {
+        Write-Host "If the package/current-HEAD mismatch is intentional, rerun the recorder with -RecordCommitMismatch."
+    }
     Write-Host ".\tools\Summarize-LocalReleaseAcceptanceNotes.cmd -Path `"$NotesPath`""
     Write-Host ".\tools\Summarize-LocalReleaseAcceptanceNotes.cmd -Path `"$NotesPath`" -RequireComplete"
-    Write-Host "These summary commands read ignored notes only; they do not launch WPF, scan, move, restore, delete, approve cleanup, or create cleanup history."
+    Write-Host "These commands update/read ignored notes only; they do not launch WPF, scan, move, restore, delete, approve cleanup, or create cleanup history."
 }
 
 function New-PortableReleaseAcceptanceNotes {
@@ -386,6 +393,10 @@ function New-PortableReleaseAcceptanceNotes {
     $lines.Add("After filling this file, run these commands from the repository root:")
     $lines.Add("")
     $lines.Add('```powershell')
+    $lines.Add(('.\tools\Record-LocalReleaseAcceptanceNotes.cmd -Path "{0}" -RecordManualAcceptance' -f $notesPath))
+    if (-not $RequireCurrentCommitEvidence) {
+        $lines.Add(('.\tools\Record-LocalReleaseAcceptanceNotes.cmd -Path "{0}" -RecordManualAcceptance -RecordCommitMismatch' -f $notesPath))
+    }
     $lines.Add(('.\tools\Summarize-LocalReleaseAcceptanceNotes.cmd -Path "{0}"' -f $notesPath))
     $lines.Add(('.\tools\Summarize-LocalReleaseAcceptanceNotes.cmd -Path "{0}" -RequireComplete' -f $notesPath))
     $lines.Add('```')
@@ -527,7 +538,7 @@ if ($ChecklistOnly.IsPresent) {
             -RequireCurrentCommitEvidence $RequireCurrentCommit.IsPresent
         Write-Host ""
         Write-Host "Portable release acceptance notes template: $notesPath"
-        Write-PortableReleaseAcceptanceNotesNextSteps -NotesPath $notesPath
+        Write-PortableReleaseAcceptanceNotesNextSteps -NotesPath $notesPath -RequireCurrentCommitEvidence $RequireCurrentCommit.IsPresent
     }
     exit 0
 }

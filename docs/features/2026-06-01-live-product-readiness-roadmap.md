@@ -89,6 +89,8 @@ Later packet note: `Verified Portable Package Candidate` cut `.local\releases\wi
 
 Later packet note: `Accepted Package Complete Notes Selection` made accepted-package helpers select the latest complete acceptance notes by default, so incomplete candidate notes no longer shadow the accepted `bc9b869` baseline. The pending candidate notes remain available by explicit path.
 
+Later packet note: `Local Release Recorder Commit Evidence Guard` made package acceptance recording fail when verifier evidence is missing, and require explicit `-RecordCommitMismatch` before package/current-HEAD mismatch evidence is marked recorded. Generated package acceptance notes now include the recorder command and the explicit mismatch variant when notes are created without `-RequireCurrentCommit`.
+
 ## Domain Language Changes
 
 No new durable domain terms.

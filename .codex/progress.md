@@ -8,7 +8,7 @@ This file is now the compact current progress log. Historical packet evidence fr
 
 Read first: `docs/codex/current-state.md`.
 
-The latest tooling/evidence packet is `2026-06-04-accepted-package-complete-notes-selection`: accepted-package helpers now select the latest complete acceptance notes by default, while pending candidate notes require an explicit path.
+The latest tooling/evidence packet is `2026-06-04-local-release-recorder-commit-evidence-guard`: package acceptance recording now refuses missing verifier evidence and requires explicit `-RecordCommitMismatch` before package/current-HEAD mismatch evidence is marked recorded.
 
 The latest package candidate remains `2026-06-04-verified-portable-package-candidate`: package `.local\releases\windows-file-cleaner-v20260604-121922` was cut from app commit `e6ac3eb` after the real-profile inline status wording fix, verified with current-commit package checks, and left pending human package acceptance.
 
@@ -26,6 +26,8 @@ Current package candidate `.local\releases\windows-file-cleaner-v20260604-121922
 
 Accepted-package tooling now selects the latest complete acceptance notes by default. This keeps daily readiness and accepted-package launch commands on the completed `bc9b869` package while the newer `e6ac3eb` candidate notes remain incomplete and inspectable by explicit path.
 
+Package acceptance recording now requires verifier evidence and explicit package/current-HEAD mismatch evidence. This keeps future docs-drifted candidate acceptance notes from looking recorded while still failing completion checks.
+
 ## Next Recommended Work
 
 1. Stop after the second tiny exact real-profile batch; do not chain another real-profile Quarantine batch.
@@ -36,6 +38,56 @@ Accepted-package tooling now selects the latest complete acceptance notes by def
 6. Start an ADR 0020 shortcut/installer follow-up only if the user explicitly asks for installed shortcut or installer automation.
 
 ## Recent Completed Packets
+
+### 2026-06-04: Local Release Recorder Commit Evidence Guard
+
+Status: completed
+
+Goal:
+
+- Make portable release acceptance recording safer when a package candidate is intentionally behind current `HEAD` because later commits are docs/tooling-only.
+
+Safety profile:
+
+- `terminal-readonly`; recorder verification used ignored test-note copies only. No WPF launch, scan, movement, restore, deletion, approval, installed shortcut, installer behavior, or cleanup history.
+
+Changes:
+
+- `Record-LocalReleaseAcceptanceNotes.ps1` now refuses to record manual package acceptance unless verifier evidence is already recorded.
+- If commit evidence is not already recorded, the recorder now requires explicit `-RecordCommitMismatch` before it marks commit mismatch evidence recorded.
+- `Start-LocalRelease.ps1` now prints and embeds the recorder command in generated notes, plus the explicit `-RecordCommitMismatch` variant when notes are created without `-RequireCurrentCommit`.
+
+Verification:
+
+- `cmd.exe /c tools\Record-LocalReleaseAcceptanceNotes.cmd -Path ".local\release-acceptance-recording-test\release-acceptance-missing-verifier.md" -RecordManualAcceptance` exited `1` with the expected missing-verifier blocker.
+- `cmd.exe /c tools\Record-LocalReleaseAcceptanceNotes.cmd -Path ".local\release-acceptance-recording-test\release-acceptance-missing-commit.md" -RecordManualAcceptance` exited `1` with the expected missing-commit blocker.
+- `cmd.exe /c tools\Record-LocalReleaseAcceptanceNotes.cmd -Path ".local\release-acceptance-recording-test\release-acceptance-missing-commit.md" -RecordManualAcceptance -RecordCommitMismatch -Summary "Test-only recorded portable release acceptance with explicit commit mismatch evidence."`
+- `cmd.exe /c tools\Summarize-LocalReleaseAcceptanceNotes.cmd -Path ".local\release-acceptance-recording-test\release-acceptance-missing-commit.md" -RequireComplete`
+- `cmd.exe /c tools\Record-LocalReleaseAcceptanceNotes.cmd -Path ".local\release-acceptance-recording-test\release-acceptance-missing-commit.md" -RecordManualAcceptance -RecordCommitMismatch -WhatIf`
+- `cmd.exe /c tools\Record-LocalReleaseAcceptanceNotes.cmd` exited `1` before writing because `-RecordManualAcceptance` was missing.
+- `cmd.exe /c tools\Start-LocalRelease.cmd -ReleasePath ".local\releases\windows-file-cleaner-v20260604-121922" -ChecklistOnly`
+- `cmd.exe /c tools\Start-LocalRelease.cmd -ReleasePath ".local\releases\windows-file-cleaner-v20260604-121922" -ChecklistOnly -WriteAcceptanceNotes`; generated ignored test notes included `-RecordCommitMismatch` guidance and were removed after confirming the generated path stayed under `.local\release-acceptance`.
+
+Docs updated:
+
+- `docs/features/2026-06-04-local-release-recorder-commit-evidence-guard.md`
+- `docs/features/index.md`
+- `docs/features/2026-06-01-live-product-readiness-roadmap.md`
+- `docs/codex/current-state.md`
+- `docs/codex/thread-handoff.md`
+- `.codex/progress.md`
+- `docs/operations/portable-release.md`
+- `docs/domain/context.md`
+- `docs/domain/glossary.md`
+- `README.md`
+
+ADRs:
+
+- Skipped; this is a release-acceptance tooling guard under ADR 0020 and does not add installed shortcut or installer behavior.
+
+Follow-up:
+
+- Complete the human package acceptance pass for `.local\releases\windows-file-cleaner-v20260604-121922` before promoting it over the accepted `bc9b869` baseline.
 
 ### 2026-06-04: Accepted Package Complete Notes Selection
 
