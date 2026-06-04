@@ -34,6 +34,7 @@ internal static class Program
                 tests.MainWindowDiscoversQuarantineManifestsReadOnly();
                 tests.MainWindowShowsRealProfileReadinessContractForSyntheticPreview();
                 tests.MainWindowShowsRealProfileFirstPhaseBlockersForSyntheticPreview();
+                tests.MainWindowUsesRealProfileInlineStatusAfterExactProfileExecutionResult();
                 tests.MainWindowShowsRealProfileChildReadinessContractForSyntheticPreview();
                 tests.MainWindowKeepsQuarantineExecutionUnavailableForCustomScope();
                 tests.MainWindowKeepsSelectedRestoreUnavailableForCustomScope();
@@ -2859,6 +2860,38 @@ internal sealed class MainWindowSmokeTests
         }
     }
 
+    public void MainWindowUsesRealProfileInlineStatusAfterExactProfileExecutionResult()
+    {
+        var cleanupScopePath = StorageScanOptions.DefaultForCurrentUser().CleanupScopePath;
+        using var fixture = SmokeFixture.CreateCustomScope();
+        var quarantineRootPath = Path.Combine(fixture.RootPath, "synthetic-real-profile-status-quarantine-root");
+        var result = CreateSyntheticRealProfileQuarantineExecutionResult(cleanupScopePath, quarantineRootPath);
+
+        var window = new MainWindow();
+        try
+        {
+            SetCurrentQuarantineExecutionResult(window, result);
+            RefreshQuarantinePreviewStatus(window);
+
+            Assert(
+                window.QuarantinePreviewStatusTextValue.Contains("Real-profile Quarantine execution completed", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantinePreviewStatusTextValue.Contains("Use Discover manifests", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantinePreviewStatusTextValue.Contains("selected restore recovery", StringComparison.OrdinalIgnoreCase)
+                && window.QuarantinePreviewStatusTextValue.Contains("rescan refreshes review rows", StringComparison.OrdinalIgnoreCase),
+                "Inline Quarantine Preview status should use real-profile post-execution wording for exact-profile Restore Manifests.");
+            Assert(
+                !window.QuarantinePreviewStatusTextValue.Contains("Fixture Quarantine execution completed", StringComparison.OrdinalIgnoreCase)
+                && !window.QuarantinePreviewStatusTextValue.Contains("Undo fixture quarantine", StringComparison.OrdinalIgnoreCase),
+                "Inline Quarantine Preview status should not describe exact-profile execution as fixture execution.");
+            Assert(window.QuarantinePreviewStatusStyleValue == "Success", "Successful real-profile inline status should keep success styling.");
+            AssertQuarantinePreviewStatusHelpText(window, "Inline status help should mirror exact-profile post-execution wording.");
+        }
+        finally
+        {
+            window.Close();
+        }
+    }
+
     public void MainWindowShowsRealProfileChildReadinessContractForSyntheticPreview()
     {
         var realProfileScopePath = StorageScanOptions.DefaultForCurrentUser().CleanupScopePath;
@@ -3794,6 +3827,74 @@ internal sealed class MainWindowSmokeTests
             $"restore-manifest-{idSuffix}");
 
         return QuarantineExecutor.Execute(manifest);
+    }
+
+    private static QuarantineExecutionResult CreateSyntheticRealProfileQuarantineExecutionResult(
+        string cleanupScopePath,
+        string quarantineRootPath)
+    {
+        var now = new DateTimeOffset(2026, 6, 4, 2, 3, 4, TimeSpan.Zero);
+        var actionId = "quarantine-action-synthetic-real-profile-status";
+        var actionRoot = Path.GetFullPath(Path.Combine(quarantineRootPath, "actions", actionId));
+        var itemsRoot = Path.Combine(actionRoot, "items");
+        var relativePath = Path.Combine("AppData", "Local", "pip", "cache", "http-v2", "response.body");
+        var originalPath = Path.GetFullPath(Path.Combine(cleanupScopePath, relativePath));
+        var quarantinePath = Path.GetFullPath(Path.Combine(itemsRoot, relativePath));
+        var entry = new RestoreManifestEntry(
+            originalPath,
+            relativePath,
+            quarantinePath,
+            IsDirectory: false,
+            SizeBytes: 29 * 1024 * 1024,
+            LastModifiedUtc: now,
+            ImportanceRating.LikelySafe,
+            DeletionRecommendation.QuarantineCandidate,
+            [BloatCategory.AppCache, BloatCategory.PythonPackageCache],
+            "Synthetic real-profile Quarantine status regression entry. No filesystem movement was run.",
+            RestoreManifestEntryStatus.Moved,
+            MoveStartedAtUtc: now,
+            MoveCompletedAtUtc: now,
+            RestoreStartedAtUtc: null,
+            RestoreCompletedAtUtc: null,
+            ErrorMessage: null);
+        var manifest = new RestoreManifest(
+            RestoreManifest.CurrentSchemaVersion,
+            "restore-manifest-synthetic-real-profile-status",
+            "restore-manifest-draft-synthetic-real-profile-status",
+            actionId,
+            now,
+            now,
+            Path.GetFullPath(cleanupScopePath),
+            Path.GetFullPath(quarantineRootPath),
+            actionRoot,
+            itemsRoot,
+            Path.Combine(actionRoot, RestoreManifestFileStore.RestoreManifestFileName),
+            RestoreManifestActionStatus.Completed,
+            [entry],
+            ["Synthetic result for inline status regression; no manifest was written."]);
+
+        return new QuarantineExecutionResult(
+            manifest,
+            [new QuarantineExecutionEntryResult(originalPath, quarantinePath, RestoreManifestEntryStatus.Moved, WasMoved: true, ErrorMessage: null)],
+            []);
+    }
+
+    private static void SetCurrentQuarantineExecutionResult(MainWindow window, QuarantineExecutionResult result)
+    {
+        var field = typeof(MainWindow).GetField(
+            "_currentQuarantineExecutionResult",
+            BindingFlags.Instance | BindingFlags.NonPublic);
+        Assert(field is not null, "MainWindow should keep current Quarantine execution result state available for WPF smoke setup.");
+        field!.SetValue(window, result);
+    }
+
+    private static void RefreshQuarantinePreviewStatus(MainWindow window)
+    {
+        var method = typeof(MainWindow).GetMethod(
+            "UpdateQuarantinePreviewStatus",
+            BindingFlags.Instance | BindingFlags.NonPublic);
+        Assert(method is not null, "MainWindow should keep the Quarantine Preview status refresh method available for WPF smoke setup.");
+        method!.Invoke(window, [null]);
     }
 
     private static void ApplySyntheticStorageScanResult(MainWindow window, StorageScanResult result)

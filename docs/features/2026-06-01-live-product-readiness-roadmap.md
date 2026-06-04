@@ -83,6 +83,8 @@ Later packet note: `Accepted Package Launch Path Clarity` clarified that the acc
 
 Later packet note: `Accepted Launcher Output Boundary` made `Start-AcceptedLocalRelease.cmd` print the daily-path/debug-shortcut boundary directly, without creating shortcuts, installing anything, launching WPF, scanning, moving, restoring, deleting, approving cleanup, or creating cleanup history.
 
+Later packet note: `Second Real-Profile Quarantine Batch` recorded the user-clicked 2026-06-04 exact-profile batch: one `pip\cache\http-v2` `.body` file, `28.93 MB`, moved with `moved 1`, `failed 0`, `Recovery review: no`. Post-action read-only summary showed exact-profile displayed undo work `1`, so do not chain another real-profile batch without a new Grill with Docs pass deciding how to handle outstanding selected-manifest undo work.
+
 ## Domain Language Changes
 
 No new durable domain terms.
@@ -313,7 +315,7 @@ ADRs added or skipped:
 
 Follow-up work:
 
-- Fresh `tools\Invoke-RealProfileNextBatchReview.cmd` evidence passed on `c7cb545`; the next live-product step can be the user's manual WPF next-batch review if they are ready, then still require WPF readiness, exact `QUARANTINE`, Real-Profile Quarantine Approval Evidence, immediate Pre-Execution Revalidation, and explicit user approval for any specific click.
+- The user-clicked 2026-06-04 second tiny exact real-profile batch succeeded and now leaves exact-profile displayed undo work `1`; do not chain another real-profile batch without a new Grill with Docs pass deciding how to handle outstanding selected-manifest undo work.
 - Use `tools\Invoke-RealProfileQuarantineReadiness.cmd -RequireNextBatchEvidence` when only evidence is needed, or `tools\Show-RealProfileNextBatchChecklist.cmd` when only the post-preset manual WPF checklist is needed.
 - Keep real-profile restore selected-manifest-only, exact `C:\Users\moxhe`, exact `RESTORE`, immediate selected-restore revalidation, no original-path overwrite, Restore Manifest-only, no all-manifest restore, no cleanup history, no permanent deletion, and no action-folder cleanup.
 - Optionally fill `.local\fixture-review-acceptance\fixture-acceptance-20260601-132126.md` and run the summary helper with `-RequireComplete` if formal notes evidence is desired.

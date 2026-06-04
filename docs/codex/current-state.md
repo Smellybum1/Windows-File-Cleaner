@@ -8,8 +8,9 @@ Use this as the first compact orientation file for new Codex threads. Historical
 
 - Repo: `D:\Codex\Windows File Cleaner`
 - Branch: `main`
-- Latest docs/workflow packet before this closeout: `1ea1b76 Reduce workflow markdown bloat`
-- Latest product/evidence packet before this docs cleanup: `3dad056 Record current-head next-batch review evidence`
+- Latest live evidence: 2026-06-04 second tiny exact real-profile Quarantine batch.
+- Latest working app packet: real-profile Quarantine inline status wording fix.
+- Latest docs/workflow baseline before these packets: `1ea1b76 Reduce workflow markdown bloat`
 - App stack: C# / WPF / .NET 8
 - Product: local Windows cleanup reviewer for `C:\Users\moxhe`
 - Storage Scan: read-only
@@ -34,17 +35,18 @@ Use this as the first compact orientation file for new Codex threads. Historical
 - First tiny exact real-profile Quarantine batch moved one `pip\cache\http\b\c` row with `moved 1, failed 0`.
 - Selected restore recovery for that batch worked on retry with `Restored 1, failed 0`.
 - Rediscovery/rescan confirmed the restored path appeared again.
+- Second tiny exact real-profile Quarantine batch moved one `pip\cache\http-v2` `.body` file with `moved 1, failed 0`, `Recovery review: no`.
 - Accepted portable package launched and scanned the fixture successfully.
 
 ## Current Evidence
 
-- `cmd.exe /c tools\Invoke-RealProfileNextBatchReview.cmd` passed on `c7cb545`.
+- `cmd.exe /c tools\Invoke-RealProfileNextBatchReview.cmd` passed on current `main` at `655e075` before the second tiny exact real-profile WPF batch.
 - Full MVP preflight passed in that wrapper: restore, build, core tests, WPF app tests, fixture `-WhatIf`, fixture checklist-only output, and whitespace check.
 - Accepted package verification passed with the expected accepted-package/current-HEAD warning.
-- Exact-profile Restore Manifest display showed 4 of 10 manifests.
-- Displayed exact-profile undo work was `0`.
-- Displayed exact-profile recovery review was `2`, both older failed NVIDIA `DXCache` attempts with no moved entries.
-- Manual WPF next-batch checklist printed.
+- The user-approved second WPF batch moved one exact `C:\Users\moxhe` `pip\cache\http-v2` `.body` file into Quarantine with `moved 1`, `failed 0`, `Recovery review: no`.
+- Read-only terminal summary after the action showed 5 of 11 exact-profile manifests, displayed exact-profile undo work `1`, and displayed exact-profile recovery review `2`.
+- New manifest: `D:\WindowsFileCleanerQuarantine\actions\quarantine-action-draft-20260604014901-b7b402a2\restore-manifest.json`.
+- Current working packet fixed WPF inline post-execution status so exact real-profile Quarantine results are no longer described as fixture Quarantine results.
 
 ## Still Unavailable
 
@@ -57,7 +59,7 @@ Use this as the first compact orientation file for new Codex threads. Historical
 
 ## Next Best Step
 
-Ask the user to do the manual WPF next-batch review if they are ready. Do not click Quarantine from Codex, and do not guide a Quarantine click unless the user explicitly chooses a specific tiny exact `C:\Users\moxhe` batch after WPF readiness, exact `QUARANTINE`, approval evidence, and immediate Pre-Execution Revalidation are visible.
+Stop after the second tiny exact real-profile batch. Do not chain another real-profile Quarantine batch while exact-profile displayed undo work is present unless a new Grill with Docs pass decides that outstanding selected-manifest undo work is acceptable. If recovery is needed, use selected-manifest restore only for the exact selected Restore Manifest after readiness, exact `RESTORE`, and immediate selected-restore revalidation pass.
 
 ## High-Value Commands
 
@@ -69,7 +71,8 @@ Ask the user to do the manual WPF next-batch review if they are ready. Do not cl
 .\tools\Invoke-RealProfileNextBatchReview.cmd
 .\tools\Invoke-RealProfileQuarantineReadiness.cmd -RequireNextBatchEvidence
 .\tools\Show-RealProfileNextBatchChecklist.cmd
-.\tools\Summarize-RestoreManifests.cmd -CleanupScope "C:\Users\moxhe" -RequireAnyDisplayed -RequireNoDisplayedUndoWork
+.\tools\Summarize-RestoreManifests.cmd -CleanupScope "C:\Users\moxhe" -ShowEntries
+.\tools\Summarize-RestoreManifests.cmd -CleanupScope "C:\Users\moxhe" -UndoWorkOnly -ShowEntries
 .\tools\Summarize-RestoreManifests.cmd -CleanupScope "C:\Users\moxhe" -RecoveryReviewOnly -ShowEntries
 ```
 

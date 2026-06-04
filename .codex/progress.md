@@ -8,21 +8,101 @@ This file is now the compact current progress log. Historical packet evidence fr
 
 Read first: `docs/codex/current-state.md`.
 
-The latest product/evidence packet before this docs cleanup is `3dad056 Record current-head next-batch review evidence`. The app remains a local Windows File Cleaner for `C:\Users\moxhe`; Storage Scan is read-only, exact real-profile movement is human-clicked only, and unavailable workflows remain broad/all-manifest real-profile Undo Quarantine, custom/non-exact real-profile Quarantine, custom selected restore, permanent deletion, persisted cleanup history, installed shortcut automation, and installer behavior.
+The latest product/evidence packet is `2026-06-04-second-real-profile-quarantine-batch`: the user approved and clicked one exact `C:\Users\moxhe` WPF Quarantine batch for a single `pip\cache\http-v2` `.body` file. The app remains a local Windows File Cleaner for `C:\Users\moxhe`; Storage Scan is read-only, exact real-profile movement is human-clicked only, and unavailable workflows remain broad/all-manifest real-profile Undo Quarantine, custom/non-exact real-profile Quarantine, custom selected restore, permanent deletion, persisted cleanup history, installed shortcut automation, and installer behavior.
 
-The latest docs/workflow packet before this closeout is `1ea1b76 Reduce workflow markdown bloat`. It archived long historical evidence, added compact current-state/safety/runbook docs, and reduced active startup-doc bloat without changing app behavior.
+The latest docs/workflow baseline before these packets is `1ea1b76 Reduce workflow markdown bloat`. It archived long historical evidence, added compact current-state/safety/runbook docs, and reduced active startup-doc bloat without changing app behavior.
 
-Fresh current-head next-batch evidence passed on `c7cb545` with `cmd.exe /c tools\Invoke-RealProfileNextBatchReview.cmd`. That wrapper ran full MVP preflight, accepted package verification, optional Fixture Acceptance Notes status, exact-profile Restore Manifest display, recovery-review focus, undo-work focus, and manual WPF checklist printing without WPF launch, real-profile scan, movement, restore, deletion, approval, manifest writes, shortcut creation, installer behavior, or cleanup history.
+Fresh current-head next-batch evidence passed on `655e075` with `cmd.exe /c tools\Invoke-RealProfileNextBatchReview.cmd` before the user-clicked WPF batch. That wrapper ran full MVP preflight, accepted package verification, optional Fixture Acceptance Notes status, exact-profile Restore Manifest display, recovery-review focus, undo-work focus, and manual WPF checklist printing without WPF launch, real-profile scan, movement, restore, deletion, approval, manifest writes, shortcut creation, installer behavior, or cleanup history.
+
+The second tiny exact real-profile WPF batch moved one `pip\cache\http-v2` `.body` file, `28.93 MB`, with `moved 1`, `failed 0`, and `Recovery review: no`. Read-only terminal summary afterward showed manifest `quarantine-action-draft-20260604014901-b7b402a2`, exact-profile display 5 of 11 manifests, displayed undo work `1`, and displayed recovery review `2`.
+
+Current working packet fixed the WPF inline post-execution status wording so exact real-profile Quarantine execution is no longer summarized as fixture Quarantine execution.
 
 ## Next Recommended Work
 
-1. Ask the user to do the manual WPF next-batch review if they are ready.
+1. Stop after the second tiny exact real-profile batch; do not chain another real-profile Quarantine batch.
 2. Do not click real-profile Quarantine from Codex.
-3. Do not guide a Quarantine click unless the user explicitly chooses a specific tiny exact `C:\Users\moxhe` batch after WPF readiness, exact `QUARANTINE`, Real-Profile Quarantine Approval Evidence, and immediate Pre-Execution Revalidation are visible.
+3. Do not run or treat another next-batch review as movement evidence while exact-profile displayed undo work is present unless a new Grill with Docs pass decides that outstanding selected-manifest undo work is acceptable.
 4. Use `docs/operations/daily-use.md`, `docs/operations/portable-release.md`, `docs/operations/manual-fixture-review.md`, and `docs/operations/restore-manifest-review.md` for command detail.
 5. Start an ADR 0020 shortcut/installer follow-up only if the user explicitly asks for installed shortcut or installer automation.
 
 ## Recent Completed Packets
+
+### 2026-06-04: Real-Profile Quarantine Inline Status Wording
+
+Status: completed
+
+Goal:
+
+- Fix the Quarantine tab inline post-execution status so exact real-profile Quarantine results are not described as fixture Quarantine results.
+
+Safety profile:
+
+- Code/test wording packet only; no WPF launch, scan, movement, restore, deletion, approval, manifest writes, shortcut creation, install, or cleanup history.
+
+Changes:
+
+- `UpdateQuarantinePreviewStatus` now reuses the existing real-profile-aware Quarantine execution status formatter.
+- Added a WPF app regression test that injects a synthetic exact-profile `QuarantineExecutionResult` into in-memory window state and verifies real-profile wording plus the absence of fixture Undo wording.
+- Updated the second-batch feature note to mark the wording follow-up fixed.
+
+Verification:
+
+- `dotnet run --project tests\WindowsFileCleaner.App.Tests\WindowsFileCleaner.App.Tests.csproj`
+
+Docs updated:
+
+- `docs/features/2026-06-04-real-profile-quarantine-inline-status-wording.md`
+- `docs/features/2026-06-04-second-real-profile-quarantine-batch.md`
+- `docs/features/index.md`
+- `docs/codex/current-state.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- Skipped; this is UI wording under existing ADR 0017, ADR 0018, and ADR 0019 gates.
+
+### 2026-06-04: Second Real-Profile Quarantine Batch
+
+Status: completed
+
+Goal:
+
+- Record the user-clicked second tiny exact `C:\Users\moxhe` Quarantine batch and its read-only post-action evidence.
+
+Safety profile:
+
+- `real-profile-user-click-only` for the WPF movement; `terminal-readonly` for Codex post-action evidence capture.
+
+Evidence:
+
+- `cmd.exe /c tools\Invoke-RealProfileNextBatchReview.cmd` passed on `655e075` before WPF movement.
+- The user shortlisted one exact `C:\Users\moxhe` `pip\cache\http-v2` `.body` file, `28.93 MB`.
+- WPF preview showed `1 included`, `0 blocked`, `0 redundant`, no readiness blockers, clean Quarantine Root Execution Safety, clean Pre-Execution Revalidation, selected real-profile restore trust, and `Can execute: yes` after exact `QUARANTINE`.
+- The user clicked `Quarantine included shortlist`; WPF reported `Moved 1`, `failed 0`, `Recovery review: no`.
+- Read-only terminal summary showed manifest `D:\WindowsFileCleanerQuarantine\actions\quarantine-action-draft-20260604014901-b7b402a2\restore-manifest.json`, status `Completed`, entry `Moved`, exact-profile displayed undo work `1`, and exact-profile displayed recovery review `2`.
+
+Verification:
+
+- `cmd.exe /c tools\Invoke-RealProfileNextBatchReview.cmd`
+- `cmd.exe /c tools\Summarize-RestoreManifests.cmd -CleanupScope "C:\Users\moxhe" -ShowEntries`
+- `git status --short --branch`
+
+Docs updated:
+
+- `docs/features/2026-06-04-second-real-profile-quarantine-batch.md`
+- `docs/features/index.md`
+- `docs/codex/current-state.md`
+- `.codex/progress.md`
+
+ADRs:
+
+- Skipped; the batch followed ADR 0017, ADR 0018, and ADR 0019 and did not introduce a new durable product, persistence, security, deployment, data-model, or core UX decision.
+
+Follow-up:
+
+- Keep recovery selected-manifest-only if the user wants to restore this file later.
+- WPF inline status wording follow-up was fixed in the next packet.
 
 ### 2026-06-04: New-Thread Closeout
 

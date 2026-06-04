@@ -6,9 +6,11 @@ Use this index before opening individual feature briefs. The folder contains man
 
 ## Active Or Current
 
+- `2026-06-04-real-profile-quarantine-inline-status-wording.md`: WPF wording fix for real-profile post-execution inline status.
+- `2026-06-04-second-real-profile-quarantine-batch.md`: latest user-clicked exact-profile Quarantine evidence and current stop state.
 - `2026-06-03-workflow-markdown-bloat-reduction.md`: latest docs/workflow cleanup baseline.
 - `2026-06-01-live-product-readiness-roadmap.md`: current readiness tracks and next live-product gates.
-- `2026-06-02-current-head-next-batch-review-evidence.md`: latest current-head terminal evidence before manual WPF next-batch review.
+- `2026-06-02-current-head-next-batch-review-evidence.md`: terminal evidence that preceded the 2026-06-04 manual WPF next-batch review.
 - `2026-06-02-real-profile-next-batch-review-wrapper.md`: combined terminal evidence plus checklist wrapper.
 - `2026-06-02-real-profile-next-batch-evidence-preset.md`: exact-profile evidence preset.
 - `2026-06-02-real-profile-next-batch-wpf-checklist.md`: manual WPF checklist printer.

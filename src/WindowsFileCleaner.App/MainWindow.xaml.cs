@@ -3574,9 +3574,9 @@ public partial class MainWindow : Window
         if (_currentQuarantineExecutionResult is not null)
         {
             var result = _currentQuarantineExecutionResult;
-            var text = result.Succeeded
-                ? $"Fixture Quarantine execution completed: {result.MovedCount:N0} included Review Shortlist row(s) moved, {result.RestoreManifest.TotalSizeDisplay} quarantined. Undo fixture quarantine remains available when enabled; rescan refreshes review rows."
-                : $"Fixture Quarantine execution needs recovery review: {result.MovedCount:N0} included Review Shortlist row(s) moved, {result.FailedCount:N0} failed. Use Undo fixture quarantine when available; rescan refreshes review rows.";
+            var text = FormatQuarantineExecutionStatus(
+                result,
+                IsDefaultRealProfileCleanupScope(result.RestoreManifest.CleanupScopePath));
             SetQuarantinePreviewStatus(text, result.Succeeded ? QuarantinePreviewStatusStyle.Success : QuarantinePreviewStatusStyle.Warning);
             return;
         }
