@@ -57,12 +57,14 @@ Changes:
 
 - `tools\Summarize-LocalReleaseAcceptanceNotes.ps1` now rejects explicit notes paths outside ignored `.local` before reading or summarizing the file.
 - `tools\Test-LocalReleaseAcceptanceSummary.cmd` / `.ps1` now verifies an explicit non-`.local` path exits with the ignored-path guard and does not print the normal summary boundary.
+- The summary regression now compact-normalizes captured child PowerShell output for contains/not-contains assertions, so runner-style path wrapping does not turn the ignored-path guard into a false failure.
 - Existing default selection remains unchanged: complete accepted notes are still selected from `.local\release-acceptance`.
 
 Verification:
 
 - `cmd.exe /c tools\Test-LocalReleaseAcceptanceSummary.cmd`
 - `cmd.exe /c tools\Invoke-MvpPreflight.cmd`
+- Fresh CI-shaped checkout at `D:\a\Windows-File-Cleaner\Windows-File-Cleaner` reproduced the pre-patch long-path assertion failure, then passed `cmd.exe /c tools\Test-LocalReleaseAcceptanceSummary.cmd` and `cmd.exe /c tools\Invoke-MvpPreflight.cmd` after copying in the patched regression script.
 - `cmd.exe /c tools\Summarize-LocalReleaseAcceptanceNotes.cmd -Path ".local\release-acceptance\release-acceptance-20260604-164509.md"`
 - `cmd.exe /c tools\Summarize-LocalReleaseAcceptanceNotes.cmd -RequireComplete`
 - Confirmed `.local\release-acceptance-summary-test` was absent after cleanup.

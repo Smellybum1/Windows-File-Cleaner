@@ -35,7 +35,10 @@ function Assert-ContainsText {
     )
 
     $joined = ($Lines -join [Environment]::NewLine)
-    if ($joined.IndexOf($ExpectedText, [System.StringComparison]::Ordinal) -lt 0) {
+    $compactOutput = Get-CompactOutputText -Text $joined
+    $compactExpected = Get-CompactOutputText -Text $ExpectedText
+    if (($joined.IndexOf($ExpectedText, [System.StringComparison]::Ordinal) -lt 0) -and
+        ($compactOutput.IndexOf($compactExpected, [System.StringComparison]::Ordinal) -lt 0)) {
         throw "Expected output to contain: $ExpectedText"
     }
 }
@@ -51,9 +54,22 @@ function Assert-DoesNotContainText {
     )
 
     $joined = ($Lines -join [Environment]::NewLine)
-    if ($joined.IndexOf($UnexpectedText, [System.StringComparison]::Ordinal) -ge 0) {
+    $compactOutput = Get-CompactOutputText -Text $joined
+    $compactUnexpected = Get-CompactOutputText -Text $UnexpectedText
+    if (($joined.IndexOf($UnexpectedText, [System.StringComparison]::Ordinal) -ge 0) -or
+        ($compactOutput.IndexOf($compactUnexpected, [System.StringComparison]::Ordinal) -ge 0)) {
         throw "Expected output not to contain: $UnexpectedText"
     }
+}
+
+function Get-CompactOutputText {
+    param(
+        [Parameter(Mandatory)]
+        [AllowEmptyString()]
+        [string]$Text
+    )
+
+    return [regex]::Replace($Text, "\s+", " ").Trim()
 }
 
 function New-TestAcceptanceNotes {
