@@ -2,6 +2,8 @@
 param(
     [string]$AcceptanceNotesPath,
 
+    [string]$LatestPackageAcceptanceNotesPath,
+
     [string]$FixtureAcceptanceNotesPath,
 
     [string]$QuarantineRoot,
@@ -126,6 +128,7 @@ if ($SyntheticRestoreManifestOnly.IsPresent) {
     }
 
     if (-not [string]::IsNullOrWhiteSpace($AcceptanceNotesPath) -or
+        -not [string]::IsNullOrWhiteSpace($LatestPackageAcceptanceNotesPath) -or
         -not [string]::IsNullOrWhiteSpace($FixtureAcceptanceNotesPath) -or
         $IncludeFixtureAcceptanceNotes.IsPresent -or
         $RequireFixtureAcceptanceComplete.IsPresent) {
@@ -137,6 +140,11 @@ if ($SyntheticRestoreManifestOnly.IsPresent) {
 $notesArguments = @("-RequireComplete")
 if (-not [string]::IsNullOrWhiteSpace($AcceptanceNotesPath)) {
     $notesArguments += @("-Path", $AcceptanceNotesPath)
+}
+
+$latestNotesArguments = @()
+if (-not [string]::IsNullOrWhiteSpace($LatestPackageAcceptanceNotesPath)) {
+    $latestNotesArguments += @("-Path", $LatestPackageAcceptanceNotesPath)
 }
 
 $fixtureNotesArguments = @()
@@ -202,7 +210,7 @@ if ($ShowRestoreEntries.IsPresent) {
 
 if (-not $SyntheticRestoreManifestOnly.IsPresent) {
     Invoke-DailyReadinessStep -Title "Accepted package evidence" -CommandPath $releaseNotesSummary -Arguments $notesArguments
-    Invoke-DailyReadinessInformationalStep -Title "Latest package acceptance notes (informational)" -CommandPath $releaseNotesSummary
+    Invoke-DailyReadinessInformationalStep -Title "Latest package acceptance notes (informational)" -CommandPath $releaseNotesSummary -Arguments $latestNotesArguments
     if ($shouldSummarizeFixtureAcceptance) {
         Invoke-DailyReadinessStep -Title "Fixture acceptance notes evidence" -CommandPath $fixtureNotesSummary -Arguments $fixtureNotesArguments
     }

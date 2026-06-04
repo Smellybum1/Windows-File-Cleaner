@@ -7,11 +7,10 @@ $ErrorActionPreference = "Stop"
 $repoRoot = Split-Path -Parent $PSScriptRoot
 $repoFullPath = [System.IO.Path]::GetFullPath($repoRoot).TrimEnd([System.IO.Path]::DirectorySeparatorChar)
 $localRoot = [System.IO.Path]::GetFullPath((Join-Path $repoRoot ".local")).TrimEnd([System.IO.Path]::DirectorySeparatorChar)
-$notesRoot = [System.IO.Path]::GetFullPath((Join-Path $repoRoot ".local\release-acceptance")).TrimEnd([System.IO.Path]::DirectorySeparatorChar)
 $testRoot = [System.IO.Path]::GetFullPath((Join-Path $repoRoot ".local\daily-readiness-latest-package-notes-test")).TrimEnd([System.IO.Path]::DirectorySeparatorChar)
-$completeNotesPath = Join-Path $notesRoot "release-acceptance-daily-latest-test-complete.md"
-$incompleteNotesPath = Join-Path $notesRoot "release-acceptance-daily-latest-test-incomplete.md"
-$malformedNotesPath = Join-Path $notesRoot "release-acceptance-daily-latest-test-malformed.md"
+$completeNotesPath = Join-Path $testRoot "release-acceptance-daily-latest-test-complete.md"
+$incompleteNotesPath = Join-Path $testRoot "release-acceptance-daily-latest-test-incomplete.md"
+$malformedNotesPath = Join-Path $testRoot "release-acceptance-daily-latest-test-malformed.md"
 $outsideLocalNotesPath = Join-Path $repoRoot "README.md"
 $fixtureNotesPath = Join-Path $testRoot "fixture-acceptance-daily-latest-test-incomplete.md"
 $quarantineRoot = Join-Path $testRoot "quarantine-root"
@@ -259,7 +258,6 @@ function Invoke-DailyReadiness {
     }
 }
 
-Assert-UnderLocalPath -Path $notesRoot
 Assert-UnderLocalPath -Path $testRoot
 
 try {
@@ -273,7 +271,6 @@ try {
         Remove-Item -LiteralPath $testRoot -Recurse -Force
     }
 
-    New-Item -ItemType Directory -Path $notesRoot -Force | Out-Null
     New-Item -ItemType Directory -Path (Join-Path $quarantineRoot "actions") -Force | Out-Null
 
     $completeReleaseFolder = Join-Path $testRoot "accepted-release"
@@ -306,6 +303,8 @@ try {
     $result = Invoke-DailyReadiness -Arguments @(
         "-AcceptanceNotesPath",
         $completeNotesPath,
+        "-LatestPackageAcceptanceNotesPath",
+        $incompleteNotesPath,
         "-FixtureAcceptanceNotesPath",
         $fixtureNotesPath,
         "-RequireFixtureAcceptanceComplete",
@@ -342,6 +341,8 @@ try {
     $malformedResult = Invoke-DailyReadiness -Arguments @(
         "-AcceptanceNotesPath",
         $completeNotesPath,
+        "-LatestPackageAcceptanceNotesPath",
+        $malformedNotesPath,
         "-FixtureAcceptanceNotesPath",
         $fixtureNotesPath,
         "-RequireFixtureAcceptanceComplete",

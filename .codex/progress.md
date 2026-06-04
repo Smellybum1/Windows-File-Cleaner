@@ -15,7 +15,7 @@ Read first: `docs/codex/current-state.md`.
 
 Latest docs/workflow packet: `2026-06-04-ci-evidence-wording-stabilization`. It rewords CI evidence docs so #365 is representative current-path proof instead of self-staling latest-run proof. No app behavior changed.
 
-Latest tooling/evidence packet: `2026-06-04-daily-readiness-package-notes-path-guard`. Daily readiness now has composed regression coverage that explicit package acceptance notes paths outside ignored `.local` fail before latest-notes or launch-command printing.
+Latest tooling/evidence packet: `2026-06-04-daily-readiness-latest-notes-isolation`. Daily readiness latest package notes regression now uses explicit synthetic latest-notes paths under its private ignored test folder.
 
 Latest package candidate: `.local\releases\windows-file-cleaner-v20260604-121922` at app commit `e6ac3eb`, verified but not human-accepted. Current pending acceptance notes: `.local\release-acceptance\release-acceptance-20260604-164509.md`.
 
@@ -40,6 +40,39 @@ Post-action evidence:
 6. Use `docs/operations/*.md` for command detail.
 
 ## Recent Packet Summaries
+
+### 2026-06-04: Daily Readiness Latest Notes Isolation
+
+Status: completed
+
+Goal:
+
+- Let daily readiness latest package notes regression coverage use explicit synthetic notes under its private ignored `.local` test folder instead of temporarily shadowing the default package acceptance notes search root.
+
+Safety profile:
+
+- `terminal-readonly`. The change adds an explicit latest package acceptance notes path for the daily readiness informational block, keeps the latest-package regression's synthetic notes under `.local\daily-readiness-latest-package-notes-test`, and updates committed documentation. It does not launch WPF, scan real-profile files, move, restore, delete, approve cleanup, promote a package, create shortcuts, install anything, write real acceptance notes, write real Restore Manifests, or create cleanup history.
+
+Changes:
+
+- `Invoke-DailyLocalReadiness.cmd` now accepts `-LatestPackageAcceptanceNotesPath` for the informational latest package notes block.
+- `-SyntheticRestoreManifestOnly` rejects `-LatestPackageAcceptanceNotesPath` along with other package or fixture acceptance notes parameters.
+- `tools\Test-DailyReadinessLatestPackageNotes.ps1` now writes its complete, incomplete, and malformed-looking package acceptance notes under `.local\daily-readiness-latest-package-notes-test` and passes explicit latest-notes paths.
+- `tools\Test-DailyReadinessExactProfileUndoSpotlight.ps1` now asserts the synthetic Restore Manifest-only mode rejects the new parameter.
+
+Verification:
+
+- `cmd.exe /c tools\Test-DailyReadinessLatestPackageNotes.cmd`
+- `cmd.exe /c tools\Test-DailyReadinessExactProfileUndoSpotlight.cmd`
+- `cmd.exe /c tools\Test-LocalReleaseAcceptanceSummary.cmd`
+- `cmd.exe /c tools\Invoke-DailyLocalReadiness.cmd -LatestPackageAcceptanceNotesPath ".local\release-acceptance\release-acceptance-20260604-164509.md"`
+- `cmd.exe /c tools\Test-DocumentationConsistency.cmd`
+- `cmd.exe /c tools\Invoke-MvpPreflight.cmd`
+- `git diff --check`
+
+ADRs:
+
+- Skipped; this is terminal-only test isolation and explicit informational-summary routing for existing daily readiness tooling and does not change product behavior, cleanup execution, restore execution, persistence, deployment, package acceptance policy, or real readiness behavior.
 
 ### 2026-06-04: Daily Readiness Package Notes Path Guard
 
@@ -651,16 +684,16 @@ Goal:
 
 Safety profile:
 
-- `terminal-readonly`. The regression writes temporary ignored complete, incomplete, and malformed-looking package acceptance notes under `.local\release-acceptance`, fixture acceptance notes and an empty Restore Manifest root under `.local\daily-readiness-latest-package-notes-test`, invokes daily readiness with explicit accepted notes, and removes the test files. It does not launch WPF, scan real-profile files, move, restore, delete, approve cleanup, promote a package, create shortcuts, install anything, or create cleanup history.
+- `terminal-readonly`. The regression writes temporary ignored complete, incomplete, and malformed-looking package acceptance notes, fixture acceptance notes, and an empty Restore Manifest root under `.local\daily-readiness-latest-package-notes-test`, invokes daily readiness with explicit accepted and explicit latest package notes paths, and removes the test files. It does not launch WPF, scan real-profile files, move, restore, delete, approve cleanup, promote a package, create shortcuts, install anything, or create cleanup history.
 
 Changes:
 
 - Added `tools\Test-DailyReadinessLatestPackageNotes.cmd` and `.ps1`.
-- The regression creates older complete accepted notes and newer incomplete candidate notes under ignored `.local\release-acceptance`.
+- The regression creates complete accepted notes, incomplete candidate notes, and malformed-looking notes under its private ignored `.local\daily-readiness-latest-package-notes-test` folder.
 - It verifies accepted package evidence uses the complete notes passed explicitly.
-- It verifies the informational latest-notes block selects the newer incomplete notes and prints guarded pending next steps including `-RecordCommitMismatch`.
+- It verifies the informational latest-notes block can use an explicit incomplete notes path and prints guarded pending next steps including `-RecordCommitMismatch`.
 - It verifies the informational latest-notes block is not treated as a failure, then intentionally stops before accepted launch-command printing by requiring incomplete fixture acceptance notes.
-- It also verifies a newer malformed-looking latest notes file is selected by the informational block, reports missing verifier/checklist evidence, and still reaches the fixture-note stop before accepted launch-command printing.
+- It also verifies an explicit malformed-looking latest notes file is selected by the informational block, reports missing verifier/checklist evidence, and still reaches the fixture-note stop before accepted launch-command printing.
 - `Invoke-MvpPreflight.cmd` now runs the daily readiness latest package notes regression by default after the daily readiness fixture acceptance notes regression.
 - Added `-SkipDailyReadinessLatestPackageNotesCheck` for focused local loops.
 
@@ -1204,6 +1237,7 @@ ADRs:
 
 ### Current Live Product And Package Packets
 
+- `2026-06-04-daily-readiness-latest-notes-isolation`: daily readiness latest package notes regression now uses explicit synthetic latest-notes paths under its private ignored test folder.
 - `2026-06-04-daily-readiness-package-notes-path-guard`: daily readiness now has composed regression coverage that explicit package acceptance notes paths outside ignored `.local` fail before latest-notes or launch-command printing.
 - `2026-06-04-daily-readiness-fixture-notes-path-guard`: daily readiness now has composed regression coverage that explicit fixture notes paths outside ignored `.local` fail before accepted launch-command printing.
 - `2026-06-04-fixture-summary-ignored-path-guard`: fixture acceptance summaries now reject explicit notes paths outside ignored `.local`.
@@ -1221,7 +1255,7 @@ ADRs:
 - `2026-06-04-package-summary-default-selection-regression`: MVP preflight now covers default package acceptance summary selection with newer incomplete and malformed-looking notes under ignored `.local\release-acceptance`.
 - `2026-06-04-package-summary-malformed-notes-regression`: MVP preflight now covers malformed-looking package acceptance summaries with temporary ignored notes and accurate missing-checklist wording.
 - `2026-06-04-accepted-launcher-malformed-notes-regression`: MVP preflight now covers accepted-package launcher default selection and explicit malformed-looking-notes rejection with temporary ignored notes and synthetic print-only package files.
-- `2026-06-04-daily-readiness-latest-package-notes-regression`: MVP preflight now covers daily readiness latest package notes informational behavior with temporary ignored complete, incomplete, and malformed-looking package acceptance notes.
+- `2026-06-04-daily-readiness-latest-package-notes-regression`: MVP preflight now covers daily readiness latest package notes informational behavior with explicit temporary ignored complete, incomplete, and malformed-looking package acceptance notes.
 - `2026-06-04-daily-readiness-fixture-acceptance-regression`: MVP preflight now covers optional and strict daily readiness fixture-note forwarding with synthetic package and Restore Manifest evidence under ignored `.local`.
 - `2026-06-04-fixture-acceptance-notes-regression`: MVP preflight now covers fixture notes summary completion blockers, recorder manual-intent guard, `-WhatIf` no-write behavior, and synthetic completion.
 - `2026-06-04-accepted-local-release-selection-regression`: MVP preflight now covers accepted-package launcher default selection and explicit incomplete or malformed-looking notes rejection with temporary ignored notes and synthetic print-only package files.

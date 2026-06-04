@@ -10,7 +10,7 @@ Cover daily readiness latest package notes visibility so newer incomplete or mal
 
 ## Safety Profile
 
-`terminal-readonly`. The regression writes temporary ignored package acceptance notes under `.local\release-acceptance`, fixture acceptance notes and an empty synthetic Restore Manifest root under `.local\daily-readiness-latest-package-notes-test`, runs daily readiness with explicit accepted notes, uses committed `README.md` only as a non-`.local` rejection target, and removes the test files. It now covers complete, incomplete, malformed-looking, and outside-`.local` explicit package acceptance notes paths. It does not launch WPF, click `Scan`, scan real-profile files, move, restore, delete, approve cleanup, promote a package, create shortcuts, install anything, write real acceptance notes, write Restore Manifests, or create cleanup history.
+`terminal-readonly`. The regression writes temporary ignored package acceptance notes, fixture acceptance notes, and an empty synthetic Restore Manifest root under `.local\daily-readiness-latest-package-notes-test`, runs daily readiness with explicit accepted and latest package notes paths, uses committed `README.md` only as a non-`.local` rejection target, and removes the test files. It now covers complete, incomplete, malformed-looking, and outside-`.local` explicit package acceptance notes paths without writing temporary latest-notes candidates into the default `.local\release-acceptance` search root. It does not launch WPF, click `Scan`, scan real-profile files, move, restore, delete, approve cleanup, promote a package, create shortcuts, install anything, write real acceptance notes, write Restore Manifests, or create cleanup history.
 
 ## Problem
 
@@ -19,12 +19,12 @@ Daily readiness already showed latest package acceptance notes as informational 
 ## Changes
 
 - Added `tools\Test-DailyReadinessLatestPackageNotes.cmd` and `.ps1`.
-- The regression creates older complete accepted notes and newer incomplete candidate notes under ignored `.local\release-acceptance`.
-- It runs daily readiness with the complete accepted notes as explicit accepted evidence.
+- The regression creates complete accepted notes, incomplete candidate notes, and malformed-looking notes under its private ignored `.local\daily-readiness-latest-package-notes-test` folder.
+- It runs daily readiness with the complete accepted notes as explicit accepted evidence and the incomplete or malformed-looking notes as explicit informational latest package notes.
 - It verifies an explicit accepted package notes path outside ignored `.local` fails during accepted-package evidence before latest-notes or launch-command printing.
-- It verifies the informational latest-notes block selects the newer incomplete notes and prints guarded pending next steps including `-RecordCommitMismatch`.
+- It verifies the informational latest-notes block can use explicit incomplete notes and prints guarded pending next steps including `-RecordCommitMismatch`.
 - It verifies the informational step is not treated as a failure and the flow reaches fixture-note evidence before intentionally stopping on incomplete fixture notes.
-- It also verifies a newer malformed-looking notes file is selected by the informational block, reports missing evidence/checklist sections, and still continues to the same fixture-note stop before accepted launch-command printing.
+- It also verifies an explicit malformed-looking notes file is selected by the informational block, reports missing evidence/checklist sections, and still continues to the same fixture-note stop before accepted launch-command printing.
 - `Invoke-MvpPreflight.cmd` now runs this regression by default after the daily readiness fixture acceptance notes regression.
 - Added `Invoke-MvpPreflight.cmd -SkipDailyReadinessLatestPackageNotesCheck` for focused local loops.
 

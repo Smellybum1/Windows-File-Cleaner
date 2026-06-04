@@ -206,6 +206,8 @@ try {
         "-SyntheticRestoreManifestOnly",
         "-QuarantineRoot",
         $testRoot,
+        "-LatestPackageAcceptanceNotesPath",
+        (Join-Path $testRoot "latest-package-notes.md"),
         "-IncludeFixtureAcceptanceNotes"
     )
     if ($acceptanceParameterResult.ExitCode -ne 1) {

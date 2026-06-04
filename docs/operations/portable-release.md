@@ -90,7 +90,7 @@ Targeted daily readiness latest package notes regression:
 .\tools\Test-DailyReadinessLatestPackageNotes.cmd
 ```
 
-This writes temporary ignored complete, incomplete, and malformed-looking notes under `.local\release-acceptance`, verifies daily readiness keeps accepted evidence on completed notes while showing newer latest notes as informational context, verifies explicit non-`.local` package notes paths stop before latest-notes or launch-command printing, then removes the test notes.
+This writes temporary ignored complete, incomplete, and malformed-looking notes under `.local\daily-readiness-latest-package-notes-test`, verifies daily readiness keeps accepted evidence on completed notes while showing explicit latest notes as informational context, verifies explicit non-`.local` package notes paths stop before latest-notes or launch-command printing, then removes the test notes.
 
 Targeted package acceptance recorder regression:
 

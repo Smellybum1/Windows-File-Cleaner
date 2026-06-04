@@ -6,6 +6,7 @@ Use this index before opening individual feature briefs. The folder contains man
 
 ## Active Or Current
 
+- `2026-06-04-daily-readiness-latest-notes-isolation.md`: daily readiness latest package notes regression now uses explicit synthetic latest-notes paths under its private ignored test folder.
 - `2026-06-04-daily-readiness-package-notes-path-guard.md`: daily readiness now has composed regression coverage that explicit package acceptance notes paths outside ignored `.local` fail before latest-notes or launch-command printing.
 - `2026-06-04-daily-readiness-fixture-notes-path-guard.md`: daily readiness now has composed regression coverage that explicit fixture notes paths outside ignored `.local` fail before accepted launch-command printing.
 - `2026-06-04-fixture-summary-ignored-path-guard.md`: fixture acceptance summaries now reject explicit notes paths outside ignored `.local`.
