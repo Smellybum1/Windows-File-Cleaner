@@ -6,7 +6,7 @@ Use this index before opening individual feature briefs. The folder contains man
 
 ## Active Or Current
 
-- `2026-06-04-real-profile-selected-restore-trust-helper-preflight-regression.md`: MVP preflight now runs the sacrificial real-profile selected restore trust helper path guard regression by default, with an escaped-path case that derives the current profile name for clean-runner portability.
+- `2026-06-04-real-profile-selected-restore-trust-helper-preflight-regression.md`: MVP preflight now runs the sacrificial real-profile selected restore trust helper path guard regression by default, with an escaped-path case derived from the helper's safe preview for clean-runner portability.
 - `2026-06-04-real-profile-selected-restore-trust-helper-path-guard.md`: the sacrificial real-profile selected restore trust helper now rejects explicit roots outside the default `D:\WindowsFileCleanerQuarantine` root or ignored `.local`, and generated quarantine source paths outside the action `items` root, with a local `-WhatIf` regression.
 - `2026-06-04-fixture-root-path-guard-regression.md`: synthetic fixture creation and fixture review launch roots now have MVP preflight coverage that explicit roots outside ignored `.local` fail before fixture writes, checklist output, or WPF launch.
 - `2026-06-04-local-release-path-guard-regression.md`: portable release publisher, verifier, and launcher now have MVP preflight coverage that explicit release roots and release paths outside ignored `.local` fail before publisher, verifier, or launch-command output.

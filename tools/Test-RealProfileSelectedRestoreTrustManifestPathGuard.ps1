@@ -9,10 +9,8 @@ $trustManifestScript = Join-Path $PSScriptRoot "New-RealProfileSelectedRestoreTr
 $localRoot = [System.IO.Path]::GetFullPath((Join-Path $repoRoot ".local")).TrimEnd([System.IO.Path]::DirectorySeparatorChar)
 $testQuarantineRoot = [System.IO.Path]::GetFullPath((Join-Path $repoRoot ".local\real-profile-selected-restore-trust-helper-path-guard-test")).TrimEnd([System.IO.Path]::DirectorySeparatorChar)
 $outsideLocalQuarantineRoot = Join-Path $repoRoot "README.md"
-$profileName = Split-Path -Leaf ([Environment]::GetFolderPath("UserProfile"))
 $uniqueSuffix = [Guid]::NewGuid().ToString("N")
 $safeRelativePath = "WindowsFileCleanerRestoreTrustTest\path-guard-safe-$uniqueSuffix.txt"
-$escapedRelativePath = "..\$profileName\WindowsFileCleanerRestoreTrustTest\path-guard-escape-$uniqueSuffix.txt"
 
 if (-not $testQuarantineRoot.StartsWith($localRoot + [System.IO.Path]::DirectorySeparatorChar, [System.StringComparison]::OrdinalIgnoreCase)) {
     throw "Test quarantine root must stay under ignored .local before cleanup: $localRoot"
@@ -85,6 +83,23 @@ function Invoke-TrustManifestTool {
     }
 }
 
+function Get-CleanupScopeFromPreview {
+    param(
+        [Parameter(Mandatory)]
+        [AllowEmptyString()]
+        [string[]]$Lines
+    )
+
+    $prefix = "Cleanup Scope: "
+    foreach ($line in $Lines) {
+        if ($line.StartsWith($prefix, [System.StringComparison]::Ordinal)) {
+            return $line.Substring($prefix.Length).Trim()
+        }
+    }
+
+    throw "Trust helper safe preview did not print Cleanup Scope."
+}
+
 try {
     $safeResult = Invoke-TrustManifestTool -Arguments @(
         "-QuarantineRoot",
@@ -100,6 +115,13 @@ try {
     Assert-ContainsText -Lines $safeResult.Output -ExpectedText "Selected real-profile restore trust manifest preview:"
     Assert-ContainsText -Lines $safeResult.Output -ExpectedText "Quarantine Root: $testQuarantineRoot"
     Assert-ContainsText -Lines $safeResult.Output -ExpectedText "Next app command:"
+
+    $cleanupScope = Get-CleanupScopeFromPreview -Lines $safeResult.Output
+    $profileName = Split-Path -Leaf $cleanupScope
+    if ([string]::IsNullOrWhiteSpace($profileName)) {
+        throw "Trust helper safe preview printed a Cleanup Scope without a profile leaf: $cleanupScope"
+    }
+    $escapedRelativePath = "..\$profileName\WindowsFileCleanerRestoreTrustTest\path-guard-escape-$uniqueSuffix.txt"
 
     $outsideLocalResult = Invoke-TrustManifestTool -Arguments @(
         "-QuarantineRoot",

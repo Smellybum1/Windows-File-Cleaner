@@ -26,7 +26,7 @@ The trust-helper path guard was useful as a local targeted check, but it was not
 
 ## Changes
 
-- `tools\Test-RealProfileSelectedRestoreTrustManifestPathGuard.cmd` now derives the escaped path's profile segment from the current `USERPROFILE`.
+- `tools\Test-RealProfileSelectedRestoreTrustManifestPathGuard.cmd` now derives the escaped path's profile segment from the helper's safe preview output.
 - `tools\Invoke-MvpPreflight.cmd` now runs the trust-helper path guard regression by default.
 - Added `-SkipRealProfileSelectedRestoreTrustHelperPathGuardCheck` for focused local preflight loops.
 - Compact docs and runbooks now list the trust-helper path guard as default MVP preflight coverage.
