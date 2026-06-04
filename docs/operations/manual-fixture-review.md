@@ -47,6 +47,16 @@ Strict completion check:
 .\tools\Summarize-FixtureAcceptanceNotes.cmd -RequireComplete
 ```
 
+Targeted fixture acceptance notes regression:
+
+```powershell
+.\tools\Test-FixtureAcceptanceNotes.cmd
+```
+
+This writes temporary ignored notes under `.local\fixture-acceptance-notes-test`, verifies summary and recorder behavior, then removes the test notes.
+
+MVP preflight runs this regression by default after the fixture checklist. Use `.\tools\Invoke-MvpPreflight.cmd -SkipFixtureAcceptanceNotesCheck` only for focused local loops where fixture acceptance notes are not in scope.
+
 Record an all-pass manual fixture review only after the visible review actually passed:
 
 ```powershell

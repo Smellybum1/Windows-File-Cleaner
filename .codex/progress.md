@@ -15,7 +15,7 @@ Read first: `docs/codex/current-state.md`.
 
 Latest docs/workflow packet: `2026-06-04-startup-context-compaction`. It moved oversized read-first docs into reference/archive files and replaced them with compact active docs to reduce Codex thread lag. No app behavior changed.
 
-Latest tooling/evidence packet: `2026-06-04-accepted-local-release-selection-regression`. MVP preflight now covers accepted-package launcher selection so incomplete candidate notes do not shadow the accepted baseline.
+Latest tooling/evidence packet: `2026-06-04-fixture-acceptance-notes-regression`. MVP preflight now covers fixture acceptance notes summary and recorder guardrails.
 
 Latest package candidate: `.local\releases\windows-file-cleaner-v20260604-121922` at app commit `e6ac3eb`, verified but not human-accepted. Current pending acceptance notes: `.local\release-acceptance\release-acceptance-20260604-134337.md`.
 
@@ -40,6 +40,40 @@ Post-action evidence:
 6. Use `docs/operations/*.md` for command detail.
 
 ## Recent Packet Summaries
+
+### 2026-06-04: Fixture Acceptance Notes Regression
+
+Status: completed
+
+Goal:
+
+- Fold fixture acceptance notes summary and recorder behavior into default MVP preflight so formal fixture notes stay human-owned and completion-checked.
+
+Safety profile:
+
+- `terminal-readonly`. The regression writes temporary ignored fixture acceptance notes under `.local\fixture-acceptance-notes-test`, invokes summary and recorder tooling against those notes, and removes the test folder. It does not launch WPF, create fixtures, scan real-profile files, move, restore, delete, approve cleanup, create shortcuts, install anything, or create cleanup history.
+
+Changes:
+
+- Added `tools\Test-FixtureAcceptanceNotes.cmd` and `.ps1`.
+- The regression verifies incomplete fixture notes summaries print recording guidance and that `-RequireComplete` fails with preflight, worktree, overall result, and checklist blockers.
+- It verifies `Record-FixtureAcceptanceNotes.cmd` requires `-RecordManualAcceptance`.
+- It verifies `-WhatIf` leaves notes unchanged.
+- It verifies explicit manual acceptance recording completes synthetic ignored notes and passes `Summarize-FixtureAcceptanceNotes.cmd -RequireComplete`.
+- `Invoke-MvpPreflight.cmd` now runs the fixture acceptance notes regression by default after the fixture checklist.
+- Added `-SkipFixtureAcceptanceNotesCheck` for focused local loops.
+
+Verification:
+
+- `cmd.exe /c tools\Test-FixtureAcceptanceNotes.cmd`
+- `cmd.exe /c tools\Test-AcceptedLocalReleaseSelection.cmd`
+- `cmd.exe /c tools\Test-LocalReleaseAcceptanceSummary.cmd`
+- `cmd.exe /c tools\Test-LocalReleaseAcceptanceRecorder.cmd`
+- `cmd.exe /c tools\Invoke-MvpPreflight.cmd`
+
+ADRs:
+
+- Skipped; this adds terminal-only regression coverage for existing fixture acceptance notes tooling and does not change product behavior, cleanup execution, restore execution, persistence, deployment, package acceptance policy, or real readiness behavior.
 
 ### 2026-06-04: Accepted Local Release Selection Regression
 
@@ -504,6 +538,7 @@ ADRs:
 
 ### Current Live Product And Package Packets
 
+- `2026-06-04-fixture-acceptance-notes-regression`: MVP preflight now covers fixture notes summary completion blockers, recorder manual-intent guard, `-WhatIf` no-write behavior, and synthetic completion.
 - `2026-06-04-accepted-local-release-selection-regression`: MVP preflight now covers accepted-package launcher default selection and explicit incomplete-notes rejection with temporary ignored notes and synthetic print-only package files.
 - `2026-06-04-local-release-acceptance-recorder-regression`: MVP preflight now covers package acceptance recorder guardrails for missing manual intent, missing verifier evidence, missing commit evidence without explicit mismatch acceptance, and `-WhatIf` no-write behavior.
 - `2026-06-04-synthetic-restore-manifest-mode-guard-regression`: focused synthetic readiness modes now have negative guard coverage for missing/outside `.local` roots, acceptance-note params, and next-batch missing `-SkipMvpPreflight`.
