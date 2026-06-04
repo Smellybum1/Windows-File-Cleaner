@@ -15,7 +15,7 @@ Read first: `docs/codex/current-state.md`.
 
 Latest docs/workflow packet: `2026-06-04-ci-evidence-wording-stabilization`. It rewords CI evidence docs so #365 is representative current-path proof instead of self-staling latest-run proof. No app behavior changed.
 
-Latest tooling/evidence packet: `2026-06-04-fixture-completion-summary-wording`. Completed fixture acceptance summaries now say evidence is complete and no recorder action is pending, instead of implying completed notes still need to be recorded.
+Latest tooling/evidence packet: `2026-06-04-fixture-summary-ignored-path-guard`. Fixture acceptance summaries now reject explicit notes paths outside ignored `.local` before printing summary output or recorder guidance.
 
 Latest package candidate: `.local\releases\windows-file-cleaner-v20260604-121922` at app commit `e6ac3eb`, verified but not human-accepted. Current pending acceptance notes: `.local\release-acceptance\release-acceptance-20260604-164509.md`.
 
@@ -40,6 +40,37 @@ Post-action evidence:
 6. Use `docs/operations/*.md` for command detail.
 
 ## Recent Packet Summaries
+
+### 2026-06-04: Fixture Summary Ignored-Path Guard
+
+Status: completed
+
+Goal:
+
+- Make fixture acceptance summaries enforce the same ignored `.local` notes boundary that fixture acceptance recording already enforces.
+
+Safety profile:
+
+- `terminal-readonly`. The change tightens terminal summary path validation, extends the synthetic fixture-notes regression, and updates committed documentation only. The regression writes temporary ignored notes under `.local\fixture-acceptance-notes-test` and uses committed `README.md` only as a non-`.local` path rejection target. It does not launch WPF, create fixtures, scan real-profile files, move, restore, delete, approve cleanup, create shortcuts, install anything, write real acceptance notes, write Restore Manifests, or create cleanup history.
+
+Changes:
+
+- `tools\Summarize-FixtureAcceptanceNotes.ps1` now rejects explicit notes paths outside ignored `.local`.
+- `tools\Test-FixtureAcceptanceNotes.ps1` now verifies an explicit in-repo non-`.local` path is rejected before summary output or recorder guidance is printed.
+- `docs\operations\manual-fixture-review.md`, compact handoff docs, and the feature index record the ignored-path summary boundary.
+
+Verification:
+
+- `cmd.exe /c tools\Test-FixtureAcceptanceNotes.cmd`
+- `cmd.exe /c tools\Test-DailyReadinessFixtureAcceptanceNotes.cmd`
+- `cmd.exe /c tools\Invoke-DailyLocalReadiness.cmd -IncludeFixtureAcceptanceNotes`
+- `cmd.exe /c tools\Test-DocumentationConsistency.cmd`
+- `cmd.exe /c tools\Invoke-MvpPreflight.cmd`
+- `git diff --check`
+
+ADRs:
+
+- Skipped; this tightens terminal-only validation for existing fixture acceptance notes tooling and does not change product behavior, cleanup execution, restore execution, persistence, deployment, package acceptance policy, or real readiness behavior.
 
 ### 2026-06-04: Fixture Completion Summary Wording
 
@@ -1109,6 +1140,7 @@ ADRs:
 
 ### Current Live Product And Package Packets
 
+- `2026-06-04-fixture-summary-ignored-path-guard`: fixture acceptance summaries now reject explicit notes paths outside ignored `.local`.
 - `2026-06-04-fixture-completion-summary-wording`: completed fixture acceptance summaries now say evidence is complete and no recorder action is pending.
 - `2026-06-04-package-completion-summary-wording`: completed package acceptance summaries now say evidence is complete and no recorder action is pending.
 - `2026-06-04-ci-evidence-wording-stabilization`: CI evidence docs now use representative current-path wording instead of self-staling latest-run wording.

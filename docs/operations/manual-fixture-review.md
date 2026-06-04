@@ -41,6 +41,8 @@ Summarize latest fixture acceptance notes:
 .\tools\Summarize-FixtureAcceptanceNotes.cmd
 ```
 
+Explicit fixture acceptance notes paths must stay under ignored `.local`.
+
 Strict completion check:
 
 ```powershell

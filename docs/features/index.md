@@ -6,6 +6,7 @@ Use this index before opening individual feature briefs. The folder contains man
 
 ## Active Or Current
 
+- `2026-06-04-fixture-summary-ignored-path-guard.md`: fixture acceptance summaries now reject explicit notes paths outside ignored `.local`.
 - `2026-06-04-fixture-completion-summary-wording.md`: completed fixture acceptance summaries now say evidence is complete and no recorder action is pending.
 - `2026-06-04-package-completion-summary-wording.md`: completed package acceptance summaries now say evidence is complete and no recorder action is pending.
 - `2026-06-04-ci-evidence-wording-stabilization.md`: CI evidence docs now use representative current-path wording instead of self-staling latest-run wording.

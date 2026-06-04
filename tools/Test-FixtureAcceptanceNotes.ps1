@@ -10,6 +10,7 @@ $localRoot = [System.IO.Path]::GetFullPath((Join-Path $repoRoot ".local")).TrimE
 $testRoot = [System.IO.Path]::GetFullPath((Join-Path $repoRoot ".local\fixture-acceptance-notes-test")).TrimEnd([System.IO.Path]::DirectorySeparatorChar)
 $summaryScript = Join-Path $PSScriptRoot "Summarize-FixtureAcceptanceNotes.ps1"
 $recorderScript = Join-Path $PSScriptRoot "Record-FixtureAcceptanceNotes.ps1"
+$outsideLocalPath = Join-Path $repoRoot "README.md"
 
 function Assert-UnderLocalPath {
     param(
@@ -159,7 +160,15 @@ function Invoke-Summary {
         $arguments += "-RequireComplete"
     }
 
-    $output = @(powershell.exe @arguments 2>&1 | ForEach-Object { [string]$_ })
+    $previousErrorActionPreference = $ErrorActionPreference
+    $ErrorActionPreference = "Continue"
+    try {
+        $output = @(powershell.exe @arguments 2>&1 | ForEach-Object { [string]$_ })
+    }
+    finally {
+        $ErrorActionPreference = $previousErrorActionPreference
+    }
+
     return [pscustomobject]@{
         ExitCode = $LASTEXITCODE
         Output = $output
@@ -229,6 +238,16 @@ try {
     Assert-ContainsText -Lines $completionResult.Output -ExpectedText "Worktree evidence checkbox is Not recorded."
     Assert-ContainsText -Lines $completionResult.Output -ExpectedText "Overall result is Not recorded."
     Assert-ContainsText -Lines $completionResult.Output -ExpectedText "9 checklist item(s) are not recorded."
+
+    $outsideLocalSummaryResult = Invoke-Summary -Path $outsideLocalPath
+    if ($outsideLocalSummaryResult.ExitCode -ne 1) {
+        throw "Fixture notes summary should reject explicit paths outside ignored .local. Exit code: $($outsideLocalSummaryResult.ExitCode)"
+    }
+
+    Assert-ContainsText -Lines $outsideLocalSummaryResult.Output -ExpectedText "Fixture acceptance notes path must stay under ignored .local: $localRoot"
+    Assert-DoesNotContainText -Lines $outsideLocalSummaryResult.Output -UnexpectedText "Fixture acceptance notes summary"
+    Assert-DoesNotContainText -Lines $outsideLocalSummaryResult.Output -UnexpectedText "This is a read-only summary of local ignored notes."
+    Assert-DoesNotContainText -Lines $outsideLocalSummaryResult.Output -UnexpectedText "After an actual all-pass visible fixture review, record these ignored notes with:"
 
     $missingManualResult = Invoke-Recorder -Arguments @("-Path", $notesPath)
     if ($missingManualResult.ExitCode -ne 1) {

@@ -10,6 +10,7 @@ $ErrorActionPreference = "Stop"
 
 $repoRoot = Split-Path -Parent $PSScriptRoot
 $notesRoot = Join-Path $repoRoot ".local\fixture-review-acceptance"
+$localRoot = [System.IO.Path]::GetFullPath((Join-Path $repoRoot ".local")).TrimEnd([System.IO.Path]::DirectorySeparatorChar)
 
 function Resolve-FixtureAcceptanceNotesPath {
     param(
@@ -248,9 +249,8 @@ if (-not (Test-Path -LiteralPath $notesPath)) {
 }
 
 $fullNotesPath = [System.IO.Path]::GetFullPath($notesPath)
-$repoFullPath = [System.IO.Path]::GetFullPath($repoRoot).TrimEnd([System.IO.Path]::DirectorySeparatorChar)
-if (-not ($fullNotesPath.StartsWith($repoFullPath + [System.IO.Path]::DirectorySeparatorChar, [System.StringComparison]::OrdinalIgnoreCase))) {
-    throw "Fixture acceptance notes path must stay inside the repository: $repoFullPath"
+if (-not ($fullNotesPath.StartsWith($localRoot + [System.IO.Path]::DirectorySeparatorChar, [System.StringComparison]::OrdinalIgnoreCase))) {
+    throw "Fixture acceptance notes path must stay under ignored .local: $localRoot"
 }
 
 $lines = Get-Content -LiteralPath $fullNotesPath

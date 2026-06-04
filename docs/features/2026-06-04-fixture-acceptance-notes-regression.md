@@ -20,6 +20,7 @@ Fixture acceptance notes already had summary and recorder helpers, but their com
 
 - Added `tools\Test-FixtureAcceptanceNotes.cmd` and `.ps1`.
 - The regression verifies incomplete fixture notes summaries print the exact recorder guidance and that `-RequireComplete` reports preflight, worktree, overall result, and checklist blockers.
+- The regression verifies explicit fixture summary paths outside ignored `.local` are rejected before summary output or recorder guidance is printed.
 - The regression verifies `Record-FixtureAcceptanceNotes.cmd` requires `-RecordManualAcceptance`.
 - The regression verifies `-WhatIf` leaves notes unchanged.
 - The regression verifies explicit manual acceptance recording completes synthetic ignored notes and passes `Summarize-FixtureAcceptanceNotes.cmd -RequireComplete`.
