@@ -15,7 +15,7 @@ Read first: `docs/codex/current-state.md`.
 
 Latest docs/workflow packet: `2026-06-04-startup-context-compaction`. It moved oversized read-first docs into reference/archive files and replaced them with compact active docs to reduce Codex thread lag. No app behavior changed.
 
-Latest tooling/evidence packet: `2026-06-04-local-release-acceptance-recorder-regression`. MVP preflight now covers the package acceptance recorder guardrails that keep candidate promotion human-owned.
+Latest tooling/evidence packet: `2026-06-04-accepted-local-release-selection-regression`. MVP preflight now covers accepted-package launcher selection so incomplete candidate notes do not shadow the accepted baseline.
 
 Latest package candidate: `.local\releases\windows-file-cleaner-v20260604-121922` at app commit `e6ac3eb`, verified but not human-accepted. Current pending acceptance notes: `.local\release-acceptance\release-acceptance-20260604-134337.md`.
 
@@ -40,6 +40,38 @@ Post-action evidence:
 6. Use `docs/operations/*.md` for command detail.
 
 ## Recent Packet Summaries
+
+### 2026-06-04: Accepted Local Release Selection Regression
+
+Status: completed
+
+Goal:
+
+- Fold accepted-package launcher note selection into default MVP preflight so newer incomplete candidate notes cannot shadow the completed accepted baseline.
+
+Safety profile:
+
+- `terminal-readonly`. The regression writes temporary ignored acceptance notes under `.local\release-acceptance`, writes synthetic package placeholder files under `.local\accepted-release-selection-test`, invokes the accepted launcher with `-PrintOnly -SkipVerify`, and removes the temporary files. It does not launch WPF, scan real-profile files, move, restore, delete, approve cleanup, promote a package, create shortcuts, install anything, or create cleanup history.
+
+Changes:
+
+- Added `tools\Test-AcceptedLocalReleaseSelection.cmd` and `.ps1`.
+- The regression creates a newer incomplete notes file and an older complete notes file, then verifies default accepted launcher selection uses the complete notes.
+- It verifies an explicit incomplete notes path exits before launch-command printing and reports the missing evidence blockers.
+- It uses a synthetic package placeholder only with `-PrintOnly -SkipVerify`, so clean runners do not need ignored package artifacts.
+- `Invoke-MvpPreflight.cmd` now runs the accepted local release selection regression by default before the package acceptance summary regression.
+- Added `-SkipAcceptedLocalReleaseSelectionCheck` for focused local loops.
+
+Verification:
+
+- `cmd.exe /c tools\Test-AcceptedLocalReleaseSelection.cmd`
+- `cmd.exe /c tools\Test-LocalReleaseAcceptanceSummary.cmd`
+- `cmd.exe /c tools\Test-LocalReleaseAcceptanceRecorder.cmd`
+- `cmd.exe /c tools\Invoke-MvpPreflight.cmd`
+
+ADRs:
+
+- Skipped; this adds terminal-only regression coverage for accepted package launcher selection under ADR 0020 and does not change product behavior, cleanup execution, restore execution, persistence, deployment, package acceptance policy, or real readiness behavior.
 
 ### 2026-06-04: Local Release Acceptance Recorder Regression
 
@@ -472,6 +504,7 @@ ADRs:
 
 ### Current Live Product And Package Packets
 
+- `2026-06-04-accepted-local-release-selection-regression`: MVP preflight now covers accepted-package launcher default selection and explicit incomplete-notes rejection with temporary ignored notes and synthetic print-only package files.
 - `2026-06-04-local-release-acceptance-recorder-regression`: MVP preflight now covers package acceptance recorder guardrails for missing manual intent, missing verifier evidence, missing commit evidence without explicit mismatch acceptance, and `-WhatIf` no-write behavior.
 - `2026-06-04-synthetic-restore-manifest-mode-guard-regression`: focused synthetic readiness modes now have negative guard coverage for missing/outside `.local` roots, acceptance-note params, and next-batch missing `-SkipMvpPreflight`.
 - `2026-06-04-local-release-acceptance-command-stamping`: completed and pushed at `5a4115e`.

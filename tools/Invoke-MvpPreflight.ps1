@@ -3,6 +3,7 @@ param(
     [switch]$SkipRestore,
     [switch]$SkipFixtureWhatIf,
     [switch]$SkipFixtureChecklist,
+    [switch]$SkipAcceptedLocalReleaseSelectionCheck,
     [switch]$SkipLocalReleaseAcceptanceSummaryCheck,
     [switch]$SkipLocalReleaseAcceptanceRecorderCheck,
     [switch]$SkipRealProfileNextBatchStopGuardCheck,
@@ -16,6 +17,7 @@ $ErrorActionPreference = "Stop"
 $repoRoot = Split-Path -Parent $PSScriptRoot
 $fixtureScript = Join-Path $PSScriptRoot "New-StorageScanSmokeFixture.ps1"
 $fixtureReviewScript = Join-Path $PSScriptRoot "Start-MvpFixtureReview.ps1"
+$acceptedLocalReleaseSelectionTestScript = Join-Path $PSScriptRoot "Test-AcceptedLocalReleaseSelection.ps1"
 $localReleaseAcceptanceSummaryTestScript = Join-Path $PSScriptRoot "Test-LocalReleaseAcceptanceSummary.ps1"
 $localReleaseAcceptanceRecorderTestScript = Join-Path $PSScriptRoot "Test-LocalReleaseAcceptanceRecorder.ps1"
 $realProfileNextBatchStopGuardTestScript = Join-Path $PSScriptRoot "Test-RealProfileNextBatchStopGuard.ps1"
@@ -70,6 +72,12 @@ try {
     if (-not $SkipFixtureChecklist) {
         Invoke-PreflightStep -Name "Fixture checklist" -Command {
             & powershell.exe -NoProfile -ExecutionPolicy Bypass -File $fixtureReviewScript -ChecklistOnly
+        }
+    }
+
+    if (-not $SkipAcceptedLocalReleaseSelectionCheck) {
+        Invoke-PreflightStep -Name "Accepted local release selection regression" -Command {
+            & powershell.exe -NoProfile -ExecutionPolicy Bypass -File $acceptedLocalReleaseSelectionTestScript
         }
     }
 

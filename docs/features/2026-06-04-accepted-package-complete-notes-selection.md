@@ -21,6 +21,9 @@ The verified package candidate `.local\releases\windows-file-cleaner-v20260604-1
 - `tools\Summarize-LocalReleaseAcceptanceNotes.ps1` now selects the latest complete acceptance notes when `-RequireComplete` is used without an explicit `-Path`.
 - `tools\Start-AcceptedLocalRelease.ps1` now selects the latest complete acceptance notes by default.
 - Explicit notes paths are still honored, so pending candidate notes can be inspected and can still fail `-RequireComplete` with their current blockers.
+- Added `tools\Test-AcceptedLocalReleaseSelection.cmd` and `.ps1` for clean-runner regression coverage.
+- `Invoke-MvpPreflight.cmd` now runs the accepted local release selection regression by default before the package acceptance summary regression.
+- Added `Invoke-MvpPreflight.cmd -SkipAcceptedLocalReleaseSelectionCheck` for focused local loops.
 
 ## Verification
 
@@ -31,6 +34,10 @@ The verified package candidate `.local\releases\windows-file-cleaner-v20260604-1
 - Expected incomplete accepted-launcher check: `cmd.exe /c tools\Start-AcceptedLocalRelease.cmd -AcceptanceNotesPath ".local\release-acceptance\release-acceptance-20260604-122009.md" -PrintOnly` exited `1` before launch-command printing.
 - `cmd.exe /c tools\Invoke-DailyLocalReadiness.cmd`
 - `cmd.exe /c tools\Test-LocalRelease.cmd -ReleasePath ".local\releases\windows-file-cleaner-v20260604-121922"`
+- `cmd.exe /c tools\Test-AcceptedLocalReleaseSelection.cmd`
+- `cmd.exe /c tools\Invoke-MvpPreflight.cmd`
+
+The reusable regression writes temporary ignored notes under `.local\release-acceptance`, writes synthetic print-only package placeholder files under `.local\accepted-release-selection-test`, verifies default accepted launcher selection ignores newer incomplete notes, verifies explicit incomplete notes still stop before launch-command printing, and cleans up its temporary files.
 
 ## ADRs
 
