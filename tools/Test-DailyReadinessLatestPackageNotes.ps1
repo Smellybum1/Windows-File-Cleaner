@@ -12,6 +12,7 @@ $testRoot = [System.IO.Path]::GetFullPath((Join-Path $repoRoot ".local\daily-rea
 $completeNotesPath = Join-Path $notesRoot "release-acceptance-daily-latest-test-complete.md"
 $incompleteNotesPath = Join-Path $notesRoot "release-acceptance-daily-latest-test-incomplete.md"
 $malformedNotesPath = Join-Path $notesRoot "release-acceptance-daily-latest-test-malformed.md"
+$outsideLocalNotesPath = Join-Path $repoRoot "README.md"
 $fixtureNotesPath = Join-Path $testRoot "fixture-acceptance-daily-latest-test-incomplete.md"
 $quarantineRoot = Join-Path $testRoot "quarantine-root"
 $dailyReadinessScript = Join-Path $PSScriptRoot "Invoke-DailyLocalReadiness.ps1"
@@ -280,6 +281,23 @@ try {
     New-TestPackageAcceptanceNotes -Path $completeNotesPath -Complete:$true -CommitEvidenceRecorded:$true -ReleaseFolder $completeReleaseFolder
     New-TestPackageAcceptanceNotes -Path $incompleteNotesPath -Complete:$false -CommitEvidenceRecorded:$false -ReleaseFolder $incompleteReleaseFolder
     New-TestFixtureAcceptanceNotes -Path $fixtureNotesPath
+
+    $outsideLocalResult = Invoke-DailyReadiness -Arguments @(
+        "-AcceptanceNotesPath",
+        $outsideLocalNotesPath,
+        "-QuarantineRoot",
+        $quarantineRoot
+    )
+
+    if ($outsideLocalResult.ExitCode -ne 1) {
+        throw "Daily readiness should fail when explicit accepted package notes path is outside ignored .local. Exit code: $($outsideLocalResult.ExitCode)"
+    }
+
+    Assert-ContainsText -Lines $outsideLocalResult.Output -ExpectedText "== Accepted package evidence =="
+    Assert-ContainsText -Lines $outsideLocalResult.Output -ExpectedText "Portable release acceptance notes path must stay under ignored .local: $localRoot"
+    Assert-ContainsText -Lines $outsideLocalResult.Output -ExpectedText "Daily local readiness failed during: Accepted package evidence"
+    Assert-DoesNotContainText -Lines $outsideLocalResult.Output -UnexpectedText "== Latest package acceptance notes (informational) =="
+    Assert-DoesNotContainText -Lines $outsideLocalResult.Output -UnexpectedText "== Accepted normal launch command =="
 
     $baseTime = Get-Date
     [System.IO.File]::SetLastWriteTime($completeNotesPath, $baseTime.AddMinutes(1))

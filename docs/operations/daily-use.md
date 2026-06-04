@@ -24,7 +24,7 @@ Strict fixture-notes completion check:
 
 When strict fixture notes completion passes, completed fixture notes report that evidence is complete and no recorder action is pending.
 
-Explicit fixture acceptance notes paths used by daily readiness must stay under ignored `.local`; paths outside `.local` fail during fixture notes evidence before accepted launch-command printing.
+Explicit package acceptance notes and fixture acceptance notes paths used by daily readiness must stay under ignored `.local`. Package notes paths outside `.local` fail during accepted-package evidence before latest-notes or launch-command printing; fixture notes paths outside `.local` fail during fixture notes evidence before accepted launch-command printing.
 
 Safety profile: `terminal-readonly` from `docs/codex/safety-profiles.md`.
 
@@ -60,7 +60,7 @@ Use this before asking the user to do another tiny exact `C:\Users\moxhe` WPF ba
 
 That wrapper runs full MVP preflight by default, then exact-profile readiness evidence, then prints the manual WPF checklist. It is not cleanup approval and does not prove a future WPF batch is executable.
 
-Full MVP preflight includes restore/build/test coverage, fixture dry-run/checklist output, the fixture acceptance notes regression check, the daily readiness fixture acceptance notes regression check, the daily readiness latest package notes regression check, the local release acceptance command stamping regression check, the accepted local release selection regression check, the local release acceptance summary regression check, the local release acceptance recorder regression check, the real-profile next-batch stop guard regression check, the daily readiness exact-profile undo spotlight regression check, the documentation consistency regression check, and the whitespace diff check. The daily readiness fixture acceptance notes regression includes the explicit non-`.local` fixture notes path guard.
+Full MVP preflight includes restore/build/test coverage, fixture dry-run/checklist output, the fixture acceptance notes regression check, the daily readiness fixture acceptance notes regression check, the daily readiness latest package notes regression check, the local release acceptance command stamping regression check, the accepted local release selection regression check, the local release acceptance summary regression check, the local release acceptance recorder regression check, the real-profile next-batch stop guard regression check, the daily readiness exact-profile undo spotlight regression check, the documentation consistency regression check, and the whitespace diff check. The daily readiness fixture acceptance notes regression includes the explicit non-`.local` fixture notes path guard, and the daily readiness latest package notes regression includes the explicit non-`.local` package notes path guard.
 
 Current stop state: after the 2026-06-04 second exact-profile Quarantine batch, exact-profile displayed undo work is expected to be `1`. Do not run or treat another next-batch review as movement evidence while that selected-manifest undo work is present unless a new Grill with Docs pass decides that outstanding undo work is acceptable for another tiny batch.
 
