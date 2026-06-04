@@ -6,6 +6,7 @@ Use this index before opening individual feature briefs. The folder contains man
 
 ## Active Or Current
 
+- `2026-06-04-local-release-path-guard-regression.md`: portable release verifier and launcher now have MVP preflight coverage that explicit release roots and release paths outside ignored `.local` fail before verifier or launch-command output.
 - `2026-06-04-accepted-launcher-notes-path-guard.md`: accepted-package launcher regression now covers explicit acceptance notes paths outside ignored `.local` failing before launch-command output.
 - `2026-06-04-pending-notes-head-wording-stabilization.md`: pending package acceptance notes docs now describe refresh commits as generation-time provenance and rely on summary status lines for live current-HEAD context.
 - `2026-06-04-daily-readiness-latest-notes-isolation.md`: daily readiness latest package notes regression now uses explicit synthetic latest-notes paths under its private ignored test folder.

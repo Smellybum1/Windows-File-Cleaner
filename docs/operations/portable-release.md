@@ -68,6 +68,14 @@ Targeted accepted package launcher selection regression:
 
 This writes temporary ignored complete, incomplete, and malformed-looking notes under `.local\release-acceptance`, writes synthetic print-only package placeholder files under `.local\accepted-release-selection-test`, verifies accepted launcher selection behavior, verifies explicit non-`.local` notes paths fail before launch-command printing, then removes its temporary files.
 
+Targeted local release path guard regression:
+
+```powershell
+.\tools\Test-LocalReleasePathGuards.cmd
+```
+
+This verifies `Test-LocalRelease.cmd` and `Start-LocalRelease.cmd` reject explicit non-`.local` release roots and release paths before verifier, launcher, or launch-command output.
+
 Targeted generated acceptance command stamping regression:
 
 ```powershell
@@ -100,7 +108,7 @@ Targeted package acceptance recorder regression:
 
 This writes temporary ignored notes under `.local\release-acceptance-recording-test`, verifies recorder guardrails, then removes the test notes.
 
-MVP preflight also runs these regressions by default. Use `.\tools\Invoke-MvpPreflight.cmd -SkipLocalReleaseAcceptanceCommandStampingCheck`, `.\tools\Invoke-MvpPreflight.cmd -SkipAcceptedLocalReleaseSelectionCheck`, `.\tools\Invoke-MvpPreflight.cmd -SkipDailyReadinessLatestPackageNotesCheck`, `.\tools\Invoke-MvpPreflight.cmd -SkipLocalReleaseAcceptanceSummaryCheck`, or `.\tools\Invoke-MvpPreflight.cmd -SkipLocalReleaseAcceptanceRecorderCheck` only for focused local loops where those package acceptance checks are not in scope.
+MVP preflight also runs these regressions by default. Use `.\tools\Invoke-MvpPreflight.cmd -SkipLocalReleasePathGuardCheck`, `.\tools\Invoke-MvpPreflight.cmd -SkipLocalReleaseAcceptanceCommandStampingCheck`, `.\tools\Invoke-MvpPreflight.cmd -SkipAcceptedLocalReleaseSelectionCheck`, `.\tools\Invoke-MvpPreflight.cmd -SkipDailyReadinessLatestPackageNotesCheck`, `.\tools\Invoke-MvpPreflight.cmd -SkipLocalReleaseAcceptanceSummaryCheck`, or `.\tools\Invoke-MvpPreflight.cmd -SkipLocalReleaseAcceptanceRecorderCheck` only for focused local loops where those package acceptance checks are not in scope.
 
 ## Acceptance Notes
 
