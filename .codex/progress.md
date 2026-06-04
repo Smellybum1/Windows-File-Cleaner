@@ -15,7 +15,7 @@ Read first: `docs/codex/current-state.md`.
 
 Latest docs/workflow packet: `2026-06-04-startup-context-compaction`. It moved oversized read-first docs into reference/archive files and replaced them with compact active docs to reduce Codex thread lag. No app behavior changed.
 
-Latest tooling/evidence packet: `2026-06-04-ci-actions-runtime-maintenance`. GitHub Actions MVP Preflight now uses Node 24-capable official actions and pins the hosted runner to `windows-2022` while remaining read-only.
+Latest tooling/evidence packet: `2026-06-04-ci-windows-image-canary`. GitHub Actions MVP Preflight now has a manual runner-image canary for `windows-2025-vs2026` while push and pull-request runs remain on `windows-2022`.
 
 Latest package candidate: `.local\releases\windows-file-cleaner-v20260604-121922` at app commit `e6ac3eb`, verified but not human-accepted. Current pending acceptance notes: `.local\release-acceptance\release-acceptance-20260604-164509.md`.
 
@@ -40,6 +40,34 @@ Post-action evidence:
 6. Use `docs/operations/*.md` for command detail.
 
 ## Recent Packet Summaries
+
+### 2026-06-04: CI Windows Image Canary
+
+Status: completed
+
+Goal:
+
+- Add an intentional manual canary path for Windows 2025 / Visual Studio 2026 hosted runner evaluation without moving normal CI off `windows-2022`.
+
+Safety profile:
+
+- `terminal-readonly`. The change updates CI YAML and docs only. It does not launch WPF, scan real-profile files, move, restore, delete, approve cleanup, promote a package, create shortcuts, install anything, write acceptance notes, write Restore Manifests, or create cleanup history.
+
+Changes:
+
+- `.github\workflows\mvp-preflight.yml` now supports `workflow_dispatch`.
+- Manual runs can choose `runner_image=windows-2025-vs2026` or `runner_image=windows-2022`.
+- Push and pull-request runs use `windows-2022` through the `inputs.runner_image || 'windows-2022'` fallback.
+- CI logs now print requested runner image, `RUNNER_OS`, `ImageOS`, and `ImageVersion`.
+- Added `docs\features\2026-06-04-ci-windows-image-canary.md`.
+
+Verification:
+
+- `cmd.exe /c tools\Invoke-MvpPreflight.cmd`
+
+ADRs:
+
+- Skipped; this is reversible CI workflow instrumentation and does not change product behavior, cleanup execution, restore execution, persistence, security, data model, deployment packaging, or core UX flow.
 
 ### 2026-06-04: CI Actions Runtime Maintenance
 
@@ -852,6 +880,7 @@ ADRs:
 
 ### Current Live Product And Package Packets
 
+- `2026-06-04-ci-windows-image-canary`: MVP Preflight now has a manual runner-image canary for intentionally testing `windows-2025-vs2026` while push/PR runs remain on `windows-2022`.
 - `2026-06-04-ci-actions-runtime-maintenance`: GitHub Actions MVP Preflight now uses Node 24-capable official actions and pins CI to `windows-2022` before the `windows-latest` Windows 2025 / Visual Studio 2026 migration.
 - `2026-06-04-package-summary-ignored-path-guard-regression`: package acceptance summaries now reject explicit notes paths outside ignored `.local`, covered by MVP preflight summary regression.
 - `2026-06-04-pending-package-acceptance-notes-refresh-after-tooling-hardening`: current pending candidate notes refreshed to `.local\release-acceptance\release-acceptance-20260604-164509.md` after package/readiness tooling commits advanced `HEAD` beyond package commit `e6ac3eb`.

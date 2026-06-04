@@ -22,6 +22,7 @@ Keep the GitHub Actions MVP Preflight workflow on a stable, read-only Windows ba
 - CI uses Node 24-capable official GitHub actions.
 - CI pins the hosted runner to `windows-2022` until the project intentionally validates the newer Windows 2025 / Visual Studio 2026 image.
 - The workflow keeps read-only checkout permissions.
+- Later packet `2026-06-04-ci-windows-image-canary.md` added a manual-only runner-image choice for intentional `windows-2025-vs2026` evaluation while keeping push and pull-request runs on `windows-2022`.
 
 ## Evidence and validation gate
 
@@ -84,12 +85,11 @@ ADRs added or skipped:
 
 Open questions:
 
-- When should the project intentionally test `windows-2025-vs2026` and decide whether to move the CI baseline forward?
+- Answered for tooling: the project now has a manual `workflow_dispatch` canary. The baseline move itself remains deferred until a human intentionally runs and reviews that canary.
 
 Follow-up work:
 
-- After push, verify the GitHub Actions MVP Preflight run succeeds without Node 20 action warnings.
-- Later, run a deliberate CI image evaluation packet for Windows 2025 / Visual Studio 2026 before changing the baseline.
+- Run the manual canary with `runner_image=windows-2025-vs2026` before changing the baseline.
 
 Risky assumptions:
 

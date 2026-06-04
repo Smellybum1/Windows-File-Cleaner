@@ -157,6 +157,7 @@ What changed:
 - Later packet `MVP Preflight Next-Batch Stop Guard Regression` added the real-profile next-batch stop guard regression step before the whitespace diff check, with `-SkipRealProfileNextBatchStopGuardCheck` for focused local loops. A follow-up made that regression use `Invoke-RealProfileQuarantineReadiness.cmd -SyntheticRestoreManifestOnly` so CI and clean runners do not need ignored accepted-package notes or local package folders for this focused Restore Manifest check.
 - Later packet `Daily Readiness Exact-Profile Undo Spotlight Regression` added the daily readiness exact-profile undo spotlight regression step before the whitespace diff check, with `-SkipDailyReadinessUndoSpotlightCheck` for focused local loops. A follow-up made that regression use `Invoke-DailyLocalReadiness.cmd -SyntheticRestoreManifestOnly` so CI and clean runners do not need ignored accepted-package notes or local package folders for this focused Restore Manifest check.
 - Later packet `CI Actions Runtime Maintenance` kept the same preflight command but updated the GitHub Actions workflow to Node 24-capable official actions and pinned the hosted runner to `windows-2022`.
+- Later packet `CI Windows Image Canary` kept the same preflight command and added a manual GitHub Actions runner-image choice for future Windows 2025 / Visual Studio 2026 evaluation.
 
 Files changed:
 

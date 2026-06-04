@@ -58,6 +58,7 @@ What changed:
 - Recorded the packet in `.codex/progress.md`.
 - Later packet `2026-05-30-ci-preflight-cmd-wrapper.md` aligned CI with the preferred execution-policy-friendly `.cmd` wrapper while keeping the same preflight steps.
 - Later packet `2026-06-04-ci-actions-runtime-maintenance.md` updated the official GitHub actions to Node 24-capable versions and pinned the hosted runner to `windows-2022` before the `windows-latest` Windows 2025 / Visual Studio 2026 migration.
+- Later packet `2026-06-04-ci-windows-image-canary.md` added a manual runner-image choice so the same workflow can intentionally test `windows-2025-vs2026` without changing push or pull-request CI.
 
 ADRs added or skipped:
 

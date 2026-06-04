@@ -7,6 +7,16 @@ on:
   pull_request:
     branches:
       - main
+  workflow_dispatch:
+    inputs:
+      runner_image:
+        description: Windows hosted runner image to test
+        required: true
+        default: windows-2025-vs2026
+        type: choice
+        options:
+          - windows-2025-vs2026
+          - windows-2022
 
 permissions:
   contents: read
@@ -14,7 +24,7 @@ permissions:
 jobs:
   preflight:
     name: Windows read-only preflight
-    runs-on: windows-2022
+    runs-on: "${{ inputs.runner_image || 'windows-2022' }}"
     timeout-minutes: 15
 
     steps:
@@ -25,6 +35,14 @@ jobs:
         uses: actions/setup-dotnet@v5
         with:
           dotnet-version: '8.0.421'
+
+      - name: Show runner image
+        shell: pwsh
+        run: |
+          Write-Host "Requested runner image: ${{ inputs.runner_image || 'windows-2022' }}"
+          Write-Host "Runner OS: $env:RUNNER_OS"
+          Write-Host "Image OS: $env:ImageOS"
+          Write-Host "Image Version: $env:ImageVersion"
 
       - name: Show .NET info
         shell: pwsh
