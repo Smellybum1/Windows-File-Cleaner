@@ -21,7 +21,7 @@ Load detailed reference docs or archived evidence only when the task needs histo
 - Branch: `main`
 - Latest package/evidence packet: `2026-06-04-pending-package-acceptance-notes-refresh-after-tooling-hardening`
 - Latest tooling/evidence packet: `2026-06-04-mvp-preflight-skip-switch-exact-documentation-regression`
-- Latest docs/workflow packet: `2026-06-04-ci-evidence-refresh-after-skip-switch-docs-regression`
+- Latest docs/workflow packet: `2026-06-04-ci-evidence-refresh-after-exact-skip-docs-regression`
 - Latest live-product evidence: `2026-06-04-second-real-profile-quarantine-batch`
 - Latest working app packet: `2026-06-04-real-profile-quarantine-inline-status-wording`
 - Previous docs/workflow baseline: `1ea1b76 Reduce workflow markdown bloat`
@@ -41,7 +41,7 @@ Load detailed reference docs or archived evidence only when the task needs histo
 - Completed fixture acceptance summaries say the evidence is complete and no recorder action is pending.
 - Package acceptance summaries print current repository `HEAD`, notes/current-HEAD status, and package/current-HEAD status, so pending candidate notes visibly show whether package/current-HEAD mismatch context is present.
 - GitHub Actions MVP Preflight now uses `actions/checkout@v6`, `actions/setup-dotnet@v5`, `windows-2022` for push/pull-request runs, and a manual `workflow_dispatch` runner-image choice for intentional `windows-2025-vs2026` canary runs.
-- Push CI run #387 passed on `1adce0a`, validating representative current-path evidence after documentation consistency started checking that the CI runbook lists every current `Invoke-MvpPreflight.cmd` skip switch. Earlier #385 validated trust-helper path guard preflight coverage, earlier #365 validated active feature-index documentation consistency coverage, and earlier #360 validated the no-input `inputs.runner_image || 'windows-2022'` fallback. Do not update the representative CI evidence for every green docs-only push.
+- Push CI run #389 passed on `00bdfb3`, validating representative current-path evidence after documentation consistency started checking that the focused skip-switch section exactly matches current `Invoke-MvpPreflight.cmd` skip switches. Earlier #387 validated initial skip-switch documentation consistency coverage, earlier #385 validated trust-helper path guard preflight coverage, earlier #365 validated active feature-index documentation consistency coverage, and earlier #360 validated the no-input `inputs.runner_image || 'windows-2022'` fallback. Do not update the representative CI evidence for every green docs-only push.
 - `docs/operations/ci.md` captures normal push/PR CI behavior, the manual Windows image canary procedure, baseline-change rule, and safety boundary.
 - `tools\Test-DocumentationConsistency.cmd` verifies active documentation links, bare active feature-index entries, latest packet breadcrumbs, and that the focused skip-switch section in `docs/operations/ci.md` exactly matches current `Invoke-MvpPreflight.cmd` skip switches; MVP preflight now runs it by default before the whitespace diff check.
 - `tools\Test-FixtureRootPathGuard.cmd` covers synthetic fixture creation and fixture review root path guards. MVP preflight now runs it by default before fixture dry-run output. It asserts explicit non-`.local` fixture roots fail before fixture writes, checklist output, or WPF launch.

@@ -1,4 +1,4 @@
-# Feature: CI Evidence Refresh After Skip Switch Docs Regression
+# Feature: CI Evidence Refresh After Exact Skip Docs Regression
 
 Date started: 2026-06-04
 Status: completed
@@ -6,7 +6,7 @@ Owner: project-owner
 
 ## Goal
 
-Refresh representative normal push CI evidence after documentation consistency started checking that `docs/operations/ci.md` lists every current `Invoke-MvpPreflight.cmd` skip switch.
+Refresh representative normal push CI evidence after documentation consistency started checking the exact `Invoke-MvpPreflight.cmd` skip-switch set against the CI runbook.
 
 ## Non-goals
 
@@ -18,17 +18,17 @@ Refresh representative normal push CI evidence after documentation consistency s
 
 ## Desired behavior
 
-- `docs/operations/ci.md` records representative normal push MVP Preflight #387 evidence.
-- Compact current-state and handoff docs mention #387 on `1adce0a` as the current representative preflight proof.
-- Earlier #360, #365, and #385 evidence remains available as historical runner fallback, feature-index, and trust-helper preflight proof.
+- `docs/operations/ci.md` records representative normal push MVP Preflight #389 evidence.
+- Compact current-state and handoff docs mention #389 on `00bdfb3` as the current representative preflight proof.
+- Earlier #387, #385, #365, and #360 evidence remains available as historical skip-switch, trust-helper, feature-index, and runner-fallback proof.
 - The latest docs/workflow packet breadcrumb stays aligned across current state, progress, and thread handoff.
 
 ## Decisions made
 
 Small feature-level decisions:
 
-- Refresh the representative evidence because default MVP preflight coverage meaningfully changed through documentation consistency.
-- Keep #385 as historical trust-helper preflight coverage proof.
+- Refresh the representative evidence because default MVP preflight coverage meaningfully changed through exact skip-switch documentation consistency.
+- Keep #387 as historical initial skip-switch documentation coverage proof.
 - Keep this as a docs-only evidence refresh.
 
 ADR-worthy decisions:
@@ -41,13 +41,13 @@ Completed on: 2026-06-04
 
 What changed:
 
-- Updated the CI runbook with GitHub Actions MVP Preflight #387 evidence for commit `1adce0a`.
+- Updated the CI runbook with GitHub Actions MVP Preflight #389 evidence for commit `00bdfb3`.
 - Updated compact current-state, progress, and thread-handoff docs to name this packet and current CI evidence.
-- Updated the feature index and prior CI evidence brief so #385 is framed as historical trust-helper preflight coverage evidence after skip-switch documentation coverage changed.
-- Later packet `CI Evidence Refresh After Exact Skip Docs Regression` made #389 the representative current-path proof after exact skip-switch documentation coverage joined documentation consistency.
+- Updated the feature index and prior CI evidence brief so #387 is framed as historical initial skip-switch documentation coverage evidence after exact skip-switch documentation coverage changed.
 
 Tests run:
 
+- GitHub Actions MVP Preflight #389 passed on `00bdfb3` in `1m 34s`.
 - `cmd.exe /c tools\Test-DocumentationConsistency.cmd`
 - `git diff --check`
 
@@ -55,7 +55,7 @@ Docs updated:
 
 - This feature brief.
 - `docs/features/index.md`
-- `docs/features/2026-06-04-ci-evidence-refresh-after-trust-helper-preflight.md`
+- `docs/features/2026-06-04-ci-evidence-refresh-after-skip-switch-docs-regression.md`
 - `docs/operations/ci.md`
 - `docs/codex/current-state.md`
 - `.codex/progress.md`
@@ -75,4 +75,4 @@ Follow-up work:
 
 Risky assumptions:
 
-- The GitHub Actions API run metadata for #387 is sufficient evidence for run number, commit, duration, and success status.
+- The GitHub Actions API run metadata for #389 is sufficient evidence for run number, commit, duration, and success status.
