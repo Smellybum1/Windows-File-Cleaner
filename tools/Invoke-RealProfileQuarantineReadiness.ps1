@@ -167,6 +167,11 @@ else {
     Write-Host "Restore Manifest display focus: all Cleanup Scopes."
 }
 
+if ($shouldRequireNoDisplayedUndoWork) {
+    Write-Host "Displayed undo-work stop: checking before MVP preflight so blocked next-batch evidence does not produce fresh preflight evidence."
+    Invoke-RealProfileReadinessStep -Title "Early displayed undo-work stop check" -CommandPath $restoreManifestSummary -Arguments (New-RestoreManifestArguments -UndoWorkOnly)
+}
+
 if ($SkipMvpPreflight.IsPresent) {
     Write-Host ""
     Write-Host "MVP preflight: skipped by request. Do not use skipped preflight output as fresh real-profile movement evidence."

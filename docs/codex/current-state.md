@@ -11,7 +11,7 @@ Use this as the first compact orientation file for new Codex threads. Historical
 - Latest live evidence: 2026-06-04 second tiny exact real-profile Quarantine batch.
 - Latest working app packet: real-profile Quarantine inline status wording fix.
 - Latest package candidate: `.local\releases\windows-file-cleaner-v20260604-121922` at `e6ac3eb`, verified but not human-accepted.
-- Latest tooling/evidence packet: MVP preflight release acceptance summary regression check.
+- Latest tooling/evidence packet: real-profile next-batch early undo guard.
 - Latest docs/workflow packet: startup context compaction.
 - Previous docs/workflow baseline: `1ea1b76 Reduce workflow markdown bloat`
 - App stack: C# / WPF / .NET 8
@@ -57,6 +57,8 @@ Use this as the first compact orientation file for new Codex threads. Historical
 - `tools\Test-LocalReleaseAcceptanceSummary.cmd` verifies accepted/incomplete package acceptance summary behavior with temporary ignored `.local` notes and cleans up after itself.
 - MVP preflight now runs the local release acceptance summary regression check by default before `git diff --check`; use `-SkipLocalReleaseAcceptanceSummaryCheck` only for focused local loops.
 - Current full MVP preflight passed with restore, build, core tests, WPF app tests, fixture `-WhatIf`, fixture checklist-only output, local release acceptance summary regression, and whitespace diff.
+- `Invoke-RealProfileQuarantineReadiness.cmd -RequireNextBatchEvidence` now checks displayed undo work before MVP preflight, so outstanding selected-manifest undo work stops the preset before it can produce fresh preflight evidence.
+- `tools\Test-RealProfileNextBatchStopGuard.cmd` verifies that early stop behavior with temporary ignored synthetic Restore Manifests.
 - Accepted-package tooling now selects the latest complete acceptance notes by default, so incomplete candidate notes do not replace the accepted `bc9b869` baseline unless an explicit notes path is used.
 - Release acceptance recording now refuses missing verifier evidence and requires explicit `-RecordCommitMismatch` before commit mismatch evidence is marked recorded.
 - Generated package acceptance notes now stamp the actual `-ReleasePath` verifier/checklist commands, include `-RequireCurrentCommit` only when that switch created the notes, and print the exact commit-mismatch recorder command when current-commit evidence is intentionally not required.
@@ -74,6 +76,8 @@ Use this as the first compact orientation file for new Codex threads. Historical
 ## Next Best Step
 
 Stop after the second tiny exact real-profile batch. Do not chain another real-profile Quarantine batch while exact-profile displayed undo work is present unless a new Grill with Docs pass decides that outstanding selected-manifest undo work is acceptable. If recovery is needed, use selected-manifest restore only for the exact selected Restore Manifest after readiness, exact `RESTORE`, and immediate selected-restore revalidation pass.
+
+The next-batch evidence preset now enforces this stop state before MVP preflight. Do not use the early-stop output as movement evidence.
 
 If packaging is the next focus, complete a human acceptance pass for `.local\releases\windows-file-cleaner-v20260604-121922` before promoting it. Until then, keep using the accepted package baseline from `bc9b869` for daily accepted-package launch commands.
 

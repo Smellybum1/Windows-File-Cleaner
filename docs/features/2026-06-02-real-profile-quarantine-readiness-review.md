@@ -240,6 +240,7 @@ Follow-up work:
 - Later packet `Daily Readiness Fixture Acceptance Status` forwarded optional Fixture Acceptance Notes flags so stricter readiness reviews can include local fixture notes status without launching WPF, scanning, movement, restore, deletion, approval, or cleanup history.
 - Later packet `Real-Profile Next-Batch Evidence Preset` added `-RequireNextBatchEvidence` as the recommended terminal command before another tiny exact real-profile batch. It stays read-only, rejects all-scope or non-exact Cleanup Scope use, includes Fixture Acceptance Notes status, and enforces exact-profile displayed Restore Manifest evidence plus zero displayed undo-work manifests without requiring recovery-review debt to be zero.
 - Later packet `Full Next-Batch Evidence After Checklist Guidance` reran the full `-RequireNextBatchEvidence` preset on `d257090` after checklist Fixture Acceptance Notes guidance. Full MVP preflight and current terminal evidence passed without WPF launch, real-profile scan, movement, restore, deletion, approval, manifest writes, or cleanup history; exact-profile displayed undo work remained zero.
+- Later packet `Real-Profile Next-Batch Early Undo Guard` moved the displayed undo-work strict check before MVP preflight for next-batch evidence, and added `tools\Test-RealProfileNextBatchStopGuard.cmd` with ignored synthetic Restore Manifests to prove blocked runs stop before preflight/daily readiness.
 
 Open questions:
 

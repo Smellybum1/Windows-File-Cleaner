@@ -18,6 +18,8 @@ Restore Manifest discovery/review lives in the WPF Quarantine tab's `Restore Man
 
 After the 2026-06-04 second exact-profile Quarantine batch, displayed undo work is expected to be `1` until the selected manifest is restored. Use `-RequireNoDisplayedUndoWork` only when zero displayed undo work is the intended assertion.
 
+The real-profile next-batch evidence preset uses that displayed undo-work strictness before MVP preflight, so outstanding selected-manifest undo work stops the preset early.
+
 ## Recovery Review Focus
 
 ```powershell

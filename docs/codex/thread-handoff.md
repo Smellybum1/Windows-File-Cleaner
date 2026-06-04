@@ -20,7 +20,7 @@ Load detailed reference docs or archived evidence only when the task needs histo
 - Repo: `D:\Codex\Windows File Cleaner`
 - Branch: `main`
 - Latest package/evidence packet: `2026-06-04-verified-portable-package-candidate`
-- Latest tooling/evidence packet: `2026-06-04-mvp-preflight-release-summary-regression`
+- Latest tooling/evidence packet: `2026-06-04-real-profile-next-batch-early-undo-guard`
 - Latest docs/workflow packet: `2026-06-04-startup-context-compaction`
 - Latest live-product evidence: `2026-06-04-second-real-profile-quarantine-batch`
 - Latest working app packet: `2026-06-04-real-profile-quarantine-inline-status-wording`
@@ -34,6 +34,7 @@ Load detailed reference docs or archived evidence only when the task needs histo
 - Daily readiness shows the latest package acceptance notes as informational context after verifying the completed accepted notes.
 - Incomplete package acceptance summaries print guarded recorder and recheck commands; the current candidate recorder command includes `-RecordCommitMismatch` and remains human-pass-only.
 - `tools\Test-LocalReleaseAcceptanceSummary.cmd` provides targeted temporary-note regression coverage for package acceptance summaries, and MVP preflight now runs it by default before the whitespace diff check.
+- `Invoke-RealProfileQuarantineReadiness.cmd -RequireNextBatchEvidence` checks displayed undo work before MVP preflight, and `tools\Test-RealProfileNextBatchStopGuard.cmd` covers that early stop with ignored synthetic manifests.
 - Accepted-package helpers select the latest complete acceptance notes by default; use explicit notes paths for pending candidate review.
 - `Record-LocalReleaseAcceptanceNotes.cmd` requires verifier evidence and explicit `-RecordCommitMismatch` when package/current-HEAD mismatch evidence is not already recorded.
 - Generated package acceptance notes stamp the actual `-ReleasePath` verifier/checklist commands and include `-RequireCurrentCommit` only when that switch created the notes.
@@ -87,7 +88,7 @@ Current state: main includes the second tiny exact real-profile Quarantine evide
 
 The second user-clicked WPF batch moved one exact C:\Users\moxhe pip\cache\http-v2 .body file, 28.93 MB, with moved 1, failed 0, Recovery review no. Post-action read-only summary showed 5 of 11 exact-profile manifests, displayed exact-profile undo work 1, displayed exact-profile recovery review 2, and new manifest D:\WindowsFileCleanerQuarantine\actions\quarantine-action-draft-20260604014901-b7b402a2\restore-manifest.json.
 
-Next best step: stop after the second tiny exact real-profile batch. Do not chain another real-profile Quarantine batch while exact-profile displayed undo work is present unless a new Grill with Docs pass decides that outstanding selected-manifest undo work is acceptable. Recovery remains selected-manifest-only with exact RESTORE and immediate selected-restore revalidation if needed.
+Next best step: stop after the second tiny exact real-profile batch. Do not chain another real-profile Quarantine batch while exact-profile displayed undo work is present unless a new Grill with Docs pass decides that outstanding selected-manifest undo work is acceptable. Recovery remains selected-manifest-only with exact RESTORE and immediate selected-restore revalidation if needed. The next-batch evidence preset now stops before MVP preflight while displayed undo work exists; do not use that early-stop output as movement evidence.
 
 Accepted package baseline remains .local\releases\windows-file-cleaner-v20260602-011556 at commit bc9b869 with completed ignored acceptance notes .local\release-acceptance\release-acceptance-20260602-011743.md. Accepted-package helpers select latest complete notes by default. Daily readiness shows latest package acceptance notes as informational context but still keeps incomplete candidate notes from replacing the accepted baseline. MVP preflight includes the local release acceptance summary regression check; use -SkipLocalReleaseAcceptanceSummaryCheck only for focused local loops.
 

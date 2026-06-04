@@ -58,6 +58,8 @@ Full MVP preflight includes restore/build/test coverage, fixture dry-run/checkli
 
 Current stop state: after the 2026-06-04 second exact-profile Quarantine batch, exact-profile displayed undo work is expected to be `1`. Do not run or treat another next-batch review as movement evidence while that selected-manifest undo work is present unless a new Grill with Docs pass decides that outstanding undo work is acceptable for another tiny batch.
 
+The next-batch evidence preset now checks displayed undo work before MVP preflight, so a blocked run exits before producing fresh preflight evidence.
+
 Evidence-only preset:
 
 ```powershell
