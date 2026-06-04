@@ -6,19 +6,20 @@ Status: completed
 
 ## Goal
 
-Cover the portable release verifier and launcher boundary that explicit `-ReleaseRoot` and `-ReleasePath` values must stay under ignored `.local` before verifier or launch-command output is printed.
+Cover the portable release publisher, verifier, and launcher boundary that explicit release roots and release paths must stay under ignored `.local` before publisher, verifier, or launch-command output is printed.
 
 ## Safety Profile
 
-`terminal-readonly`. The regression uses committed `README.md` only as a non-`.local` rejection target and does not write test files. It does not launch WPF, click `Scan`, scan real-profile files, move, restore, delete, approve cleanup, promote a package, create shortcuts, install anything, write acceptance notes, write Restore Manifests, or create cleanup history.
+`terminal-readonly`. The regression uses committed `README.md` only as a non-`.local` rejection target and does not write test files. It does not launch WPF, click `Scan`, scan real-profile files, move, restore, delete, approve cleanup, publish or promote a package, create shortcuts, install anything, write acceptance notes, write Restore Manifests, or create cleanup history.
 
 ## Problem
 
-`Test-LocalRelease.cmd` and `Start-LocalRelease.cmd` already require local release roots and release folders to resolve under ignored `.local`, but MVP preflight did not have a focused regression proving explicit non-`.local` package paths stop before verifier, launcher, or launch-command output. A future edit could loosen the package path boundary while package acceptance note checks still passed.
+`Publish-LocalRelease.cmd`, `Test-LocalRelease.cmd`, and `Start-LocalRelease.cmd` already require local release roots and release folders to resolve under ignored `.local`, but MVP preflight did not have a focused regression proving explicit non-`.local` package paths stop before publisher, verifier, launcher, or launch-command output. A future edit could loosen the package path boundary while package acceptance note checks still passed.
 
 ## Changes
 
 - Added `tools\Test-LocalReleasePathGuards.cmd` and `.ps1`.
+- The regression verifies `Publish-LocalRelease.cmd -ReleaseRoot README.md -SkipPreflight` fails before publisher, preflight, publish, or launch-command output.
 - The regression verifies `Test-LocalRelease.cmd -ReleaseRoot README.md` fails before verifier output.
 - It verifies `Test-LocalRelease.cmd -ReleasePath README.md` fails before verifier output.
 - It verifies `Start-LocalRelease.cmd -ReleaseRoot README.md -PrintOnly -SkipVerify` fails before launcher or launch-command output.
@@ -38,5 +39,5 @@ No ADR added. This tightens terminal-only regression coverage for existing porta
 
 ## Follow-Up
 
-- Keep package verification and repo-level package launch paths under ignored `.local`.
+- Keep package publishing, verification, and repo-level package launch paths under ignored `.local`.
 - Use the accepted-package launcher for daily use until a new package is human-accepted.

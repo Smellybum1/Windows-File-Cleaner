@@ -6,6 +6,7 @@ $ErrorActionPreference = "Stop"
 
 $repoRoot = Split-Path -Parent $PSScriptRoot
 $outsideLocalPath = Join-Path $repoRoot "README.md"
+$localReleasePublisherScript = Join-Path $PSScriptRoot "Publish-LocalRelease.ps1"
 $localReleaseVerifierScript = Join-Path $PSScriptRoot "Test-LocalRelease.ps1"
 $localReleaseLauncherScript = Join-Path $PSScriptRoot "Start-LocalRelease.ps1"
 
@@ -101,6 +102,32 @@ function Assert-GuardedVerifierFailure {
     Assert-DoesNotContainText -Lines $result.Output -UnexpectedText "Portable release verification passed."
 }
 
+function Assert-GuardedPublisherFailure {
+    param(
+        [Parameter(Mandatory)]
+        [string]$Description,
+
+        [Parameter(Mandatory)]
+        [string[]]$Arguments,
+
+        [Parameter(Mandatory)]
+        [string]$ExpectedGuardText
+    )
+
+    $result = Invoke-Tool -ScriptPath $localReleasePublisherScript -Arguments $Arguments
+    if ($result.ExitCode -ne 1) {
+        throw "$Description should fail before publisher output. Exit code: $($result.ExitCode)"
+    }
+
+    Assert-ContainsText -Lines $result.Output -ExpectedText $ExpectedGuardText
+    Assert-DoesNotContainText -Lines $result.Output -UnexpectedText "Portable v1 release publisher"
+    Assert-DoesNotContainText -Lines $result.Output -UnexpectedText "Current git status:"
+    Assert-DoesNotContainText -Lines $result.Output -UnexpectedText "Skipping MVP preflight by request"
+    Assert-DoesNotContainText -Lines $result.Output -UnexpectedText "Publish self-contained WPF app"
+    Assert-DoesNotContainText -Lines $result.Output -UnexpectedText "Portable v1 release package created."
+    Assert-DoesNotContainText -Lines $result.Output -UnexpectedText "Launch command:"
+}
+
 function Assert-GuardedLauncherFailure {
     param(
         [Parameter(Mandatory)]
@@ -125,6 +152,11 @@ function Assert-GuardedLauncherFailure {
     Assert-DoesNotContainText -Lines $result.Output -UnexpectedText "Print-only mode: WPF was not launched."
 }
 
+Assert-GuardedPublisherFailure `
+    -Description "Publisher explicit ReleaseRoot outside ignored .local" `
+    -Arguments @("-ReleaseRoot", $outsideLocalPath, "-SkipPreflight") `
+    -ExpectedGuardText "Release root must stay under the ignored .local directory:"
+
 Assert-GuardedVerifierFailure `
     -Description "Verifier explicit ReleaseRoot outside ignored .local" `
     -Arguments @("-ReleaseRoot", $outsideLocalPath) `
@@ -146,4 +178,4 @@ Assert-GuardedLauncherFailure `
     -ExpectedGuardText "Release path must stay under the ignored .local directory:"
 
 Write-Host "Local release path guard regression passed."
-Write-Host "Boundary: committed README.md was used only as a non-.local rejection target; this did not launch WPF, scan, move, restore, delete, approve cleanup, promote a package, create shortcuts, install anything, write acceptance notes, write Restore Manifests, or create cleanup history."
+Write-Host "Boundary: committed README.md was used only as a non-.local rejection target; this did not launch WPF, scan, move, restore, delete, approve cleanup, publish or promote a package, create shortcuts, install anything, write acceptance notes, write Restore Manifests, or create cleanup history."

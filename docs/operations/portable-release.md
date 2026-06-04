@@ -74,7 +74,7 @@ Targeted local release path guard regression:
 .\tools\Test-LocalReleasePathGuards.cmd
 ```
 
-This verifies `Test-LocalRelease.cmd` and `Start-LocalRelease.cmd` reject explicit non-`.local` release roots and release paths before verifier, launcher, or launch-command output.
+This verifies `Publish-LocalRelease.cmd`, `Test-LocalRelease.cmd`, and `Start-LocalRelease.cmd` reject explicit non-`.local` release roots and release paths before publisher, verifier, launcher, or launch-command output.
 
 Targeted generated acceptance command stamping regression:
 

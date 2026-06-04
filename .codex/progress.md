@@ -15,7 +15,7 @@ Read first: `docs/codex/current-state.md`.
 
 Latest docs/workflow packet: `2026-06-04-pending-notes-head-wording-stabilization`. It rewords pending package acceptance notes docs so refresh commits are generation-time provenance and live notes/current-HEAD context comes from the summary helper. No app behavior changed.
 
-Latest tooling/evidence packet: `2026-06-04-local-release-path-guard-regression`. Portable release verifier and launcher now have MVP preflight coverage that explicit release roots and release paths outside ignored `.local` fail before verifier or launch-command output.
+Latest tooling/evidence packet: `2026-06-04-local-release-path-guard-regression`. Portable release publisher, verifier, and launcher now have MVP preflight coverage that explicit release roots and release paths outside ignored `.local` fail before publisher, verifier, or launch-command output.
 
 Latest package candidate: `.local\releases\windows-file-cleaner-v20260604-121922` at app commit `e6ac3eb`, verified but not human-accepted. Current pending acceptance notes: `.local\release-acceptance\release-acceptance-20260604-164509.md`.
 
@@ -49,15 +49,16 @@ Status: completed
 
 Goal:
 
-- Cover the portable release verifier and launcher boundary that explicit `-ReleaseRoot` and `-ReleasePath` values must stay under ignored `.local` before verifier or launch-command output is printed.
+- Cover the portable release publisher, verifier, and launcher boundary that explicit release roots and release paths must stay under ignored `.local` before publisher, verifier, or launch-command output is printed.
 
 Safety profile:
 
-- `terminal-readonly`. The regression uses committed `README.md` only as a non-`.local` rejection target and does not write test files. It does not launch WPF, scan real-profile files, move, restore, delete, approve cleanup, promote a package, create shortcuts, install anything, write acceptance notes, write Restore Manifests, or create cleanup history.
+- `terminal-readonly`. The regression uses committed `README.md` only as a non-`.local` rejection target and does not write test files. It does not launch WPF, scan real-profile files, move, restore, delete, approve cleanup, publish or promote a package, create shortcuts, install anything, write acceptance notes, write Restore Manifests, or create cleanup history.
 
 Changes:
 
 - Added `tools\Test-LocalReleasePathGuards.cmd` and `.ps1`.
+- The regression verifies `Publish-LocalRelease.cmd -ReleaseRoot README.md -SkipPreflight` fails before publisher, preflight, publish, or launch-command output.
 - The regression verifies `Test-LocalRelease.cmd -ReleaseRoot README.md` fails before verifier output.
 - It verifies `Test-LocalRelease.cmd -ReleasePath README.md` fails before verifier output.
 - It verifies `Start-LocalRelease.cmd -ReleaseRoot README.md -PrintOnly -SkipVerify` fails before launcher or launch-command output.
@@ -1329,7 +1330,7 @@ ADRs:
 
 ### Current Live Product And Package Packets
 
-- `2026-06-04-local-release-path-guard-regression`: portable release verifier and launcher now have MVP preflight coverage that explicit release roots and release paths outside ignored `.local` fail before verifier or launch-command output.
+- `2026-06-04-local-release-path-guard-regression`: portable release publisher, verifier, and launcher now have MVP preflight coverage that explicit release roots and release paths outside ignored `.local` fail before publisher, verifier, or launch-command output.
 - `2026-06-04-accepted-launcher-notes-path-guard`: accepted-package launcher regression now covers explicit acceptance notes paths outside ignored `.local` failing before launch-command output.
 - `2026-06-04-pending-notes-head-wording-stabilization`: pending package acceptance notes docs now describe refresh commits as generation-time provenance and rely on summary status lines for live current-HEAD context.
 - `2026-06-04-daily-readiness-latest-notes-isolation`: daily readiness latest package notes regression now uses explicit synthetic latest-notes paths under its private ignored test folder.
