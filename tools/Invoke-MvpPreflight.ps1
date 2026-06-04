@@ -12,6 +12,7 @@ param(
     [switch]$SkipAcceptedLocalReleaseSelectionCheck,
     [switch]$SkipLocalReleaseAcceptanceSummaryCheck,
     [switch]$SkipLocalReleaseAcceptanceRecorderCheck,
+    [switch]$SkipRealProfileSelectedRestoreTrustHelperPathGuardCheck,
     [switch]$SkipRealProfileNextBatchStopGuardCheck,
     [switch]$SkipDailyReadinessUndoSpotlightCheck,
     [switch]$SkipDocumentationConsistencyCheck,
@@ -33,6 +34,7 @@ $localReleaseAcceptanceCommandStampingTestScript = Join-Path $PSScriptRoot "Test
 $acceptedLocalReleaseSelectionTestScript = Join-Path $PSScriptRoot "Test-AcceptedLocalReleaseSelection.ps1"
 $localReleaseAcceptanceSummaryTestScript = Join-Path $PSScriptRoot "Test-LocalReleaseAcceptanceSummary.ps1"
 $localReleaseAcceptanceRecorderTestScript = Join-Path $PSScriptRoot "Test-LocalReleaseAcceptanceRecorder.ps1"
+$realProfileSelectedRestoreTrustHelperPathGuardTestScript = Join-Path $PSScriptRoot "Test-RealProfileSelectedRestoreTrustManifestPathGuard.ps1"
 $realProfileNextBatchStopGuardTestScript = Join-Path $PSScriptRoot "Test-RealProfileNextBatchStopGuard.ps1"
 $dailyReadinessUndoSpotlightTestScript = Join-Path $PSScriptRoot "Test-DailyReadinessExactProfileUndoSpotlight.ps1"
 $documentationConsistencyTestScript = Join-Path $PSScriptRoot "Test-DocumentationConsistency.ps1"
@@ -140,6 +142,12 @@ try {
     if (-not $SkipLocalReleaseAcceptanceRecorderCheck) {
         Invoke-PreflightStep -Name "Local release acceptance recorder regression" -Command {
             & powershell.exe -NoProfile -ExecutionPolicy Bypass -File $localReleaseAcceptanceRecorderTestScript
+        }
+    }
+
+    if (-not $SkipRealProfileSelectedRestoreTrustHelperPathGuardCheck) {
+        Invoke-PreflightStep -Name "Real-profile selected restore trust helper path guard regression" -Command {
+            & powershell.exe -NoProfile -ExecutionPolicy Bypass -File $realProfileSelectedRestoreTrustHelperPathGuardTestScript
         }
     }
 

@@ -33,7 +33,7 @@ The helper is also write-capable outside `-WhatIf`, so explicit `QuarantineRoot`
 - Added `tools\Test-RealProfileSelectedRestoreTrustManifestPathGuard.cmd` and `.ps1`.
 - The regression verifies a safe relative path passes in `-WhatIf` mode with an ignored `.local` Quarantine Root.
 - The regression verifies committed `README.md` as a non-`.local` `QuarantineRoot` fails before preview, manifest, or app-command output.
-- The regression verifies an escaped `..\moxhe\...` relative path fails before preview, manifest, or app-command output.
+- The regression verifies a profile-shaped escaped relative path fails before preview, manifest, or app-command output.
 - The regression asserts no ignored test Quarantine Root is created in `-WhatIf` mode and bounds any cleanup under repo `.local`.
 
 ## Verification
